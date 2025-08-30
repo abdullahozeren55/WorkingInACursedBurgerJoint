@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c4a1f97ec1b644aa2aab2f266b34a8, type: 3}
+  m_Name: BUN
+  m_EditorClassIdentifier: 
+  cookingParticles: {fileID: 3451705259810622206, guid: c63e6c5a9c31cc54c8e13bc2c071867e, type: 3}
+  cookingSound: {fileID: 8300000, guid: f1409505fc2935e4e8c4abbfde6a52ec, type: 3}
+  audioFadeOutDuration: 1
+  materials:
+  - {fileID: 2100000, guid: ca1dfd91055e20240ab4c5f793c39cf9, type: 2}
+  - {fileID: 2100000, guid: 2c7435990fa9a9640afad4068c99d45a, type: 2}
+  - {fileID: 2100000, guid: e476f7c2dca7523489a75cc717af5c47, type: 2}
+  cookTime:
+  - 5
+  - 9

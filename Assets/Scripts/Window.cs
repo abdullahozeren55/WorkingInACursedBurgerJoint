@@ -1,0 +1,256 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Window : MonoBehaviour, IInteractable
+{
+    [Header("Audio Settings")]
+    public AudioClip openSound;
+    public AudioClip closeSound;
+    private AudioSource audioSource;
+
+    [Header("Text Settings")]
+    public GameObject openText;
+    public GameObject closeText;
+
+    [Header("Open Close Settings")]
+    [SerializeField] private float timeToOpen = 0.3f;
+    [SerializeField] private float openZPosition = 6.5f;
+    private Vector3 closePosition;
+    private Vector3 openPosition;
+    private Coroutine openCoroutine;
+    private bool isOpened;
+
+    [Header("Layer Settings")]
+    private int interactableLayer;
+    private int interactableOutlinedLayer;
+    private int uninteractableLayer;
+
+    [Header("Lock Settings")]
+    public bool IsLocked;
+    public AudioClip lockedSound;
+    public GameObject lockedText;
+    [SerializeField] private float timeToLockOpen = 0.12f;
+    [SerializeField] private float lockOpenZPosition = 0.1f;
+    private Vector3 lockedOpenPosition;
+    private bool inLockOpen;
+
+    private GameObject[] windowParts;
+
+    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private GameManager.HandRigTypes handRigType;
+
+    void Awake()
+    {
+        // Get the number of children
+        int childCount = transform.childCount;
+
+        // Initialize the array to hold the children
+        windowParts = new GameObject[childCount];
+
+        // Loop through each child and store it in the array
+        for (int i = 0; i < childCount; i++)
+        {
+            // Get the child GameObject
+            windowParts[i] = transform.GetChild(i).gameObject;
+        }
+
+        isOpened = false;
+
+        closePosition = windowParts[0].transform.position;
+        openPosition = new Vector3(closePosition.x, closePosition.y, openZPosition);
+        lockedOpenPosition = new Vector3(closePosition.x, closePosition.y, lockOpenZPosition);
+
+        audioSource = windowParts[0].GetComponent<AudioSource>();
+
+        interactableLayer = LayerMask.NameToLayer("Interactable");
+        interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
+        uninteractableLayer = LayerMask.NameToLayer("Uninteractable");
+
+        inLockOpen = false;
+    }
+
+    public void OnFocus()
+    {
+        if (!inLockOpen)
+        {
+            if (IsLocked)
+                lockedText.SetActive(true);
+            else
+                HandleText(true);
+
+            ChangeLayer(interactableOutlinedLayer);
+        }
+        
+    }
+
+    public void OnInteract()
+    {
+        if (!IsLocked)
+            HandlePosition();
+        else
+            HandleLocked();
+    }
+
+    public void OnLoseFocus()
+    {
+        if (!inLockOpen)
+        {
+            if (IsLocked)
+                lockedText.SetActive(false);
+            else
+                HandleText(false);
+
+            ChangeLayer(interactableLayer);
+        }
+        
+    }
+
+    private void HandleText(bool isFocused)
+    {
+        if (isFocused)
+        {
+            openText.SetActive(!isOpened);
+            closeText.SetActive(isOpened);
+        }
+        else
+        {
+            if (openText.activeSelf) openText.SetActive(false);
+            if (closeText.activeSelf) closeText.SetActive(false);
+        }
+    }
+
+    public void HandlePosition()
+    {
+        isOpened = !isOpened;
+        HandleText(true);
+
+        if (openCoroutine != null)
+        {
+            StopCoroutine(openCoroutine);
+            openCoroutine = null;
+        }
+
+        PlaySound(!isOpened);
+        openCoroutine = StartCoroutine(ToggleReposition(isOpened));
+    }
+
+    private void HandleLocked()
+    {
+
+        inLockOpen = true;
+
+        ChangeLayer(uninteractableLayer);
+
+        HandleText(false);
+        lockedText.SetActive(false);
+
+        audioSource.Stop();
+
+        audioSource.PlayOneShot(lockedSound);
+
+        if (openCoroutine != null)
+        {
+            StopCoroutine(openCoroutine);
+            openCoroutine = null;
+        }
+
+        openCoroutine = StartCoroutine(ToggleLockReposition());
+    }
+
+    private void PlaySound(bool isOpen)
+    {
+        audioSource.Stop();
+
+        if (isOpen)
+        {
+            audioSource.PlayOneShot(closeSound);
+        }
+        else
+        {
+            audioSource.PlayOneShot(openSound);
+        }
+    }
+
+    private void ChangeLayer(int layerIndex)
+    {
+        gameObject.layer = layerIndex;
+        foreach (GameObject child in windowParts)
+            child.layer = layerIndex;
+    }
+
+    private IEnumerator ToggleReposition(bool shouldOpen)
+    {
+
+        Vector3 targetPosition = shouldOpen ? openPosition : closePosition;
+        Vector3 startingPosition = windowParts[0].transform.position;
+
+        float timeElapsed = 0f;
+
+        while (timeElapsed < timeToOpen)
+        {
+            windowParts[0].transform.position = Vector3.Lerp(startingPosition, targetPosition, timeElapsed / timeToOpen);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        windowParts[0].transform.position = targetPosition;
+        openCoroutine = null;
+    }
+
+    private IEnumerator ToggleLockReposition()
+    {
+
+        float timeElapsed = 0f;
+
+        while (timeElapsed < timeToLockOpen)
+        {
+            windowParts[0].transform.position = Vector3.Lerp(closePosition, lockedOpenPosition, timeElapsed / timeToLockOpen);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        windowParts[0].transform.position = lockedOpenPosition;
+
+        timeElapsed = 0f;
+
+        while (timeElapsed < timeToLockOpen)
+        {
+            windowParts[0].transform.position = Vector3.Lerp(lockedOpenPosition, closePosition, timeElapsed / timeToLockOpen);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        windowParts[0].transform.position = closePosition;
+
+        timeElapsed = 0f;
+
+        while (timeElapsed < timeToLockOpen)
+        {
+            windowParts[0].transform.position = Vector3.Lerp(closePosition, lockedOpenPosition, timeElapsed / timeToLockOpen);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        windowParts[0].transform.position = lockedOpenPosition;
+
+        timeElapsed = 0f;
+
+        while (timeElapsed < timeToLockOpen)
+        {
+            windowParts[0].transform.position = Vector3.Lerp(lockedOpenPosition, closePosition, timeElapsed / timeToLockOpen);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        windowParts[0].transform.position = closePosition;
+
+        inLockOpen = false;
+
+        ChangeLayer(interactableLayer);
+
+        openCoroutine = null;
+    }
+
+
+}

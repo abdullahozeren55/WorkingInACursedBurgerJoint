@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
+  m_Name: PATTY
+  m_EditorClassIdentifier: 
+  ingredientType: 1
+  yHeight: 0.01
+  trashSpaceValue: 8
+  followingSpeed: 40
+  timeToPutOnTray: 0.3
+  grabPositionOffset: {x: 0.0002, y: 0.001, z: 0.0003}
+  grabRotationOffset: {x: 130, y: 0, z: 0}
+  audioClips:
+  - {fileID: 8300000, guid: b93dbdd756280f6419be6d697d852f4f, type: 3}
+  - {fileID: 8300000, guid: 3e28540a4e7b19447a5cf58012f58e56, type: 3}
+  - {fileID: 8300000, guid: d7b91449db4f3184c8654c340db2c173, type: 3}
+  - {fileID: 8300000, guid: c1ee040ec696c4a4589e62c972655b97, type: 3}
+  - {fileID: 8300000, guid: 564c08c154e42024986db9ecc7d5df1c, type: 3}
+  - {fileID: 8300000, guid: 43ae9b8eae91c9942b1ba71de938f1f4, type: 3}
+  - {fileID: 8300000, guid: f6346fd350ca0de49b1ac511d6600830, type: 3}
+  - {fileID: 8300000, guid: 287963081c3c1f7488db38ef6899eaf1, type: 3}
+  - {fileID: 8300000, guid: c673c1b3640dd8e4cac5fd0897507e5b, type: 3}

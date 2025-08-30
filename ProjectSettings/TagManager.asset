@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Door
+  - Grill
+  - BurgerIngredient
+  - BurgerBox
+  - BurgerBoxClosed
+  - Ground
+  - Tray
+  - Customer
+  - WholeIngredient
+  - SupplyBox
+  - Trash
+  - Drink
+  - Knife
+  - BroomTrigger
+  - Noodle
+  - NevzatTrigger
+  - SauceBottle
+  - BurgerSauceArea
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Player
+  - Ground
+  - Customer
+  - InteractableOutlined
+  - Interactable
+  - Uninteractable
+  - Grabable
+  - GrabableOutlined
+  - Ungrabable
+  - Grill
+  - 
+  - OnTray
+  - 
+  - CustomerTriggers
+  - OrderThrowArea
+  - 
+  - 
+  - 
+  - Screens
+  - UIStage1
+  - MANAGERS
+  - UIStage2
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0

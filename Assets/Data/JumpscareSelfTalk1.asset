@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02eb87e73e22d8241af6e84e70b394ab, type: 3}
+  m_Name: JumpscareSelfTalk1
+  m_EditorClassIdentifier: 
+  dialogueSegments:
+  - PersonName: BEN
+    DialogueToPrint: Bu ne ya?
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "D\xFCkkan\u0131n maskotu falan herhalde. Patron bundan bahsetmemi\u015Fti."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Bunu da \xE7\xF6pe atmam gerekiyor mu acaba?"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "En iyisi patrona soray\u0131m ya \u015Fimdi atar\u0131m k\u0131ymete
+      biner falan. Durduk yere ba\u015F\u0131ma i\u015F almayay\u0131m."
+    Skippable: 0
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  shouldGiveOrderBack: 0
+  shouldDoAnActionAtTheEnd: 0
+  isDialogueFinished: 0
+  type: 0
+  question: 
+  optionA: 
+  optionD: 

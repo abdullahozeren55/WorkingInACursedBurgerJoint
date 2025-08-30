@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54339c9dde0476f4fabd14e44eb823a4, type: 3}
+  m_Name: BURGERBOX
+  m_EditorClassIdentifier: 
+  trashSpaceValue: 35
+  followingSpeed: 40
+  timeToPutOnTray: 0.3
+  grabPositionOffsetForOpen: {x: 0.0005, y: 0.0012, z: -0.0006}
+  grabRotationOffsetForOpen: {x: -10, y: 280, z: -250}
+  grabPositionOffsetForClose: {x: 0.0002, y: 0.0008, z: 0.001}
+  grabRotationOffsetForClose: {x: 15, y: 85, z: 200}
+  audioClips:
+  - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
+  - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}
+  - {fileID: 8300000, guid: eb9009cde0262ab47bab39f312e9823b, type: 3}

@@ -1,0 +1,127 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using System.Linq;
+
+public class SauceManager : MonoBehaviour
+{
+    public static SauceManager Instance;
+
+    public class SauceDropData
+    {
+        public GameObject drop;
+        public float spawnTime;
+
+        public SauceDropData(GameObject drop, float spawnTime)
+        {
+            this.drop = drop;
+            this.spawnTime = spawnTime;
+        }
+    }
+
+
+    public GameObject[] sauceDrops = new GameObject[4]; //0 ketchup, 1 mayo, 2 mustard, 3 BBQ
+    public float dropLifetime = 10f;
+
+    private List<SauceDropData> activeOutsideDrops = new List<SauceDropData>();
+    private List<SauceDropData> activeBurgerKetchupDrops = new List<SauceDropData>();
+    private List<SauceDropData> activeBurgerMayoDrops = new List<SauceDropData>();
+    private List<SauceDropData> activeBurgerMustardDrops = new List<SauceDropData>();
+    private List<SauceDropData> activeBurgerBBQDrops = new List<SauceDropData>();
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
+    private void Update()
+    {
+        float currentTime = Time.time;
+
+        for (int i = activeOutsideDrops.Count - 1; i >= 0; i--)
+        {
+            SauceDropData data = activeOutsideDrops[i];
+            float age = currentTime - data.spawnTime;
+            float timeLeft = dropLifetime - age;
+
+            if (age >= dropLifetime)
+            {
+                Destroy(data.drop);
+                activeOutsideDrops.RemoveAt(i);
+            }
+        }
+    }
+
+    public void SpawnDrop(SauceBottle.SauceType sauceType, Vector3 position, Quaternion rotation, Transform parent, bool inBurger)
+    {
+        GameObject newDrop = Instantiate(sauceType == SauceBottle.SauceType.Ketchup ? sauceDrops[0] : sauceType == SauceBottle.SauceType.Mayo ? sauceDrops[1] : sauceType == SauceBottle.SauceType.Mustard ? sauceDrops[2] : sauceDrops[3], position, rotation, parent);
+
+        if (!inBurger)
+            activeOutsideDrops.Add(new SauceDropData(newDrop, Time.time));
+        else
+        {
+            if (sauceType == SauceBottle.SauceType.Ketchup)
+            {
+                activeBurgerKetchupDrops.Add(new SauceDropData(newDrop, Time.time));
+
+                if (activeBurgerKetchupDrops.Count > 100)
+                {
+                    var oldest = activeBurgerKetchupDrops.OrderBy(d => d.spawnTime).FirstOrDefault();
+                    if (oldest != null)
+                    {
+                        activeBurgerKetchupDrops.Remove(oldest);
+                        Destroy(oldest.drop);
+                    }
+                }
+            }
+            else if (sauceType == SauceBottle.SauceType.Mayo)
+            {
+                activeBurgerMayoDrops.Add(new SauceDropData(newDrop, Time.time));
+
+                if (activeBurgerMayoDrops.Count > 100)
+                {
+                    var oldest = activeBurgerMayoDrops.OrderBy(d => d.spawnTime).FirstOrDefault();
+                    if (oldest != null)
+                    {
+                        activeBurgerMayoDrops.Remove(oldest);
+                        Destroy(oldest.drop);
+                    }
+                }
+            }
+            else if (sauceType == SauceBottle.SauceType.Mustard)
+            {
+                activeBurgerMustardDrops.Add(new SauceDropData(newDrop, Time.time));
+
+                if (activeBurgerMustardDrops.Count > 100)
+                {
+                    var oldest = activeBurgerMustardDrops.OrderBy(d => d.spawnTime).FirstOrDefault();
+                    if (oldest != null)
+                    {
+                        activeBurgerMustardDrops.Remove(oldest);
+                        Destroy(oldest.drop);
+                    }
+                }
+            }
+            else if (sauceType == SauceBottle.SauceType.BBQ)
+            {
+                activeBurgerBBQDrops.Add(new SauceDropData(newDrop, Time.time));
+
+                if (activeBurgerBBQDrops.Count > 100)
+                {
+                    var oldest = activeBurgerBBQDrops.OrderBy(d => d.spawnTime).FirstOrDefault();
+                    if (oldest != null)
+                    {
+                        activeBurgerBBQDrops.Remove(oldest);
+                        Destroy(oldest.drop);
+                    }
+                }
+            }
+
+        }
+    }
+}

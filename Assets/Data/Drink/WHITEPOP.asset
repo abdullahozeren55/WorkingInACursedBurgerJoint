@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 075a3b9d60a19f444836bb2aba352f11, type: 3}
+  m_Name: WHITEPOP
+  m_EditorClassIdentifier: 
+  drinkType: 2
+  trashSpaceValue: 12
+  followingSpeed: 40
+  timeToPutOnTray: 0.3
+  grabPositionOffset: {x: 0.0008, y: 0.0009, z: 0.0003}
+  grabRotationOffset: {x: 80, y: -125, z: -50}
+  audioClips:
+  - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
+  - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}
+  - {fileID: 8300000, guid: 663ad0518d9d3c04f89c09b876621b22, type: 3}

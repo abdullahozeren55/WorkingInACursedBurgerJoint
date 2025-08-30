@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02eb87e73e22d8241af6e84e70b394ab, type: 3}
+  m_Name: SellerNoodleBuyDialogueData
+  m_EditorClassIdentifier: 
+  dialogueSegments:
+  - PersonName: BEN
+    DialogueToPrint: "Bunu sat\u0131n almak istiyorum."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: Tamam.
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: ???
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Ee... Ne kadar vermem laz\u0131m?"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: "Haa... \u015Eey... Otuz be\u015F versen yeter."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Otuz alt\u0131 versem?"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: Artar.
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "\u0130yi misin abi?"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: "\u0130yiyim karde\u015Fim."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Biraz dalg\u0131n gibisin de."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: "\u0130yiyiz dedik ya karde\u015Fim."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Tamam abi sen \xF6yle diyorsan."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Ben de buraya yeni ta\u015F\u0131nd\u0131m."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: "\u0130yi ne g\xFCzel."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "\u0130\u015F ar\u0131yorum da..."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Var m\u0131 civarda esnafta eleman arayan falan?"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: Yok... Bilmiyorum.
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: "Ben de \xE7ok olmad\u0131 bu marketi a\xE7al\u0131. O y\xFCzden..."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "A-anlad\u0131m abi."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: SATICI
+    DialogueToPrint: ...
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  - PersonName: BEN
+    DialogueToPrint: "Neyse abi sa\u011Folas\u0131n. \u015Eu kar\u015F\u0131daki
+      burgerci eleman ar\u0131yormu\u015F oraya soray\u0131m olmazsa. Hadi kolay
+      ge-"
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  shouldGiveOrderBack: 0
+  shouldDoAnActionAtTheEnd: 1
+  isDialogueFinished: 1
+  type: 0
+  question: 
+  optionA: 
+  optionD: 

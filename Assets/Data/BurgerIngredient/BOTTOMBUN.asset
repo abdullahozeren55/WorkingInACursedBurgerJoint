@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
+  m_Name: BOTTOMBUN
+  m_EditorClassIdentifier: 
+  ingredientType: 0
+  yHeight: 0.012
+  trashSpaceValue: 9
+  followingSpeed: 40
+  timeToPutOnTray: 0.3
+  grabPositionOffset: {x: 0.0002, y: 0.0008, z: 0.0004}
+  grabRotationOffset: {x: -50, y: 0, z: 0}
+  audioClips:
+  - {fileID: 8300000, guid: 4b125dc5bc95ec04e867f0357eff41bf, type: 3}
+  - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}
+  - {fileID: 8300000, guid: f0efa123572028a43a704e66046edc85, type: 3}

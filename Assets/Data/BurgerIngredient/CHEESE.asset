@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
+  m_Name: CHEESE
+  m_EditorClassIdentifier: 
+  ingredientType: 2
+  yHeight: 0.003
+  trashSpaceValue: 3
+  followingSpeed: 40
+  timeToPutOnTray: 0.3
+  grabPositionOffset: {x: 0.0003, y: 0.00068, z: 0.0001}
+  grabRotationOffset: {x: 140, y: 0, z: 0}
+  audioClips:
+  - {fileID: 8300000, guid: f90ad78c871ee8941881b549564a2341, type: 3}
+  - {fileID: 8300000, guid: 7d6e09aa374a296429fab7f0b51cda27, type: 3}
+  - {fileID: 8300000, guid: 8562a45926bbca041a48e9894b138304, type: 3}
