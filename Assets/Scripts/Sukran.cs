@@ -21,6 +21,9 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     public ICustomer.Feeling CurrentFeeling { get => currentFeeling; set => currentFeeling = value; }
     [SerializeField] private ICustomer.Feeling currentFeeling;
 
+    public ICustomer.CustomerName PersonName { get => personName; set => personName = value; }
+    [SerializeField] private ICustomer.CustomerName personName;
+
     public GameManager.BurgerTypes BurgerType { get => burgerType; set => burgerType = value; }
     [SerializeField] private GameManager.BurgerTypes burgerType;
 

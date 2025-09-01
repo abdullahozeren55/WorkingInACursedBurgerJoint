@@ -20,6 +20,9 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
     public ICustomer.Feeling CurrentFeeling { get => currentFeeling; set => currentFeeling = value; }
     [SerializeField] private ICustomer.Feeling currentFeeling;
 
+    public ICustomer.CustomerName PersonName { get => personName; set => personName = value; }
+    [SerializeField] private ICustomer.CustomerName personName;
+
     public GameManager.BurgerTypes BurgerType { get => burgerType; set => burgerType = value; }
     [SerializeField] private GameManager.BurgerTypes burgerType;
 
@@ -120,22 +123,9 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         {
             if (CustomerDayChanges[i].Day == day)
             {
-                skinnedMeshRenderer.material = CustomerDayChanges[i].Material;
-                BurgerType = CustomerDayChanges[i].BurgerType;
-                DrinkType = CustomerDayChanges[i].DrinkType;
-
-                BeforeOrderDialogueData = CustomerDayChanges[i].BeforeOrderDialogueData;
-                AfterOrderDialogueData = CustomerDayChanges[i].AfterOrderDialogueData;
-                FalseBurgerDialogueData = CustomerDayChanges[i].FalseBurgerDialogueData;
-                TrueBurgerDialogueData = CustomerDayChanges[i].TrueBurgerDialogueData;
-                FalseDrinkDialogueData = CustomerDayChanges[i].FalseDrinkDialogueData;
-                TrueDrinkDialogueData = CustomerDayChanges[i].TrueDrinkDialogueData;
-                CompleteOrderDialogueData = CustomerDayChanges[i].CompleteOrderDialogueData;
-                NotAnsweringDialogueData = CustomerDayChanges[i].NotAnsweringDialogueData;
-                OptionADialogueData = CustomerDayChanges[i].OptionADialogueData;
-                OptionDDialogueData = CustomerDayChanges[i].OptionDDialogueData;
+                ApplyDayChanges(CustomerDayChanges[i]);
+                break; // daha fazla arama gereksiz
             }
-
         }
 
         foreach (GameObject item in ordersInRightHand)
@@ -464,6 +454,24 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, CustomerData.rotationSpeed * Time.deltaTime);
         }
+    }
+
+    private void ApplyDayChanges(ICustomer.CustomerDayChangesSegment changes)
+    {
+        skinnedMeshRenderer.material = changes.Material;
+        BurgerType = changes.BurgerType;
+        DrinkType = changes.DrinkType;
+
+        BeforeOrderDialogueData = changes.BeforeOrderDialogueData;
+        AfterOrderDialogueData = changes.AfterOrderDialogueData;
+        FalseBurgerDialogueData = changes.FalseBurgerDialogueData;
+        TrueBurgerDialogueData = changes.TrueBurgerDialogueData;
+        FalseDrinkDialogueData = changes.FalseDrinkDialogueData;
+        TrueDrinkDialogueData = changes.TrueDrinkDialogueData;
+        CompleteOrderDialogueData = changes.CompleteOrderDialogueData;
+        NotAnsweringDialogueData = changes.NotAnsweringDialogueData;
+        OptionADialogueData = changes.OptionADialogueData;
+        OptionDDialogueData = changes.OptionDDialogueData;
     }
 
     private void GiveOrderBack()

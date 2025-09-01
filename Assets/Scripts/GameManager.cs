@@ -8,6 +8,32 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class CustomerDaySortSegment
+    {
+        [Range(1, 5)]
+        public int Day;
+        public ICustomer.CustomerName[] CustomerSort;
+    }
+
+    [System.Serializable]
+    public class DayState
+    {
+        [Range(1, 5)]
+        public int Day;
+        [Range(1, 8)]
+        public int Part;
+        [Space]
+        public Vector3 sunRotation;
+        public float sunIntensity;
+        public Color sunColor;
+
+        public float skyboxExposure;
+        public Color skyboxColor;
+
+        public Color fogColor;
+        public float fogDensity;
+    }
     public enum BurgerTypes
     {
         ClassicBurger,
@@ -93,8 +119,21 @@ public class GameManager : MonoBehaviour
 
     [Header("Ertan Settings")]
     [SerializeField] private GameObject[] allErtans; //0 for regular, turning into an abomination as the number goes up
+    [SerializeField] private Ertan[] allErtansSC; //0 for regular, turning into an abomination as the number goes up
+    [Space]
+    [SerializeField] private ICustomer.CustomerDayChangesSegment[] ErtanDayChanges;
+    [Space]
     [HideInInspector] public bool ertanDidEatCheeseYesterday;
-    [HideInInspector] public int levelOfMadness = 0; //0 for regular, turning into an abomination as the number goes up
+    [HideInInspector] public int levelOfMadness = 1; //1 for regular, turning into an abomination as the number goes up
+
+    [Header("Customer Settings")]
+    [SerializeField] private GameObject[] allCustomers; //One Ertan will be put inside and get changed based on the required Ertan.
+    private ICustomer.CustomerName[] allCustomersName;
+
+    [Header("Day Settings")]
+    public DayState[] DayStates;
+    public CustomerDaySortSegment[] DayCustomerSort;
+    private int customerCounter = 0;
 
     private ICustomer currentCustomer;
 
@@ -153,11 +192,31 @@ public class GameManager : MonoBehaviour
             ertanFullMixedBurgerSauces
         };
 
+        allCustomersName = new ICustomer.CustomerName[allCustomers.Length]; // initialize
+
+        for (int i = 0; i < allCustomers.Length; i++)
+        {
+            allCustomersName[i] = allCustomers[i].GetComponent<ICustomer>().PersonName;
+        }
+
         firstPersonController = FindFirstObjectByType<FirstPersonController>();
         characterController = FindFirstObjectByType<CharacterController>();
 
         SetSkyCollider(false);
         SetOrderThrowArea(false);
+    }
+
+    public void CallCustomer()
+    {
+        for (int i = 0; i < allCustomersName.Length; i++)
+        {
+            if (allCustomersName[i] == DayCustomerSort[DayCount - 1].CustomerSort[customerCounter])
+            {
+                allCustomers[i].gameObject.SetActive(true);
+                customerCounter++;
+            }
+        }
+        
     }
 
     public void ResetPlayerGrabAndInteract()

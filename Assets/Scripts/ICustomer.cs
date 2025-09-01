@@ -28,11 +28,26 @@ public interface ICustomer
         SAD
     }
 
+    public enum CustomerName
+    {
+        KEMAL,
+        HIKMET,
+        TARIK,
+        NEVZAT,
+        SUKRAN,
+        ERTAN,
+        ALEYNA,
+        KEKO
+    }
+
     [System.Serializable]
     public class CustomerDayChangesSegment
     {
         [Range(1, 5)]
         public int Day;
+        [Range(1, 5)]
+        public int RequiredLevel;
+        public bool RequiredBoolean;
         public Material Material;
         public GameManager.BurgerTypes BurgerType;
         public GameManager.DrinkTypes DrinkType;
@@ -72,6 +87,7 @@ public interface ICustomer
 
     public Action CurrentAction {  get; set; }
     public Feeling CurrentFeeling { get; set; }
+    public CustomerName PersonName { get; set; }
     public GameManager.BurgerTypes BurgerType { get; set; }
     public GameManager.DrinkTypes DrinkType { get; set; }
 

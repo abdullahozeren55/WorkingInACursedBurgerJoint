@@ -8,8 +8,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class Ertan : MonoBehaviour, ICustomer, IInteractable
 {
-    public ICustomer.CustomerDayChangesSegment[] CustomerDayChanges { get => customerDayChanges; set => customerDayChanges = value; }
-    [SerializeField] private ICustomer.CustomerDayChangesSegment[] customerDayChanges;
+    public ICustomer.CustomerDayChangesSegment[] CustomerDayChanges { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public CustomerData CustomerData { get => customerData; set => customerData = value; }
     [SerializeField] private CustomerData customerData;
 
@@ -18,6 +17,9 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     public ICustomer.Feeling CurrentFeeling { get => currentFeeling; set => currentFeeling = value; }
     [SerializeField] private ICustomer.Feeling currentFeeling;
+
+    public ICustomer.CustomerName PersonName { get => personName; set => personName = value; }
+    [SerializeField] private ICustomer.CustomerName personName;
 
     public GameManager.BurgerTypes BurgerType { get => burgerType; set => burgerType = value; }
     [SerializeField] private GameManager.BurgerTypes burgerType;
@@ -93,12 +95,6 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
     [Header("Push Player Settings")]
     [SerializeField] private Transform rayPointForPushingPlayer;
 
-    [Header("Ertan Settings")]
-    private bool ertanDidEatCheeseYesterday;
-    private int levelOfMadness = 0; //0 for regular, turning into an abomination as the number goes up
-
-    private int day;
-
     private void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -117,35 +113,8 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     private void OnEnable()
     {
-        day = GameManager.Instance.DayCount;
-
         trueBurgerReceived = false;
         trueDrinkReceived = false;
-
-        ertanDidEatCheeseYesterday = GameManager.Instance.ertanDidEatCheeseYesterday;
-        levelOfMadness = GameManager.Instance.levelOfMadness;
-
-        for (int i = 0; i < CustomerDayChanges.Length; i++)
-        {
-            if (CustomerDayChanges[i].Day == day)
-            {
-                skinnedMeshRenderer.material = CustomerDayChanges[i].Material;
-                BurgerType = CustomerDayChanges[i].BurgerType;
-                DrinkType = CustomerDayChanges[i].DrinkType;
-
-                BeforeOrderDialogueData = CustomerDayChanges[i].BeforeOrderDialogueData;
-                AfterOrderDialogueData = CustomerDayChanges[i].AfterOrderDialogueData;
-                FalseBurgerDialogueData = CustomerDayChanges[i].FalseBurgerDialogueData;
-                TrueBurgerDialogueData = CustomerDayChanges[i].TrueBurgerDialogueData;
-                FalseDrinkDialogueData = CustomerDayChanges[i].FalseDrinkDialogueData;
-                TrueDrinkDialogueData = CustomerDayChanges[i].TrueDrinkDialogueData;
-                CompleteOrderDialogueData = CustomerDayChanges[i].CompleteOrderDialogueData;
-                NotAnsweringDialogueData = CustomerDayChanges[i].NotAnsweringDialogueData;
-                OptionADialogueData = CustomerDayChanges[i].OptionADialogueData;
-                OptionDDialogueData = CustomerDayChanges[i].OptionDDialogueData;
-            }
-
-        }
 
         foreach (GameObject item in ordersInLeftHand)
         {
