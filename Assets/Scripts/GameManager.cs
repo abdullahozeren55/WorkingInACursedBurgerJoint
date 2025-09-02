@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
 
         public Color fogColor;
         public float fogDensity;
+
+        public bool shouldLightsUp;
     }
     public enum BurgerTypes
     {
@@ -140,6 +142,9 @@ public class GameManager : MonoBehaviour
     public float transitionDuration = 10f;
     private int currentIndex = 0;
     private Coroutine transitionRoutine;
+    [Space]
+    [SerializeField] private Material[] lightMats;
+    [SerializeField] private GameObject[] allLights;
     [Space]
     public CustomerDaySortSegment[] DayCustomerSort;
     private int customerCounter = 0;
@@ -535,6 +540,43 @@ public class GameManager : MonoBehaviour
             RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, t);
 
             yield return null;
+        }
+
+        sun.transform.rotation = Quaternion.Euler(to.sunRotation);
+        sun.intensity = to.sunIntensity;
+        sun.color = to.sunColor;
+
+        skyboxMat.SetFloat("_Exposure", to.skyboxExposure);
+        skyboxMat.SetFloat("_Rotation", to.skyboxRotate);
+        skyboxMat.SetColor("_Tint", to.skyboxColor);
+
+        RenderSettings.fogColor = to.fogColor;
+        RenderSettings.fogDensity = to.fogDensity;
+        RenderSettings.ambientLight = to.environmentColor;
+
+        if (!from.shouldLightsUp && to.shouldLightsUp)
+        {
+            foreach (Material mat in lightMats)
+            {
+                mat.EnableKeyword("_EMISSION");
+            }
+
+            foreach (GameObject light in allLights)
+            {
+                light.SetActive(true);
+            }
+        }
+        else if (from.shouldLightsUp && !to.shouldLightsUp)
+        {
+            foreach (Material mat in lightMats)
+            {
+                mat.DisableKeyword("_EMISSION");
+            }
+
+            foreach (GameObject light in allLights)
+            {
+                light.SetActive(false);
+            }
         }
     }
 }
