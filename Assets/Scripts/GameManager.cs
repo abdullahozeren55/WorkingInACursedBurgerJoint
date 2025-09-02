@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour
         public float skyboxExposure;
         public float skyboxRotate;
         public Color skyboxColor;
+        public Color environmentColor;
 
         public Color fogColor;
         public float fogDensity;
@@ -531,6 +532,7 @@ public class GameManager : MonoBehaviour
             // Fog
             RenderSettings.fogColor = Color.Lerp(from.fogColor, to.fogColor, t);
             RenderSettings.fogDensity = Mathf.Lerp(from.fogDensity, to.fogDensity, t);
+            RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, t);
 
             yield return null;
         }
