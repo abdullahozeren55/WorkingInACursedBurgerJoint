@@ -14,12 +14,6 @@ public class Noodle : MonoBehaviour, IGrabable
     public float HandLerp { get => handLerp; set => handLerp = value; }
     [SerializeField] private float handLerp;
 
-    public bool IsGettingPutOnTrash { get => isGettingPutOnTrash; set => isGettingPutOnTrash = value; }
-    private bool isGettingPutOnTrash;
-
-    public bool IsGettingPutOnContainer { get => isGettingPutOnContainer; set => isGettingPutOnContainer = value; }
-    private bool isGettingPutOnContainer;
-
     public bool IsGettingPutOnHologram { get => isGettingPutOnHologram; set => isGettingPutOnHologram = value; }
     private bool isGettingPutOnHologram;
 
@@ -49,8 +43,6 @@ public class Noodle : MonoBehaviour, IGrabable
     private int grabableLayer;
     private int grabableOutlinedLayer;
     private int ungrabableLayer;
-    private int onTrashLayer;
-    private int onContainerLayer;
 
     private int interactableLayer;
 
@@ -61,8 +53,6 @@ public class Noodle : MonoBehaviour, IGrabable
 
     private bool isJustThrowed;
 
-    private Coroutine putOnTrashCoroutine;
-    private Coroutine putOnContainerCoroutine;
     private Coroutine putOnHologramCoroutine;
 
     private float audioLastPlayedTime;
@@ -108,56 +98,14 @@ public class Noodle : MonoBehaviour, IGrabable
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
-        onTrashLayer = LayerMask.NameToLayer("OnTrash");
-        onContainerLayer = LayerMask.NameToLayer("OnContainer");
         interactableLayer = LayerMask.NameToLayer("Interactable");
 
         IsGrabbed = false;
-        IsGettingPutOnTrash = false;
-        IsGettingPutOnContainer = false;
         IsGettingPutOnHologram = false;
 
         isJustThrowed = false;
 
         audioLastPlayedTime = 0f;
-    }
-
-    public void PutOnTrash(Vector3 trashPos, Transform parentTrash)
-    {
-
-        IsGettingPutOnTrash = true;
-        gameObject.layer = onTrashLayer;
-        ChangeChildLayers(onTrashLayer);
-
-        PlayAudioWithRandomPitch(1);
-
-        IsGrabbed = false;
-        HandleText(false);
-
-        transform.parent = parentTrash;
-
-        this.trashPos = trashPos;
-
-        putOnTrashCoroutine = StartCoroutine(PutOnTrash());
-    }
-
-    public void PutOnContainer(Vector3 containerPos, Transform parentContainer)
-    {
-
-        IsGettingPutOnContainer = true;
-        gameObject.layer = onContainerLayer;
-        ChangeChildLayers(onContainerLayer);
-
-        PlayAudioWithRandomPitch(1);
-
-        IsGrabbed = false;
-        HandleText(false);
-
-        transform.parent = parentContainer;
-
-        this.containerPos = containerPos;
-
-        putOnContainerCoroutine = StartCoroutine(PutOnContainer());
     }
 
     public void PutOnHologram(Vector3 hologramPos, Quaternion hologramRotation, bool isStoreHologram)
@@ -228,7 +176,7 @@ public class Noodle : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        if (!isGettingPutOnTrash && !IsGettingPutOnContainer && !IsGettingPutOnHologram)
+        if (!IsGettingPutOnHologram)
         {
             HandleText(true);
             gameObject.layer = grabableOutlinedLayer;
@@ -239,9 +187,8 @@ public class Noodle : MonoBehaviour, IGrabable
     }
     public void OnLoseFocus()
     {
-        if (!isGettingPutOnTrash && !IsGettingPutOnContainer && !IsGettingPutOnHologram)
+        if (!IsGettingPutOnHologram)
         {
-            rb.isKinematic = false;
 
             HandleText(false);
             gameObject.layer = grabableLayer;
@@ -342,7 +289,7 @@ public class Noodle : MonoBehaviour, IGrabable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && !IsGettingPutOnTrash && !IsGettingPutOnContainer && !IsGettingPutOnHologram && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
+        if (!IsGrabbed && !IsGettingPutOnHologram && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
         {
             if (isJustThrowed)
             {
@@ -359,67 +306,6 @@ public class Noodle : MonoBehaviour, IGrabable
         }
 
 
-    }
-
-    private IEnumerator PutOnTrash()
-    {
-        rb.isKinematic = true;
-
-        Vector3 startPos = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Random.rotation;
-
-        float timeElapsed = 0f;
-        float rate = 0f;
-
-        while (timeElapsed < data.timeToPutOnTray)
-        {
-            rate = timeElapsed / data.timeToPutOnTray;
-
-            transform.position = Vector3.Lerp(startPos, trashPos, rate);
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, rate);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = trashPos;
-        transform.rotation = targetRotation;
-
-        rb.isKinematic = false;
-        rb.useGravity = true;
-
-        putOnTrashCoroutine = null;
-    }
-
-    private IEnumerator PutOnContainer()
-    {
-        rb.isKinematic = true;
-
-        Vector3 startPos = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Random.rotation;
-
-        float timeElapsed = 0f;
-        float rate = 0f;
-
-        while (timeElapsed < data.timeToPutOnTray)
-        {
-
-            rate = timeElapsed / data.timeToPutOnTray;
-
-            transform.position = Vector3.Lerp(startPos, containerPos, rate);
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, rate);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = containerPos;
-        transform.rotation = targetRotation;
-
-        rb.isKinematic = false;
-        rb.useGravity = true;
-
-        putOnContainerCoroutine = null;
     }
 
     private IEnumerator PutOnHologram(bool isStoreHologram)

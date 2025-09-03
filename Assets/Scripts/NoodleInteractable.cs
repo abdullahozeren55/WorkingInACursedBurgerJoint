@@ -39,8 +39,8 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
     private MeshCollider bucketCollider;
     private Animator anim;
 
-    public GameManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
+    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private GameManager.HandRigTypes handRigType;
     void Awake()
     {
 
