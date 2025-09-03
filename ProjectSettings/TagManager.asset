@@ -22,6 +22,7 @@ TagManager:
   - NevzatTrigger
   - SauceBottle
   - BurgerSauceArea
+  - SaucePack
   layers:
   - Default
   - TransparentFX

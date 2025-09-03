@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82b750d8b2482424a8243f39feb945b0, type: 3}
-  m_Name: NoodleData
+  m_Name: SaucePackData
   m_EditorClassIdentifier: 
   timeToPutOnHologram: 0.3
-  grabPositionOffset: {x: 0.0002, y: 0.00075, z: 0.0006}
-  grabRotationOffset: {x: 45, y: -125, z: -30}
+  grabPositionOffset: {x: 0, y: 0, z: 0}
+  grabRotationOffset: {x: 0, y: 0, z: 0}
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}

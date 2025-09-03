@@ -14,8 +14,7 @@ public class Noodle : MonoBehaviour, IGrabable
     public float HandLerp { get => handLerp; set => handLerp = value; }
     [SerializeField] private float handLerp;
 
-    public bool IsGettingPutOnHologram { get => isGettingPutOnHologram; set => isGettingPutOnHologram = value; }
-    private bool isGettingPutOnHologram;
+    public bool IsGettingPutOnHologram;
 
     public NoodleData data;
 
@@ -24,21 +23,14 @@ public class Noodle : MonoBehaviour, IGrabable
     [SerializeField] private GameObject hologramStorePart;
     [SerializeField] private GameObject grabText;
     [SerializeField] private GameObject dropText;
-    [SerializeField] private OutSaucePack outSaucePack;
     [SerializeField] private GameObject saucePack;
     [SerializeField] private GameObject water;
     [SerializeField] private Kettle kettle;
-    [Space]
-    [SerializeField] private Vector3 grabPositionOffset;
-    [SerializeField] private Vector3 grabRotationOffset;
 
     private AudioSource audioSource;
     private Rigidbody rb;
-    private Collider col;
-    private Collider[] childColliders;
     private Renderer hologramRenderer;
     private Renderer hologramStoreRenderer;
-    private Animator anim;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -46,8 +38,6 @@ public class Noodle : MonoBehaviour, IGrabable
 
     private int interactableLayer;
 
-    private Vector3 trashPos;
-    private Vector3 containerPos;
     private Vector3 hologramPos;
     private Quaternion hologramRotation;
 
@@ -56,19 +46,14 @@ public class Noodle : MonoBehaviour, IGrabable
     private Coroutine putOnHologramCoroutine;
 
     private float audioLastPlayedTime;
-    private float distance;
 
-    private Quaternion targetRotation;
-    private float rotationDistance;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
-        col = GetComponent<Collider>();
         hologramRenderer = hologramPart.GetComponent<Renderer>();
         hologramStoreRenderer = hologramStorePart.GetComponent<Renderer>();
-        anim = GetComponent<Animator>();
 
         foreach (Material material in hologramRenderer.materials)
         {
@@ -86,13 +71,6 @@ public class Noodle : MonoBehaviour, IGrabable
             color.a = 0f;
 
             material.color = color;
-        }
-
-        childColliders = new Collider[childObjects.Length];
-
-        for (int i = 0; i < childObjects.Length; i++)
-        {
-            childColliders[i] = childObjects[i].GetComponent<Collider>();
         }
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
@@ -139,8 +117,6 @@ public class Noodle : MonoBehaviour, IGrabable
 
         PlayAudioWithRandomPitch(0);
 
-        targetRotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
-
         ChangeChildLayers(ungrabableLayer);
 
         rb.velocity = Vector3.zero;
@@ -171,8 +147,8 @@ public class Noodle : MonoBehaviour, IGrabable
 
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
-        transform.localPosition = grabPositionOffset;
-        transform.localRotation = Quaternion.Euler(grabRotationOffset);
+        transform.localPosition = data.grabPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
     }
     public void OnFocus()
     {
@@ -318,26 +294,24 @@ public class Noodle : MonoBehaviour, IGrabable
         float timeElapsed = 0f;
         float rate = 0f;
 
-        while (timeElapsed < data.timeToPutOnTray)
+        while (timeElapsed < data.timeToPutOnHologram)
         {
 
-            rate = timeElapsed / data.timeToPutOnTray;
+            rate = timeElapsed / data.timeToPutOnHologram;
 
-            transform.localPosition = Vector3.Lerp(startPos, hologramPos, rate);
-            transform.localRotation = Quaternion.Slerp(startRotation, hologramRotation, rate);
+            transform.position = Vector3.Lerp(startPos, hologramPos, rate);
+            transform.rotation = Quaternion.Slerp(startRotation, hologramRotation, rate);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
 
-        transform.localPosition = hologramPos;
-        transform.localRotation = hologramRotation;
+        transform.position = hologramPos;
+        transform.rotation = hologramRotation;
 
         if (!isStoreHologram)
         {
-            col.enabled = false;
             saucePack.GetComponent<Collider>().enabled = true;
 
-            outSaucePack.currentWater = water;
             kettle.currentNoodle = gameObject.GetComponent<NoodleInteractable>();
 
             gameObject.layer = interactableLayer;

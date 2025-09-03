@@ -20,6 +20,8 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
     private int interactableOutlinedLayer;
     private int uninteractableLayer;
 
+    private MeshCollider col;
+
     [Header("Child Settings")]
     [SerializeField] private GameObject lidPart;
     [SerializeField] private GameObject bucketPart;
@@ -35,8 +37,6 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
 
     private MeshFilter lidMeshFilter;
     private MeshFilter bucketMeshFilter;
-    private MeshCollider lidCollider;
-    private MeshCollider bucketCollider;
     private Animator anim;
 
     public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
@@ -48,6 +48,7 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
 
         audioSource = GetComponent<AudioSource>();
         anim = GetComponent<Animator>();
+        col = GetComponent<MeshCollider>();
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
@@ -55,8 +56,6 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
 
         lidMeshFilter = lidPart.GetComponent<MeshFilter>();
         bucketMeshFilter = bucketPart.GetComponent<MeshFilter>();
-        lidCollider = lidPart.GetComponent<MeshCollider>();
-        bucketCollider = bucketPart.GetComponent<MeshCollider>();
     }
 
     public void OnFocus()
@@ -74,18 +73,11 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
         if (isOpened)
         {
             lidMeshFilter.mesh = lidPartMeshes[0];
-            lidCollider.sharedMesh = lidPartMeshes[0];
-
-            lidCollider.enabled = false;
-            bucketCollider.enabled = false;
+            col.enabled = false;
         }
         else
         {
             lidMeshFilter.mesh = lidPartMeshes[1];
-            lidCollider.sharedMesh = lidPartMeshes[1];
-
-            lidCollider.enabled = false;
-            bucketCollider.enabled = false;
 
             var main = smoke.main;
             main.stopAction = ParticleSystemStopAction.Callback;
@@ -145,18 +137,6 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
         StartCoroutine(LerpColor(currentWaterMat));
 
         Destroy(saucePack, 0.2f);
-    }
-
-    private void EnableColliders()
-    {
-        lidCollider.enabled = true;
-        bucketCollider.enabled = true;
-    }
-
-    private void ChangeSaucePackToInteractable()
-    {
-        saucePack.GetComponent<Collider>().enabled = true;
-        saucePack.layer = interactableLayer;
     }
 
     private void KettleInteractable()

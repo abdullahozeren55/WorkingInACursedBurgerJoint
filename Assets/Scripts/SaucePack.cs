@@ -1,89 +1,249 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class SaucePack : MonoBehaviour, IInteractable
+public class SaucePack : MonoBehaviour, IGrabable
 {
-    [Header("Audio Settings")]
-    public AudioClip takeOutSound;
+    public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
+    private bool isGrabbed;
+
+    public GameManager.GrabTypes GrabType { get => grabType; set => grabType = value; }
+    [SerializeField] private GameManager.GrabTypes grabType;
+
+    public float HandLerp { get => handLerp; set => handLerp = value; }
+    [SerializeField] private float handLerp;
+
+    public bool IsGettingPutOnHologram;
+
+    public NoodleData data;
+
+    [SerializeField] private GameObject hologramPart;
+    [SerializeField] private GameObject grabText;
+    [SerializeField] private GameObject dropText;
+
     private AudioSource audioSource;
+    private Rigidbody rb;
+    private Renderer hologramRenderer;
 
-    [Header("Text Settings")]
-    public GameObject takeOutText;
-    public GameObject addText;
+    private int grabableLayer;
+    private int grabableOutlinedLayer;
+    private int ungrabableLayer;
 
-    [Header("Layer Settings")]
-    private int interactableLayer;
-    private int interactableOutlinedLayer;
-    private int uninteractableLayer;
+    private Vector3 hologramPos;
+    private Quaternion hologramRotation;
 
-    private Animator anim;
-    private Collider col;
+    private bool isJustThrowed;
 
-    private bool isSaucePackOut;
+    private Coroutine putOnHologramCoroutine;
 
-    public GameManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    private float audioLastPlayedTime;
 
-    void Awake()
+    private void Awake()
     {
-
-        anim = GetComponentInParent<Animator>();
-        col = GetComponent<Collider>();
-
         audioSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();
+        hologramRenderer = hologramPart.GetComponent<Renderer>();
 
-        interactableLayer = LayerMask.NameToLayer("Interactable");
-        interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
-        uninteractableLayer = LayerMask.NameToLayer("Uninteractable");
+        foreach (Material material in hologramRenderer.materials)
+        {
+            Color color = material.color;
 
-        isSaucePackOut = false;
+            color.a = 0f;
 
+            material.color = color;
+        }
+
+        grabableLayer = LayerMask.NameToLayer("Grabable");
+        grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
+        ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+
+        IsGrabbed = false;
+        IsGettingPutOnHologram = false;
+
+        isJustThrowed = false;
+
+        audioLastPlayedTime = 0f;
     }
 
+    public void PutOnHologram(Vector3 hologramPos, Quaternion hologramRotation)
+    {
+        IsGettingPutOnHologram = true;
+
+        audioSource.enabled = false;
+
+        gameObject.layer = ungrabableLayer;
+
+        IsGrabbed = false;
+        HandleText(false);
+
+        hologramPart.SetActive(false);
+
+        this.hologramPos = hologramPos;
+        this.hologramRotation = hologramRotation;
+
+        putOnHologramCoroutine = StartCoroutine(PutOnHologram());
+    }
+
+    public void OnGrab(Transform grabPoint)
+    {
+        gameObject.layer = ungrabableLayer;
+
+        audioSource.enabled = true;
+
+        PlayAudioWithRandomPitch(0);
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.useGravity = false;
+
+        foreach (Material material in hologramRenderer.materials)
+        {
+            Color color = material.color;
+
+            color.a = 40f / 255f;
+
+            material.color = color;
+        }
+
+        IsGrabbed = true;
+
+        HandleText(true);
+
+        transform.SetParent(grabPoint);
+        transform.position = grabPoint.position;
+        transform.localPosition = data.grabPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
+    }
     public void OnFocus()
     {
-        HandleText(true);
-        gameObject.layer = interactableOutlinedLayer;
-    }
-
-    public void OnInteract()
-    {
-        gameObject.layer = uninteractableLayer;
-        GameManager.Instance.ResetPlayerGrabAndInteract();
-
-        col.enabled = false;
-
-        if (!isSaucePackOut)
+        if (!IsGettingPutOnHologram)
         {
-            anim.Play("NoodleSaucePackOut");
-            isSaucePackOut = true;
-        }
-        else
-        {
-            anim.Play("NoodleSaucePackIn");
+            HandleText(true);
+            gameObject.layer = grabableOutlinedLayer;
         }
 
-        audioSource.PlayOneShot(takeOutSound);
-
     }
-
     public void OnLoseFocus()
     {
-        HandleText(false);
-        gameObject.layer = interactableLayer;
+        if (!IsGettingPutOnHologram)
+        {
+            HandleText(false);
+            gameObject.layer = grabableLayer;
+        }
+
+    }
+
+    public void OnDrop(Vector3 direction, float force)
+    {
+        IsGrabbed = false;
+
+        transform.SetParent(null);
+
+        foreach (Material material in hologramRenderer.materials)
+        {
+            Color color = material.color;
+
+            color.a = 0f;
+
+            material.color = color;
+        }
+
+        rb.useGravity = true;
+
+        rb.AddForce(direction * force, ForceMode.Impulse);
+    }
+
+    public void OnThrow(Vector3 direction, float force)
+    {
+        IsGrabbed = false;
+
+        transform.SetParent(null);
+
+        foreach (Material material in hologramRenderer.materials)
+        {
+            Color color = material.color;
+
+            color.a = 0f;
+
+            material.color = color;
+        }
+
+        rb.useGravity = true;
+
+        rb.AddForce(direction * force, ForceMode.Impulse);
+
+        isJustThrowed = true;
     }
 
     private void HandleText(bool isFocused)
     {
         if (isFocused)
         {
-            takeOutText.SetActive(!isSaucePackOut);
-            addText.SetActive(isSaucePackOut);
+            grabText.SetActive(!IsGrabbed);
+            dropText.SetActive(IsGrabbed);
         }
         else
         {
-            if (takeOutText.activeSelf) takeOutText.SetActive(false);
-            if (addText.activeSelf) addText.SetActive(false);
+            if (grabText.activeSelf) grabText.SetActive(false);
+            if (dropText.activeSelf) dropText.SetActive(false);
         }
+    }
+
+    private void PlayAudioWithRandomPitch(int index)
+    {
+        audioLastPlayedTime = Time.time;
+        audioSource.pitch = Random.Range(0.85f, 1.15f);
+        audioSource.PlayOneShot(data.audioClips[index]);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!IsGrabbed && !IsGettingPutOnHologram && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
+        {
+            if (isJustThrowed)
+            {
+
+                PlayAudioWithRandomPitch(2);
+
+                isJustThrowed = false;
+            }
+            else if (Time.time > audioLastPlayedTime + 0.1f)
+            {
+                PlayAudioWithRandomPitch(1);
+            }
+
+        }
+
+
+    }
+
+    private IEnumerator PutOnHologram()
+    {
+        rb.isKinematic = true;
+
+        Vector3 startPos = transform.position;
+        Quaternion startRotation = transform.rotation;
+
+        float timeElapsed = 0f;
+        float rate = 0f;
+
+        while (timeElapsed < data.timeToPutOnHologram)
+        {
+
+            rate = timeElapsed / data.timeToPutOnHologram;
+
+            transform.position = Vector3.Lerp(startPos, hologramPos, rate);
+            transform.rotation = Quaternion.Slerp(startRotation, hologramRotation, rate);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = hologramPos;
+        transform.rotation = hologramRotation;
+
+        IsGettingPutOnHologram = false;
+
+        putOnHologramCoroutine = null;
     }
 }
