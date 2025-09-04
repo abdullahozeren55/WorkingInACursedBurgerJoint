@@ -23,7 +23,6 @@ public class Noodle : MonoBehaviour, IGrabable
     [SerializeField] private GameObject hologramStorePart;
     [SerializeField] private GameObject grabText;
     [SerializeField] private GameObject dropText;
-    [SerializeField] private GameObject saucePack;
     [SerializeField] private GameObject water;
     [SerializeField] private Kettle kettle;
 
@@ -310,8 +309,6 @@ public class Noodle : MonoBehaviour, IGrabable
 
         if (!isStoreHologram)
         {
-            saucePack.GetComponent<Collider>().enabled = true;
-
             kettle.currentNoodle = gameObject.GetComponent<NoodleInteractable>();
 
             gameObject.layer = interactableLayer;

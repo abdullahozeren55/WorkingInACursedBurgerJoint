@@ -74,6 +74,8 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
         {
             lidMeshFilter.mesh = lidPartMeshes[0];
             col.enabled = false;
+            saucePack.GetComponent<Collider>().enabled = true;
+            saucePack.GetComponent<Rigidbody>().isKinematic = false;
         }
         else
         {
