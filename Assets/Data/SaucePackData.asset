@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SaucePackData
   m_EditorClassIdentifier: 
   timeToPutOnHologram: 0.3
-  grabPositionOffset: {x: 0, y: 0, z: 0}
-  grabRotationOffset: {x: 0, y: 0, z: 0}
+  grabPositionOffset: {x: -0.0001, y: 0.0005, z: 0.0001}
+  grabRotationOffset: {x: 200, y: -170, z: -110}
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}
