@@ -14,6 +14,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
     public float HandLerp { get => handLerp; set => handLerp = value; }
     [SerializeField] private float handLerp;
 
+    [SerializeField] private Tray tray;
+
     public SauceBottleData data;
 
     public enum SauceType
@@ -31,6 +33,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
     [Space]
     [SerializeField] private Transform pourInstantiatePoint;
     [SerializeField] private ParticleSystem pourParticlePrefab;
+    [Space]
+    [SerializeField] private SauceType sauceType;
     private ParticleSystem currentPourPrefab;
 
     private AudioSource audioSource;
@@ -85,6 +89,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
     {
         gameObject.layer = ungrabableLayer;
 
+        tray.TurnOnSauceHologram(sauceType);
+
         PlayAudioWithRandomPitch(0);
 
         rb.velocity = Vector3.zero;
@@ -113,6 +119,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnDrop(Vector3 direction, float force)
     {
+        tray.TurnOffAllHolograms();
+
         IsGrabbed = false;
 
         transform.SetParent(null);
@@ -124,6 +132,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnThrow(Vector3 direction, float force)
     {
+        tray.TurnOffAllHolograms();
+
         IsGrabbed = false;
 
         transform.SetParent(null);

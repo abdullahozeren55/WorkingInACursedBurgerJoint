@@ -19,12 +19,16 @@ public class Tray : MonoBehaviour
     [SerializeField] private GameObject bottomBun;
     [SerializeField] private GameObject topBun;
     [SerializeField] private GameObject box;
+    [SerializeField] private GameObject sauce;
 
     [Header("Sauces")]
     [SerializeField] private GameObject[] sauces; //0 ketchup, 1 mayo, 2 mustard, 3 bbq
 
     private Vector3 currentLocationToPutBurgerIngredient;
     private Vector3 hologramLocation;
+
+    private Vector3 saucePos;
+    private Quaternion sauceRot;
 
     private List<BurgerIngredient> allBurgerIngredients = new List<BurgerIngredient>();
     private List<SauceBottle.SauceType> allSauces = new List<SauceBottle.SauceType>();
@@ -88,12 +92,14 @@ public class Tray : MonoBehaviour
         {
             GameObject go = Instantiate(type == SauceBottle.SauceType.Ketchup ? sauces[0] :
                         type == SauceBottle.SauceType.Mayo ? sauces[1] :
-                        type == SauceBottle.SauceType.Mustard ? sauces[2] : sauces[3], new Vector3 (currentLocationToPutBurgerIngredient.x, currentLocationToPutBurgerIngredient.y + 0.003f, currentLocationToPutBurgerIngredient.z), Quaternion.Euler(90, Random.Range(0, 360), 0), transform);
+                        type == SauceBottle.SauceType.Mustard ? sauces[2] : sauces[3], sauce.transform.position, sauce.transform.rotation, transform);
 
             currentLocationToPutBurgerIngredient.y += 0.0025f;
 
             allSauces.Add(type);
             allGO.Add(go);
+
+            TurnOffAllHolograms();
         }
             
     }
@@ -124,6 +130,20 @@ public class Tray : MonoBehaviour
         currentIngredient = null;
 
         ResetPosition();
+    }
+
+    public void TurnOnSauceHologram(SauceBottle.SauceType type)
+    {
+        if (allBurgerIngredients.Count != 0 && !allSauces.Contains(type) && !burgerIsDone)
+        {
+            hologramLocation = currentLocationToPutBurgerIngredient;
+            hologramLocation.y += 0.0025f;
+
+            sauce.transform.position = hologramLocation;
+            sauce.transform.rotation = Quaternion.Euler(90, Random.Range(0, 360), 0);
+            sauce.SetActive(true);
+        }
+            
     }
 
     public void TurnOnHologram(BurgerIngredientData.IngredientType type)
@@ -214,6 +234,7 @@ public class Tray : MonoBehaviour
         bottomBun.SetActive(false);
         topBun.SetActive(false);
         box.SetActive(false);
+        sauce.SetActive(false);
     }
 
     private void ResetPosition()
