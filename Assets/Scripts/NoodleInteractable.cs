@@ -82,6 +82,9 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
             emission.rateOverTime = 0f;
 
             NoodleManager.Instance.currentNoodleStatus = NoodleManager.NoodleStatus.Prepared;
+
+            if (GameManager.Instance.DayCount == 1)
+                GameManager.Instance.HandleAfterFirstNoodle();
         }
 
     }

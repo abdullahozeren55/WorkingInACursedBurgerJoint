@@ -247,6 +247,7 @@ public class DialogueManager : MonoBehaviour
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {
+            CutsceneManager.Instance.StopCutscene();
             CutsceneManager.Instance.PlayCutscene(dialogueData.cutsceneType);
         }
     }

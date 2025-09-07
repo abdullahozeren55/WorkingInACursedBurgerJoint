@@ -118,6 +118,8 @@ public class GameManager : MonoBehaviour
 
     private bool burgerMatched;
 
+    [SerializeField] private GameObject crosshair;
+
     private BurgerBox lastThrowedBurgerBox;
     private Drink lastThrowedDrink;
     private MeshRenderer[] lastThrowedBurgerBoxMeshRenderers;
@@ -149,9 +151,13 @@ public class GameManager : MonoBehaviour
     public CustomerDaySortSegment[] DayCustomerSort;
     private int customerCounter = 0;
 
+    [Header("Day1 Settings")]
+    [SerializeField] private GameObject afterFirstNoodleCutsceneTrigger;
+    [SerializeField] private DialogueData afterFirstNoodleSelfTalk;
+
     private ICustomer currentCustomer;
 
-    [SerializeField] private GameObject skyColliderControllerGO;
+    [Header("Other Settings")]
     [Space]
     [SerializeField] private Tray tray;
     [Space]
@@ -218,7 +224,6 @@ public class GameManager : MonoBehaviour
         firstPersonController = FindFirstObjectByType<FirstPersonController>();
         characterController = FindFirstObjectByType<CharacterController>();
 
-        SetSkyCollider(false);
         SetOrderThrowArea(false);
     }
 
@@ -294,12 +299,13 @@ public class GameManager : MonoBehaviour
         tray.AddSauce(type);
     }
 
-    public void SetSkyCollider(bool value)
+    public void HandleAfterFirstNoodle()
     {
-        if (value == true)
-            skyColliderControllerGO.GetComponent<SkyColliderController>().currentCustomer = currentCustomer;
-        skyColliderControllerGO.SetActive(value);
+        afterFirstNoodleCutsceneTrigger.SetActive(true);
+        DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
     }
+
+    public void TurnCrosshairOnOff(bool shouldTurnOn) => crosshair.SetActive(shouldTurnOn);
 
     public void SetCurrentCustomer(ICustomer customer) => currentCustomer = customer;
 

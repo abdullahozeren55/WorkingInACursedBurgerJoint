@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSegments:
   - PersonName: BEN
-    DialogueToPrint: "Demek hayat\u0131m bundan sonra b\xF6yle olacak..."
+    DialogueToPrint: "Bir ka\xE7 dakikaya haz\u0131r olur."
     Skippable: 1
     LettersPerSecond: 32
     audioClip: {fileID: 0}
-  type: 2
+  - PersonName: BEN
+    DialogueToPrint: "Ben de o ara kap\u0131n\u0131n \xF6n\xFCnde bi hava alay\u0131m."
+    Skippable: 1
+    LettersPerSecond: 32
+    audioClip: {fileID: 0}
+  type: 0
   question: 
   optionA: 
   optionD: 
