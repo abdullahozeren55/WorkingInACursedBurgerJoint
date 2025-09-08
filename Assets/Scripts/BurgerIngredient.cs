@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class BurgerIngredient : MonoBehaviour, IGrabable
 {
-
+    public Transform LeftHandFixPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 

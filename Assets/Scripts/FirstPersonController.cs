@@ -173,21 +173,15 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private Volume postProcessVolume;
     [Space]
     [Header("Single Hand Parameters")]
-    [SerializeField] private Transform singleHandGrabPoint;
+    [SerializeField] private Transform grabPoint;
     [SerializeField] private Vector3 positionOffsetForSingleHandGrab;
     [SerializeField] private Vector3 rotationOffsetForSingleHandGrab;
     [SerializeField] private Vector3 positionOffsetForSingleHandGrabRotated;
     [SerializeField] private Vector3 rotationOffsetForSingleHandGrabRotated;
     [Header("Both Hands Parameters")]
-    [SerializeField] private Transform bothHandsGrabPoint;
     [SerializeField] private Vector3 positionOffsetForBothHandsGrabRight;
     [SerializeField] private Vector3 rotationOffsetForBothHandsGrabRight;
-    [SerializeField] private Vector3 positionOffsetForBothHandsGrabRightRotated;
-    [SerializeField] private Vector3 rotationOffsetForBothHandsGrabRightRotated;
-    [SerializeField] private Vector3 positionOffsetForBothHandsGrabLeft;
     [SerializeField] private Vector3 rotationOffsetForBothHandsGrabLeft;
-    [SerializeField] private Vector3 positionOffsetForBothHandsGrabLeftRotated;
-    [SerializeField] private Vector3 rotationOffsetForBothHandsGrabLeftRotated;
 
 
     [SerializeField] private float handPoseScrollSpeed = 0.5f; // how fast scroll adjusts the lerp
@@ -330,7 +324,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleHandPoseScrollLerp()
     {
-        if (currentGrabable != null && currentGrabable.IsGrabbed)
+        if (currentGrabable != null && currentGrabable.IsGrabbed && currentGrabable.GrabType == GameManager.GrabTypes.SingleHand)
         {
             float scroll = -Input.GetAxis("Mouse ScrollWheel");
 
@@ -340,31 +334,29 @@ public class FirstPersonController : MonoBehaviour
                 handPoseLerpValue = Mathf.Clamp01(handPoseLerpValue); // clamp between 0 and 1
             }
 
-            if (currentGrabable.GrabType == GameManager.GrabTypes.SingleHand)
-            {
-                currentPositionOffsetForRightHand = Vector3.Lerp(positionOffsetForSingleHandGrab, positionOffsetForSingleHandGrabRotated, handPoseLerpValue);
-                currentRotationOffsetForRightHand = Vector3.Lerp(rotationOffsetForSingleHandGrab, rotationOffsetForSingleHandGrabRotated, handPoseLerpValue);
-            }
-            else if (currentGrabable.GrabType == GameManager.GrabTypes.BothHands)
-            {
-                currentPositionOffsetForRightHand = Vector3.Lerp(positionOffsetForBothHandsGrabRight, positionOffsetForBothHandsGrabRightRotated, handPoseLerpValue);
-                currentRotationOffsetForRightHand = Vector3.Lerp(rotationOffsetForBothHandsGrabRight, rotationOffsetForBothHandsGrabRightRotated, handPoseLerpValue);
-                currentPositionOffsetForLeftHand = Vector3.Lerp(positionOffsetForBothHandsGrabLeft, positionOffsetForBothHandsGrabLeftRotated, handPoseLerpValue);
-                currentRotationOffsetForLeftHand = Vector3.Lerp(rotationOffsetForBothHandsGrabLeft, rotationOffsetForBothHandsGrabLeftRotated, handPoseLerpValue);
-            }
+            currentPositionOffsetForRightHand = Vector3.Lerp(positionOffsetForSingleHandGrab, positionOffsetForSingleHandGrabRotated, handPoseLerpValue);
+            currentRotationOffsetForRightHand = Vector3.Lerp(rotationOffsetForSingleHandGrab, rotationOffsetForSingleHandGrabRotated, handPoseLerpValue);
 
-
-                currentGrabable.HandLerp = handPoseLerpValue;
+            currentGrabable.HandLerp = handPoseLerpValue;
         }
     }
 
     private void HandleHandTargetPositions()
     {
-        leftHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForLeftHand);
-        leftHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForLeftHand);
+        if (currentGrabable != null && currentGrabable.IsGrabbed && currentGrabable.GrabType == GameManager.GrabTypes.BothHands)
+        {
+            leftHandTarget.position = currentGrabable.LeftHandFixPoint.position;
+        }
+        else
+        {
+            leftHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForLeftHand);
+            leftHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForLeftHand);
+            rightHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForRightHand);
+            rightHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForRightHand);
+        }
+           
 
-        rightHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForRightHand);
-        rightHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForRightHand);
+        
     }
 
     private void HandleMovementInput()
@@ -625,42 +617,58 @@ public class FirstPersonController : MonoBehaviour
         {
             if (Input.GetKeyDown(throwKey)) // right click starts
             {
-                anim.SetBool("chargingThrow", true);
 
                 if (throwVisualEffectsCoroutine != null)
+                {
                     StopCoroutine(throwVisualEffectsCoroutine);
+                    throwVisualEffectsCoroutine = null;
+                }
 
                 throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(true));
 
                 if (currentGrabable.GrabType == GameManager.GrabTypes.SingleHand)
                 {
+                    anim.SetBool("chargingThrowRight", true);
+
                     if (singleHandThrowCoroutine != null)
+                    {
                         StopCoroutine(singleHandThrowCoroutine);
+                        singleHandThrowCoroutine = null;
+                    }      
 
                     singleHandThrowCoroutine = StartCoroutine(SingleHandThrow());
                 }
                 else if (currentGrabable.GrabType == GameManager.GrabTypes.BothHands)
                 {
-                    if (bothHandsThrowCoroutine != null)
-                        StopCoroutine(bothHandsThrowCoroutine);
+                    anim.SetBool("chargingThrowRight", true);
+                    anim.SetBool("chargingThrowLeft", true);
 
+                    if (bothHandsThrowCoroutine != null)
+                    {
+                        StopCoroutine(bothHandsThrowCoroutine);
+                        bothHandsThrowCoroutine = null;
+                    }
+                        
                     bothHandsThrowCoroutine = StartCoroutine(BothHandsThrow());
                 }
                 
-                
-
             }
             if (Input.GetKeyUp(throwKey))
             {
-                anim.SetBool("grabbing", false);
-                anim.SetBool("chargingThrow", false);
 
                 if (throwVisualEffectsCoroutine != null)
+                {
                     StopCoroutine(throwVisualEffectsCoroutine);
+                    throwVisualEffectsCoroutine = null;
+                }
+                    
                 throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(false));
 
                 if (currentGrabable.GrabType == GameManager.GrabTypes.SingleHand)
                 {
+                    anim.SetBool("grabbingRight", false);
+                    anim.SetBool("chargingThrowRight", false);
+
                     if (singleHandThrowCoroutine != null)
                     {
                         StopCoroutine(singleHandThrowCoroutine);
@@ -677,6 +685,12 @@ public class FirstPersonController : MonoBehaviour
                 }
                 else if (currentGrabable.GrabType == GameManager.GrabTypes.BothHands)
                 {
+                    anim.SetBool("grabbingRight", false);
+                    anim.SetBool("chargingThrowRight", false);
+
+                    anim.SetBool("grabbingLeft", false);
+                    anim.SetBool("chargingThrowLeft", false);
+
                     if (bothHandsThrowCoroutine != null)
                     {
                         StopCoroutine(bothHandsThrowCoroutine);
@@ -713,25 +727,52 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable)
             {
-                anim.SetBool("grabbing", true);
 
                 if (currentGrabable.GrabType == GameManager.GrabTypes.SingleHand)
                 {
-                    currentGrabable.OnGrab(singleHandGrabPoint);
-                    if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
+                    anim.SetBool("grabbingRight", true);
+
+                    currentGrabable.OnGrab(grabPoint);
+
+                    if (rightHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(rightHandRigLerpCoroutine);
+                        rightHandRigLerpCoroutine = null;
+                    }
+                        
+                    if (leftHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(leftHandRigLerpCoroutine);
+                        leftHandRigLerpCoroutine = null;
+                    }
 
                     // her yeni grab iþleminde sýfýrla
                     handPoseLerpValue = 0f;
 
                     currentPositionOffsetForRightHand = positionOffsetForSingleHandGrab;
                     currentRotationOffsetForRightHand = rotationOffsetForSingleHandGrab;
+
                     rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
+                    leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
                 }
                 else if (currentGrabable.GrabType == GameManager.GrabTypes.BothHands)
                 {
-                    currentGrabable.OnGrab(bothHandsGrabPoint);
-                    if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
-                    if (leftHandRigLerpCoroutine != null) StopCoroutine(leftHandRigLerpCoroutine);
+                    anim.SetBool("grabbingRight", true);
+                    anim.SetBool("grabbingLeft", true);
+
+                    currentGrabable.OnGrab(grabPoint);
+
+                    if (rightHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(rightHandRigLerpCoroutine);
+                        rightHandRigLerpCoroutine = null;
+                    }
+
+                    if (leftHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(leftHandRigLerpCoroutine);
+                        leftHandRigLerpCoroutine = null;
+                    }
 
                     // her yeni grab iþleminde sýfýrla
                     handPoseLerpValue = 0f;
@@ -739,7 +780,6 @@ public class FirstPersonController : MonoBehaviour
                     currentPositionOffsetForRightHand = positionOffsetForBothHandsGrabRight;
                     currentRotationOffsetForRightHand = rotationOffsetForBothHandsGrabRight;
 
-                    currentPositionOffsetForLeftHand = positionOffsetForBothHandsGrabLeft;
                     currentRotationOffsetForLeftHand = rotationOffsetForBothHandsGrabLeft;
 
                     rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
@@ -794,10 +834,10 @@ public class FirstPersonController : MonoBehaviour
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
     {
-        anim.SetBool("grabbing", true);
+        anim.SetBool("grabbingRight", true);
 
         currentGrabable = grabObject;
-        currentGrabable.OnGrab(singleHandGrabPoint);
+        currentGrabable.OnGrab(grabPoint);
         ChangeCrosshairColor(grabCrosshairColor);
 
         if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);

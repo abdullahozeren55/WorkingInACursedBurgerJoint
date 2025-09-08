@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class KnifeHolder : MonoBehaviour, IInteractable
 {
+    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private GameManager.HandRigTypes handRigType;
 
     [Header("Text Settings")]
     public GameObject grabKnifeText;
@@ -16,24 +18,9 @@ public class KnifeHolder : MonoBehaviour, IInteractable
     [SerializeField] private GameObject knife;
     [SerializeField] private Transform pointToSpawnKnife;
 
-    private GameObject[] allParts;
-
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
-
     private void Awake()
     {
         int childCount = transform.childCount;
-
-        // Initialize the array to hold the children
-        allParts = new GameObject[childCount];
-
-        // Loop through each child and store it in the array
-        for (int i = 0; i < childCount; i++)
-        {
-            // Get the child GameObject
-            allParts[i] = transform.GetChild(i).gameObject;
-        }
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
@@ -42,13 +29,13 @@ public class KnifeHolder : MonoBehaviour, IInteractable
     public void OnFocus()
     {
         grabKnifeText.SetActive(true);
-        ChangeLayer(interactableOutlinedLayer);
+        gameObject.layer = interactableOutlinedLayer;
     }
 
     public void OnLoseFocus()
     {
         grabKnifeText.SetActive(false);
-        ChangeLayer(interactableLayer);
+        gameObject.layer = interactableLayer;
     }
 
     public void OnInteract()
@@ -56,12 +43,5 @@ public class KnifeHolder : MonoBehaviour, IInteractable
         GameObject instantiatedKnife = Instantiate(knife, pointToSpawnKnife.position, Quaternion.Euler(0f, -90f, 180f), null);
         GameManager.Instance.ResetPlayerGrabAndInteract();
         GameManager.Instance.ChangePlayerCurrentGrabable(instantiatedKnife.GetComponent<IGrabable>());
-    }
-
-
-    private void ChangeLayer(int layerIndex)
-    {
-        foreach (GameObject child in allParts)
-            child.layer = layerIndex;
     }
 }

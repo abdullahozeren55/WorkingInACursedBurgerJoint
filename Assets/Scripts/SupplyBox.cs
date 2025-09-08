@@ -5,6 +5,8 @@ using static Cookable;
 
 public class SupplyBox : MonoBehaviour, IGrabable
 {
+    public Transform LeftHandFixPoint { get => leftHandFixPoint; set => leftHandFixPoint = value; }
+    [SerializeField] private Transform leftHandFixPoint;
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
@@ -54,17 +56,6 @@ public class SupplyBox : MonoBehaviour, IGrabable
         isJustThrowed = false;
 
         audioLastPlayedTime = 0f;
-
-        Debug.Log("Supply Box Deneme Update Kaldýrýlacak!");
-    }
-
-    private void Update()
-    {
-        if (IsGrabbed)
-        {
-            transform.localPosition = data.grabPositionOffset;
-            transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
-        }
     }
 
     public void OnGrab(Transform grabPoint)

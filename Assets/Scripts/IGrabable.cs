@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IGrabable
 {
+    public Transform LeftHandFixPoint { get; set; }
     public void OnGrab(Transform grabPoint);
     public void OnThrow(Vector3 direction, float force);
     public void OnFocus();

@@ -5,6 +5,7 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class SaucePack : MonoBehaviour, IGrabable
 {
+    public Transform LeftHandFixPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
