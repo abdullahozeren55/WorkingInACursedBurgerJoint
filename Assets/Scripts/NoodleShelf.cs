@@ -14,7 +14,7 @@ public class NoodleShelf : MonoBehaviour, IInteractable
     private int interactableOutlinedLayer;
     private int uninteractableLayer;
 
-    [Header("Knife Settings")]
+    [Header("Noodle Settings")]
     [SerializeField] private GameObject noodle;
     [SerializeField] private Transform pointToSpawnNoodle;
     [SerializeField] private GameObject storeBlocker;

@@ -101,6 +101,9 @@ public class NoodleManager : MonoBehaviour
 
     public void AddSauceToWater()
     {
+        currentNoodleGO.layer = interactableLayer;
+        currentNoodleCollider.enabled = true;
+
         StartCoroutine(LerpColor());
     }
 
@@ -118,8 +121,6 @@ public class NoodleManager : MonoBehaviour
         }
 
         currentWaterMat.color = saucedWaterColor;
-        currentNoodleGO.layer = interactableLayer;
-        currentNoodleCollider.enabled = true;
     }
 
 }

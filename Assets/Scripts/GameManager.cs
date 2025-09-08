@@ -70,7 +70,8 @@ public class GameManager : MonoBehaviour
 
     public enum GrabTypes
     {
-        SingleHand
+        SingleHand,
+        BothHands
     }
 
     [Header("Burger Lists")]

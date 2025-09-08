@@ -19,8 +19,7 @@ public class SupplyBox : MonoBehaviour, IGrabable
     [SerializeField] private GameObject grabText;
     [SerializeField] private GameObject dropText;
     [Space]
-    [SerializeField] private Vector3 grabPositionOffset;
-    [SerializeField] private Vector3 grabRotationOffset;
+    
 
     [Header("Supply Settings")]
     [SerializeField] private GameObject supplyToSpawn;
@@ -55,6 +54,17 @@ public class SupplyBox : MonoBehaviour, IGrabable
         isJustThrowed = false;
 
         audioLastPlayedTime = 0f;
+
+        Debug.Log("Supply Box Deneme Update Kaldýrýlacak!");
+    }
+
+    private void Update()
+    {
+        if (IsGrabbed)
+        {
+            transform.localPosition = data.grabPositionOffset;
+            transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
+        }
     }
 
     public void OnGrab(Transform grabPoint)
@@ -73,8 +83,8 @@ public class SupplyBox : MonoBehaviour, IGrabable
 
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
-        transform.localPosition = grabPositionOffset;
-        transform.localRotation = Quaternion.Euler(grabRotationOffset);
+        transform.localPosition = data.grabPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
     }
     public void OnFocus()
     {
