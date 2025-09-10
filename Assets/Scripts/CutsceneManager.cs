@@ -5,7 +5,8 @@ using UnityEngine.Playables;
 public enum CutsceneType
 {
     AfterFirstNoodleP1,
-    AfterFirstNoodleP2
+    AfterFirstNoodleP2,
+    FirstMim
     // Buraya istediðin kadar cutscene ekleyebilirsin
 }
 
