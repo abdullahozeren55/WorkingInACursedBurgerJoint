@@ -21,6 +21,8 @@ public class CutsceneManager : MonoBehaviour
         public PlayableAsset cutscene;
     }
 
+    [SerializeField] private CinemachineVirtualCamera dollyCam;
+    [Space]
     [SerializeField] private CutsceneEntry[] cutscenes;
 
     private PlayableAsset currentCutscene;
@@ -79,5 +81,10 @@ public class CutsceneManager : MonoBehaviour
     public void StartSelfDialogue(DialogueData data)
     {
         DialogueManager.Instance.StartSelfDialogueInCutscene(data);
+    }
+
+    public void SetDollyCamPath(CinemachineSmoothPath path)
+    {
+        dollyCam.GetCinemachineComponent<CinemachineTrackedDolly>().m_Path = path;
     }
 }
