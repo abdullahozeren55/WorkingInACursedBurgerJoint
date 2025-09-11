@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: PICKLEPACK
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 939900511580441035, guid: b1aa171ede49dd14ca4966340bcad396, type: 3}
-  minForce: 0.4
-  maxForce: 0.7
+  minForce: 0.3
+  maxForce: 0.6
   haveWholeIngredient: 1
   grabPositionOffset: {x: 0.000929608, y: 0.0012849426, z: 0.0009905574}
   grabRotationOffset: {x: 39.229534, y: 334.51224, z: 78.774925}
