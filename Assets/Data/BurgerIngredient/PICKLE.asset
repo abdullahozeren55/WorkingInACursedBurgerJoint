@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ingredientType: 6
   yHeight: 0.0037
-  timeToPutOnTray: 0.15
+  timeToPutOnTray: 0.2
   grabPositionOffset: {x: 0.0002, y: 0.00068, z: 0.0001}
   grabRotationOffset: {x: 140, y: 0, z: 0}
   audioClips:

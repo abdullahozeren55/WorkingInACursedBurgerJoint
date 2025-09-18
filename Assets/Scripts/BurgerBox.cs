@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,6 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     private Vector3 trayPos;
 
-    private Coroutine putOnTrayCoroutine;
-
     private float audioLastPlayedTime;
 
     private GameObject[] childObjects;
@@ -63,8 +62,6 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         IsGrabbed = false;
         IsGettingPutOnTray = false;
-
-        putOnTrayCoroutine = null;
 
         isJustThrowed = false;
 
@@ -91,11 +88,16 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         rb.isKinematic = true;
 
-        IsGrabbed = false;
-
         this.trayPos = trayPos;
 
-        putOnTrayCoroutine = StartCoroutine(PutOnTray());
+        Sequence seq = DOTween.Sequence();
+        seq.Append(transform.DOMove(trayPos, data.timeToPutOnTray).SetEase(Ease.OutQuad));
+        seq.Join(transform.DORotateQuaternion(Quaternion.identity, data.timeToPutOnTray).SetEase(Ease.OutCubic));
+        seq.OnComplete(() =>
+        {
+            anim.Play("TopHolderClose");
+        });
+
     }
 
     public void OnGrab(Transform grabPoint)
@@ -192,7 +194,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         audioSource.PlayOneShot(data.audioClips[index]);
     }
 
-    private void FinishPutOnTray()
+    private void FinishPutOnTray() //Gets called in animator
     {
         tray.ResetTray();
 
@@ -203,6 +205,11 @@ public class BurgerBox : MonoBehaviour, IGrabable
             ChangeLayer(grabableOutlinedLayer);
         else
             ChangeLayer(grabableLayer);
+    }
+
+    private void TrySquashingBurger() //Gets called in animator
+    {
+        tray.TrySquashingBurger();
     }
 
     public void ChangeText(GameObject newText, GameManager.BurgerTypes type)
@@ -248,32 +255,5 @@ public class BurgerBox : MonoBehaviour, IGrabable
             }
 
         }
-    }
-
-    private IEnumerator PutOnTray()
-    {
-        Vector3 startPos = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.identity;
-
-        float timeElapsed = 0f;
-
-        anim.Play("TopHolderClose");
-
-        while (timeElapsed < data.timeToPutOnTray)
-        {
-            transform.position = Vector3.Lerp(startPos, trayPos, timeElapsed / data.timeToPutOnTray);
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, timeElapsed / data.timeToPutOnTray);
-
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = trayPos;
-        transform.rotation = targetRotation;
-
-        FinishPutOnTray();
-
-        putOnTrayCoroutine = null;
     }
 }

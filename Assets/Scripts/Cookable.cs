@@ -35,7 +35,7 @@ public class Cookable : MonoBehaviour
 
         currentCookedTime = 0;
 
-        ChangeCookAmount(0);
+        //ChangeCookAmount(0);
 
     }
 

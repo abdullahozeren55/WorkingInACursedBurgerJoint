@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trashSpaceValue: 35
   followingSpeed: 40
-  timeToPutOnTray: 0.3
+  timeToPutOnTray: 0.2
   grabPositionOffsetForOpen: {x: 0.0005, y: 0.0012, z: -0.0006}
   grabRotationOffsetForOpen: {x: -10, y: 280, z: -250}
   grabPositionOffsetForClose: {x: 0.0002, y: 0.0008, z: 0.001}

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: LETTUCE
   m_EditorClassIdentifier: 
   ingredientType: 3
-  yHeight: 0.003
-  timeToPutOnTray: 0.15
+  yHeight: 0.007
+  timeToPutOnTray: 0.2
   grabPositionOffset: {x: 0.0003, y: 0.0007, z: 0.0001}
   grabRotationOffset: {x: 140, y: 0, z: 0}
   audioClips:

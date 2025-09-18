@@ -37,8 +37,6 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private int ungrabableLayer;
     private int onTrayLayer;
 
-    private Vector3 trayPos;
-
     private bool isJustThrowed;
     private bool isStuck;
     public bool canStick;
@@ -95,17 +93,14 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
         col.enabled = false;
         rb.isKinematic = true;
-        IsGrabbed = false;
 
         transform.parent = parentTray;
 
-        // Pozisyon tween
-        transform.DOMove(trayPos, data.timeToPutOnTray)
-            .SetEase(Ease.OutBack); // biraz lastikli otursun
+        Quaternion randomRot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
 
-        // Rotasyon tween
-        transform.DORotateQuaternion(Quaternion.identity, data.timeToPutOnTray)
-            .SetEase(Ease.OutCubic);
+        transform.DOMove(trayPos, data.timeToPutOnTray).SetEase(Ease.OutQuad);
+
+        transform.DORotateQuaternion(randomRot, data.timeToPutOnTray).SetEase(Ease.OutCubic);
     }
 
     public void OnGrab(Transform grabPoint)
@@ -324,29 +319,6 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private void OnDestroy()
     {
         GameManager.Instance.ResetPlayerGrab(this);
-    }
-
-    private IEnumerator PutOnTray()
-    {
-        Vector3 startPos = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.identity;
-
-        float timeElapsed = 0f;
-        float rate = 0f;
-
-        while (timeElapsed < data.timeToPutOnTray)
-        {
-            rate = timeElapsed / data.timeToPutOnTray;
-
-            transform.position = Vector3.Lerp(startPos, trayPos, rate);
-            transform.rotation = Quaternion.Slerp(startRotation, targetRotation, rate);
-            timeElapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = trayPos;
-        transform.rotation = targetRotation;
     }
 
     private void OnCollisionEnter(Collision collision)

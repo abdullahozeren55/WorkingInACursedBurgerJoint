@@ -6,6 +6,7 @@ using UnityEngine;
 public class Tray : MonoBehaviour
 {
     [SerializeField] private float startPointYHeight = 0.01f;
+    [SerializeField] private float boxClosingSquashMinLimit = 0.16f;
     [SerializeField] private Transform burgerBoxTransform;
     [SerializeField] private Transform ingredientsParent;
     [SerializeField] private BoxCollider boxCollider;
@@ -28,9 +29,6 @@ public class Tray : MonoBehaviour
 
     private Vector3 currentLocationToPutBurgerIngredient;
     private Vector3 hologramLocation;
-
-    private Vector3 saucePos;
-    private Quaternion sauceRot;
 
     private List<BurgerIngredient> allBurgerIngredients = new List<BurgerIngredient>();
     private List<SauceBottle.SauceType> allSauces = new List<SauceBottle.SauceType>();
@@ -97,6 +95,8 @@ public class Tray : MonoBehaviour
                         type == SauceBottle.SauceType.Mustard ? sauces[2] : sauces[3], sauce.transform.position, sauce.transform.rotation, transform);
 
             currentLocationToPutBurgerIngredient.y += 0.003f;
+
+            go.transform.parent = ingredientsParent;
 
             allSauces.Add(type);
             allGO.Add(go);
@@ -262,15 +262,34 @@ public class Tray : MonoBehaviour
         UpdateCurrentLocationToPutBurgerIngredient(startPointYHeight);
     }
 
+    public void TrySquashingBurger()
+    {
+        // Eðer yükseklik min limitten küçükse squash yok
+        if (currentLocationToPutBurgerIngredient.y <= boxClosingSquashMinLimit)
+            return;
+
+        // Ne kadar squash yapýlacaðýný hesapla
+        float excessHeight = currentLocationToPutBurgerIngredient.y - boxClosingSquashMinLimit;
+
+        // Ýstediðin oranda Z scale küçült
+        float squashFactor = Mathf.Clamp01(excessHeight); // istersen çarpan ekleyebilirsin
+        float targetZ = Mathf.Max(0f, 1f - squashFactor); // Z scale küçülür ama negatif olmaz
+
+        // Tween ile squash (sadece Z ekseni)
+        ingredientsParent
+            .DOScale(new Vector3(ingredientsParent.localScale.x, ingredientsParent.localScale.y, targetZ), 0.06f)
+            .SetEase(Ease.Linear); // lineer, geri yaylanma yok
+    }
+
     private void Squash()
     {
         ingredientsParent
-    .DOScale(new Vector3(1.1f, 1.1f, 1f - currentIngredient.data.yHeight), 0.2f) // biraz daha uzun süre
+    .DOScale(new Vector3(1.1f, 1.1f, 1f - 2f * currentIngredient.data.yHeight), 0.2f) // biraz daha uzun süre
     .SetEase(Ease.OutQuad)                        // daha yumuþak çöküþ
     .OnComplete(() =>
     {
         ingredientsParent.DOScale(Vector3.one, 0.3f) // kalkýþý daha uzun yap
-            .SetEase(Ease.OutElastic, 1f + currentIngredient.data.yHeight);          // lastikli, overshootlu
+            .SetEase(Ease.OutElastic, 1f + 2f * currentIngredient.data.yHeight);          // lastikli, overshootlu
     });
     }
 
@@ -294,7 +313,7 @@ public class Tray : MonoBehaviour
 
                 currentIngredient.PutOnTray(currentLocationToPutBurgerIngredient, ingredientsParent);
 
-                Invoke("Squash", currentIngredient.data.timeToPutOnTray/2);
+                Invoke("Squash", currentIngredient.data.timeToPutOnTray / 1.2f);
 
                 UpdateCurrentLocationToPutBurgerIngredient(currentIngredient.data.yHeight);
             }
