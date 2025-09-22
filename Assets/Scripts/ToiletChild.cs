@@ -6,11 +6,9 @@ public class ToiletChild : MonoBehaviour, IInteractable
 {
     private Toilet parentToilet;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public GameManager.HandRigTypes HandRigType { get => parentToilet.HandRigType; set => parentToilet.HandRigType = value; }
 
-    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
-    [SerializeField] private bool outlineShouldBeRed;
+    public bool OutlineShouldBeRed { get => parentToilet.OutlineShouldBeRed; set => parentToilet.OutlineShouldBeRed = value; }
 
     private void Awake()
     {

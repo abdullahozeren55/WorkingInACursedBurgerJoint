@@ -131,6 +131,7 @@ public class FirstPersonController : MonoBehaviour
     private float currentThrowForce = 0f;
     private Color defaultCrosshairColor;
     private IGrabable currentGrabable;
+    private IGrabable otherGrabable;
 
     [Header("Footstep Parameters")]
     [SerializeField] private float baseStepSpeed = 0.5f;
@@ -265,11 +266,7 @@ public class FirstPersonController : MonoBehaviour
             if (canGrab)
             {
                 HandleGrabInput();
-
-                if (currentGrabable == null || !currentGrabable.IsGrabbed)
-                {
-                    HandleGrabCheck();
-                }
+                HandleGrabCheck();
             }
 
             if (useFootsteps)
@@ -481,18 +478,57 @@ public class FirstPersonController : MonoBehaviour
     }
 
     private void DecideInteractableOutlineColor()
-    { 
-        if (isUsingGrabbedItem ||
-            (currentGrabable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == GameManager.HandRigTypes.SingleHandGrab))
+    {
+        if (currentInteractable != null)
         {
-            currentInteractable.OutlineShouldBeRed = true;
+            if (isUsingGrabbedItem ||
+            (currentGrabable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == GameManager.HandRigTypes.SingleHandGrab))
+            {
+                currentInteractable.OutlineShouldBeRed = true;
+            }
+            else
+            {
+                currentInteractable.OutlineShouldBeRed = false;
+            }
+
+            currentInteractable.OutlineChangeCheck();
+        }
+        
+    }
+
+    private void DecideCrosshairColor()
+    {
+        if (currentInteractable != null && currentInteractable.OutlineShouldBeRed)
+        {
             ChangeCrosshairColor(useCrosshairColor);
+        }
+        else if (currentGrabable != null)
+        {
+            ChangeCrosshairColor(grabCrosshairColor);
         }
         else
         {
-            currentInteractable.OutlineShouldBeRed = false;
-            ChangeCrosshairColor(currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
+            ChangeCrosshairColor(defaultCrosshairColor);
         }
+    }
+
+    private void DecideCrosshairSize()
+    {
+        if (currentInteractable != null || (currentGrabable != null && !currentGrabable.IsGrabbed))
+        {
+            ChangeCrosshairSize(interactableCrosshairSize);
+        }
+        else
+        {
+            ChangeCrosshairSize(defaultCrosshairSize);
+        }
+    }
+
+    private void DecideOutlineAndCrosshair()
+    {
+        DecideInteractableOutlineColor();
+        DecideCrosshairColor();
+        DecideCrosshairSize();
     }
 
     private void HandleInteractionCheck()
@@ -509,43 +545,35 @@ public class FirstPersonController : MonoBehaviour
                     if (currentInteractable == null)
                     {
                         currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                        ChangeCrosshairSize(interactableCrosshairSize);
-                        DecideInteractableOutlineColor();
-                        currentInteractable.OutlineChangeCheck();
+                        DecideOutlineAndCrosshair();
                         currentInteractable.OnFocus();
                     }
                     else if (currentInteractable != hit.collider.gameObject.GetComponent<IInteractable>())
                     {
-                        ChangeCrosshairColor((isUsingGrabbedItem || (currentGrabable != null && currentInteractable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == GameManager.HandRigTypes.SingleHandGrab)) ? useCrosshairColor : currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
-                        currentInteractable.OnLoseFocus();
                         currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                        DecideInteractableOutlineColor();
-                        currentInteractable.OutlineChangeCheck();
+                        DecideOutlineAndCrosshair();
                         currentInteractable.OnFocus();
                     }
                 }
                 else if (currentInteractable != null)
                 {
-                    ChangeCrosshairColor(isUsingGrabbedItem ? useCrosshairColor : currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
                     currentInteractable.OnLoseFocus();
                     currentInteractable = null;
-                    ChangeCrosshairSize(defaultCrosshairSize);
+                    DecideOutlineAndCrosshair();
                 }
             }
             else if (currentInteractable != null)
             {
-                ChangeCrosshairColor(isUsingGrabbedItem ? useCrosshairColor : currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
                 currentInteractable.OnLoseFocus();
                 currentInteractable = null;
-                ChangeCrosshairSize(defaultCrosshairSize);
+                DecideOutlineAndCrosshair();
             }
         }
         else if (currentInteractable != null)
         {
-            ChangeCrosshairColor(isUsingGrabbedItem ? useCrosshairColor : currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
             currentInteractable.OnLoseFocus();
             currentInteractable = null;
-            ChangeCrosshairSize(defaultCrosshairSize);
+            DecideOutlineAndCrosshair();
         }
     }
 
@@ -572,13 +600,7 @@ public class FirstPersonController : MonoBehaviour
                     currentGrabable.OnUseHold();
                     isUsingGrabbedItem = true;
 
-                    ChangeCrosshairColor(useCrosshairColor);
-
-                    if (currentInteractable != null)
-                    {
-                        DecideInteractableOutlineColor();
-                        currentInteractable.OutlineChangeCheck();
-                    }
+                    DecideOutlineAndCrosshair();
                 }
             }
 
@@ -593,18 +615,12 @@ public class FirstPersonController : MonoBehaviour
                 {
                     // uzun basma býrakýldý kullaným bitti
                     currentGrabable.OnUseRelease();
-
-                    ChangeCrosshairColor((currentGrabable != null && currentInteractable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == GameManager.HandRigTypes.SingleHandGrab) ? useCrosshairColor : currentGrabable != null ? grabCrosshairColor : defaultCrosshairColor);
                 }
 
                 interactChargeTimer = 0f;
                 isUsingGrabbedItem = false;
 
-                if (currentInteractable != null)
-                {
-                    DecideInteractableOutlineColor();
-                    currentInteractable.OutlineChangeCheck();
-                }
+                DecideOutlineAndCrosshair();
             }
         }
         else
@@ -666,15 +682,25 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider)
             {
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Grabable") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlined"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Grabable") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlined") || hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlinedRed"))
                 {
                     if (currentGrabable == null)
                     {
                         currentGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
-                        ChangeCrosshairColor(grabCrosshairColor);
+                        DecideOutlineAndCrosshair();
                         currentGrabable.OnFocus();
                     }
-                    else if (currentGrabable != hit.collider.gameObject.GetComponent<IGrabable>())
+                    else if (currentGrabable.IsGrabbed)
+                    {
+                        otherGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
+
+                        if (otherGrabable != null)
+                        {
+                            otherGrabable.OutlineShouldBeRed = true;
+                            otherGrabable.OnFocus();
+                        }
+                    }
+                    else if (!currentGrabable.IsGrabbed && currentGrabable != hit.collider.gameObject.GetComponent<IGrabable>())
                     {
                         currentGrabable.OnLoseFocus();
                         currentGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
@@ -685,7 +711,7 @@ public class FirstPersonController : MonoBehaviour
                 {
                     currentGrabable.OnLoseFocus();
                     currentGrabable = null;
-                    ChangeCrosshairColor(defaultCrosshairColor);
+                    DecideOutlineAndCrosshair();
                 }
 
             }
@@ -693,14 +719,14 @@ public class FirstPersonController : MonoBehaviour
             {
                 currentGrabable.OnLoseFocus();
                 currentGrabable = null;
-                ChangeCrosshairColor(defaultCrosshairColor);
+                DecideOutlineAndCrosshair();
             }
         }
         else if (currentGrabable != null)
         {
             currentGrabable.OnLoseFocus();
             currentGrabable = null;
-            ChangeCrosshairColor(defaultCrosshairColor);
+            DecideOutlineAndCrosshair();
         }
     }
 
@@ -722,11 +748,7 @@ public class FirstPersonController : MonoBehaviour
 
                 anim.SetBool("chargingThrowRight", true);
 
-                if (currentInteractable != null)
-                {
-                    DecideInteractableOutlineColor();
-                    currentInteractable.OutlineChangeCheck();
-                }
+                DecideOutlineAndCrosshair();
 
                 if (singleHandThrowCoroutine != null)
                 {
@@ -792,11 +814,7 @@ public class FirstPersonController : MonoBehaviour
 
                 throwChargeTimer = 0f;
 
-                if (currentInteractable != null)
-                {
-                    DecideInteractableOutlineColor();
-                    currentInteractable.OutlineChangeCheck();
-                }
+                DecideOutlineAndCrosshair();
             }
         }
         else if (Input.GetKeyDown(interactKey) && currentGrabable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
@@ -805,6 +823,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 anim.SetBool("grabbingRight", true);
 
+                DecideOutlineAndCrosshair();
                 currentGrabable.OnGrab(grabPoint);
 
                 if (rightHandRigLerpCoroutine != null)
@@ -825,11 +844,7 @@ public class FirstPersonController : MonoBehaviour
                 rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
                 leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
 
-                if (currentInteractable != null)
-                {
-                    DecideInteractableOutlineColor();
-                    currentInteractable.OutlineChangeCheck();
-                }
+                DecideOutlineAndCrosshair();
             }
         }
     }
@@ -848,8 +863,7 @@ public class FirstPersonController : MonoBehaviour
             currentGrabable = null;
         }
 
-        ChangeCrosshairSize(defaultCrosshairSize);
-        ChangeCrosshairColor(defaultCrosshairColor);
+        DecideOutlineAndCrosshair();
     }
 
     public void ResetGrab(IGrabable grabable)
@@ -860,20 +874,10 @@ public class FirstPersonController : MonoBehaviour
             {
                 currentGrabable.OnLoseFocus();
                 currentGrabable = null;
-                ChangeCrosshairColor(defaultCrosshairColor);
             }
         }
-        else
-        {
-            ChangeCrosshairColor(defaultCrosshairColor);
-        }
 
-        if (currentInteractable != null)
-            ChangeCrosshairSize(interactableCrosshairSize);
-        else
-            ChangeCrosshairSize(defaultCrosshairSize);
-
-        
+        DecideOutlineAndCrosshair();
     }
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
@@ -882,7 +886,7 @@ public class FirstPersonController : MonoBehaviour
 
         currentGrabable = grabObject;
         currentGrabable.OnGrab(grabPoint);
-        ChangeCrosshairColor(grabCrosshairColor);
+        DecideOutlineAndCrosshair();
 
         if (rightHandRigLerpCoroutine != null)
         {

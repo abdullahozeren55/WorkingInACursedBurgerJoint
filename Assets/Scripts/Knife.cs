@@ -5,6 +5,10 @@ using UnityEngine;
 public class Knife : MonoBehaviour, IGrabable
 {
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
+    private bool isGrabbed;
+
+    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
+    private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
@@ -16,8 +20,6 @@ public class Knife : MonoBehaviour, IGrabable
     [SerializeField] private Vector3 stabRotationOffset = new Vector3(2.5f, -70f, -100f);
 
     [Space]
-
-    private bool isGrabbed;
 
     public KnifeData data;
     [Space]
@@ -34,6 +36,7 @@ public class Knife : MonoBehaviour, IGrabable
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
+    private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
 
     private bool isJustThrowed;
@@ -52,6 +55,7 @@ public class Knife : MonoBehaviour, IGrabable
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
+        interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
 
         IsGrabbed = false;
@@ -162,6 +166,18 @@ public class Knife : MonoBehaviour, IGrabable
         rb.AddForce(direction * throwMultiplier * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+    }
+
+    public void OutlineChangeCheck()
+    {
+        if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
+        {
+            gameObject.layer = interactableOutlinedRedLayer;
+        }
+        else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
+        {
+            gameObject.layer = grabableOutlinedLayer;
+        }
     }
 
     private void HandleText(bool isFocused)

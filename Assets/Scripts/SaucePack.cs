@@ -5,12 +5,14 @@ using UnityEngine;
 public class SaucePack : MonoBehaviour, IGrabable
 {
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
+    private bool isGrabbed;
+
+    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
+    private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
-
-    private bool isGrabbed;
 
     public bool IsGettingPutOnHologram;
 
@@ -26,6 +28,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
+    private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
 
     private Vector3 hologramPos;
@@ -54,6 +57,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
+        interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
 
         IsGrabbed = false;
@@ -173,6 +177,18 @@ public class SaucePack : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+    }
+
+    public void OutlineChangeCheck()
+    {
+        if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
+        {
+            gameObject.layer = interactableOutlinedRedLayer;
+        }
+        else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
+        {
+            gameObject.layer = grabableOutlinedLayer;
+        }
     }
 
     private void HandleText(bool isFocused)

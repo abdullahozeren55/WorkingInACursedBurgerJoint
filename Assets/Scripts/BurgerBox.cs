@@ -10,6 +10,9 @@ public class BurgerBox : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
+    private bool outlineShouldBeRed;
+
     public bool IsGettingPutOnTray { get => isGettingPutOnTray; set => isGettingPutOnTray = value; }
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
@@ -36,6 +39,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
+    private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
     private int onTrayLayer;
 
@@ -58,6 +62,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
+        interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         onTrayLayer = LayerMask.NameToLayer("OnTray");
 
@@ -178,6 +183,18 @@ public class BurgerBox : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+    }
+
+    public void OutlineChangeCheck()
+    {
+        if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
+        {
+            ChangeLayer(interactableOutlinedRedLayer);
+        }
+        else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
+        {
+            ChangeLayer(grabableOutlinedLayer);
+        }
     }
 
     private void HandleText(bool isFocused)

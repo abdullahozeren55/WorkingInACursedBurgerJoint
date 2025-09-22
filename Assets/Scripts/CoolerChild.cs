@@ -6,11 +6,8 @@ public class CoolerChild : MonoBehaviour, IInteractable
 {
     private Cooler parentCooler;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
-    [SerializeField] private bool outlineShouldBeRed;
-
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public GameManager.HandRigTypes HandRigType { get => parentCooler.HandRigType; set => parentCooler.HandRigType = value; }
+    public bool OutlineShouldBeRed { get => parentCooler.OutlineShouldBeRed; set => parentCooler.OutlineShouldBeRed = value; }
 
     private void Awake()
     {

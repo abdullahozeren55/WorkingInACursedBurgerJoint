@@ -6,11 +6,9 @@ public class WindowChild : MonoBehaviour, IInteractable
 {
     private Window parentWindow;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public GameManager.HandRigTypes HandRigType { get => parentWindow.HandRigType; set => parentWindow.HandRigType = value; }
 
-    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
-    [SerializeField] private bool outlineShouldBeRed;
+    public bool OutlineShouldBeRed { get => parentWindow.OutlineShouldBeRed; set => parentWindow.OutlineShouldBeRed = value; }
 
     private void Awake()
     {
