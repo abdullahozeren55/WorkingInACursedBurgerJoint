@@ -14,6 +14,13 @@ public class SauceBottle : MonoBehaviour, IGrabable
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
 
+    [Space]
+
+    [SerializeField] private Vector3 stabPositionOffset = new Vector3(0.2f, 0.3f, 1.5f);
+    [SerializeField] private Vector3 stabRotationOffset = new Vector3(2.5f, -70f, -100f);
+
+    [Space]
+
     [SerializeField] private Tray tray;
 
     public SauceBottleData data;
@@ -39,6 +46,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     private AudioSource audioSource;
     private Rigidbody rb;
+    private Collider col;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -49,10 +57,13 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     private float audioLastPlayedTime;
 
+    private Coroutine stabCoroutine;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
+        col = GetComponent<Collider>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -69,6 +80,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
     public void OnGrab(Transform grabPoint)
     {
         gameObject.layer = ungrabableLayer;
+
+        col.enabled = false;
 
         tray.TurnOnSauceHologram(sauceType);
 
@@ -104,6 +117,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
         IsGrabbed = false;
 
+        Invoke("TurnOnCollider", 0.05f);
+
         transform.SetParent(null);
 
         rb.useGravity = true;
@@ -116,6 +131,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
+
+        Invoke("TurnOnCollider", 0.05f);
 
         transform.SetParent(null);
 
@@ -150,6 +167,11 @@ public class SauceBottle : MonoBehaviour, IGrabable
             if (grabText.activeSelf) grabText.SetActive(false);
             if (dropText.activeSelf) dropText.SetActive(false);
         }
+    }
+
+    private void TurnOnCollider()
+    {
+        col.enabled = true;
     }
 
     private void OnDisable()
@@ -192,11 +214,60 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        throw new System.NotImplementedException();
+        GameManager.Instance.SetPlayerAnimBool("stabRight", true);
+        GameManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
+        GameManager.Instance.SetPlayerIsUsingItemXY(false, true);
+
+        if (stabCoroutine != null)
+        {
+            StopCoroutine(stabCoroutine);
+            stabCoroutine = null;
+        }
+
+        stabCoroutine = StartCoroutine(Stab(true));
     }
 
     public void OnUseRelease()
     {
-        throw new System.NotImplementedException();
+        GameManager.Instance.SetPlayerAnimBool("stabRight", false);
+        GameManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab / 2f);
+        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
+        if (stabCoroutine != null)
+        {
+            StopCoroutine(stabCoroutine);
+            stabCoroutine = null;
+        }
+
+        stabCoroutine = StartCoroutine(Stab(false));
+    }
+
+    private IEnumerator Stab(bool shouldStab)
+    {
+        Vector3 startPos = transform.localPosition;
+        Quaternion startRot = transform.localRotation;
+
+        Vector3 endPos = shouldStab ? data.stabPositionOffset : data.grabPositionOffset;
+        Quaternion endRot = shouldStab ? Quaternion.Euler(data.stabRotationOffset) : Quaternion.Euler(data.grabRotationOffset);
+
+        float elapsedTime = 0f;
+        float value = 0f;
+
+        while (elapsedTime < data.timeToStab)
+        {
+            value = elapsedTime / data.timeToStab;
+
+            transform.localPosition = Vector3.Lerp(startPos, endPos, value);
+            transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localPosition = endPos;
+        transform.localRotation = endRot;
+
+        stabCoroutine = null;
+
     }
 }

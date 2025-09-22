@@ -496,6 +496,24 @@ public class FirstPersonController : MonoBehaviour
         
     }
 
+    private void DecideGrabableOutlineColor()
+    {
+        if (currentGrabable != null && currentGrabable.IsGrabbed && otherGrabable != null)
+        {
+            otherGrabable.OutlineShouldBeRed = true;
+            otherGrabable.OutlineChangeCheck();
+        }
+        else
+        {
+            if (otherGrabable != null)
+            {
+                otherGrabable.OutlineShouldBeRed = false;
+                otherGrabable.OutlineChangeCheck();
+            }
+                
+        }
+    }
+
     private void DecideCrosshairColor()
     {
         if (currentInteractable != null && currentInteractable.OutlineShouldBeRed)
@@ -504,7 +522,7 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (currentGrabable != null)
         {
-            ChangeCrosshairColor(grabCrosshairColor);
+            ChangeCrosshairColor(otherGrabable != null ? useCrosshairColor : grabCrosshairColor);
         }
         else
         {
@@ -514,7 +532,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void DecideCrosshairSize()
     {
-        if (currentInteractable != null || (currentGrabable != null && !currentGrabable.IsGrabbed))
+        if (currentInteractable != null || (currentGrabable != null && (!currentGrabable.IsGrabbed || otherGrabable != null)))
         {
             ChangeCrosshairSize(interactableCrosshairSize);
         }
@@ -527,6 +545,7 @@ public class FirstPersonController : MonoBehaviour
     private void DecideOutlineAndCrosshair()
     {
         DecideInteractableOutlineColor();
+        DecideGrabableOutlineColor();
         DecideCrosshairColor();
         DecideCrosshairSize();
     }
@@ -545,14 +564,23 @@ public class FirstPersonController : MonoBehaviour
                     if (currentInteractable == null)
                     {
                         currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                        DecideOutlineAndCrosshair();
-                        currentInteractable.OnFocus();
+
+                        if (currentInteractable != null)
+                        {
+                            DecideOutlineAndCrosshair();
+                            currentInteractable.OnFocus();
+                        }
+                        
                     }
                     else if (currentInteractable != hit.collider.gameObject.GetComponent<IInteractable>())
                     {
                         currentInteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                        DecideOutlineAndCrosshair();
-                        currentInteractable.OnFocus();
+
+                        if (currentInteractable != null)
+                        {
+                            DecideOutlineAndCrosshair();
+                            currentInteractable.OnFocus();
+                        }
                     }
                 }
                 else if (currentInteractable != null)
@@ -686,47 +714,98 @@ public class FirstPersonController : MonoBehaviour
                 {
                     if (currentGrabable == null)
                     {
+                        if (otherGrabable != null)
+                        {
+                            otherGrabable.OnLoseFocus();
+                            otherGrabable = null;
+                            DecideOutlineAndCrosshair();
+                        }
+
                         currentGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
                         DecideOutlineAndCrosshair();
                         currentGrabable.OnFocus();
                     }
                     else if (currentGrabable.IsGrabbed)
                     {
+                        if (otherGrabable != null)
+                        {
+                            otherGrabable.OnLoseFocus();
+                            otherGrabable = null;
+                            DecideOutlineAndCrosshair();
+                        }
+
                         otherGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
 
                         if (otherGrabable != null)
                         {
-                            otherGrabable.OutlineShouldBeRed = true;
                             otherGrabable.OnFocus();
+                            DecideOutlineAndCrosshair();   
                         }
                     }
-                    else if (!currentGrabable.IsGrabbed && currentGrabable != hit.collider.gameObject.GetComponent<IGrabable>())
+                    else if (currentGrabable != hit.collider.gameObject.GetComponent<IGrabable>())
                     {
+                        if (otherGrabable != null)
+                        {
+                            otherGrabable.OnLoseFocus();
+                            otherGrabable = null;
+                            DecideOutlineAndCrosshair();
+                        }
+
                         currentGrabable.OnLoseFocus();
                         currentGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
                         currentGrabable.OnFocus();
                     }
                 }
-                else if (currentGrabable != null)
+                else
+                {
+                    if (currentGrabable != null && !currentGrabable.IsGrabbed)
+                    {
+                        currentGrabable.OnLoseFocus();
+                        currentGrabable = null;
+                        DecideOutlineAndCrosshair();
+                    }
+
+                    if (otherGrabable != null)
+                    {
+                        otherGrabable.OnLoseFocus();
+                        otherGrabable = null;
+                        DecideOutlineAndCrosshair();
+                    }
+                }
+
+            }
+            else
+            {
+                if (currentGrabable != null && !currentGrabable.IsGrabbed)
                 {
                     currentGrabable.OnLoseFocus();
                     currentGrabable = null;
                     DecideOutlineAndCrosshair();
                 }
 
+                if (otherGrabable != null)
+                {
+                    otherGrabable.OnLoseFocus();
+                    otherGrabable = null;
+                    DecideOutlineAndCrosshair();
+                }
             }
-            else if (currentGrabable != null)
+        }
+        else
+        {
+            if (currentGrabable != null && !currentGrabable.IsGrabbed)
             {
                 currentGrabable.OnLoseFocus();
                 currentGrabable = null;
                 DecideOutlineAndCrosshair();
             }
-        }
-        else if (currentGrabable != null)
-        {
-            currentGrabable.OnLoseFocus();
-            currentGrabable = null;
-            DecideOutlineAndCrosshair();
+
+            if (otherGrabable != null)
+            {
+                otherGrabable.OnLoseFocus();
+                otherGrabable = null;
+                DecideOutlineAndCrosshair();
+            }
         }
     }
 
