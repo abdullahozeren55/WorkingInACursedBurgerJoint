@@ -1,4 +1,4 @@
-using Cinemachine;
+﻿using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,22 +7,33 @@ public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance;
 
+    public enum CameraName
+    {
+        Null,
+        FirstPerson,
+        Monitor,
+        Customer0
+    }
+
+    [System.Serializable]
+    public class CameraEntry
+    {
+        public CameraName camName;
+        public CinemachineVirtualCamera vCam;
+    }
+
     [SerializeField] private CursorFollow cursorFollow;
     [SerializeField] private GameObject crosshair;
     [SerializeField] private Monitor monitor;
     [Space]
-    [SerializeField] private CinemachineVirtualCamera firstPersonCam;
-    [SerializeField] private CinemachineVirtualCamera customerCam;
-    [SerializeField] private CinemachineVirtualCamera monitorCam;
-    [SerializeField] private CinemachineVirtualCamera cutsceneDollyCam;
-    [SerializeField] private CinemachineVirtualCamera phoneCam;
+    [SerializeField] private CameraEntry[] cameras;
 
     private FirstPersonController firstPersonController;
     private KeyCode interactKey;
     private bool isFocusedOnMonitor;
     private bool isFocused;
 
-    private CinemachineVirtualCamera currentCam;
+    private CameraEntry currentCam;
     private int basePriority = 10;
 
     private void Awake()
@@ -56,34 +67,50 @@ public class CameraManager : MonoBehaviour
         }
     }
 
-    public void SwitchToCamera(CinemachineVirtualCamera targetCam)
+    public void SwitchToCamera(CameraName name)
     {
-        if (targetCam == null || targetCam == currentCam)
+        if (name == currentCam.camName || name == CameraName.Null)
             return;
 
         // Lower priority of current camera
-        if (currentCam != null)
-            currentCam.Priority = basePriority;
+        foreach (CameraEntry entry in cameras)
+        {
+            if (entry.camName == name)
+            {
+                currentCam.vCam.Priority = basePriority;
+                currentCam = entry;
+                currentCam.vCam.Priority = basePriority + 1;
 
-        // Raise priority of target camera
-        targetCam.Priority = basePriority + 1;
-        currentCam = targetCam;
+                break;
+            }
+        }
     }
 
-    // Optional: Use this to get current camera
-    public CinemachineVirtualCamera GetCurrentCamera()
+    public void InitializeCamera(CameraName name)
     {
-        return currentCam;
+        if (currentCam != null)
+            return;
+
+        foreach (CameraEntry entry in cameras)
+        {
+            if (entry.camName == name)
+            {
+                currentCam = entry;
+                currentCam.vCam.Priority = basePriority + 1;
+
+                break;
+            }
+        }
+    }
+
+    public CinemachineVirtualCamera GetCamera()
+    {
+        return currentCam.vCam;
     }
 
     public void SwitchToFirstPersonCamera()
     {
-        SwitchToCamera(firstPersonCam);
-    }
-
-    public void SwitchToCustomerCamera()
-    {
-        SwitchToCamera(customerCam);
+        SwitchToCamera(CameraName.FirstPerson);
     }
 
     private void CheckDefocus()
@@ -105,7 +132,7 @@ public class CameraManager : MonoBehaviour
 
         PhoneManager.Instance.CanUsePhone = false;
 
-        SwitchToCamera(monitorCam);
+        SwitchToCamera(CameraName.Monitor);
 
         Invoke("FinishMonitorFocus", 0.5f);
     }
@@ -123,7 +150,7 @@ public class CameraManager : MonoBehaviour
     {
         cursorFollow.EndCursorFollow();
         monitor.defocusText.SetActive(false);
-        SwitchToCamera(firstPersonCam);
+        SwitchToCamera(CameraName.FirstPerson);
 
         if (!firstPersonController.CanMove) firstPersonController.CanMove = true;
         crosshair.SetActive(true);
@@ -150,7 +177,7 @@ public class CameraManager : MonoBehaviour
 
         PhoneManager.Instance.CanUsePhone = false;
 
-        SwitchToCamera(phoneCam);
+        //SwitchToCamera(phoneCam);
 
         Invoke("FinishPhoneFocus", 1f);
     }
@@ -162,7 +189,7 @@ public class CameraManager : MonoBehaviour
 
     private void DefocusCameraForPhone()
     {
-        SwitchToCamera(firstPersonCam);
+        SwitchToCamera(CameraName.FirstPerson);
 
         if (!firstPersonController.CanMove) firstPersonController.CanMove = true;
         PhoneManager.Instance.CanUsePhone = true;

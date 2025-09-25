@@ -1,12 +1,11 @@
-﻿using DG.Tweening;
+﻿using Cinemachine;
+using DG.Tweening;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI;
 
 public class ChoiceManager : MonoBehaviour
 {
@@ -62,6 +61,7 @@ public class ChoiceManager : MonoBehaviour
     private float bwFadeOutTime;
     private float originalCameraFov;
     private float changedCameraFov;
+    private CinemachineVirtualCamera virtualCamera;
 
     private ICustomer currentCustomer;
 
@@ -89,9 +89,6 @@ public class ChoiceManager : MonoBehaviour
         startColor = optionAText.color;
 
         currentCustomer = null;
-
-        originalCameraFov = Camera.main.fieldOfView;
-        changedCameraFov = originalCameraFov * cameraFovMultiplier;
 
         visualPart.SetActive(false);
 
@@ -201,7 +198,17 @@ public class ChoiceManager : MonoBehaviour
         }
     }
 
-    public void StartTheCustomerChoice(string question, string optionA, string optionD, ICustomer customer, DialogueData optionADialogue, DialogueData optionDDialogue, DialogueData notAnsweringDialogue)
+    public void StartTheCustomerChoice
+        (
+        string question,
+        string optionA,
+        string optionD,
+        ICustomer customer,
+        DialogueData optionADialogue,
+        DialogueData optionDDialogue,
+        DialogueData notAnsweringDialogue,
+        CameraManager.CameraName camToSwitch
+        )
     {
         questionText.text = question;
         optionAText.text = "[A]\n" + optionA;
@@ -216,6 +223,13 @@ public class ChoiceManager : MonoBehaviour
         currentCustomer = customer;
 
         currentCoroutine = CurrentCoroutine.NONE;
+
+        CameraManager.Instance.SwitchToCamera(camToSwitch);
+
+        virtualCamera = CameraManager.Instance.GetCamera();
+
+        originalCameraFov = virtualCamera.m_Lens.FieldOfView;
+        changedCameraFov = originalCameraFov * cameraFovMultiplier;
 
         visualPart.SetActive(true);
 
@@ -233,7 +247,7 @@ public class ChoiceManager : MonoBehaviour
     private IEnumerator FastOut()
     {
         float startAlpha = colorAdjust.saturation.value;
-        float currentFov = Camera.main.fieldOfView;
+        float currentFov = virtualCamera.m_Lens.FieldOfView;
         float currentTimeScale = Time.timeScale;
 
         if (!slowMoEndsSource.isPlaying) slowMoEndsSource.PlayOneShot(slowMoEndsSound);
@@ -248,7 +262,7 @@ public class ChoiceManager : MonoBehaviour
             value = elapsedTime / fastOutTime;
 
             colorAdjust.saturation.value = Mathf.Lerp(startAlpha, 0f, value);
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, originalCameraFov, value);
+            virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(currentFov, originalCameraFov, value);
             Time.timeScale = Mathf.Lerp(Time.timeScale, 1f, value);
             if (slowMoBeginSource.isPlaying) slowMoBeginSource.volume = Mathf.Lerp(slowMoBeginSource.volume, 0f, value);
             if (clockTickingSource.isPlaying) clockTickingSource.volume = Mathf.Lerp(clockTickingSource.volume, 0f, value);
@@ -259,7 +273,7 @@ public class ChoiceManager : MonoBehaviour
 
         colorAdjust.saturation.value = 0f;
 
-        Camera.main.fieldOfView = originalCameraFov;
+        virtualCamera.m_Lens.FieldOfView = originalCameraFov;
 
         Time.timeScale = 1f;
 
@@ -275,7 +289,7 @@ public class ChoiceManager : MonoBehaviour
     private IEnumerator FadeInAndOut()
     {
 
-        float startCameraFov = Camera.main.fieldOfView;
+        float startCameraFov = virtualCamera.m_Lens.FieldOfView;
 
         slowMoBeginSource.PlayOneShot(slowMoBeginSound);
 
@@ -288,7 +302,7 @@ public class ChoiceManager : MonoBehaviour
 
             colorAdjust.saturation.value = Mathf.Lerp(0f, -100f, value);
             Time.timeScale = Mathf.Lerp(1f, slowedDownTimeSpeed, value);
-            Camera.main.fieldOfView = Mathf.Lerp(startCameraFov, changedCameraFov, value);
+            virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(startCameraFov, changedCameraFov, value);
 
             timeElapsed += Time.unscaledDeltaTime;
             yield return null;
@@ -296,11 +310,11 @@ public class ChoiceManager : MonoBehaviour
 
         colorAdjust.saturation.value = -100f;
         Time.timeScale = slowedDownTimeSpeed;
-        Camera.main.fieldOfView = changedCameraFov;
+        virtualCamera.m_Lens.FieldOfView = changedCameraFov;
 
         clockTickingSource.PlayOneShot(clockTickingSoundFx);
 
-        startCameraFov = Camera.main.fieldOfView;
+        startCameraFov = virtualCamera.m_Lens.FieldOfView;
 
         timeElapsed = 0f;
         value = 0f;
@@ -311,7 +325,7 @@ public class ChoiceManager : MonoBehaviour
 
             colorAdjust.saturation.value = Mathf.Lerp(-100f, 0f, value);
             Time.timeScale = Mathf.Lerp(slowedDownTimeSpeed, 1f, value);
-            Camera.main.fieldOfView = Mathf.Lerp(startCameraFov, originalCameraFov, value);
+            virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(startCameraFov, originalCameraFov, value);
             timer.fillAmount = Mathf.Lerp(1f, 0f, value);
 
             if (bwFadeOutTime - timeElapsed < 1f && !isSlowMoEndsStarted)
@@ -326,7 +340,7 @@ public class ChoiceManager : MonoBehaviour
 
         colorAdjust.saturation.value = 0f;
         Time.timeScale = 1f;
-        Camera.main.fieldOfView = originalCameraFov;
+        virtualCamera.m_Lens.FieldOfView = originalCameraFov;
         timer.fillAmount = 0f;
 
         isSlowMoEndsStarted = false;

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,10 @@ public class DialogueData : ScriptableObject
 
         [Range(1f, 50f)]
         public float LettersPerSecond;
+        [Space]
         public AudioClip audioClip;
+        [Space]
+        public CameraManager.CameraName cam;
     }
 
     public enum DialogueType
@@ -33,6 +37,7 @@ public class DialogueData : ScriptableObject
     public string question;
     public string optionA;
     public string optionD;
+    public CameraManager.CameraName choiceCam;
     [Space]
     public CutsceneType cutsceneType;
 }

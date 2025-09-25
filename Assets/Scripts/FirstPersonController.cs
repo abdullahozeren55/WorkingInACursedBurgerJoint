@@ -233,7 +233,7 @@ public class FirstPersonController : MonoBehaviour
             smr.localBounds = new Bounds(Vector3.zero, Vector3.one * 5f); // overly large bounds to guarantee visibility
         }
 
-        CameraManager.Instance.SwitchToCamera(firstPersonCam);
+        CameraManager.Instance.InitializeCamera(CameraManager.CameraName.FirstPerson);
     }
 
     private void Update()

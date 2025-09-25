@@ -153,7 +153,7 @@ public class DialogueManager : MonoBehaviour
             visualPart.SetActive(false);
 
             ChoiceManager.Instance.StartTheCustomerChoice(dialogueData.question, dialogueData.optionA, dialogueData.optionD,
-                                    currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData);
+                                    currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, dialogueData.choiceCam);
         }
         else
         {
@@ -262,6 +262,8 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator PlayDialogue(DialogueData.DialogueSegment segment)
     {
         playingDialogue = true;
+        
+        CameraManager.Instance.SwitchToCamera(segment.cam);
 
         SetRandomPitch();
 

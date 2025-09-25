@@ -361,7 +361,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void ReceiveBurger(BurgerBox burgerBox)
     {
-        CameraManager.Instance.SwitchToCustomerCamera();
+        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
 
         ChangeLayer(uninteractableLayer);
@@ -375,7 +375,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void ReceiveDrink(Drink drink)
     {
-        CameraManager.Instance.SwitchToCustomerCamera();
+        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
         ChangeLayer(uninteractableLayer);
         HandleText(false);
@@ -389,7 +389,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
     public void OnInteract()
     {
 
-        CameraManager.Instance.SwitchToCustomerCamera();
+        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
         if (CurrentAction == ICustomer.Action.ReadyToOrder)
         {
