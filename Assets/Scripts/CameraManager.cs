@@ -22,16 +22,12 @@ public class CameraManager : MonoBehaviour
         public CinemachineVirtualCamera vCam;
     }
 
-    [SerializeField] private CursorFollow cursorFollow;
     [SerializeField] private GameObject crosshair;
-    [SerializeField] private Monitor monitor;
     [Space]
     [SerializeField] private CameraEntry[] cameras;
 
     private FirstPersonController firstPersonController;
     private KeyCode interactKey;
-    private bool isFocusedOnMonitor;
-    private bool isFocused;
 
     private CameraEntry currentCam;
     private int basePriority = 10;
@@ -54,17 +50,6 @@ public class CameraManager : MonoBehaviour
 
         firstPersonController = FindFirstObjectByType<FirstPersonController>();
         interactKey = firstPersonController.throwKey;
-
-        isFocusedOnMonitor = false;
-        isFocused = false;
-    }
-
-    private void Update()
-    {
-        if ((isFocusedOnMonitor || isFocused) && !DialogueManager.Instance.IsInDialogue)
-        {
-            CheckDefocus();
-        }
     }
 
     public void SwitchToCamera(CameraName name)
@@ -111,89 +96,5 @@ public class CameraManager : MonoBehaviour
     public void SwitchToFirstPersonCamera()
     {
         SwitchToCamera(CameraName.FirstPerson);
-    }
-
-    private void CheckDefocus()
-    {
-        if (Input.GetKeyDown(interactKey))
-        {
-            if (isFocused)
-                DefocusCameraForPhone();
-            else
-                DefocusCameraForMonitor();
-            
-        }
-    }
-
-    public void FocusCameraForMonitor()
-    {
-        if (firstPersonController.CanMove) firstPersonController.CanMove = false;
-        crosshair.SetActive(false);
-
-        PhoneManager.Instance.CanUsePhone = false;
-
-        SwitchToCamera(CameraName.Monitor);
-
-        Invoke("FinishMonitorFocus", 0.5f);
-    }
-
-    private void FinishMonitorFocus()
-    {
-        isFocusedOnMonitor = true;
-
-        cursorFollow.StartCursorFollow();
-
-        monitor.defocusText.SetActive(true);
-    }
-
-    private void DefocusCameraForMonitor()
-    {
-        cursorFollow.EndCursorFollow();
-        monitor.defocusText.SetActive(false);
-        SwitchToCamera(CameraName.FirstPerson);
-
-        if (!firstPersonController.CanMove) firstPersonController.CanMove = true;
-        crosshair.SetActive(true);
-
-        PhoneManager.Instance.CanUsePhone = true;
-
-        isFocusedOnMonitor = false;
-    }
-
-    private void FinishMonitorDefocus()
-    {
-        crosshair.SetActive(true);
-        monitor.ChangeLayerToInteractable();
-
-        if (!firstPersonController.CanMove) firstPersonController.CanMove = true;
-        PhoneManager.Instance.CanUsePhone = true;
-
-        isFocusedOnMonitor = false;
-    }
-
-    public void FocusCameraForPhone(Camera camera)
-    {
-        if (firstPersonController.CanMove) firstPersonController.CanMove = false;
-
-        PhoneManager.Instance.CanUsePhone = false;
-
-        //SwitchToCamera(phoneCam);
-
-        Invoke("FinishPhoneFocus", 1f);
-    }
-
-    private void FinishPhoneFocus()
-    {
-        isFocused = true;
-    }
-
-    private void DefocusCameraForPhone()
-    {
-        SwitchToCamera(CameraName.FirstPerson);
-
-        if (!firstPersonController.CanMove) firstPersonController.CanMove = true;
-        PhoneManager.Instance.CanUsePhone = true;
-
-        isFocused = false;
     }
 }

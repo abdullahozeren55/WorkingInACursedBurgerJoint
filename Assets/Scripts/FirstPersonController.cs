@@ -522,7 +522,7 @@ public class FirstPersonController : MonoBehaviour
         }
         else if (currentGrabable != null)
         {
-            ChangeCrosshairColor(otherGrabable != null ? useCrosshairColor : grabCrosshairColor);
+            ChangeCrosshairColor(!currentGrabable.IsGrabbed ? grabCrosshairColor : otherGrabable != null ? useCrosshairColor : defaultCrosshairColor);
         }
         else
         {
