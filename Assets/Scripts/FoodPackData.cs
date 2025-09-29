@@ -6,6 +6,9 @@ using UnityEngine;
 public class FoodPackData : ScriptableObject
 {
     public GameObject destroyParticle;
+    [Space]
+    public bool isUseable = false;
+    [Space]
     public float minForce = 0.4f;
     public float maxForce = 0.8f;
     public bool haveWholeIngredient;

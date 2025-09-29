@@ -6,6 +6,8 @@ using UnityEngine;
 public class BurgerIngredientData : ScriptableObject
 {
 
+    public bool isUseable = false;
+    [Space]
     public IngredientType ingredientType;
     public float yHeight = 0.1f;
     public float timeToPutOnTray = 0.3f;

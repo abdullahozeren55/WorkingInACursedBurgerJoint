@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewKnifeData", menuName = "Data/Knife")]
 public class KnifeData : ScriptableObject
 {
+    public bool isUseable = true;
+    [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
     public Vector3 grabScaleOffset;

@@ -13,12 +13,12 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
-
-    public bool IsGettingPutOnTray { get => isGettingPutOnTray; set => isGettingPutOnTray = value; }
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
+
+    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
 
     private bool isGettingPutOnTray;
 
@@ -69,7 +69,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         onTrayLayer = LayerMask.NameToLayer("OnTray");
 
         IsGrabbed = false;
-        IsGettingPutOnTray = false;
+        isGettingPutOnTray = false;
 
         isJustThrowed = false;
 
@@ -89,7 +89,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public void PutOnTray(Vector3 trayPos)
     {
-        IsGettingPutOnTray = true;
+        isGettingPutOnTray = true;
         ChangeLayer(onTrayLayer);
 
         PlayAudioWithRandomPitch(1);
@@ -111,7 +111,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
     public void OnGrab(Transform grabPoint)
     {
         ChangeLayer(ungrabableLayer);
-        IsGettingPutOnTray = false;
+        isGettingPutOnTray = false;
 
         tray.currentBox = this;
         tray.TurnOnBoxHologram();
@@ -251,7 +251,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && !IsGettingPutOnTray && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door")))
+        if (!IsGrabbed && !isGettingPutOnTray && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door")))
         {
             if (isJustThrowed)
             {

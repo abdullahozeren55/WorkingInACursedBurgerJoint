@@ -15,6 +15,8 @@ public class Knife : MonoBehaviour, IGrabable
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
 
+    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
+
     [Space]
 
     [SerializeField] private Vector3 stabPositionOffset = new Vector3(0.2f, 0.3f, 1.5f);

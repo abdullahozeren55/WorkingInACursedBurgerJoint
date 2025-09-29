@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewBurgerBoxData", menuName = "Data/BurgerBox")]
 public class BurgerBoxData : ScriptableObject
 {
+    public bool isUseable = false;
+    [Space]
     public float trashSpaceValue = 35f;
     public float followingSpeed = 40f;
     public float timeToPutOnTray = 0.3f;

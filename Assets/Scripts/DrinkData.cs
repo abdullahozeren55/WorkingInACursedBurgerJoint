@@ -7,6 +7,8 @@ public class DrinkData : ScriptableObject
 {
     public GameManager.DrinkTypes drinkType;
     [Space]
+    public bool isUseable = false;
+    [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
 

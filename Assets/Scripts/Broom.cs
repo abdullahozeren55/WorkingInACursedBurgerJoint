@@ -17,6 +17,9 @@ public class Broom : MonoBehaviour, IGrabable
 
     public Sprite FocusImage { get => focusImage; set => focusImage = value; }
     [SerializeField] private Sprite focusImage;
+    public bool IsUseable { get => isUseable; set => isUseable = value; }
+    [SerializeField] private bool isUseable = true;
+
     [Space]
     [SerializeField] private AudioClip[] audioClips;
 

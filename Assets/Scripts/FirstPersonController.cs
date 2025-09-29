@@ -648,7 +648,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleInteractionInput()
     {
-        if (currentGrabable == null || !currentGrabable.IsGrabbed)
+        if (currentGrabable == null || !currentGrabable.IsGrabbed || !currentGrabable.IsUseable)
         {
             // EL BOS normal interact (tap)
             if (Input.GetKeyDown(interactKey))

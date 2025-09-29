@@ -18,6 +18,7 @@ public interface IGrabable
     public Vector3 GrabRotationOffset { get; set; }
 
     public bool IsGrabbed {  get; set; }
+    public bool IsUseable { get; set; }
     public bool OutlineShouldBeRed { get; set; }
     public Sprite FocusImage { get; set; }
 }

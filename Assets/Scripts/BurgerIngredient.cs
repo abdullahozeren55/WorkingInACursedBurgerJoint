@@ -17,7 +17,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
 
-    public bool IsGettingPutOnTray { get => isGettingPutOnTray; set => isGettingPutOnTray = value; }
+    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
@@ -71,7 +71,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         decalParent = transform.Find("DecalParent");
 
         IsGrabbed = false;
-        IsGettingPutOnTray = false;
+        isGettingPutOnTray = false;
 
         isJustThrowed = false;
         isStuck = false;
@@ -83,7 +83,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void PutOnTray(Vector3 trayPos, Transform parentTray)
     {
-        IsGettingPutOnTray = true;
+        isGettingPutOnTray = true;
         gameObject.layer = onTrayLayer;
 
         // Ses çalma kýsmý ayný kalýyor
@@ -350,7 +350,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && !IsGettingPutOnTray && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
+        if (!IsGrabbed && !isGettingPutOnTray && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
         {
 
             if (decalParent != null && decalParent.childCount > 0)
@@ -413,11 +413,9 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        throw new System.NotImplementedException();
     }
 
     public void OnUseRelease()
     {
-        throw new System.NotImplementedException();
     }
 }

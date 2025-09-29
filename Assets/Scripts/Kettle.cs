@@ -14,6 +14,8 @@ public class Kettle : MonoBehaviour, IGrabable
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
+    public bool IsUseable { get => isUseable; set => isUseable = value; }
+    [SerializeField] private bool isUseable = true;
 
     public bool IsGettingPutOnHologram;
 

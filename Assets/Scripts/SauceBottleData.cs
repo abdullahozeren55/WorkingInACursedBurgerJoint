@@ -6,6 +6,8 @@ using static SauceBottle;
 [CreateAssetMenu(fileName = "NewSauceBottleData", menuName = "Data/Sauce Bottle")]
 public class SauceBottleData : ScriptableObject
 {
+    public bool isUseable = true;
+    [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
     [Space]
