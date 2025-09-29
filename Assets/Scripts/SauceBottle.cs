@@ -213,8 +213,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        GameManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         if (stabCoroutine != null)
         {
@@ -227,8 +227,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnUseRelease()
     {
-        GameManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab / 2f);
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab / 2f);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         pourParticle.Stop();
         isPlayingParticles = false;

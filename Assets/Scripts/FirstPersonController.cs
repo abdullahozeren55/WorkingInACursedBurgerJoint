@@ -487,7 +487,7 @@ public class FirstPersonController : MonoBehaviour
         if (currentInteractable != null)
         {
             if (isUsingGrabbedItem ||
-            (currentGrabable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == GameManager.HandRigTypes.SingleHandGrab))
+            (currentGrabable != null && currentGrabable.IsGrabbed && currentInteractable.HandRigType == PlayerManager.HandRigTypes.SingleHandGrab))
             {
                 currentInteractable.OutlineShouldBeRed = true;
             }
@@ -707,7 +707,7 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<IInteractable>() == currentInteractable)
             {
-                if (currentInteractable.HandRigType == GameManager.HandRigTypes.Talk)
+                if (currentInteractable.HandRigType == PlayerManager.HandRigTypes.Talk)
                 {
                     if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
                     if (leftHandRigLerpCoroutine != null) StopCoroutine(leftHandRigLerpCoroutine);
@@ -718,7 +718,7 @@ public class FirstPersonController : MonoBehaviour
                 {
                     if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
 
-                    if (currentInteractable.HandRigType == GameManager.HandRigTypes.Interaction)
+                    if (currentInteractable.HandRigType == PlayerManager.HandRigTypes.Interaction)
                     {
                         currentPositionOffsetForRightHand = positionOffsetForRightHandInteraction;
                         currentRotationOffsetForRightHand = rotationOffsetForRightHandInteraction;
@@ -730,7 +730,7 @@ public class FirstPersonController : MonoBehaviour
                 {
                     if (leftHandRigLerpCoroutine != null) StopCoroutine(leftHandRigLerpCoroutine);
 
-                    if (currentInteractable.HandRigType == GameManager.HandRigTypes.Interaction)
+                    if (currentInteractable.HandRigType == PlayerManager.HandRigTypes.Interaction)
                     {
                         currentPositionOffsetForLeftHand = positionOffsetForLeftHandInteraction;
                         currentRotationOffsetForLeftHand = rotationOffsetForLeftHandInteraction;

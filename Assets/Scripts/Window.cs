@@ -38,8 +38,8 @@ public class Window : MonoBehaviour, IInteractable
 
     private GameObject[] windowParts;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private PlayerManager.HandRigTypes handRigType;
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;

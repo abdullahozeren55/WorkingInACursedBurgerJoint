@@ -340,12 +340,12 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             canStick = false;
         }
 
-        GameManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.ResetPlayerGrab(this);
+        PlayerManager.Instance.ResetPlayerGrab(this);
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -7,7 +7,7 @@ public class CoolerChild : MonoBehaviour, IInteractable
 {
     private Cooler parentCooler;
 
-    public GameManager.HandRigTypes HandRigType { get => parentCooler.HandRigType; set => parentCooler.HandRigType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => parentCooler.HandRigType; set => parentCooler.HandRigType = value; }
     public bool OutlineShouldBeRed { get => parentCooler.OutlineShouldBeRed; set => parentCooler.OutlineShouldBeRed = value; }
     public Sprite FocusImage { get => parentCooler.FocusImage; set => parentCooler.FocusImage = value; }
 

@@ -44,7 +44,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void PlayCutscene(CutsceneType type)
     {
-        GameManager.Instance.ChangePlayerCanMove(false);
+        PlayerManager.Instance.ChangePlayerCanMove(false);
         GameManager.Instance.TurnCrosshairOnOff(false);
 
         if (playableDirector.state == PlayState.Playing)
@@ -68,7 +68,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void StopCutscene()
     {
-        GameManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.ChangePlayerCanMove(true);
         GameManager.Instance.TurnCrosshairOnOff(true);
         playableDirector.Stop();
     }

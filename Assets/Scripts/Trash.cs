@@ -125,7 +125,7 @@ public class Trash : MonoBehaviour, IGrabable
 
     private void OnDestroy()
     {
-        GameManager.Instance.ResetPlayerGrab(this);
+        PlayerManager.Instance.ResetPlayerGrab(this);
     }
 
     private void OnCollisionEnter(Collision collision)

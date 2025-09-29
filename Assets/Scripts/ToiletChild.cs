@@ -7,7 +7,7 @@ public class ToiletChild : MonoBehaviour, IInteractable
 {
     private Toilet parentToilet;
 
-    public GameManager.HandRigTypes HandRigType { get => parentToilet.HandRigType; set => parentToilet.HandRigType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => parentToilet.HandRigType; set => parentToilet.HandRigType = value; }
 
     public bool OutlineShouldBeRed { get => parentToilet.OutlineShouldBeRed; set => parentToilet.OutlineShouldBeRed = value; }
     public Sprite FocusImage { get => parentToilet.FocusImage; set => parentToilet.FocusImage = value; }

@@ -28,7 +28,7 @@ public class Door : MonoBehaviour, IInteractable
     
     public Sprite FocusImage { get => data.focusImages[doorStateNum]; set => data.focusImages[doorStateNum] = value; }
     [HideInInspector] public int doorStateNum = 0;
-    public GameManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;

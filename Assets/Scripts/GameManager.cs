@@ -60,14 +60,6 @@ public class GameManager : MonoBehaviour
         WhitePop
     }
 
-    public enum HandRigTypes
-    {
-        Interaction,
-        SingleHandGrab,
-        Talk,
-        Nothing,
-    }
-
     [Header("Burger Lists")]
     public List<BurgerIngredientData.IngredientType> classicBurger = new List<BurgerIngredientData.IngredientType>();
     public List <SauceBottle.SauceType> classicBurgerSauces = new List<SauceBottle.SauceType>();
@@ -98,7 +90,6 @@ public class GameManager : MonoBehaviour
     [Space]
 
     private List<List<BurgerIngredientData.IngredientType>> allBurgerMenus;
-    private List<List<SauceBottle.SauceType>> allBurgerSauces;
 
     private bool burgerMatched;
 
@@ -107,15 +98,6 @@ public class GameManager : MonoBehaviour
     private BurgerBox lastThrowedBurgerBox;
     private Drink lastThrowedDrink;
     private MeshRenderer[] lastThrowedBurgerBoxMeshRenderers;
-
-    [Header("Ertan Settings")]
-    [SerializeField] private GameObject[] allErtans; //0 for regular, turning into an abomination as the number goes up
-    [SerializeField] private Ertan[] allErtansSC; //0 for regular, turning into an abomination as the number goes up
-    [Space]
-    [SerializeField] private ICustomer.CustomerDayChangesSegment[] ErtanDayChanges;
-    [Space]
-    [HideInInspector] public bool ertanDidEatCheeseYesterday;
-    [HideInInspector] public int levelOfMadness = 1; //1 for regular, turning into an abomination as the number goes up
 
     [Header("Customer Settings")]
     [SerializeField] private GameObject[] allCustomers; //One Ertan will be put inside and get changed based on the required Ertan.
@@ -151,9 +133,6 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance;
 
-    private FirstPersonController firstPersonController;
-    private CharacterController characterController;
-
     private void Awake()
     {
         if (Instance == null)
@@ -183,19 +162,6 @@ public class GameManager : MonoBehaviour
             ertanFullMixedBurger
         };
 
-        allBurgerSauces = new List<List<SauceBottle.SauceType>>()
-        {
-            cheeseBurgerSauces,
-            cheeseBurgerSauces,
-            doubleCheeseBurgerSauces,
-            fullMixedBurgerSauces,
-            studentBurgerSauces,
-            economicalStudentBurgerSauces,
-            goutBurgerSauces,
-            bigSifadBurgerSauces,
-            ertanFullMixedBurgerSauces
-        };
-
         allCustomersName = new ICustomer.CustomerName[allCustomers.Length]; // initialize
 
         for (int i = 0; i < allCustomers.Length; i++)
@@ -204,9 +170,6 @@ public class GameManager : MonoBehaviour
         }
 
         NextState();
-
-        firstPersonController = FindFirstObjectByType<FirstPersonController>();
-        characterController = FindFirstObjectByType<CharacterController>();
 
         SetOrderThrowArea(false);
     }
@@ -246,62 +209,6 @@ public class GameManager : MonoBehaviour
     {
         DayCount++;
         currentIndex = 0; // yeni güne baþlarken baþtan
-    }
-
-    public void ResetPlayerGrabAndInteract()
-    {
-        firstPersonController.ResetGrabAndInteract();
-    }
-
-    public void ResetPlayerGrab(IGrabable grabable)
-    {
-        firstPersonController.ResetGrab(grabable);
-    }
-
-    public void ChangePlayerCanMove(bool canMove)
-    {
-        firstPersonController.CanMove = canMove;
-    }
-
-    public void ChangePlayerCurrentGrabable(IGrabable objectToGrab)
-    {
-        firstPersonController.ChangeCurrentGrabable(objectToGrab);
-    }
-
-    public void SetPlayerPushedByCustomer(bool value)
-    {
-        firstPersonController.isBeingPushedByACustomer = value;
-    }
-
-    public void MovePlayer(Vector3 moveForce)
-    {
-        characterController.Move(moveForce);
-    }
-
-    public void SetPlayerAnimBool(string boolName, bool value)
-    {
-        firstPersonController.SetAnimBool(boolName, value);
-    }
-
-    public void SetPlayerUseHandLerp(Vector3 targetPos, Vector3 targetRot, float timeToDo)
-    {
-        firstPersonController.SetUseHandLerp(targetPos, targetRot, timeToDo);
-    }
-
-    public void SetPlayerIsUsingItemXY(bool xValue, bool yValue)
-    {
-        firstPersonController.IsUsingItemX = xValue;
-        firstPersonController.IsUsingItemY = yValue;
-    }
-
-    public void TryChangingFocusText(IInteractable interactable, Sprite sprite)
-    {
-        firstPersonController.TryChangingFocusText(interactable, sprite);
-    }
-
-    public void TryChangingFocusText(IGrabable grabable, Sprite sprite)
-    {
-        firstPersonController.TryChangingFocusText(grabable, sprite);
     }
 
     public void AddSauceToTray(SauceBottle.SauceType type)

@@ -28,7 +28,7 @@ public class Keys : MonoBehaviour, IInteractable
     private MeshRenderer meshRenderer;
     private MeshCollider meshCollider;
 
-    public GameManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public PlayerManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
@@ -85,6 +85,6 @@ public class Keys : MonoBehaviour, IInteractable
 
     private void OnDestroy()
     {
-        GameManager.Instance.ResetPlayerGrabAndInteract();
+        PlayerManager.Instance.ResetPlayerGrabAndInteract();
     }
 }

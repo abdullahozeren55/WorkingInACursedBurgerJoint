@@ -6,7 +6,7 @@ using UnityEngine;
 public class DoorData : ScriptableObject
 {
     public Sprite[] focusImages; //0 kapýyý aç, 1 kapýyý kapat, 2 kapý kilitli
-    public GameManager.HandRigTypes handRigType;
+    public PlayerManager.HandRigTypes handRigType;
     [Space]
     public float timeToRotate = 0.3f;
     public float openYRotation = 90f;

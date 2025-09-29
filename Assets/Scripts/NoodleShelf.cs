@@ -24,8 +24,8 @@ public class NoodleShelf : MonoBehaviour, IInteractable
 
     private GameObject instantiatedNoodle;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private PlayerManager.HandRigTypes handRigType;
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
@@ -61,8 +61,8 @@ public class NoodleShelf : MonoBehaviour, IInteractable
         }
 
         instantiatedNoodle = Instantiate(noodle, pointToSpawnNoodle.position, Quaternion.Euler(0f, 0f, 0f), null);
-        GameManager.Instance.ResetPlayerGrabAndInteract();
-        GameManager.Instance.ChangePlayerCurrentGrabable(instantiatedNoodle.GetComponent<IGrabable>());
+        PlayerManager.Instance.ResetPlayerGrabAndInteract();
+        PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedNoodle.GetComponent<IGrabable>());
 
         storeBlocker.SetActive(true);
     }

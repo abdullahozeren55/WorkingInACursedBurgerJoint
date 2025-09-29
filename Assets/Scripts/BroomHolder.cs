@@ -19,7 +19,7 @@ public class BroomHolder : MonoBehaviour, IInteractable
     [SerializeField] private GameObject broom;
     [SerializeField] private Transform pointToSpawnKnife;
 
-    public GameManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public PlayerManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
@@ -44,8 +44,8 @@ public class BroomHolder : MonoBehaviour, IInteractable
     public void OnInteract()
     {
         GameObject instantiatedKnife = Instantiate(broom, pointToSpawnKnife.position, Quaternion.Euler(-135f, 0f, 0f), null);
-        GameManager.Instance.ResetPlayerGrabAndInteract();
-        GameManager.Instance.ChangePlayerCurrentGrabable(instantiatedKnife.GetComponent<IGrabable>());
+        PlayerManager.Instance.ResetPlayerGrabAndInteract();
+        PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedKnife.GetComponent<IGrabable>());
     }
 
     public void OutlineChangeCheck()

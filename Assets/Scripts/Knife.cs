@@ -78,7 +78,7 @@ public class Knife : MonoBehaviour, IGrabable
         }
 
         transform.localScale = data.grabScaleOffset;
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
 
@@ -139,7 +139,7 @@ public class Knife : MonoBehaviour, IGrabable
         triggerCol.enabled = true;
 
         transform.localScale = data.grabScaleOffset;
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
 
@@ -250,9 +250,9 @@ public class Knife : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        GameManager.Instance.SetPlayerAnimBool("stabRight", true);
-        GameManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, true);
+        PlayerManager.Instance.SetPlayerAnimBool("stabRight", true);
+        PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, true);
 
         triggerCol.enabled = true;
 
@@ -267,9 +267,9 @@ public class Knife : MonoBehaviour, IGrabable
 
     public void OnUseRelease()
     {
-        GameManager.Instance.SetPlayerAnimBool("stabRight", false);
-        GameManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab/2f);
-        GameManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        PlayerManager.Instance.SetPlayerAnimBool("stabRight", false);
+        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab/2f);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         triggerCol.enabled = false;
 

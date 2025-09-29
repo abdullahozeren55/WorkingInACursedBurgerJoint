@@ -59,8 +59,8 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
     public DialogueData OptionDDialogueData { get => optionDDialogueData; set => optionDDialogueData = value; }
     [SerializeField] DialogueData optionDDialogueData;
 
-    public GameManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
-    [SerializeField] private GameManager.HandRigTypes handRigType;
+    public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private PlayerManager.HandRigTypes handRigType;
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
@@ -278,12 +278,12 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
         if (Physics.Raycast(ray, out RaycastHit hit, customerData.rayDistanceForPushingPlayer, customerData.playerLayer))
         {
-            GameManager.Instance.SetPlayerPushedByCustomer(true);
-            GameManager.Instance.MovePlayer(transform.forward * CustomerData.pushForce * Time.deltaTime);
+            PlayerManager.Instance.SetPlayerPushedByCustomer(true);
+            PlayerManager.Instance.MovePlayer(transform.forward * CustomerData.pushForce * Time.deltaTime);
         }
         else
         {
-            GameManager.Instance.SetPlayerPushedByCustomer(false);
+            PlayerManager.Instance.SetPlayerPushedByCustomer(false);
         }
     }
 
@@ -335,7 +335,7 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
             HandleHeadHome();
         }
 
-        GameManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.ChangePlayerCanMove(true);
 
     }
 

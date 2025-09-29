@@ -182,7 +182,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
 
     private void OnDestroy()
     {
-        GameManager.Instance.ResetPlayerGrab(this);
+        PlayerManager.Instance.ResetPlayerGrab(this);
     }
 
     private void PlayAudioWithRandomPitch(int index)

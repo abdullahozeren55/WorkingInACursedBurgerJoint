@@ -223,7 +223,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         burgerNo = (int) type + 1;
         burgerType = type;
 
-        GameManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
     }
 
     private void ChangeLayer(int layer)
@@ -241,12 +241,12 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     private void OnDisable()
     {
-        GameManager.Instance.ResetPlayerGrab(this);
+        PlayerManager.Instance.ResetPlayerGrab(this);
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.ResetPlayerGrab(this);
+        PlayerManager.Instance.ResetPlayerGrab(this);
     }
 
     private void OnCollisionEnter(Collision collision)
