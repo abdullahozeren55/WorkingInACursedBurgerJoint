@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a36c543d467ec6245ac010065e9af8fc, type: 3}
   m_Name: MAYO
   m_EditorClassIdentifier: 
-  grabPositionOffset: {x: -0.0002587364, y: 0.0008513732, z: 0.0005009067}
-  grabRotationOffset: {x: 74.99857, y: 230.00604, z: 310.00656}
-  stabPositionOffset: {x: -0.0002587364, y: 0.0008513732, z: 0.0005009067}
-  stabRotationOffset: {x: 74.99857, y: 230.00604, z: 310.00656}
-  timeToStab: 0.2
+  isUseable: 1
+  handGrabType: 1
+  grabPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
+  grabRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  stabPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
+  stabRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  timeToStab: 0.3
   audioClips:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
   - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}

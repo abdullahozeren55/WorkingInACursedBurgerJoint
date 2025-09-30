@@ -8,6 +8,7 @@ public class Knife : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
@@ -79,7 +80,8 @@ public class Knife : MonoBehaviour, IGrabable
             stabCoroutine = null;
         }
 
-        transform.localScale = data.grabScaleOffset;
+        triggerCol.enabled = false;
+
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
@@ -118,7 +120,6 @@ public class Knife : MonoBehaviour, IGrabable
         transform.position = grabPoint.position;
         transform.localPosition = data.grabPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
-        transform.localScale = data.grabScaleOffset;
     }
 
     public void OnLoseFocus()
@@ -140,7 +141,6 @@ public class Knife : MonoBehaviour, IGrabable
 
         triggerCol.enabled = true;
 
-        transform.localScale = data.grabScaleOffset;
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
@@ -252,7 +252,6 @@ public class Knife : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        PlayerManager.Instance.SetPlayerAnimBool("stabRight", true);
         PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, true);
 
@@ -269,7 +268,6 @@ public class Knife : MonoBehaviour, IGrabable
 
     public void OnUseRelease()
     {
-        PlayerManager.Instance.SetPlayerAnimBool("stabRight", false);
         PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab/2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
@@ -292,7 +290,6 @@ public class Knife : MonoBehaviour, IGrabable
 
         Vector3 endPos = shouldStab ? data.stabPositionOffset : data.grabPositionOffset;
         Quaternion endRot = shouldStab ? Quaternion.Euler(data.stabRotationOffset) : Quaternion.Euler(data.grabRotationOffset);
-        Vector3 endScale = shouldStab ? data.stabScaleOffset : data.grabScaleOffset;
 
         float elapsedTime = 0f;
         float value = 0f;
@@ -303,7 +300,6 @@ public class Knife : MonoBehaviour, IGrabable
 
             transform.localPosition = Vector3.Lerp(startPos, endPos, value);
             transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
-            transform.localScale = Vector3.Lerp(startScale, endScale, value);
 
             elapsedTime += Time.deltaTime;
             yield return null;
@@ -311,7 +307,6 @@ public class Knife : MonoBehaviour, IGrabable
 
         transform.localPosition = endPos;
         transform.localRotation = endRot;
-        transform.localScale = endScale;
 
         stabCoroutine = null;
 

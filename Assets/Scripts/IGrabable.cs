@@ -14,6 +14,8 @@ public interface IGrabable
     public void OnUseRelease();
     public void OutlineChangeCheck();
 
+    public PlayerManager.HandGrabTypes HandGrabType { get; set; }
+
     public Vector3 GrabPositionOffset { get; set; }
     public Vector3 GrabRotationOffset { get; set; }
 

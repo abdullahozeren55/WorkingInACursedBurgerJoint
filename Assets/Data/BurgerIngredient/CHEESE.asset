@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
   m_Name: CHEESE
   m_EditorClassIdentifier: 
+  isUseable: 0
   ingredientType: 2
+  handGrabType: 4
   yHeight: 0.0025
   timeToPutOnTray: 0.2
-  grabPositionOffset: {x: 0.0003, y: 0.00068, z: 0.0001}
-  grabRotationOffset: {x: 140, y: 0, z: 0}
+  grabPositionOffset: {x: 0.00028948102, y: 0.00090738846, z: 0.00026371676}
+  grabRotationOffset: {x: 68.09051, y: 180.00795, z: 180.00955}
   focusImages:
   - {fileID: 21300000, guid: a94ca0431e86b0845b48b556d4d525d4, type: 3}
   audioClips:

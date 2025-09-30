@@ -15,6 +15,8 @@ public class Drink : MonoBehaviour, IGrabable
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
 
+    public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
 
     public DrinkData data;

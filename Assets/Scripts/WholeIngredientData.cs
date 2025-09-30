@@ -8,6 +8,7 @@ public class WholeIngredientData : ScriptableObject
     public GameObject destroyParticle;
     [Space]
     public bool isUseable = false;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public float minForce = 0.2f;
     public float maxForce = 0.4f;

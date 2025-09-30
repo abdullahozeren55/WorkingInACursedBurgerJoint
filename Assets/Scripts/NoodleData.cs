@@ -6,6 +6,7 @@ using UnityEngine;
 public class NoodleData : ScriptableObject
 {
     public bool isUseable = false;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public float timeToPutOnHologram = 0.3f;
     public Vector3 grabPositionOffset;

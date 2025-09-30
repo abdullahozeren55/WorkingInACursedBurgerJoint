@@ -14,6 +14,15 @@ public class PlayerManager : MonoBehaviour
         Nothing,
     }
 
+    public enum HandGrabTypes
+    {
+        RegularGrab,
+        BottleGrab,
+        TrashGrab,
+        KnifeGrab,
+        ThinBurgerIngredientGrab
+    }
+
     private FirstPersonController firstPersonController;
     private CharacterController characterController;
 

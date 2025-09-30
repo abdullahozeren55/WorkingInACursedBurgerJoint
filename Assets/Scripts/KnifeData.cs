@@ -6,14 +6,13 @@ using UnityEngine;
 public class KnifeData : ScriptableObject
 {
     public bool isUseable = true;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
-    public Vector3 grabScaleOffset;
     [Space]
     public Vector3 stabPositionOffset;
     public Vector3 stabRotationOffset;
-    public Vector3 stabScaleOffset;
     [Space]
     public float timeToStab = 0.3f;
     [Space]

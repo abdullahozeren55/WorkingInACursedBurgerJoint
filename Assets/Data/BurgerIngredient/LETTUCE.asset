@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
   m_Name: LETTUCE
   m_EditorClassIdentifier: 
+  isUseable: 0
   ingredientType: 3
+  handGrabType: 4
   yHeight: 0.007
   timeToPutOnTray: 0.2
-  grabPositionOffset: {x: 0.0003, y: 0.0007, z: 0.0001}
-  grabRotationOffset: {x: 140, y: 0, z: 0}
+  grabPositionOffset: {x: 0.00042557187, y: 0.00079134916, z: 0.00010146905}
+  grabRotationOffset: {x: 77.947105, y: 218.30144, z: 205.52403}
   focusImages:
   - {fileID: 21300000, guid: eb02bc4ad20796f4ea23212875ade714, type: 3}
   audioClips:

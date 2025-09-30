@@ -6,6 +6,7 @@ using UnityEngine;
 public class TrashData : ScriptableObject
 {
     public bool isUseable = false;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

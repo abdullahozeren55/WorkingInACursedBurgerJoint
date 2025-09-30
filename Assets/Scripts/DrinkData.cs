@@ -6,6 +6,7 @@ using UnityEngine;
 public class DrinkData : ScriptableObject
 {
     public GameManager.DrinkTypes drinkType;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public bool isUseable = false;
     [Space]

@@ -6,6 +6,7 @@ using UnityEngine;
 public class BurgerBoxData : ScriptableObject
 {
     public bool isUseable = false;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public float trashSpaceValue = 35f;
     public float followingSpeed = 40f;

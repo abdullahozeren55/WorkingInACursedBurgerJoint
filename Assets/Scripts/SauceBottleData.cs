@@ -7,6 +7,7 @@ using static SauceBottle;
 public class SauceBottleData : ScriptableObject
 {
     public bool isUseable = true;
+    public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

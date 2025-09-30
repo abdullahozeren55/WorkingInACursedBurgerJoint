@@ -866,7 +866,7 @@ public class FirstPersonController : MonoBehaviour
 
                 throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(true));
 
-                anim.SetBool("chargingThrowRight", true);
+                anim.SetBool("chargingThrow", true);
 
                 DecideOutlineAndCrosshair();
 
@@ -890,8 +890,7 @@ public class FirstPersonController : MonoBehaviour
                     
                 throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(false));
 
-                anim.SetBool("grabbingRight", false);
-                anim.SetBool("chargingThrowRight", false);
+                SetHandAnimBoolsOff();
 
                 if (singleHandThrowCoroutine != null)
                 {
@@ -934,6 +933,8 @@ public class FirstPersonController : MonoBehaviour
 
                 throwChargeTimer = 0f;
 
+                anim.SetBool("throw", false);
+
                 DecideOutlineAndCrosshair();
             }
         }
@@ -941,10 +942,10 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable)
             {
-                anim.SetBool("grabbingRight", true);
-
+                
                 DecideOutlineAndCrosshair();
                 currentGrabable.OnGrab(grabPoint);
+                DecideGrabAnimBool();
 
                 if (rightHandRigLerpCoroutine != null)
                 {
@@ -965,6 +966,46 @@ public class FirstPersonController : MonoBehaviour
                 leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
 
                 DecideOutlineAndCrosshair();
+            }
+        }
+    }
+
+    private void SetHandAnimBoolsOff()
+    {
+        anim.SetBool("regularGrab", false);
+        anim.SetBool("bottleGrab", false);
+        anim.SetBool("trashGrab", false);
+        anim.SetBool("knifeGrab", false);
+        anim.SetBool("thinBurgerIngredientGrab", false);
+        anim.SetBool("chargingThrow", false);
+    }
+    private void DecideGrabAnimBool()
+    {
+        if (currentGrabable != null && currentGrabable.IsGrabbed)
+        {
+            anim.SetTrigger("endThrowInstantly");
+
+            switch (currentGrabable.HandGrabType)
+            {
+                case PlayerManager.HandGrabTypes.RegularGrab:
+                    anim.SetBool("regularGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.BottleGrab:
+                    anim.SetBool("bottleGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.TrashGrab:
+                    anim.SetBool("trashGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.KnifeGrab:
+                    anim.SetBool("knifeGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.ThinBurgerIngredientGrab:
+                    anim.SetBool("thinBurgerIngredientGrab", true);
+                    break;
             }
         }
     }
@@ -1011,10 +1052,9 @@ public class FirstPersonController : MonoBehaviour
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
     {
-        anim.SetBool("grabbingRight", true);
-
         currentGrabable = grabObject;
         currentGrabable.OnGrab(grabPoint);
+        DecideGrabAnimBool();
         DecideOutlineAndCrosshair();
 
         if (rightHandRigLerpCoroutine != null)
@@ -1225,8 +1265,6 @@ public class FirstPersonController : MonoBehaviour
 
         IsUsingItemX = false;
         IsUsingItemY = false;
-        
-        anim.SetBool("stabRight", false);
     }
         
 
@@ -1302,7 +1340,7 @@ public class FirstPersonController : MonoBehaviour
             value = throwChargeTimer / throwMaxChargeTime;
 
             if (value > 0.6f)
-                anim.SetTrigger("throwRight");
+                anim.SetBool("throw", true);
 
             currentThrowForce = Mathf.Lerp(minThrowForce, maxThrowForce, value);
 

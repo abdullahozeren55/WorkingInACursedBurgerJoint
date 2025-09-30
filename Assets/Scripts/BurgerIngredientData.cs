@@ -9,6 +9,7 @@ public class BurgerIngredientData : ScriptableObject
     public bool isUseable = false;
     [Space]
     public IngredientType ingredientType;
+    public PlayerManager.HandGrabTypes handGrabType;
     public float yHeight = 0.1f;
     public float timeToPutOnTray = 0.3f;
     [Space]

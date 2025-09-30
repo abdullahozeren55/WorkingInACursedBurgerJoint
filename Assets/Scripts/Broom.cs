@@ -8,6 +8,9 @@ public class Broom : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
+    [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
+
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }

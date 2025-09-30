@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffafc54a53686654a804b577eb7e81c8, type: 3}
   m_Name: KNIFE
   m_EditorClassIdentifier: 
-  grabPositionOffset: {x: -0.000023400884, y: 0.00043231747, z: -0.00018449826}
-  grabRotationOffset: {x: 8.61262, y: 77.27481, z: 231.09416}
+  isUseable: 1
+  handGrabType: 3
+  grabPositionOffset: {x: -0.0000010572512, y: 0.00051305967, z: 0.000011773997}
+  grabRotationOffset: {x: 9.527423, y: 61.804817, z: 280.1402}
   grabScaleOffset: {x: 0.01, y: 0.01, z: 0.01}
   stabPositionOffset: {x: -0.0000010572512, y: 0.00051305967, z: 0.000011773997}
   stabRotationOffset: {x: 9.527423, y: 61.804817, z: 280.1402}
