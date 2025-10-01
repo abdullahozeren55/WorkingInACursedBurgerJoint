@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isUseable: 0
   ingredientType: 7
-  handGrabType: 0
+  handGrabType: 6
   yHeight: 0.024
   timeToPutOnTray: 0.2
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -30, y: -80, z: -80}
-  grabLocalPositionOffset: {x: 0.0002, y: 0.0008, z: 0.0004}
-  grabLocalRotationOffset: {x: 130, y: 0, z: 0}
+  grabLocalPositionOffset: {x: 0.00025912363, y: 0.00079479074, z: 0.00063007564}
+  grabLocalRotationOffset: {x: 40.878933, y: 186.00804, z: 180.24084}
   focusImages:
   - {fileID: 21300000, guid: 09e5f50e03e3f4b4f9bdb635202f8c50, type: 3}
   - {fileID: 21300000, guid: e852d1db45f24864a8cab23ab4df0d5a, type: 3}

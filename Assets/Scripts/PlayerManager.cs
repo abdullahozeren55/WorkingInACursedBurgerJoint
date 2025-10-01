@@ -20,7 +20,9 @@ public class PlayerManager : MonoBehaviour
         BottleGrab,
         TrashGrab,
         KnifeGrab,
-        ThinBurgerIngredientGrab
+        ThinBurgerIngredientGrab,
+        RegularBurgerIngredientGrab,
+        ThickBurgerIngredientGrab
     }
 
     private FirstPersonController firstPersonController;

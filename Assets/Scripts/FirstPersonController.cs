@@ -979,6 +979,8 @@ public class FirstPersonController : MonoBehaviour
         anim.SetBool("trashGrab", false);
         anim.SetBool("knifeGrab", false);
         anim.SetBool("thinBurgerIngredientGrab", false);
+        anim.SetBool("regularBurgerIngredientGrab", false);
+        anim.SetBool("thickBurgerIngredientGrab", false);
         anim.SetBool("chargingThrow", false);
     }
     private void DecideGrabAnimBool()
@@ -1007,6 +1009,14 @@ public class FirstPersonController : MonoBehaviour
 
                 case PlayerManager.HandGrabTypes.ThinBurgerIngredientGrab:
                     anim.SetBool("thinBurgerIngredientGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.RegularBurgerIngredientGrab:
+                    anim.SetBool("regularBurgerIngredientGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.ThickBurgerIngredientGrab:
+                    anim.SetBool("thickBurgerIngredientGrab", true);
                     break;
             }
         }
