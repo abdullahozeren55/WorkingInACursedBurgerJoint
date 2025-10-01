@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isUseable: 0
   handGrabType: 2
-  grabPositionOffset: {x: 0.00021117488, y: 0.0007586022, z: 0.00022624835}
-  grabRotationOffset: {x: 359.0228, y: 5.3367095, z: 215.03581}
+  grabPositionOffset: {x: 0.4, y: 0.7, z: 2}
+  grabRotationOffset: {x: 60, y: -70, z: -70}
+  grabLocalPositionOffset: {x: 0.00021117488, y: 0.0007586022, z: 0.00022624835}
+  grabLocalRotationOffset: {x: 359.0228, y: 5.3367095, z: 215.03581}
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}

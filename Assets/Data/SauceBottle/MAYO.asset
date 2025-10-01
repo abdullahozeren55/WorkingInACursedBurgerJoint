@@ -14,10 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isUseable: 1
   handGrabType: 1
-  grabPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
-  grabRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
-  stabPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
-  stabRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  grabPositionOffset: {x: 0.2, y: 1, z: 3}
+  grabRotationOffset: {x: -5, y: -70, z: -70}
+  grabLocalPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
+  grabLocalRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  usePositionOffset: {x: 0.2, y: 2.5, z: 3}
+  useRotationOffset: {x: 180, y: -120, z: -150}
+  useLocalPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
+  useLocalRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
   timeToStab: 0.3
   audioClips:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}

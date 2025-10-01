@@ -854,7 +854,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleGrabInput()
     {
-        if (currentGrabable != null && currentGrabable.IsGrabbed)
+        if (currentGrabable != null && currentGrabable.IsGrabbed && !isUsingGrabbedItem)
         {
             if (Input.GetKeyDown(throwKey)) // right click starts
             {

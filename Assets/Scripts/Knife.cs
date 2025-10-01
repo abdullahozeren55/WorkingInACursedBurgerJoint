@@ -11,19 +11,10 @@ public class Knife : MonoBehaviour, IGrabable
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
-    public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
-    [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
-    public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
-    [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
+    public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
+    public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
-
-    [Space]
-
-    [SerializeField] private Vector3 stabPositionOffset = new Vector3(0.2f, 0.3f, 1.5f);
-    [SerializeField] private Vector3 stabRotationOffset = new Vector3(2.5f, -70f, -100f);
-
-    [Space]
 
     public KnifeData data;
     public Sprite FocusImage { get => data.focusImage; set => data.focusImage = value; }
@@ -46,7 +37,7 @@ public class Knife : MonoBehaviour, IGrabable
 
     private float audioLastPlayedTime;
 
-    private Coroutine stabCoroutine;
+    private Coroutine useCoroutine;
 
     private void Awake()
     {
@@ -74,10 +65,10 @@ public class Knife : MonoBehaviour, IGrabable
 
         Invoke("TurnOnCollider", 0.08f);
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
         triggerCol.enabled = false;
@@ -118,8 +109,8 @@ public class Knife : MonoBehaviour, IGrabable
 
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
-        transform.localPosition = data.grabPositionOffset;
-        transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
+        transform.localPosition = data.grabLocalPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
     }
 
     public void OnLoseFocus()
@@ -133,10 +124,10 @@ public class Knife : MonoBehaviour, IGrabable
 
         Invoke("TurnOnCollider", 0.08f);
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
         triggerCol.enabled = true;
@@ -252,51 +243,51 @@ public class Knife : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
+        PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, true);
 
         triggerCol.enabled = true;
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
-        stabCoroutine = StartCoroutine(Stab(true));
+        useCoroutine = StartCoroutine(Use(true));
     }
 
     public void OnUseRelease()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab/2f);
+        PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse/2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         triggerCol.enabled = false;
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
-        stabCoroutine = StartCoroutine(Stab(false));
+        useCoroutine = StartCoroutine(Use(false));
     }
 
-    private IEnumerator Stab(bool shouldStab)
+    private IEnumerator Use(bool shouldUse)
     {
         Vector3 startPos = transform.localPosition;
         Quaternion startRot = transform.localRotation;
         Vector3 startScale = transform.localScale;
 
-        Vector3 endPos = shouldStab ? data.stabPositionOffset : data.grabPositionOffset;
-        Quaternion endRot = shouldStab ? Quaternion.Euler(data.stabRotationOffset) : Quaternion.Euler(data.grabRotationOffset);
+        Vector3 endPos = shouldUse ? data.useLocalPositionOffset : data.grabLocalPositionOffset;
+        Quaternion endRot = shouldUse ? Quaternion.Euler(data.useLocalRotationOffset) : Quaternion.Euler(data.grabLocalRotationOffset);
 
         float elapsedTime = 0f;
         float value = 0f;
 
-        while (elapsedTime < data.timeToStab)
+        while (elapsedTime < data.timeToUse)
         {
-            value = elapsedTime / data.timeToStab;
+            value = elapsedTime / data.timeToUse;
 
             transform.localPosition = Vector3.Lerp(startPos, endPos, value);
             transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
@@ -308,7 +299,7 @@ public class Knife : MonoBehaviour, IGrabable
         transform.localPosition = endPos;
         transform.localRotation = endRot;
 
-        stabCoroutine = null;
+        useCoroutine = null;
 
     }
 }

@@ -17,8 +17,10 @@ MonoBehaviour:
   handGrabType: 0
   yHeight: 0.005
   timeToPutOnTray: 0.15
-  grabPositionOffset: {x: 0.0002, y: 0.0007, z: 0.0001}
-  grabRotationOffset: {x: 140, y: 0, z: 0}
+  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabRotationOffset: {x: -30, y: -80, z: -80}
+  grabLocalPositionOffset: {x: 0.0002, y: 0.0007, z: 0.0001}
+  grabLocalRotationOffset: {x: 140, y: 0, z: 0}
   focusImages:
   - {fileID: 21300000, guid: a3d4a5f9a5efb3c488d57f94303ebcf8, type: 3}
   audioClips:

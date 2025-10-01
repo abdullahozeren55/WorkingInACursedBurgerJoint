@@ -12,10 +12,16 @@ public class SauceBottleData : ScriptableObject
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
     [Space]
-    public Vector3 stabPositionOffset;
-    public Vector3 stabRotationOffset;
+    public Vector3 grabLocalPositionOffset;
+    public Vector3 grabLocalRotationOffset;
     [Space]
-    public float timeToStab = 0.3f;
+    public Vector3 usePositionOffset;
+    public Vector3 useRotationOffset;
+    [Space]
+    public Vector3 useLocalPositionOffset;
+    public Vector3 useLocalRotationOffset;
+    [Space]
+    public float timeToUse = 0.3f;
     [Space]
     public AudioClip[] audioClips;
 }

@@ -12,17 +12,10 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
-    public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
-    [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
-    public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
-    [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
+    public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
+    public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
-
-    [Space]
-
-    [SerializeField] private Vector3 stabPositionOffset = new Vector3(0.2f, 0.3f, 1.5f);
-    [SerializeField] private Vector3 stabRotationOffset = new Vector3(2.5f, -70f, -100f);
 
     [Space]
 
@@ -61,7 +54,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     private float audioLastPlayedTime;
 
-    private Coroutine stabCoroutine;
+    private Coroutine useCoroutine;
 
     private void Awake()
     {
@@ -99,8 +92,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
-        transform.localPosition = data.grabPositionOffset;
-        transform.localRotation = Quaternion.Euler(data.grabRotationOffset);
+        transform.localPosition = data.grabLocalPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
     }
     public void OnFocus()
     {
@@ -119,10 +112,10 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
         Invoke("TurnOnCollider", 0.1f);
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
         pourParticle.Stop();
@@ -143,11 +136,14 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
         Invoke("TurnOnCollider", 0.1f);
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
+
+        pourParticle.Stop();
+        isPlayingParticles = false;
 
         transform.SetParent(null);
 
@@ -198,9 +194,6 @@ public class SauceBottle : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-                pourParticle.Stop();
-                isPlayingParticles = false;
-
                 PlayAudioWithRandomPitch(2);
 
                 isJustThrowed = false;
@@ -217,54 +210,54 @@ public class SauceBottle : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, data.timeToStab);
+        PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
-        stabCoroutine = StartCoroutine(Stab(true));
+        useCoroutine = StartCoroutine(Use(true));
     }
 
     public void OnUseRelease()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, data.timeToStab / 2f);
+        PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse / 2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         pourParticle.Stop();
         isPlayingParticles = false;
 
-        if (stabCoroutine != null)
+        if (useCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
         }
 
-        stabCoroutine = StartCoroutine(Stab(false));
+        useCoroutine = StartCoroutine(Use(false));
     }
 
-    private IEnumerator Stab(bool shouldStab)
+    private IEnumerator Use(bool shouldUse)
     {
         Vector3 startPos = transform.localPosition;
         Quaternion startRot = transform.localRotation;
 
-        Vector3 endPos = shouldStab ? data.stabPositionOffset : data.grabPositionOffset;
-        Quaternion endRot = shouldStab ? Quaternion.Euler(data.stabRotationOffset) : Quaternion.Euler(data.grabRotationOffset);
+        Vector3 endPos = shouldUse ? data.useLocalPositionOffset : data.grabLocalPositionOffset;
+        Quaternion endRot = shouldUse ? Quaternion.Euler(data.useLocalRotationOffset) : Quaternion.Euler(data.grabLocalRotationOffset);
 
         float elapsedTime = 0f;
         float value = 0f;
 
-        while (elapsedTime < data.timeToStab)
+        while (elapsedTime < data.timeToUse)
         {
-            value = elapsedTime / data.timeToStab;
+            value = elapsedTime / data.timeToUse;
 
             transform.localPosition = Vector3.Lerp(startPos, endPos, value);
             transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
 
-            if (shouldStab && !isPlayingParticles && value > 0.6f)
+            if (shouldUse && !isPlayingParticles && value > 0.6f)
             {
                 pourParticle.Play();
                 isPlayingParticles = true;
@@ -277,7 +270,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
         transform.localPosition = endPos;
         transform.localRotation = endRot;
 
-        stabCoroutine = null;
+        useCoroutine = null;
 
     }
 }
