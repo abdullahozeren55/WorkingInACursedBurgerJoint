@@ -195,12 +195,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private GameObject interactUseDropThrowUI;
     [SerializeField] private GameObject grabInteractUI;
 
-    [Header("Layers")]
-    private int interactableLayer;
-    private int interactableOutlinedLayer;
-    private int grabableLayer;
-    private int grabableOutlinedLayer;
-
     private Coroutine singleHandThrowCoroutine;
     private Coroutine throwVisualEffectsCoroutine;
     private CinemachineBasicMultiChannelPerlin perlin;
@@ -230,11 +224,6 @@ public class FirstPersonController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        interactableLayer = LayerMask.NameToLayer("Interactable");
-        interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
-        grabableLayer = LayerMask.NameToLayer("Grabable");
-        grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
     }
 
     void Start()
@@ -775,7 +764,8 @@ public class FirstPersonController : MonoBehaviour
 
                         currentGrabable = hit.collider.gameObject.GetComponent<IGrabable>();
                         DecideOutlineAndCrosshair();
-                        currentGrabable.OnFocus();
+                        if (currentGrabable != null)
+                            currentGrabable.OnFocus();
                     }
                     else if (currentGrabable.IsGrabbed)
                     {
@@ -992,6 +982,8 @@ public class FirstPersonController : MonoBehaviour
         anim.SetBool("thinBurgerIngredientGrab", false);
         anim.SetBool("regularBurgerIngredientGrab", false);
         anim.SetBool("thickBurgerIngredientGrab", false);
+        anim.SetBool("noodleGrab", false);
+        anim.SetBool("kettleGrab", false);
         anim.SetBool("chargingThrow", false);
     }
     private void DecideGrabAnimBool()
@@ -1028,6 +1020,14 @@ public class FirstPersonController : MonoBehaviour
 
                 case PlayerManager.HandGrabTypes.ThickBurgerIngredientGrab:
                     anim.SetBool("thickBurgerIngredientGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.NoodleGrab:
+                    anim.SetBool("noodleGrab", true);
+                    break;
+
+                case PlayerManager.HandGrabTypes.KettleGrab:
+                    anim.SetBool("kettleGrab", true);
                     break;
             }
         }
@@ -1071,14 +1071,6 @@ public class FirstPersonController : MonoBehaviour
         }
 
         DecideOutlineAndCrosshair();
-    }
-
-    public void SetTurningBackToInteractable(IInteractable interactable)
-    {
-        if (currentInteractable != null && currentInteractable == interactable)
-        {
-            //interactable. TODO
-        }
     }
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
@@ -1288,6 +1280,9 @@ public class FirstPersonController : MonoBehaviour
 
         grabbedUseCoroutine = StartCoroutine(UseGrabbed(targetPos, targetRot, timeToDo));
     }
+
+    public IInteractable GetCurrentInteractable() { return currentInteractable; }
+    public IGrabable GetCurrentGrabable() { return currentGrabable; }
 
     private void ResetHandAnim()
     {

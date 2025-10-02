@@ -22,7 +22,9 @@ public class PlayerManager : MonoBehaviour
         KnifeGrab,
         ThinBurgerIngredientGrab,
         RegularBurgerIngredientGrab,
-        ThickBurgerIngredientGrab
+        ThickBurgerIngredientGrab,
+        NoodleGrab,
+        KettleGrab
     }
 
     private FirstPersonController firstPersonController;
@@ -46,6 +48,16 @@ public class PlayerManager : MonoBehaviour
 
         firstPersonController = FindFirstObjectByType<FirstPersonController>();
         characterController = FindFirstObjectByType<CharacterController>();
+    }
+
+    public IInteractable GetCurrentInteractable()
+    {
+        return firstPersonController.GetCurrentInteractable();
+    }
+
+    public IGrabable GetCurrentGrabable()
+    {
+        return firstPersonController?.GetCurrentGrabable();
     }
 
     public void ResetPlayerGrabAndInteract()

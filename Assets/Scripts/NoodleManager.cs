@@ -90,7 +90,12 @@ public class NoodleManager : MonoBehaviour
         currentWaterGO.transform.localPosition = Vector3.Lerp(waterStartPos, waterEndPos, t);
         currentWaterGO.transform.localScale = Vector3.Lerp(waterStartScale, waterEndScale, t);
         
-        currentSmokeGO.SetActive(true);
+        
+
+        if (t > 0.5f)
+        {
+            currentSmokeGO.SetActive(true);
+        }
 
         if (t > 0.9f)
         {

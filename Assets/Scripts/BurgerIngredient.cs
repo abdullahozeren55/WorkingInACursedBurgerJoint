@@ -183,7 +183,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
         IsGrabbed = false;
 
-        Invoke("TurnOnCollider", 0.08f);
+        Invoke("TurnOnCollider", 0.05f);
 
         transform.SetParent(null);
 
@@ -198,7 +198,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
         IsGrabbed = false;
 
-        Invoke("TurnOnCollider", 0.08f);
+        Invoke("TurnOnCollider", 0.05f);
 
         transform.SetParent(null);
 

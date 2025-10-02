@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: NoodleData
   m_EditorClassIdentifier: 
   isUseable: 0
-  handGrabType: 1
+  handGrabType: 7
   timeToPutOnHologram: 0.3
-  grabPositionOffset: {x: 0.00025402431, y: 0.0009583593, z: 0.0003845602}
-  grabRotationOffset: {x: 5.208863, y: 0.18112952, z: 52.044724}
+  grabPositionOffset: {x: 0.00027969177, y: 0.00037357793, z: 0.00031330824}
+  grabRotationOffset: {x: 84.91662, y: 291.5111, z: 7.4244943}
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}

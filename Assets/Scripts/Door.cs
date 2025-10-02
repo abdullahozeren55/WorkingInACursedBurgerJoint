@@ -33,10 +33,9 @@ public class Door : MonoBehaviour, IInteractable
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
 
-    [HideInInspector] public bool isOpened;
+    public bool isOpened;
     private Vector3 closeEuler;
     private Vector3 openEuler;
-    private Collider col;
 
     private int interactableLayer;
     private int interactableOutlinedLayer;
@@ -45,8 +44,6 @@ public class Door : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        isOpened = false;
-        col = GetComponent<Collider>();
 
         closeEuler = transform.parent.localRotation.eulerAngles;
         openEuler = new Vector3(closeEuler.x, closeEuler.y + data.openYRotation, closeEuler.z);
@@ -105,7 +102,6 @@ public class Door : MonoBehaviour, IInteractable
         if (isLockedAnimating) return;
         isLockedAnimating = true;
 
-        gameObject.layer = uninteractableLayer;
         doorAudioSource.PlayOneShot(data.lockedSound);
 
         transform.parent.DOKill();
@@ -118,8 +114,6 @@ public class Door : MonoBehaviour, IInteractable
            .Append(transform.parent.DOLocalRotate(closeEuler, 0.1f))
            .OnComplete(() =>
            {
-               gameObject.layer = interactableLayer;
-
                doorStateNum = 2;
 
                OutlineShouldBeRed = true;
