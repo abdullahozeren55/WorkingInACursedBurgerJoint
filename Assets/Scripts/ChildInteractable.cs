@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ChildInteractable : MonoBehaviour, IInteractable
+{
+    private IInteractable parent;
+
+    public PlayerManager.HandRigTypes HandRigType { get => parent.HandRigType; set => parent.HandRigType = value; }
+
+    public bool OutlineShouldBeRed { get => parent.OutlineShouldBeRed; set => parent.OutlineShouldBeRed = value; }
+    public Sprite FocusImage { get => parent.FocusImage; set => parent.FocusImage = value; }
+
+    private void Awake()
+    {
+        parent = transform.parent.GetComponent<IInteractable>();
+    }
+
+    public void OnFocus()
+    {
+        parent.OnFocus();
+    }
+
+    public void OnInteract()
+    {
+        parent.OnInteract();
+    }
+
+    public void OnLoseFocus()
+    {
+        parent.OnLoseFocus();
+    }
+
+    public void OutlineChangeCheck()
+    {
+        parent.OutlineChangeCheck();
+    }
+
+    public void HandleFinishDialogue()
+    {
+        parent.HandleFinishDialogue();
+    }
+}

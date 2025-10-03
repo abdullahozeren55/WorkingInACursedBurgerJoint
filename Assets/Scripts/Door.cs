@@ -162,16 +162,15 @@ public class Door : MonoBehaviour, IInteractable
         Sequence seq = DOTween.Sequence();
         seq.Append(doorTween);
 
-        float insertTime = data.timeToRotate * data.jumpscareDoorRotatePercentValue;
+        seq.Insert(data.timeToRotate * data.jumpscareDoorRotatePercentValue, jumpscareTween); // Kapý animasyonunun %x'inde baþlasýn
 
-        seq.Insert(insertTime, jumpscareTween); // Kapý animasyonunun %x'inde baþlasýn
-
-        seq.InsertCallback(insertTime, () =>
+        seq.InsertCallback(data.timeToRotate * data.jumpscareSoundEffectPercentValue, () =>
         {
-            // Ses
             jumpscareAudioSource.PlayOneShot(data.jumpscareSound);
+        });
 
-            // Kamera efekti (örnek: Mid Jumpscare)
+        seq.InsertCallback(data.timeToRotate * data.jumpscareEffectPercentValue, () =>
+        {
             CameraManager.Instance.PlayJumpscareEffects(data.jumpscareType);
         });
 

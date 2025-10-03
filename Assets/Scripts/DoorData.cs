@@ -15,6 +15,8 @@ public class DoorData : ScriptableObject
     [Space]
     public Vector3 jumpscareMoveAmount;
     public float timeToJumpscare = 0.4f;
+    public float jumpscareEffectPercentValue = 0.2f;
+    public float jumpscareSoundEffectPercentValue = 0.3f;
     public float jumpscareDoorRotatePercentValue = 0.4f; //when door gets opened %40, jumpscare starts
     [Space]
     public DialogueData dialogueAfterInteraction;

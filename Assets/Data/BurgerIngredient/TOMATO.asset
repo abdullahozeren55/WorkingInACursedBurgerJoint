@@ -15,7 +15,7 @@ MonoBehaviour:
   isUseable: 0
   ingredientType: 4
   handGrabType: 4
-  yHeight: 0.005
+  yHeight: 0.004
   timeToPutOnTray: 0.15
   grabPositionOffset: {x: 0.4, y: 0.3, z: 2}
   grabRotationOffset: {x: -30, y: -80, z: -80}

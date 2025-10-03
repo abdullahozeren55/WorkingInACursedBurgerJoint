@@ -17,16 +17,22 @@ public class CameraManager : MonoBehaviour
         [Header("Screen Shake")]
         public float amplitude = 0.2f;
         public float frequency = 0.4f;
-        public float shakeDuration = 0.5f;
+        public float shakeLerpDuration = 0.5f;
+        public float shakeTotalDuration = 1f;
+        public float shakeResetLerpDuration = 0.5f;
 
         [Header("Vignette")]
         public float vignetteIntensity = 0.4f;
         public Color vignetteColor = Color.red;
-        public float vignetteDuration = 0.5f;
+        public float vignetteLerpDuration = 0.5f;
+        public float vignetteTotalDuration = 1f;
+        public float vignetteResetLerpDuration = 0.5f;
 
         [Header("FOV Kick")]
         public float fov = 55f;
-        public float fovDuration = 0.4f;
+        public float fovLerpDuration = 0.4f;
+        public float fovTotalDuration = 1f;
+        public float fovResetLerpDuration = 0.4f;
     }
 
     public enum JumpscareType
@@ -58,6 +64,8 @@ public class CameraManager : MonoBehaviour
     [Space]
 
     [SerializeField] private Volume postProcessVolume;
+    [SerializeField] private NoiseSettings wobbleNoise;
+    [SerializeField] private NoiseSettings shakeNoise;
     [Space]
 
     [Header("Player Throw Charge Effect Settings")]
@@ -192,6 +200,8 @@ public class CameraManager : MonoBehaviour
 
     public void PlayThrowEffects(bool isCharging)
     {
+        perlin.m_NoiseProfile = wobbleNoise;
+
         float duration = isCharging ? throwMaxChargeTime : throwMaxChargeTime / releaseSpeedMultiplier;
         Ease ease = isCharging ? Ease.OutSine : Ease.InSine;
 
@@ -208,6 +218,8 @@ public class CameraManager : MonoBehaviour
 
     public void PlayJumpscareEffects(JumpscareType type)
     {
+        perlin.m_NoiseProfile = shakeNoise;
+
         var preset = jumpscarePresets.Find(p => p.type == type);
         if (preset == null)
         {
@@ -216,12 +228,39 @@ public class CameraManager : MonoBehaviour
         }
 
         // Screen Shake
-        PlayScreenShake(preset.amplitude, preset.frequency, preset.shakeDuration, Ease.OutBack, $"Jumpscare_{type}_Shake");
+        PlayScreenShake(preset.amplitude, preset.frequency, preset.shakeLerpDuration, Ease.OutBack, $"Jumpscare_{type}_Shake");
 
         // Vignette
-        PlayVignette(preset.vignetteIntensity, preset.vignetteDuration, preset.vignetteColor, Ease.OutSine, $"Jumpscare_{type}_Vignette");
+        PlayVignette(preset.vignetteIntensity, preset.vignetteLerpDuration, preset.vignetteColor, Ease.OutSine, $"Jumpscare_{type}_Vignette");
 
         // FOV
-        PlayFOV(preset.fov, preset.fovDuration, Ease.OutSine, $"Jumpscare_{type}_FOV");
+        PlayFOV(preset.fov, preset.fovLerpDuration, Ease.OutSine, $"Jumpscare_{type}_FOV");
+
+        StartCoroutine(EndScreenShake(preset.shakeTotalDuration, preset.shakeResetLerpDuration, type));
+        StartCoroutine(EndVignette(preset.vignetteTotalDuration, preset.vignetteResetLerpDuration, type));
+        StartCoroutine(EndFOV(preset.fovTotalDuration, preset.fovResetLerpDuration, type));
+    }
+
+    private IEnumerator EndScreenShake(float delay, float duration, JumpscareType type)
+    {
+        yield return new WaitForSeconds(delay);
+
+        perlin.m_NoiseProfile = shakeNoise;
+
+        PlayScreenShake(0f, 0f, duration, Ease.OutExpo, $"Jumpscare_{type}_Shake");
+    }
+
+    private IEnumerator EndVignette(float delay, float duration, JumpscareType type)
+    {
+        yield return new WaitForSeconds(delay);
+
+        PlayVignette(0f, duration, null, Ease.InSine, $"Jumpscare_{type}_Vignette");
+    }
+
+    private IEnumerator EndFOV(float delay, float duration, JumpscareType type)
+    {
+        yield return new WaitForSeconds(delay);
+
+        PlayFOV(normalFOV, duration, Ease.InSine, $"Jumpscare_{type}_FOV");
     }
 }

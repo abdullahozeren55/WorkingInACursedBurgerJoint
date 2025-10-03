@@ -94,12 +94,14 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public void PutOnTray(Vector3 trayPos)
     {
+        canAddToTray = false;
         isGettingPutOnTray = true;
         ChangeLayer(onTrayLayer);
 
         PlayAudioWithRandomPitch(1);
 
-        rb.isKinematic = true;
+        rb.velocity = Vector3.zero;
+        rb.isKinematic = true; 
 
         this.trayPos = trayPos;
 

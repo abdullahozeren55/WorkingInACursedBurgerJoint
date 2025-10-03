@@ -89,6 +89,8 @@ public class Toilet : MonoBehaviour, IInteractable
 
         toiletStateNum = isOpened ? 1 : 0;
 
+        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+
         if (rotateCoroutine != null)
         {
             StopCoroutine(rotateCoroutine);

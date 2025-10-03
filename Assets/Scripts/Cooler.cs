@@ -102,6 +102,8 @@ public class Cooler : MonoBehaviour, IInteractable
 
         coolerStateNum = isOpened ? 1 : 0;
 
+        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+
         if (rotateCoroutine != null)
         {
             StopCoroutine(rotateCoroutine);

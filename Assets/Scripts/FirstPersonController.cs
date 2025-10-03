@@ -21,7 +21,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private bool canSprint = true;
     [SerializeField] private bool canJump = true;
     [SerializeField] private bool canCrouch = true;
-    [SerializeField] private bool canUseHeadbob = true;
+    public bool CanUseHeadbob = true;
     [SerializeField] private bool willSlideOnSlopes = true;
     public bool CanInteract = true;
     public bool CanGrab = true;
@@ -294,7 +294,7 @@ public class FirstPersonController : MonoBehaviour
             HandleHandTargetPositions();
         }
 
-        if (canUseHeadbob)
+        if (CanUseHeadbob)
             HandleHeadbob();
     }
 
@@ -309,14 +309,14 @@ public class FirstPersonController : MonoBehaviour
 
         if (IsUsingItemX)
         {
-            horizSpeed = handControlSpeedX * 5f;
-            vertSpeed /= 4f;
+            horizSpeed = handControlSpeedX * 7f;
+            vertSpeed /= 3f;
         }
 
         if (IsUsingItemY)
         {
-            vertSpeed = handControlSpeedY * 5f;
-            horizSpeed /= 4f;
+            vertSpeed = handControlSpeedY * 7f;
+            horizSpeed /= 3f;
         }
 
         // Vertical look (Pitch)

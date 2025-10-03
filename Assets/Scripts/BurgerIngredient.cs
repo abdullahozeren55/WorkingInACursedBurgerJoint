@@ -83,6 +83,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void PutOnTray(Vector3 trayPos, Transform parentTray)
     {
+        canAddToTray = false;
         isGettingPutOnTray = true;
         gameObject.layer = onTrayLayer;
 
@@ -101,6 +102,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 PlayAudioWithRandomPitch(7);
         }
 
+        rb.velocity = Vector3.zero;
         rb.isKinematic = true;
 
         transform.parent = parentTray;

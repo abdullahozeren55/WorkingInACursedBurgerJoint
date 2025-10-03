@@ -137,6 +137,7 @@ public class DialogueManager : MonoBehaviour
         talkType = TalkType.TalkWithCustomer;
 
         firstPersonController.CanMove = false;
+        firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
         currentCustomer = customer;
@@ -167,6 +168,8 @@ public class DialogueManager : MonoBehaviour
 
         IsInDialogue = false;
 
+        firstPersonController.CanUseHeadbob = true;
+
         visualPart.SetActive(false);
     }
 
@@ -179,6 +182,7 @@ public class DialogueManager : MonoBehaviour
         talkType = TalkType.TalkWithYourselfAfterInteraction;
 
         firstPersonController.CanMove = false;
+        firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
         currentInteractable = interactable;
@@ -199,6 +203,8 @@ public class DialogueManager : MonoBehaviour
 
         IsInDialogue = false;
 
+        firstPersonController.CanUseHeadbob = true;
+
         visualPart.SetActive(false);
     }
 
@@ -211,6 +217,7 @@ public class DialogueManager : MonoBehaviour
         talkType = TalkType.TalkWithSeller;
 
         firstPersonController.CanMove = false;
+        firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
@@ -226,6 +233,9 @@ public class DialogueManager : MonoBehaviour
     {
         shopSeller.HandleFinishDialogue();
         IsInDialogue = false;
+
+        firstPersonController.CanUseHeadbob = true;
+
         visualPart.SetActive(false);
     }
 
@@ -238,6 +248,7 @@ public class DialogueManager : MonoBehaviour
         talkType = TalkType.TalkWithYourself;
 
         firstPersonController.CanMove = false;
+        firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
@@ -252,7 +263,11 @@ public class DialogueManager : MonoBehaviour
     private void EndSelfDialogue()
     {
         IsInDialogue = false;
+
+        firstPersonController.CanUseHeadbob = true;
+
         visualPart.SetActive(false);
+
 
         firstPersonController.CanMove = true;
     }
@@ -266,6 +281,7 @@ public class DialogueManager : MonoBehaviour
         talkType = TalkType.TalkWithYourselfInCutscene;
 
         firstPersonController.CanMove = false;
+        firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
@@ -280,6 +296,9 @@ public class DialogueManager : MonoBehaviour
     private void EndSelfDialogueInCutscene()
     {
         IsInDialogue = false;
+
+        firstPersonController.CanUseHeadbob = true;
+
         visualPart.SetActive(false);
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
