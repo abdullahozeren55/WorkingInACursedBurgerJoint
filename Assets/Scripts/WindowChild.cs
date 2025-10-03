@@ -36,4 +36,9 @@ public class WindowChild : MonoBehaviour, IInteractable
     {
         parentWindow.OutlineChangeCheck();
     }
+
+    public void HandleFinishDialogue()
+    {
+        parentWindow.HandleFinishDialogue();
+    }
 }

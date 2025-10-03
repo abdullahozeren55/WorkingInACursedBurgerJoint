@@ -47,6 +47,11 @@ public class NoodleShelf : MonoBehaviour, IInteractable
 
         instantiatedNoodle = null;
     }
+
+    public void HandleFinishDialogue()
+    {
+
+    }
     public void OnFocus()
     {
         ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);

@@ -1,6 +1,8 @@
+using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
+using static CameraManager;
 
 public class Door : MonoBehaviour, IInteractable
 {
@@ -54,6 +56,13 @@ public class Door : MonoBehaviour, IInteractable
         uninteractableLayer = LayerMask.NameToLayer("Uninteractable");
     }
 
+    public void HandleFinishDialogue()
+    {
+        PlayerManager.Instance.SetPlayerCanInteract(true);
+        gameObject.layer = interactableLayer;
+        PlayerManager.Instance.ChangePlayerCanMove(true);
+    }
+
     public void OnInteract()
     {
         switch (doorState)
@@ -73,14 +82,15 @@ public class Door : MonoBehaviour, IInteractable
 
         if (shouldPlayDialogueAfterInteraction && !isDialoguePlayed)
         {
-            Invoke("PlayDialogue", data.dialoguePlayDelay);
+            StartCoroutine(PlayDialogueWithDelay(data.dialoguePlayDelay));
             isDialoguePlayed = true;
         }
     }
 
-    private void PlayDialogue()
+    private IEnumerator PlayDialogueWithDelay(float delay)
     {
-        DialogueManager.Instance.StartSelfDialogue(data.dialogueAfterInteraction);
+        yield return new WaitForSeconds(delay);
+        DialogueManager.Instance.StartAfterInteractionSelfDialogue(this, data.dialogueAfterInteraction);
     }
 
     public void HandleRotation()
@@ -128,6 +138,9 @@ public class Door : MonoBehaviour, IInteractable
 
     private void HandleJumpscare()
     {
+        PlayerManager.Instance.SetPlayerCanInteract(false);
+        PlayerManager.Instance.ResetPlayerInteract(this);
+
         gameObject.layer = uninteractableLayer;
         isOpened = true;
 
@@ -148,15 +161,24 @@ public class Door : MonoBehaviour, IInteractable
         // Sequence ile birleþtirme
         Sequence seq = DOTween.Sequence();
         seq.Append(doorTween);
-        seq.Insert(data.timeToRotate * data.jumpscareDoorRotatePercentValue, jumpscareTween); // Kapý animasyonunun %x'inde baþlasýn
 
-        seq.InsertCallback(data.jumpscareAudioDelay, () => jumpscareAudioSource.PlayOneShot(data.jumpscareSound));
+        float insertTime = data.timeToRotate * data.jumpscareDoorRotatePercentValue;
+
+        seq.Insert(insertTime, jumpscareTween); // Kapý animasyonunun %x'inde baþlasýn
+
+        seq.InsertCallback(insertTime, () =>
+        {
+            // Ses
+            jumpscareAudioSource.PlayOneShot(data.jumpscareSound);
+
+            // Kamera efekti (örnek: Mid Jumpscare)
+            CameraManager.Instance.PlayJumpscareEffects(data.jumpscareType);
+        });
 
         // Bitince state normal'e dönsün
         seq.OnComplete(() =>
         {
             doorState = DoorState.Normal;
-            gameObject.layer = interactableLayer;
         });
     }
 

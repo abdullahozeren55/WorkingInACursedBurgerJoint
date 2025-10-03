@@ -36,4 +36,9 @@ public class ToiletChild : MonoBehaviour, IInteractable
     {
         parentToilet.OutlineChangeCheck();
     }
+
+    public void HandleFinishDialogue()
+    {
+        parentToilet.HandleFinishDialogue();
+    }
 }

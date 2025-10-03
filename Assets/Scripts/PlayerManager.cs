@@ -70,6 +70,27 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.ResetGrab(grabable);
     }
 
+    public void ResetPlayerInteract(IInteractable interactable)
+    {
+        firstPersonController.ResetInteract(interactable);
+    }
+
+    public void SetPlayerCanInteract(bool can)
+    {
+        firstPersonController.CanInteract = can;
+    }
+
+    public void SetPlayerCanGrab(bool can)
+    {
+        firstPersonController.CanGrab = can;
+    }
+
+    public void SetPlayerCanGrabAndInteract(bool can)
+    {
+        firstPersonController.CanGrab = can;
+        firstPersonController.CanInteract = can;
+    }
+
     public void ChangePlayerCanMove(bool canMove)
     {
         firstPersonController.CanMove = canMove;

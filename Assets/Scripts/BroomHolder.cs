@@ -31,6 +31,11 @@ public class BroomHolder : MonoBehaviour, IInteractable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnFocus()
     {
         gameObject.layer = OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer;

@@ -76,6 +76,11 @@ public class Window : MonoBehaviour, IInteractable
         inLockOpen = false;
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnFocus()
     {
         if (!inLockOpen)

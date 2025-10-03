@@ -33,6 +33,11 @@ public class SupplyBox : MonoBehaviour, IInteractable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnFocus()
     {
         gameObject.layer = OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer;

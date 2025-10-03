@@ -55,6 +55,11 @@ public class NoodleInteractable : MonoBehaviour, IInteractable
         lidMeshFilter = lidPart.GetComponent<MeshFilter>();
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnFocus()
     {
         ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);

@@ -51,6 +51,11 @@ public class Toilet : MonoBehaviour, IInteractable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnFocus()
     {
         ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);

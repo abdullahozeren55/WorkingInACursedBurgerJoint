@@ -47,6 +47,11 @@ public class Keys : MonoBehaviour, IInteractable
         transform.position = keyPossiblePositions[place].position;
     }
 
+    public void HandleFinishDialogue()
+    {
+
+    }
+
     public void OnInteract()
     {
         meshRenderer.enabled = false;   

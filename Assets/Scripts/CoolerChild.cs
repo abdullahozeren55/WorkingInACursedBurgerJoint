@@ -35,4 +35,9 @@ public class CoolerChild : MonoBehaviour, IInteractable
     {
         parentCooler.OutlineChangeCheck();
     }
+
+    public void HandleFinishDialogue()
+    {
+        parentCooler.HandleFinishDialogue();
+    }
 }

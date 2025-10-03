@@ -23,8 +23,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private bool canCrouch = true;
     [SerializeField] private bool canUseHeadbob = true;
     [SerializeField] private bool willSlideOnSlopes = true;
-    [SerializeField] private bool canInteract = true;
-    [SerializeField] private bool canGrab = true;
+    public bool CanInteract = true;
+    public bool CanGrab = true;
     [SerializeField] private bool useFootsteps = true;
 
     [Header("Controls")]
@@ -171,15 +171,6 @@ public class FirstPersonController : MonoBehaviour
     [Space]
     [SerializeField] private float lerpTimeForInteractionHand = 0.2f;
 
-    [Header("Grab Hand Parameters")]
-    [SerializeField] private CinemachineVirtualCamera firstPersonCam;
-    [SerializeField] private float maxAmplitudeGain = 0.35f;
-    [SerializeField] private float maxFrequencyGain = 0.7f;
-    [SerializeField] private float maxFOV = 50f;
-    private float normalFOV;
-    [Space]
-    [SerializeField] private Volume postProcessVolume;
-    [Space]
     [Header("Grab Parameters")]
     [SerializeField] private Transform grabPoint;
     [SerializeField] private Image focusText;
@@ -196,9 +187,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private GameObject grabInteractUI;
 
     private Coroutine singleHandThrowCoroutine;
-    private Coroutine throwVisualEffectsCoroutine;
-    private CinemachineBasicMultiChannelPerlin perlin;
-    private Vignette vignette;
 
     private Camera mainCamera;
     private CharacterController characterController;
@@ -215,9 +203,6 @@ public class FirstPersonController : MonoBehaviour
         mainCamera = Camera.main;
         characterController = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
-        perlin = firstPersonCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-        normalFOV = firstPersonCam.m_Lens.FieldOfView;
 
         defaultCrosshairSize = crosshairTransform.localScale;
         defaultCrosshairColor = crosshairImage.color;
@@ -228,9 +213,6 @@ public class FirstPersonController : MonoBehaviour
 
     void Start()
     {
-        // Get the effects from the volume
-        if (postProcessVolume.profile.TryGet(out Vignette v))
-            vignette = v;
 
         foreach (var smr in GetComponentsInChildren<SkinnedMeshRenderer>())
         {
@@ -262,13 +244,13 @@ public class FirstPersonController : MonoBehaviour
             if (canCrouch)
                 HandleCrouch();
 
-            if (canInteract)
+            if (CanInteract)
             {
                 HandleInteractionInput();
                 HandleInteractionCheck();
             }
 
-            if (canGrab)
+            if (CanGrab)
             {
                 HandleGrabInput();
                 HandleGrabCheck();
@@ -861,13 +843,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 ResetHandAnim();
 
-                if (throwVisualEffectsCoroutine != null)
-                {
-                    StopCoroutine(throwVisualEffectsCoroutine);
-                    throwVisualEffectsCoroutine = null;
-                }
-
-                throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(true));
+                CameraManager.Instance.PlayThrowEffects(true);
 
                 anim.SetBool("chargingThrow", true);
 
@@ -885,13 +861,7 @@ public class FirstPersonController : MonoBehaviour
             if (Input.GetKeyUp(throwKey))
             {
 
-                if (throwVisualEffectsCoroutine != null)
-                {
-                    StopCoroutine(throwVisualEffectsCoroutine);
-                    throwVisualEffectsCoroutine = null;
-                }
-                    
-                throwVisualEffectsCoroutine = StartCoroutine(ThrowVisualEffects(false));
+                CameraManager.Instance.PlayThrowEffects(false);
 
                 SetHandAnimBoolsOff();
 
@@ -1047,6 +1017,12 @@ public class FirstPersonController : MonoBehaviour
             currentGrabable = null;
         }
 
+        if (otherGrabable != null)
+        {
+            otherGrabable.OnLoseFocus();
+            otherGrabable = null;
+        }
+
         DecideOutlineAndCrosshair();
     }
 
@@ -1071,6 +1047,16 @@ public class FirstPersonController : MonoBehaviour
         }
 
         DecideOutlineAndCrosshair();
+    }
+
+    public void ResetInteract(IInteractable interactable)
+    {
+        if (currentInteractable == interactable)
+        {
+            currentInteractable.OnLoseFocus();
+            currentInteractable = null;
+            DecideOutlineAndCrosshair();
+        }     
     }
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
@@ -1379,46 +1365,6 @@ public class FirstPersonController : MonoBehaviour
         currentThrowForce = maxThrowForce;
 
         twoBoneIKConstraintRightHand.weight = 0f;
-    }
-
-    private IEnumerator ThrowVisualEffects(bool isCharging)
-    {
-        float startAmplitude = perlin.m_AmplitudeGain;
-        float startFrequency = perlin.m_FrequencyGain;
-        float targetAmplitude = isCharging ? maxAmplitudeGain : 0f;
-        float targetFrequency = isCharging ? maxFrequencyGain : 0f;
-
-        float startVignette = vignette.intensity.value;
-        float targetVignette = isCharging ? 0.25f : 0f;
-
-        float startFOV = firstPersonCam.m_Lens.FieldOfView;
-        float targetFOV = isCharging ? maxFOV : normalFOV;
-
-        float t = 0f;
-        float v = 0f;
-
-        while (t < throwMaxChargeTime)
-        {
-            v = isCharging ? (t / throwMaxChargeTime) : (t * 4 / throwMaxChargeTime);
-
-            perlin.m_AmplitudeGain = Mathf.Lerp(startAmplitude, targetAmplitude, v);
-            perlin.m_FrequencyGain = Mathf.Lerp(startFrequency, targetFrequency, v);
-
-            vignette.intensity.value = Mathf.Lerp(startVignette, targetVignette, v);
-
-            firstPersonCam.m_Lens.FieldOfView = Mathf.Lerp(startFOV, targetFOV, v);
-
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        perlin.m_AmplitudeGain = targetAmplitude;
-        perlin.m_FrequencyGain = targetFrequency;
-
-        vignette.intensity.value = targetVignette;
-
-        firstPersonCam.m_Lens.FieldOfView = targetFOV;
-
     }
 
     private IEnumerator UseGrabbed(Vector3 targetPos, Vector3 targetRot, float timeToDo)

@@ -12,7 +12,8 @@ public class DialogueManager : MonoBehaviour
         TalkWithSeller,
         TalkWithYourself,
         TalkWithMascott,
-        TalkWithYourselfInCutscene
+        TalkWithYourselfInCutscene,
+        TalkWithYourselfAfterInteraction
     }
     public static DialogueManager Instance { get; private set; }
 
@@ -47,6 +48,7 @@ public class DialogueManager : MonoBehaviour
     private float currentCoroutineTime;
 
     private ICustomer currentCustomer;
+    private IInteractable currentInteractable;
 
     private void Awake()
     {
@@ -69,6 +71,7 @@ public class DialogueManager : MonoBehaviour
         skipKey = firstPersonController.interactKey;
 
         currentCustomer = null;
+        currentInteractable = null;
 
         IsInDialogue = false;
     }
@@ -88,6 +91,8 @@ public class DialogueManager : MonoBehaviour
                 {
                     if (talkType == TalkType.TalkWithCustomer)
                         EndCustomerDialogue();
+                    else if (talkType == TalkType.TalkWithYourselfAfterInteraction)
+                        EndAfterInteractionSelfDialogue();
                     else if (talkType == TalkType.TalkWithSeller)
                         EndSellerDialogue();
                     else if (talkType == TalkType.TalkWithYourself)
@@ -159,6 +164,38 @@ public class DialogueManager : MonoBehaviour
         {
             currentCustomer.HandleFinishDialogue();
         }
+
+        IsInDialogue = false;
+
+        visualPart.SetActive(false);
+    }
+
+    public void StartAfterInteractionSelfDialogue(IInteractable interactable, DialogueData data)
+    {
+        dialogueData = data;
+
+        IsInDialogue = true;
+
+        talkType = TalkType.TalkWithYourselfAfterInteraction;
+
+        firstPersonController.CanMove = false;
+        dialogueIndex = 0;
+
+        currentInteractable = interactable;
+
+        currentCoroutineTime = coroutineTimeBeforeSkip;
+
+        ChangeDialogueBar(false);
+
+        visualPart.SetActive(true);
+
+        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+    }
+
+    private void EndAfterInteractionSelfDialogue()
+    {
+
+        currentInteractable.HandleFinishDialogue();
 
         IsInDialogue = false;
 
