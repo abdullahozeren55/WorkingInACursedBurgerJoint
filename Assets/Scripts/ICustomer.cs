@@ -85,6 +85,8 @@ public interface ICustomer
     public void HandleFootsteps();
     public void HandleIdle();
 
+    public void ChangeLayer(int layer);
+
     public Action CurrentAction {  get; set; }
     public Feeling CurrentFeeling { get; set; }
     public CustomerName PersonName { get; set; }

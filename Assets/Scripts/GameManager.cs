@@ -123,6 +123,9 @@ public class GameManager : MonoBehaviour
 
     private ICustomer currentCustomer;
 
+    private int customerLayer;
+    private int ungrabableLayer;
+
     [Header("Other Settings")]
     [Space]
     [SerializeField] private Tray tray;
@@ -168,6 +171,9 @@ public class GameManager : MonoBehaviour
         {
             allCustomersName[i] = allCustomers[i].GetComponent<ICustomer>().PersonName;
         }
+
+        customerLayer = LayerMask.NameToLayer("Customer");
+        ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
 
         NextState();
 
@@ -262,7 +268,14 @@ public class GameManager : MonoBehaviour
 
     public void CustomerGiveBackDrink(Transform throwPoint, Vector3 force)
     {
+        currentCustomer.ChangeLayer(customerLayer);
         lastThrowedDrink.transform.position = throwPoint.position;
+        lastThrowedDrink.transform.rotation = throwPoint.rotation;
+        lastThrowedDrink.isJustThrowed = false;
+        lastThrowedDrink.isJustDropped = true;
+        lastThrowedDrink.CanBeReceived = false;
+        lastThrowedDrink.ChangeLayer(ungrabableLayer);
+
         lastThrowedDrink.GetComponent<MeshRenderer>().enabled = true;
         lastThrowedDrink.GetComponent<MeshCollider>().enabled = true;
         lastThrowedDrink.GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse); 
@@ -270,7 +283,13 @@ public class GameManager : MonoBehaviour
 
     public void CustomerGiveBackBurger(Transform throwPoint, Vector3 force)
     {
+        currentCustomer.ChangeLayer(customerLayer);
         lastThrowedBurgerBox.transform.position = throwPoint.position;
+        lastThrowedBurgerBox.transform.rotation = throwPoint.rotation;
+        lastThrowedBurgerBox.isJustThrowed = false;
+        lastThrowedBurgerBox.isJustDropped = true;
+        lastThrowedBurgerBox.CanBeReceived = false;
+        lastThrowedBurgerBox.ChangeLayer(ungrabableLayer);
 
         foreach (MeshRenderer mr in lastThrowedBurgerBoxMeshRenderers)
         {

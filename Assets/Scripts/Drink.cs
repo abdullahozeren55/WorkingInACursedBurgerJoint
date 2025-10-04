@@ -34,7 +34,9 @@ public class Drink : MonoBehaviour, IGrabable
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
 
-    private bool isJustThrowed;
+    [HideInInspector] public bool isJustThrowed;
+    [HideInInspector] public bool isJustDropped;
+    [HideInInspector] public bool CanBeReceived;
 
     private float audioLastPlayedTime;
 
@@ -52,6 +54,8 @@ public class Drink : MonoBehaviour, IGrabable
         IsGrabbed = false;
 
         isJustThrowed = false;
+        isJustDropped = false;
+        CanBeReceived = true;
 
         audioLastPlayedTime = 0f;
     }
@@ -59,6 +63,8 @@ public class Drink : MonoBehaviour, IGrabable
     public void OnGrab(Transform grabPoint)
     {
         gameObject.layer = ungrabableLayer;
+
+        CanBeReceived = true;
 
         col.enabled = false;
 
@@ -77,31 +83,35 @@ public class Drink : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        gameObject.layer = grabableOutlinedLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableOutlinedLayer;
     }
     public void OnLoseFocus()
     {
-        gameObject.layer = grabableLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableLayer;
     }
 
     public void OnDrop(Vector3 direction, float force)
     {
-        IsGrabbed = false;
+        col.enabled = true;
 
-        Invoke("TurnOnCollider", 0.08f);
+        IsGrabbed = false;
 
         transform.SetParent(null);
 
         rb.useGravity = true;
 
         rb.AddForce(direction * force, ForceMode.Impulse);
+
+        isJustDropped = true;
     }
 
     public void OnThrow(Vector3 direction, float force)
     {
-        IsGrabbed = false;
+        col.enabled = true;
 
-        Invoke("TurnOnCollider", 0.08f);
+        IsGrabbed = false;
 
         transform.SetParent(null);
 
@@ -110,6 +120,11 @@ public class Drink : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 
     public void OutlineChangeCheck()
@@ -122,11 +137,6 @@ public class Drink : MonoBehaviour, IGrabable
         {
             gameObject.layer = grabableOutlinedLayer;
         }
-    }
-
-    private void TurnOnCollider()
-    {
-        col.enabled = true;
     }
 
     private void OnDisable()
@@ -152,10 +162,20 @@ public class Drink : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-
                 PlayAudioWithRandomPitch(2);
 
+                gameObject.layer = grabableLayer;
+
                 isJustThrowed = false;
+            }
+            else if (isJustDropped)
+            {
+                gameObject.layer = grabableLayer;
+
+                if (Time.time > audioLastPlayedTime + 0.1f)
+                    PlayAudioWithRandomPitch(1);
+
+                isJustDropped = false;
             }
             else if (Time.time > audioLastPlayedTime + 0.1f)
             {

@@ -48,9 +48,9 @@ public class BurgerBox : MonoBehaviour, IGrabable
     private int ungrabableLayer;
     private int onTrayLayer;
 
-    private bool isJustThrowed;
-
-    private Vector3 trayPos;
+    [HideInInspector] public bool isJustThrowed;
+    [HideInInspector] public bool isJustDropped;
+    [HideInInspector] public bool CanBeReceived;
 
     private float audioLastPlayedTime;
 
@@ -77,6 +77,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
         isGettingPutOnTray = false;
 
         isJustThrowed = false;
+        isJustDropped = false;
+        CanBeReceived = true;
 
         canAddToTray = false;
 
@@ -100,10 +102,11 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         PlayAudioWithRandomPitch(1);
 
-        rb.velocity = Vector3.zero;
-        rb.isKinematic = true; 
+        isJustDropped = false;
+        isJustThrowed = false;
 
-        this.trayPos = trayPos;
+        rb.velocity = Vector3.zero;
+        rb.isKinematic = true;
 
         Sequence seq = DOTween.Sequence();
         seq.Append(transform.DOMove(trayPos, data.timeToPutOnTray).SetEase(Ease.OutQuad));
@@ -119,6 +122,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
     {
         ChangeLayer(ungrabableLayer);
         isGettingPutOnTray = false;
+
+        CanBeReceived = true;
 
         tray.currentBox = this;
         tray.TurnOnBoxHologram();
@@ -143,35 +148,39 @@ public class BurgerBox : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        ChangeLayer(grabableOutlinedLayer);
+        if (!isJustDropped && !isJustThrowed)
+            ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
-        ChangeLayer(grabableLayer);
+        if (!isJustDropped && !isJustThrowed)
+            ChangeLayer(grabableLayer);
     }
 
     public void OnDrop(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.08f);
 
         transform.SetParent(null);
 
         rb.useGravity = true;
 
         rb.AddForce(direction * force, ForceMode.Impulse);
+
+        isJustDropped = true;
     }
 
     public void OnThrow(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.08f);
 
         transform.SetParent(null);
 
@@ -227,17 +236,12 @@ public class BurgerBox : MonoBehaviour, IGrabable
         PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
     }
 
-    private void ChangeLayer(int layer)
+    public void ChangeLayer(int layer)
     {
         foreach (GameObject child in childObjects)
             child.layer = layer; 
 
         gameObject.layer = layer;
-    }
-
-    private void TurnOnCollider()
-    {
-        col.enabled = true;
     }
 
     private void OnDisable()
@@ -258,7 +262,18 @@ public class BurgerBox : MonoBehaviour, IGrabable
             {
                 PlayAudioWithRandomPitch(2);
 
+                ChangeLayer(grabableLayer);
+
                 isJustThrowed = false;
+            }
+            else if (isJustDropped)
+            {
+                ChangeLayer(grabableLayer);
+
+                if (Time.time > audioLastPlayedTime + 0.1f)
+                    PlayAudioWithRandomPitch(1);
+
+                isJustDropped = false;
             }
             else if (Time.time > audioLastPlayedTime + 0.1f)
             {

@@ -45,6 +45,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private int onTrayLayer;
 
     private bool isJustThrowed;
+    private bool isJustDropped;
     private bool isStuck;
     public bool canStick;
 
@@ -172,35 +173,39 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        gameObject.layer = grabableOutlinedLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableOutlinedLayer;
     }
     public void OnLoseFocus()
     {
-        gameObject.layer = grabableLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableLayer;
     }
 
     public void OnDrop(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.05f);
 
         transform.SetParent(null);
 
         rb.useGravity = true;
 
         rb.AddForce(direction * force, ForceMode.Impulse);
+
+        isJustDropped = true;
     }
 
     public void OnThrow(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.05f);
 
         transform.SetParent(null);
 
@@ -221,11 +226,6 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         {
             gameObject.layer = grabableOutlinedLayer;
         }
-    }
-
-    private void TurnOnCollider()
-    {
-        col.enabled = true;
     }
 
     private void StickToSurface(Collision collision)
@@ -391,7 +391,18 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                     }
                 }
 
+                gameObject.layer = grabableLayer;
+
                 isJustThrowed = false;
+            }
+            else if (isJustDropped)
+            {
+                gameObject.layer = grabableLayer;
+
+                if (Time.time > audioLastPlayedTime + 0.1f)
+                    PlayAudioWithRandomPitch(1);
+
+                isJustDropped = false;
             }
             else if (Time.time > audioLastPlayedTime + 0.1f)
             {

@@ -393,7 +393,7 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
         }
     }
 
-    private void ChangeLayer(int layer)
+    public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
         skinnedMeshRenderer.gameObject.layer = layer;

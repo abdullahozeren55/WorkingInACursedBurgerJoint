@@ -51,6 +51,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
     private int ungrabableLayer;
 
     private bool isJustThrowed;
+    private bool isJustDropped;
 
     private float audioLastPlayedTime;
 
@@ -70,6 +71,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
         IsGrabbed = false;
 
         isJustThrowed = false;
+        isJustDropped = false;
 
         audioLastPlayedTime = 0f;
     }
@@ -97,20 +99,22 @@ public class SauceBottle : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        gameObject.layer = grabableOutlinedLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableOutlinedLayer;
     }
     public void OnLoseFocus()
     {
-        gameObject.layer = grabableLayer;
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableLayer;
     }
 
     public void OnDrop(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.1f);
 
         if (useCoroutine != null)
         {
@@ -126,15 +130,17 @@ public class SauceBottle : MonoBehaviour, IGrabable
         rb.useGravity = true;
 
         rb.AddForce(direction * force, ForceMode.Impulse);
+
+        isJustDropped = true;
     }
 
     public void OnThrow(Vector3 direction, float force)
     {
+        col.enabled = true;
+
         tray.TurnOffAllHolograms();
 
         IsGrabbed = false;
-
-        Invoke("TurnOnCollider", 0.1f);
 
         if (useCoroutine != null)
         {
@@ -166,11 +172,6 @@ public class SauceBottle : MonoBehaviour, IGrabable
         }
     }
 
-    private void TurnOnCollider()
-    {
-        col.enabled = true;
-    }
-
     private void OnDisable()
     {
         OnLoseFocus();
@@ -196,7 +197,18 @@ public class SauceBottle : MonoBehaviour, IGrabable
             {
                 PlayAudioWithRandomPitch(2);
 
+                gameObject.layer = grabableLayer;
+
                 isJustThrowed = false;
+            }
+            else if (isJustDropped)
+            {
+                gameObject.layer = grabableLayer;
+
+                if (Time.time > audioLastPlayedTime + 0.1f)
+                    PlayAudioWithRandomPitch(1);
+
+                isJustDropped = false;
             }
             else if (Time.time > audioLastPlayedTime + 0.1f)
             {

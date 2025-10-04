@@ -14,7 +14,7 @@ public class OrderThrowArea : MonoBehaviour
             {
                 Drink drink = other.GetComponent<Drink>();
 
-                if (!drink.IsGrabbed)
+                if (!drink.IsGrabbed && drink.CanBeReceived)
                 {
                     GameManager.Instance.CustomerReceiveDrink(drink);
                 }
@@ -24,7 +24,7 @@ public class OrderThrowArea : MonoBehaviour
             {
                 BurgerBox burgerBox = other.GetComponent<BurgerBox>();
 
-                if (!burgerBox.IsGrabbed)
+                if (!burgerBox.IsGrabbed && burgerBox.CanBeReceived)
                 {
                     GameManager.Instance.CustomerReceiveBurger(burgerBox);
                 }
