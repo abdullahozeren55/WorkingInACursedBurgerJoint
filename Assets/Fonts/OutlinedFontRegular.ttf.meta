@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 43ef14a36e0dee84ab0126142e2dbdcb
+guid: 1d8c48bfd1de7e540a4b25224278c7ad
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - OutlinedFont
+  - OutlinedFontRegular
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 2
