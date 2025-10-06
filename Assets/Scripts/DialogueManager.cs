@@ -6,6 +6,12 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class FontAtlasData
+    {
+        public FontType type;
+        public Texture2D atlasSprite;
+    }
     public enum TalkType
     {
         TalkWithCustomer,
@@ -15,7 +21,16 @@ public class DialogueManager : MonoBehaviour
         TalkWithYourselfInCutscene,
         TalkWithYourselfAfterInteraction
     }
+
+    public enum FontType
+    {
+        Default,
+        Sinan,
+    }
     public static DialogueManager Instance { get; private set; }
+    [Space]
+    [SerializeField] private FontAtlasData[] fontAtlasDatas;
+    [Space]
 
     public bool IsInDialogue;
 
@@ -23,21 +38,13 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private FirstPersonController firstPersonController;
     [SerializeField] private AudioClip defaultDialogueAudio;
     [Space]
-    [SerializeField] private TMP_Text personText;
     [SerializeField] private TMP_Text dialogueText;
-    [SerializeField] private float dialogueTextNormalYValue = -66f;
-    [SerializeField] private float dialogueTextSelfTalkYValue = -33f;
     [Space]
     [SerializeField] private ShopSeller shopSeller;
-    private RectTransform dialogueRectTransform;
 
     private DialogueData dialogueData;
-    private GameObject visualPart;
 
     private int dialogueIndex = 0;
-
-    private bool playingDialogue;
-    private bool skip;
     private TalkType talkType;
 
     private AudioSource audioSource;
@@ -59,12 +66,10 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        //Clone it so changes on material only effects itself
+        dialogueText.fontMaterial = new Material(dialogueText.fontMaterial);
+
         Instance = this;
-
-        dialogueRectTransform = dialogueText.GetComponent<RectTransform>();
-
-        visualPart = GetComponentInChildren<Image>().gameObject;
-        visualPart.SetActive(false);
 
         audioSource = GetComponent<AudioSource>();
 
@@ -78,7 +83,7 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (visualPart.activeSelf)
+        if (IsInDialogue)
         {
             if (currentCoroutineTime > 0f)
             {
@@ -87,6 +92,8 @@ public class DialogueManager : MonoBehaviour
 
             if (Input.GetKeyDown(skipKey))
             {
+                dialogueIndex++;
+
                 if (dialogueIndex >= dialogueData.dialogueSegments.Length)
                 {
                     if (talkType == TalkType.TalkWithCustomer)
@@ -100,17 +107,10 @@ public class DialogueManager : MonoBehaviour
                     else if (talkType == TalkType.TalkWithYourselfInCutscene)
                         EndSelfDialogueInCutscene();
                 }
-
-                else if (!playingDialogue)
-                {
-                    StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
-                }
                 else
                 {
-                    if (dialogueData.dialogueSegments[dialogueIndex].Skippable && currentCoroutineTime <= 0f)
-                    {
-                        skip = true;
-                    }
+                    DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
+                    dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
                 }
             }
             
@@ -134,9 +134,11 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        visualPart.SetActive(true);
+        //visualPart.SetActive(true);
+        DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
+        dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
 
-        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        //StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
     }
 
     private void EndCustomerDialogue()
@@ -144,7 +146,7 @@ public class DialogueManager : MonoBehaviour
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
         {
-            visualPart.SetActive(false);
+            //visualPart.SetActive(false);
 
             ChoiceManager.Instance.StartTheCustomerChoice(dialogueData.question, dialogueData.optionA, dialogueData.optionD,
                                     currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, dialogueData.choiceCam);
@@ -158,7 +160,7 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        visualPart.SetActive(false);
+        //visualPart.SetActive(false);
     }
 
     public void StartAfterInteractionSelfDialogue(IInteractable interactable, DialogueData data)
@@ -177,9 +179,7 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        visualPart.SetActive(true);
-
-        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        //visualPart.SetActive(true);
     }
 
     private void EndAfterInteractionSelfDialogue()
@@ -191,7 +191,7 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        visualPart.SetActive(false);
+        //visualPart.SetActive(false);
     }
 
     public void StartSellerDialogue(DialogueData data)
@@ -208,9 +208,7 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        visualPart.SetActive(true);
-
-        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        //visualPart.SetActive(true);
     }
 
     private void EndSellerDialogue()
@@ -220,7 +218,7 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        visualPart.SetActive(false);
+        //visualPart.SetActive(false);
     }
 
     public void StartSelfDialogue(DialogueData data)
@@ -237,9 +235,7 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        visualPart.SetActive(true);
-
-        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        //visualPart.SetActive(true);
     }
 
     private void EndSelfDialogue()
@@ -248,7 +244,7 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        visualPart.SetActive(false);
+        //visualPart.SetActive(false);
 
 
         firstPersonController.CanMove = true;
@@ -268,9 +264,7 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        visualPart.SetActive(true);
-
-        StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        //visualPart.SetActive(true);
     }
 
     private void EndSelfDialogueInCutscene()
@@ -279,7 +273,7 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        visualPart.SetActive(false);
+        //visualPart.SetActive(false);
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {
@@ -288,62 +282,23 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private void DecideFontType(FontType type)
+    {
+        for (int i = 0; i < fontAtlasDatas.Length; i++)
+        {
+            if (type == fontAtlasDatas[i].type)
+            {
+                dialogueText.fontMaterial.SetTexture("_MainTex", fontAtlasDatas[i].atlasSprite);
+                break;
+            }
+        }
+        
+    }
+
     private void SetRandomPitch()
     {
         float pitch = Random.Range(1, 1.2f);
 
         audioSource.pitch = pitch;
-    }
-
-    private IEnumerator PlayDialogue(DialogueData.DialogueSegment segment)
-    {
-        playingDialogue = true;
-        
-        CameraManager.Instance.SwitchToCamera(segment.cam);
-
-        SetRandomPitch();
-
-        if (segment.audioClip != null)
-        {
-            audioSource.PlayOneShot(segment.audioClip);
-        }
-        else
-        {
-            audioSource.PlayOneShot(defaultDialogueAudio);
-        }
-            
-
-        dialogueText.SetText(string.Empty);
-        personText.SetText(segment.PersonName);
-
-        float delay = 1f / segment.LettersPerSecond;
-
-        for (int i = 0; i < segment.DialogueToPrint.Length; i++)
-        {
-            if (skip)
-            {
-                dialogueText.SetText(segment.DialogueToPrint);
-                skip = false;
-                break;
-            }
-
-            string chunkToAdd = string.Empty;
-            chunkToAdd += segment.DialogueToPrint[i];
-
-            if (segment.DialogueToPrint[i] == ' ' && i < segment.DialogueToPrint.Length - 1)
-            {
-                chunkToAdd = segment.DialogueToPrint.Substring(i, 2);
-                i++;
-            }
-
-            dialogueText.text += chunkToAdd;
-            yield return new WaitForSeconds(delay);
-        }
-
-        playingDialogue = false;
-
-        audioSource.Stop();
-
-        dialogueIndex++;
     }
 }

@@ -9,14 +9,12 @@ public class DialogueData : ScriptableObject
     [System.Serializable]
     public class DialogueSegment
     {
-        public string PersonName;
+        public DialogueManager.FontType fontType;
 
         [TextArea]
         public string DialogueToPrint;
         public bool Skippable;
 
-        [Range(1f, 50f)]
-        public float LettersPerSecond;
         [Space]
         public AudioClip audioClip;
         [Space]
