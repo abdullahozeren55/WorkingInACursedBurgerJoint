@@ -1,13 +1,14 @@
+using Cinemachine;
+using Febucci.UI.Core;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Animations.Rigging;
+using TMPro;
 using Unity.VisualScripting;
-using Cinemachine;
+using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using TMPro;
+using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
@@ -185,8 +186,12 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 handUseDelta; // mouse hareketlerini biriktirecek
 
     [Header("UI Settings")]
-    [SerializeField] private GameObject interactUseDropThrowUI;
-    [SerializeField] private GameObject grabInteractUI;
+    [SerializeField] private GameObject interactUI;
+    [SerializeField] private GameObject interact2UI;
+    [SerializeField] private GameObject useUI;
+    [SerializeField] private GameObject grabUI;
+    [SerializeField] private GameObject dropThrowUI;
+    [SerializeField] private GameObject interactUseUI;
 
     private Coroutine singleHandThrowCoroutine;
 
@@ -538,30 +543,60 @@ public class FirstPersonController : MonoBehaviour
     {
         if (currentInteractable != null)
         {
-            focusText.text = currentInteractable.FocusText;
             focusText.color = crosshairText.color;
+
+            if (focusText.text != currentInteractable.FocusText)
+            {
+                focusText.text = currentInteractable.FocusText;
+            }   
         }
         else if (currentGrabable != null && !currentGrabable.IsGrabbed)
         {
-            focusText.text = currentGrabable.FocusText;
             focusText.color = crosshairText.color;
+
+            if (focusText.text != currentGrabable.FocusText)
+            {
+                focusText.text = currentGrabable.FocusText;
+            }
         }
         else if (otherGrabable != null)
         {
-            focusText.text = otherGrabable.FocusText;
             focusText.color = crosshairText.color;
+
+            if (focusText.text != otherGrabable.FocusText)
+            {
+                focusText.text = otherGrabable.FocusText;
+            }
         }
         else
         {
-            focusText.text = null;
-            focusText.color = Color.clear;
+            if (focusText.text != null)
+            {
+                focusText.text = null;
+            }
         }
     }
 
     private void DecideUIText()
     {
-        interactUseDropThrowUI.SetActive(currentGrabable != null && currentGrabable.IsGrabbed);
-        grabInteractUI.SetActive((currentGrabable != null && !currentGrabable.IsGrabbed) || (currentInteractable != null && (currentGrabable == null || !currentGrabable.IsGrabbed)));
+        if (isUsingGrabbedItem)
+        {
+            interactUI.SetActive(false);
+            interact2UI.SetActive(false);
+            useUI.SetActive(false);
+            grabUI.SetActive(false);
+            dropThrowUI.SetActive(false);
+            interactUseUI.SetActive(false);
+        }
+        else
+        {
+            interactUI.SetActive(currentInteractable != null && (currentGrabable == null || !currentGrabable.IsGrabbed));
+            interact2UI.SetActive(currentInteractable != null && currentInteractable.HandRigType != PlayerManager.HandRigTypes.SingleHandGrab && currentGrabable != null && currentGrabable.IsGrabbed && !currentGrabable.IsUseable);
+            useUI.SetActive((currentInteractable == null || currentInteractable.HandRigType == PlayerManager.HandRigTypes.SingleHandGrab) && currentGrabable != null && currentGrabable.IsGrabbed && currentGrabable.IsUseable);
+            grabUI.SetActive(currentInteractable == null && currentGrabable != null && !currentGrabable.IsGrabbed);
+            dropThrowUI.SetActive(currentGrabable != null && currentGrabable.IsGrabbed);
+            interactUseUI.SetActive(currentInteractable != null && currentInteractable.HandRigType != PlayerManager.HandRigTypes.SingleHandGrab && currentGrabable != null && currentGrabable.IsGrabbed && currentGrabable.IsUseable);
+        }
     }
 
     private void DecideOutlineAndCrosshair()
@@ -912,6 +947,8 @@ public class FirstPersonController : MonoBehaviour
                 throwChargeTimer = 0f;
 
                 anim.SetBool("throw", false);
+
+                currentGrabable = null;
 
                 DecideOutlineAndCrosshair();
             }

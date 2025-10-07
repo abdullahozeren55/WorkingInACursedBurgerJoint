@@ -1806,6 +1806,7 @@ namespace Febucci.UI
 
         private void Update()
         {
+            if (tmproText.text == null) return;
             //TMPRO's text changed, setting the text again
             if (!tmproText.text.Equals(text))
             {

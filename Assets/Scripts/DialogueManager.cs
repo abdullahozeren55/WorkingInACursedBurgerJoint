@@ -36,6 +36,8 @@ public class DialogueManager : MonoBehaviour
     [Space]
 
     public bool IsInDialogue;
+    public bool IsSkipped;
+    public bool IsDialogueComplete;
 
     [Space]
     [SerializeField] private FirstPersonController firstPersonController;
@@ -56,9 +58,6 @@ public class DialogueManager : MonoBehaviour
     private AudioSource audioSource;
 
     private KeyCode skipKey;
-
-    private float coroutineTimeBeforeSkip = 0.15f;
-    private float currentCoroutineTime;
 
     private ICustomer currentCustomer;
     private IInteractable currentInteractable;
@@ -85,38 +84,45 @@ public class DialogueManager : MonoBehaviour
         currentInteractable = null;
 
         IsInDialogue = false;
+        IsSkipped = false;
+        IsDialogueComplete = false;
     }
 
     private void Update()
     {
         if (IsInDialogue)
         {
-            if (currentCoroutineTime > 0f)
-            {
-                currentCoroutineTime -= Time.deltaTime;
-            }
 
             if (Input.GetKeyDown(skipKey))
             {
-                dialogueIndex++;
+                if (!IsSkipped && !IsDialogueComplete)
+                {
+                    textAnimPlayerBase.SkipTypewriter();
+                    IsSkipped = true;
+                }
+                else if (IsSkipped || IsDialogueComplete)
+                {
+                    dialogueIndex++;
 
-                if (dialogueIndex >= dialogueData.dialogueSegments.Length)
-                {
-                    if (talkType == TalkType.TalkWithCustomer)
-                        EndCustomerDialogue();
-                    else if (talkType == TalkType.TalkWithYourselfAfterInteraction)
-                        EndAfterInteractionSelfDialogue();
-                    else if (talkType == TalkType.TalkWithSeller)
-                        EndSellerDialogue();
-                    else if (talkType == TalkType.TalkWithYourself)
-                        EndSelfDialogue();
-                    else if (talkType == TalkType.TalkWithYourselfInCutscene)
-                        EndSelfDialogueInCutscene();
+                    if (dialogueIndex >= dialogueData.dialogueSegments.Length)
+                    {
+                        if (talkType == TalkType.TalkWithCustomer)
+                            EndCustomerDialogue();
+                        else if (talkType == TalkType.TalkWithYourselfAfterInteraction)
+                            EndAfterInteractionSelfDialogue();
+                        else if (talkType == TalkType.TalkWithSeller)
+                            EndSellerDialogue();
+                        else if (talkType == TalkType.TalkWithYourself)
+                            EndSelfDialogue();
+                        else if (talkType == TalkType.TalkWithYourselfInCutscene)
+                            EndSelfDialogueInCutscene();
+                    }
+                    else
+                    {
+                        HandleDialogue();
+                    }
                 }
-                else
-                {
-                    HandleDialogue();
-                }
+
             }
             
         }
@@ -124,6 +130,9 @@ public class DialogueManager : MonoBehaviour
 
     private void HandleDialogue()
     {
+        IsSkipped = false;
+        IsDialogueComplete = false;
+
         CameraManager.Instance.SwitchToCamera(dialogueData.dialogueSegments[dialogueIndex].cam);
 
         RectTransform rect = dialogueText.rectTransform;
@@ -131,6 +140,12 @@ public class DialogueManager : MonoBehaviour
 
         DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
         dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+
+    }
+
+    public void SetIsDialogueComplete(bool value)
+    {
+        IsDialogueComplete = value;
     }
 
     public void StartCustomerDialogue(ICustomer customer, DialogueData data)
@@ -139,6 +154,8 @@ public class DialogueManager : MonoBehaviour
         dialogueData = data;
 
         IsInDialogue = true;
+        IsSkipped = false;
+        IsDialogueComplete = false;
 
         talkType = TalkType.TalkWithCustomer;
 
@@ -148,13 +165,13 @@ public class DialogueManager : MonoBehaviour
 
         currentCustomer = customer;
 
-        currentCoroutineTime = coroutineTimeBeforeSkip;
-
         HandleDialogue();
     }
 
     private void EndCustomerDialogue()
     {
+        IsSkipped = false;
+        IsDialogueComplete = false;
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
         {
@@ -187,8 +204,6 @@ public class DialogueManager : MonoBehaviour
         dialogueIndex = 0;
 
         currentInteractable = interactable;
-
-        currentCoroutineTime = coroutineTimeBeforeSkip;
     }
 
     private void EndAfterInteractionSelfDialogue()
@@ -212,8 +227,6 @@ public class DialogueManager : MonoBehaviour
         firstPersonController.CanMove = false;
         firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
-
-        currentCoroutineTime = coroutineTimeBeforeSkip;
     }
 
     private void EndSellerDialogue()
@@ -237,8 +250,6 @@ public class DialogueManager : MonoBehaviour
         firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
 
-        currentCoroutineTime = coroutineTimeBeforeSkip;
-
     }
 
     private void EndSelfDialogue()
@@ -261,8 +272,6 @@ public class DialogueManager : MonoBehaviour
         firstPersonController.CanMove = false;
         firstPersonController.CanUseHeadbob = false;
         dialogueIndex = 0;
-
-        currentCoroutineTime = coroutineTimeBeforeSkip;
     }
 
     private void EndSelfDialogueInCutscene()
