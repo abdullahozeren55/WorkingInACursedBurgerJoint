@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BroomHolder : MonoBehaviour, IInteractable
 {
 
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
 
     [Header("Layer Settings")]

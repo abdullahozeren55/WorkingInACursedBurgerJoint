@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -95,8 +96,8 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
     private bool shouldPlayFootstep;
     private Material currentGroundMaterial;
     private AudioClip lastPlayedFootstep;
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
 
     [Header("Hikmet Settings")]
@@ -362,7 +363,6 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void ReceiveBurger(BurgerBox burgerBox)
     {
-        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
 
         ChangeLayer(uninteractableLayer);
@@ -375,7 +375,6 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void ReceiveDrink(Drink drink)
     {
-        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
         ChangeLayer(uninteractableLayer);
 
@@ -387,8 +386,6 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void OnInteract()
     {
-
-        CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Customer0);
 
         if (CurrentAction == ICustomer.Action.ReadyToOrder)
         {

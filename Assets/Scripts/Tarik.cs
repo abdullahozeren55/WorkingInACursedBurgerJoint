@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -91,8 +92,8 @@ public class Tarik : MonoBehaviour, ICustomer, IInteractable
     private Material currentGroundMaterial;
     private AudioClip lastPlayedFootstep;
 
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
 
     [Header("Tarýk Settings")]

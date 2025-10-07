@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,8 @@ public class Cooler : MonoBehaviour, IInteractable
     public AudioClip closeSound;
     private AudioSource audioSource;
 
-    public Sprite FocusImage { get => focusImages[coolerStateNum]; set => focusImages[coolerStateNum] = value; }
-    [SerializeField] private Sprite[] focusImages;
+    public string FocusText { get => focusTexts[coolerStateNum]; set => focusTexts[coolerStateNum] = value; }
+    [SerializeField] private string[] focusTexts;
     private int coolerStateNum = 0;
     [Space]
 
@@ -102,7 +103,7 @@ public class Cooler : MonoBehaviour, IInteractable
 
         coolerStateNum = isOpened ? 1 : 0;
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusText);
 
         if (rotateCoroutine != null)
         {

@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00042557187, y: 0.00079134916, z: 0.00010146905}
   grabLocalRotationOffset: {x: 77.947105, y: 218.30144, z: 205.52403}
-  focusImages:
-  - {fileID: 21300000, guid: d70dfbfa23ef4f543903928048d682e5, type: 3}
+  focusTexts:
+  - Marul Dilimi
   audioClips:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
   - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}

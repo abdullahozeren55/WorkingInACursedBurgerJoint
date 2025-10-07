@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewKnifeData", menuName = "Data/Knife")]
@@ -22,6 +23,6 @@ public class KnifeData : ScriptableObject
     [Space]
     public float timeToUse = 0.3f;
     [Space]
-    public Sprite focusImage;
+    public string focusText;
     public AudioClip[] audioClips;
 }

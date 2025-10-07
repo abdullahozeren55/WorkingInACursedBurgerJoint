@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -75,7 +76,6 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
     private bool trueDrinkReceived;
 
     private Transform currentDestination;
-    private Coroutine currentRotateCoroutine;
 
     [Header("Components")]
     private Animator anim;
@@ -96,8 +96,8 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
     private Material currentGroundMaterial;
     private AudioClip lastPlayedFootstep;
 
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
 
     [Header("Push Player Settings")]

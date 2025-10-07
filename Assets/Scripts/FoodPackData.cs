@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewFoodPackData", menuName = "Data/FoodPack")]
@@ -20,7 +21,7 @@ public class FoodPackData : ScriptableObject
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
     [Space]
-    public Sprite focusImage;
+    public string focusText;
     [Space]
 
     public AudioClip[] audioClips;

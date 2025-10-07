@@ -13,18 +13,22 @@ MonoBehaviour:
   m_Name: Day1HikmetFalseBurger
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: "M\xDC\u015ETER\u0130"
+  - fontType: 2
     DialogueToPrint: "Yeenim bunun Glasik G\xF6fde oldu\u011Funa emin misin yav?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 3
+  - fontType: 1
     DialogueToPrint: "\xC7ok \xF6z\xFCr dilerim amcac\u0131m bir yanl\u0131\u015Fl\u0131k
       olmu\u015F. Hemen yenisini haz\u0131rl\u0131yorum."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
+    cam: 0
   type: 0
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
+  cutsceneType: 0

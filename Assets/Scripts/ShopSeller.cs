@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,8 @@ public class ShopSeller : MonoBehaviour, IInteractable
     [SerializeField] private DialogueData noodleBuyDialogueData;
     [SerializeField] private DialogueData noodleBuyDialoguePartTwoData;
     [SerializeField] private float waitingTime = 1f;
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
     [SerializeField] private GameObject storeBlocker;
     [Space]

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ public class Knife : MonoBehaviour, IGrabable
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
 
     public KnifeData data;
-    public Sprite FocusImage { get => data.focusImage; set => data.focusImage = value; }
+    public string FocusText { get => data.focusText; set => data.focusText = value; }
     [Space]
     [SerializeField] private Collider triggerCol; 
 

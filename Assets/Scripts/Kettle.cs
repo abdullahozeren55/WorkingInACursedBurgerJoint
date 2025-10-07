@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,8 +32,8 @@ public class Kettle : MonoBehaviour, IGrabable
 
     [Header("Regular Settings")]
     [SerializeField] private GameObject hologramPart;
-    public Sprite FocusImage { get => focusImage; set => focusImage = value; }
-    [SerializeField] private Sprite focusImage;
+    public string FocusText { get => focusText; set => focusText = value; }
+    [SerializeField] private string focusText;
     [Space]
     [SerializeField] private ParticleSystem pourParticle;
     [SerializeField] private float timeToPutOnHologram = 0.3f;

@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00017944007, y: 0.00088617083, z: 0.00021549959}
   grabLocalRotationOffset: {x: 35.501827, y: 131.96713, z: 122.1275}
-  focusImages:
-  - {fileID: 21300000, guid: 9c8e22d3e7c4849438e3bb1825368dea, type: 3}
+  focusTexts:
+  - "Tur\u015Fu Dilimi"
   audioClips:
   - {fileID: 8300000, guid: 6bb232783a14c814eafe9995837763fd, type: 3}
   - {fileID: 8300000, guid: 5ae132e105a2fdb4b9d2a24417df0a6f, type: 3}

@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static CameraManager;
@@ -28,7 +29,7 @@ public class Door : MonoBehaviour, IInteractable
     [SerializeField] private AudioSource doorAudioSource;
     [SerializeField] private AudioSource jumpscareAudioSource;
     
-    public Sprite FocusImage { get => data.focusImages[doorStateNum]; set => data.focusImages[doorStateNum] = value; }
+    public string FocusText { get => data.focusTexts[doorStateNum]; set => data.focusTexts[doorStateNum] = value; }
     private int doorStateNum = 0;
     public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
 
@@ -100,7 +101,7 @@ public class Door : MonoBehaviour, IInteractable
 
         doorStateNum = isOpened ? 1 : 0;
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusText);
 
         transform.parent.DOKill();
         transform.parent.DOLocalRotate(isOpened ? openEuler : closeEuler, data.timeToRotate)
@@ -126,7 +127,7 @@ public class Door : MonoBehaviour, IInteractable
            {
                doorStateNum = 2;
 
-               PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+               PlayerManager.Instance.TryChangingFocusText(this, FocusText);
 
                isLockedAnimating = false;
            });

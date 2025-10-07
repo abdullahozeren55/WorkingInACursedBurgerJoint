@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,5 +23,5 @@ public interface IGrabable
     public bool IsGrabbed {  get; set; }
     public bool IsUseable { get; set; }
     public bool OutlineShouldBeRed { get; set; }
-    public Sprite FocusImage { get; set; }
+    public string FocusText { get; set; }
 }

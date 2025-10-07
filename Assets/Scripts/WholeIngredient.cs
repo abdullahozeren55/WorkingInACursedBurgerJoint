@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +22,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
 
     public WholeIngredientData data;
 
-    public Sprite FocusImage { get => data.focusImage; set => data.focusImage = value; }
+    public string FocusText { get => data.focusText; set => data.focusText = value; }
     [Space]
 
     [Header("Instantiate Settings")]

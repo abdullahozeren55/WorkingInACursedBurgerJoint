@@ -13,50 +13,60 @@ MonoBehaviour:
   m_Name: Day1HikmetTrueDrink
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: "M\xDC\u015ETER\u0130"
+  - fontType: 2
     DialogueToPrint: "Ben bu Sar\u0131 Gulay\u0131 \xE7ok seviyom yav. G\xFC\xE7\xFCkken
       yedi\u011Fim portugallara benziyo dad\u0131."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 3
+  - fontType: 1
     DialogueToPrint: "Do\u011Frudur amcac\u0131m. \u015Eimdi nerdeee \xF6yle portakallar.
       Hepsi hormonlu tats\u0131z tuzsuz di mi?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: "M\xDC\u015ETER\u0130"
+    cam: 0
+  - fontType: 2
     DialogueToPrint: ...
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 0
+  - fontType: 1
     DialogueToPrint: ...
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: "M\xDC\u015ETER\u0130"
+    cam: 0
+  - fontType: 2
     DialogueToPrint: ...
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 0
+  - fontType: 1
     DialogueToPrint: Amca?
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: "M\xDC\u015ETER\u0130"
+    cam: 0
+  - fontType: 2
     DialogueToPrint: Ha ney?
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 0
+  - fontType: 1
     DialogueToPrint: "Diyorum ki portak- Amaan neyse. Klasik K\xF6fteyi de haz\u0131rl\u0131y\u0131p
       getiriyorum hemen."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
+    cam: 0
   type: 0
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
+  cutsceneType: 0

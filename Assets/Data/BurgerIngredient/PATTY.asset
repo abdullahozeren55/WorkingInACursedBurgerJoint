@@ -21,10 +21,10 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.000029034101, y: 0.00093181024, z: 0.00039220246}
   grabLocalRotationOffset: {x: 49.996616, y: 180.00002, z: 170.60837}
-  focusImages:
-  - {fileID: 21300000, guid: 38a8a5c7b3426414cb26f2509c99cde2, type: 3}
-  - {fileID: 21300000, guid: 09d2efd854e86dc4fb4af4079dbcea94, type: 3}
-  - {fileID: 21300000, guid: 66530508d139ff94facb3c683732c65f, type: 3}
+  focusTexts:
+  - "K\xF6fte (\xC7i\u011F)"
+  - "K\xF6fte (Pi\u015Fmi\u015F)"
+  - "K\xF6fte (Yanm\u0131\u015F)"
   audioClips:
   - {fileID: 8300000, guid: b93dbdd756280f6419be6d697d852f4f, type: 3}
   - {fileID: 8300000, guid: 3e28540a4e7b19447a5cf58012f58e56, type: 3}

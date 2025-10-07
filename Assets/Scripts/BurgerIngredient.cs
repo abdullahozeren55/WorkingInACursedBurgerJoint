@@ -30,7 +30,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     [SerializeField] private AudioSource audioSource;
 
     [SerializeField] private Tray tray;
-    public Sprite FocusImage { get => data.focusImages[(int)cookAmount]; set => data.focusImages[(int)cookAmount] = value; }
+    public string FocusText { get => data.focusTexts[(int)cookAmount]; set => data.focusTexts[(int)cookAmount] = value; }
     [Space]
 
     [HideInInspector] public bool canAddToTray;
@@ -350,7 +350,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             canStick = false;
         }
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusText);
     }
 
     private void OnDestroy()

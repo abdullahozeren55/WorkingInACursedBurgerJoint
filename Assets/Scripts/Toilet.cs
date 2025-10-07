@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,8 @@ public class Toilet : MonoBehaviour, IInteractable
     public AudioClip closeSound;
     private AudioSource audioSource;
 
-    public Sprite FocusImage { get => focusImages[toiletStateNum]; set => focusImages[toiletStateNum] = value; }
-    [SerializeField] private Sprite[] focusImages;
+    public string FocusText { get => focusTexts[toiletStateNum]; set => focusTexts[toiletStateNum] = value; }
+    [SerializeField] private string[] focusTexts;
     private int toiletStateNum = 0;
     [Space]
 
@@ -89,7 +90,7 @@ public class Toilet : MonoBehaviour, IInteractable
 
         toiletStateNum = isOpened ? 1 : 0;
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusText);
 
         if (rotateCoroutine != null)
         {

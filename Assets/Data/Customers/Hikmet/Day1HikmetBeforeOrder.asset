@@ -13,77 +13,91 @@ MonoBehaviour:
   m_Name: Day1HikmetBeforeOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: Golay gelsin yeenim.
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
-    cam: 0
+    cam: 3
   - fontType: 1
     DialogueToPrint: "Sa\u011Folas\u0131n amcac\u0131m, ho\u015Fgeldin!"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Sen de saol. Bizim dorun buray\u0131 \xE7oh \xF6vd\xFC yav.
       Ben de dedim geliyim bi deniyim h\u0131h h\u0131h h\u0131h h\u0131h."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
   - fontType: 1
     DialogueToPrint: "\u0130yi yapm\u0131\u015Fs\u0131n amcac\u0131m iyi. Ne vereyim
       peki ne istersin?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Ben hi\xE7 bilmiyom ki burdaki \u015Feyleri yeenim. Normal
       bi\u015Fi ver b\xF6le gen\xE7 i\u015Fi olmas\u0131n yav."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 1
     DialogueToPrint: Klasik Burger vereyim o zaman amca.
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Ne goyyonuz onun i\xE7ine yeenim?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 1
     DialogueToPrint: "K\xF6fte, so\u011Fan, maru-"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Hee bizim g\xF6fde egmeg gibi ayn\u0131 yav. Olu olu ondan
       ver \xF6yleyince."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 1
     DialogueToPrint: "Tamam amcac\u0131m. \u0130\xE7ecek vereyim mi?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Sar\u0131 Gulan var m\u0131 Sar\u0131 Gulan?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 1
     DialogueToPrint: Var var olmaz olur mu!
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 2
     DialogueToPrint: "Sar\u0131 Gula ver \xF6yleyince."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 0
+  - fontType: 1
     DialogueToPrint: "Tamamd\u0131r amcac\u0131m hemen haz\u0131rl\u0131yorum!"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0

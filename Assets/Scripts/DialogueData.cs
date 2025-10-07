@@ -11,8 +11,8 @@ public class DialogueData : ScriptableObject
     {
         public DialogueManager.FontType fontType;
 
-        [TextArea]
-        public string DialogueToPrint;
+        [TextArea] public string DialogueToPrint;
+        public Vector2 DialogueOffset;
         public bool Skippable;
 
         [Space]

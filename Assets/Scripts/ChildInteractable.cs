@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ public class ChildInteractable : MonoBehaviour, IInteractable
     public PlayerManager.HandRigTypes HandRigType { get => parent.HandRigType; set => parent.HandRigType = value; }
 
     public bool OutlineShouldBeRed { get => parent.OutlineShouldBeRed; set => parent.OutlineShouldBeRed = value; }
-    public Sprite FocusImage { get => parent.FocusImage; set => parent.FocusImage = value; }
+    public string FocusText { get => parent.FocusText; set => parent.FocusText = value; }
 
     private void Awake()
     {

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewWholeIngredientData", menuName = "Data/WholeIngredient")]
@@ -7,7 +8,7 @@ public class WholeIngredientData : ScriptableObject
 {
     public GameObject destroyParticle;
     [Space]
-    public Sprite focusImage;
+    public string focusText;
     public bool isUseable = false;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]

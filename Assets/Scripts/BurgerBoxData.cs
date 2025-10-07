@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewBurgerBoxData", menuName = "Data/BurgerBox")]
@@ -16,7 +17,7 @@ public class BurgerBoxData : ScriptableObject
     public Vector3[] grabLocalPositionOffset; //0 for open, 1 for close
     public Vector3[] grabLocalRotationOffset; //0 for open, 1 for close
     [Space]
-    public Sprite[] focusImages;
+    public string[] focusTexts;
 
     public AudioClip[] audioClips;
 }

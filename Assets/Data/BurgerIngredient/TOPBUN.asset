@@ -21,10 +21,10 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00025912363, y: 0.00079479074, z: 0.00063007564}
   grabLocalRotationOffset: {x: 40.878933, y: 186.00804, z: 180.24084}
-  focusImages:
-  - {fileID: 21300000, guid: 09e5f50e03e3f4b4f9bdb635202f8c50, type: 3}
-  - {fileID: 21300000, guid: e852d1db45f24864a8cab23ab4df0d5a, type: 3}
-  - {fileID: 21300000, guid: 2de9db3b294a13048b642dc5e28cfd92, type: 3}
+  focusTexts:
+  - "\xDCst Ekmek (Normal)"
+  - "\xDCst Ekmek (K\u0131zarm\u0131\u015F)"
+  - "\xDCst Ekmek (Yanm\u0131\u015F)"
   audioClips:
   - {fileID: 8300000, guid: 4b125dc5bc95ec04e867f0357eff41bf, type: 3}
   - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}

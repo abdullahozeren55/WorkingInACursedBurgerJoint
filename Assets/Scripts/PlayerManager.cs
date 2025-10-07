@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -130,13 +131,13 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.IsUsingItemY = yValue;
     }
 
-    public void TryChangingFocusText(IInteractable interactable, Sprite sprite)
+    public void TryChangingFocusText(IInteractable interactable, string text)
     {
-        firstPersonController.TryChangingFocusText(interactable, sprite);
+        firstPersonController.TryChangingFocusText(interactable, text);
     }
 
-    public void TryChangingFocusText(IGrabable grabable, Sprite sprite)
+    public void TryChangingFocusText(IGrabable grabable, string text)
     {
-        firstPersonController.TryChangingFocusText(grabable, sprite);
+        firstPersonController.TryChangingFocusText(grabable, text);
     }
 }

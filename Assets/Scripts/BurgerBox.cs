@@ -29,7 +29,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
     [HideInInspector] public bool canAddToTray;
 
     [SerializeField] private Tray tray;
-    public Sprite FocusImage { get => data.focusImages[burgerNo]; set => data.focusImages[burgerNo] = value; }
+    public string FocusText { get => data.focusTexts[burgerNo]; set => data.focusTexts[burgerNo] = value; }
     [HideInInspector] public int burgerNo = 0; //0 for "Burger Box" text, rest is for menu names in order
     private int boxSituation = 0; //0 for open, 1 for close
     [Space]
@@ -233,7 +233,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         burgerNo = (int) type + 1;
         burgerType = type;
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusImage);
+        PlayerManager.Instance.TryChangingFocusText(this, FocusText);
     }
 
     public void ChangeLayer(int layer)

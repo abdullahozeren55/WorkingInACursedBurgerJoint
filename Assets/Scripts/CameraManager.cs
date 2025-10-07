@@ -47,7 +47,7 @@ public class CameraManager : MonoBehaviour
         Null,
         FirstPerson,
         Monitor,
-        Customer0
+        CustomerDialogue,
     }
 
     [System.Serializable]

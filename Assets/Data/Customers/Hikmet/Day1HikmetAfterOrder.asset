@@ -13,18 +13,22 @@ MonoBehaviour:
   m_Name: Day1HikmetAfterOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: "M\xDC\u015ETER\u0130"
+  - fontType: 2
     DialogueToPrint: "Bana bi dene Glasik G\xF6fdeynen Sar\u0131 Gula m\u0131 ne
       verece\u011Fdin yeenim noldu o i\u015F?"
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 3
+  - fontType: 1
     DialogueToPrint: "Haz\u0131rl\u0131yorum amcac\u0131m."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
+    cam: 0
   type: 0
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
+  cutsceneType: 0

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,8 @@ public class Window : MonoBehaviour, IInteractable
     public AudioClip closeSound;
     private AudioSource audioSource;
 
-    public Sprite FocusImage { get => focusImages[windowStateNum]; set => focusImages[windowStateNum] = value; }
-    [SerializeField] private Sprite[] focusImages;
+    public string FocusText { get => focusTexts[windowStateNum]; set => focusTexts[windowStateNum] = value; }
+    [SerializeField] private string[] focusTexts;
     private int windowStateNum = 0;
     [Space]
 

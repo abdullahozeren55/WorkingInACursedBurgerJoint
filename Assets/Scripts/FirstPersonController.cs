@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using Cinemachine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using TMPro;
 
 public class FirstPersonController : MonoBehaviour
 {
@@ -110,16 +111,15 @@ public class FirstPersonController : MonoBehaviour
     [Header("Interaction Parameters")]
     [SerializeField] private Vector3 interactionRayPoint = default;
     [SerializeField] private float interactionDistance = default;
-    [SerializeField] private Transform crosshairTransform = default;
-    [SerializeField] private Vector3 interactableCrosshairSize = default;
     [SerializeField] private LayerMask interactionLayers = default;
     private float interactChargeTimer = 0f;
-    private Vector3 defaultCrosshairSize;
     private IInteractable currentInteractable;
 
     [Header("Grab Parameters")]
     [SerializeField] private LayerMask grabableLayers;
-    [SerializeField] private Image crosshairImage;
+    [SerializeField] private TMP_Text crosshairText;
+    [SerializeField] private float grabCrosshairSize = 32;
+    [SerializeField] private Vector2 grabCrosshairPosition;
     [SerializeField] private Color grabCrosshairColor;
     [SerializeField] private Color useCrosshairColor;
     [SerializeField] private float maxThrowForce = 1.3f;
@@ -129,6 +129,8 @@ public class FirstPersonController : MonoBehaviour
     private bool isUsingGrabbedItem = false;
     private float throwChargeTimer = 0f;
     private float currentThrowForce = 0f;
+    private float defaultCrosshairSize;
+    private Vector2 defaultCrosshairPosition;
     private Color defaultCrosshairColor;
     private IGrabable currentGrabable;
     private IGrabable otherGrabable;
@@ -173,7 +175,7 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Grab Parameters")]
     [SerializeField] private Transform grabPoint;
-    [SerializeField] private Image focusText;
+    [SerializeField] private TMP_Text focusText;
     private Coroutine grabbedUseCoroutine;
 
     [Header("HandControlSettings")]
@@ -204,8 +206,11 @@ public class FirstPersonController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
 
-        defaultCrosshairSize = crosshairTransform.localScale;
-        defaultCrosshairColor = crosshairImage.color;
+        defaultCrosshairSize = crosshairText.fontSize;
+        defaultCrosshairPosition = crosshairText.rectTransform.localPosition;
+        defaultCrosshairColor = crosshairText.color;
+
+        DecideFocusText();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -277,7 +282,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 currentInteractable.OnLoseFocus();
                 currentInteractable = null;
-                ChangeCrosshairSize(defaultCrosshairSize);
+                ChangeCrosshairSize(defaultCrosshairSize, defaultCrosshairPosition);
             }
 
             anim.SetFloat("speed", 0f, 0.15f, Time.deltaTime);
@@ -521,11 +526,11 @@ public class FirstPersonController : MonoBehaviour
     {
         if (currentInteractable != null || (currentGrabable != null && (!currentGrabable.IsGrabbed || otherGrabable != null)))
         {
-            ChangeCrosshairSize(interactableCrosshairSize);
+            ChangeCrosshairSize(grabCrosshairSize, grabCrosshairPosition);
         }
         else
         {
-            ChangeCrosshairSize(defaultCrosshairSize);
+            ChangeCrosshairSize(defaultCrosshairSize, defaultCrosshairPosition);
         }
     }
 
@@ -533,22 +538,22 @@ public class FirstPersonController : MonoBehaviour
     {
         if (currentInteractable != null)
         {
-            focusText.sprite = currentInteractable.FocusImage;
-            focusText.color = crosshairImage.color;
+            focusText.text = currentInteractable.FocusText;
+            focusText.color = crosshairText.color;
         }
         else if (currentGrabable != null && !currentGrabable.IsGrabbed)
         {
-            focusText.sprite = currentGrabable.FocusImage;
-            focusText.color = crosshairImage.color;
+            focusText.text = currentGrabable.FocusText;
+            focusText.color = crosshairText.color;
         }
         else if (otherGrabable != null)
         {
-            focusText.sprite = otherGrabable.FocusImage;
-            focusText.color = crosshairImage.color;
+            focusText.text = otherGrabable.FocusText;
+            focusText.color = crosshairText.color;
         }
         else
         {
-            focusText.sprite = null;
+            focusText.text = null;
             focusText.color = Color.clear;
         }
     }
@@ -1134,9 +1139,13 @@ public class FirstPersonController : MonoBehaviour
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
-    private void ChangeCrosshairSize(Vector3 size) => crosshairTransform.localScale = size;
+    private void ChangeCrosshairSize(float size, Vector2 pos)
+    {
+        crosshairText.fontSize = size;
+        crosshairText.rectTransform.anchoredPosition = pos;
+    }
 
-    private void ChangeCrosshairColor(Color color) => crosshairImage.color = color;
+    private void ChangeCrosshairColor(Color color) => crosshairText.color = color;
 
     private int GetSubMeshIndex(Mesh mesh, int triangleIndex)
     {
@@ -1250,19 +1259,19 @@ public class FirstPersonController : MonoBehaviour
 
     }
 
-    public void TryChangingFocusText(IInteractable interactable, Sprite sprite)
+    public void TryChangingFocusText(IInteractable interactable, string text)
     {
         if (currentInteractable != null && currentInteractable == interactable)
         {
-            focusText.sprite = sprite;
+            focusText.text = text;
         }
     }
 
-    public void TryChangingFocusText(IGrabable grabable, Sprite sprite)
+    public void TryChangingFocusText(IGrabable grabable, string text)
     {
         if (currentGrabable != null && !currentGrabable.IsGrabbed && currentGrabable == grabable)
         {
-            focusText.sprite = sprite;
+            focusText.text = text;
         }
     }
 

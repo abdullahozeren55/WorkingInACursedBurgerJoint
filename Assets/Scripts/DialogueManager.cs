@@ -1,3 +1,5 @@
+using Febucci.UI;
+using Febucci.UI.Core;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -26,6 +28,7 @@ public class DialogueManager : MonoBehaviour
     {
         Default,
         Sinan,
+        Hikmet
     }
     public static DialogueManager Instance { get; private set; }
     [Space]
@@ -36,6 +39,9 @@ public class DialogueManager : MonoBehaviour
 
     [Space]
     [SerializeField] private FirstPersonController firstPersonController;
+    [Space]
+    [SerializeField] private TAnimPlayerBase textAnimPlayerBase;
+    [Space]
     [SerializeField] private AudioClip defaultDialogueAudio;
     [Space]
     [SerializeField] private TMP_Text dialogueText;
@@ -109,12 +115,22 @@ public class DialogueManager : MonoBehaviour
                 }
                 else
                 {
-                    DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
-                    dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+                    HandleDialogue();
                 }
             }
             
         }
+    }
+
+    private void HandleDialogue()
+    {
+        CameraManager.Instance.SwitchToCamera(dialogueData.dialogueSegments[dialogueIndex].cam);
+
+        RectTransform rect = dialogueText.rectTransform;
+        rect.anchoredPosition += dialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
+
+        DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
+        dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
     }
 
     public void StartCustomerDialogue(ICustomer customer, DialogueData data)
@@ -134,11 +150,7 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        //visualPart.SetActive(true);
-        DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
-        dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
-
-        //StartCoroutine(PlayDialogue(dialogueData.dialogueSegments[dialogueIndex]));
+        HandleDialogue();
     }
 
     private void EndCustomerDialogue()
@@ -146,7 +158,6 @@ public class DialogueManager : MonoBehaviour
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
         {
-            //visualPart.SetActive(false);
 
             ChoiceManager.Instance.StartTheCustomerChoice(dialogueData.question, dialogueData.optionA, dialogueData.optionD,
                                     currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, dialogueData.choiceCam);
@@ -158,9 +169,9 @@ public class DialogueManager : MonoBehaviour
 
         IsInDialogue = false;
 
-        firstPersonController.CanUseHeadbob = true;
+        textAnimPlayerBase.StartDisappearingText();
 
-        //visualPart.SetActive(false);
+        firstPersonController.CanUseHeadbob = true;
     }
 
     public void StartAfterInteractionSelfDialogue(IInteractable interactable, DialogueData data)
@@ -178,8 +189,6 @@ public class DialogueManager : MonoBehaviour
         currentInteractable = interactable;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
-
-        //visualPart.SetActive(true);
     }
 
     private void EndAfterInteractionSelfDialogue()
@@ -190,8 +199,6 @@ public class DialogueManager : MonoBehaviour
         IsInDialogue = false;
 
         firstPersonController.CanUseHeadbob = true;
-
-        //visualPart.SetActive(false);
     }
 
     public void StartSellerDialogue(DialogueData data)
@@ -207,8 +214,6 @@ public class DialogueManager : MonoBehaviour
         dialogueIndex = 0;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
-
-        //visualPart.SetActive(true);
     }
 
     private void EndSellerDialogue()
@@ -218,7 +223,6 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        //visualPart.SetActive(false);
     }
 
     public void StartSelfDialogue(DialogueData data)
@@ -235,7 +239,6 @@ public class DialogueManager : MonoBehaviour
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
 
-        //visualPart.SetActive(true);
     }
 
     private void EndSelfDialogue()
@@ -243,9 +246,6 @@ public class DialogueManager : MonoBehaviour
         IsInDialogue = false;
 
         firstPersonController.CanUseHeadbob = true;
-
-        //visualPart.SetActive(false);
-
 
         firstPersonController.CanMove = true;
     }
@@ -263,8 +263,6 @@ public class DialogueManager : MonoBehaviour
         dialogueIndex = 0;
 
         currentCoroutineTime = coroutineTimeBeforeSkip;
-
-        //visualPart.SetActive(true);
     }
 
     private void EndSelfDialogueInCutscene()
@@ -272,8 +270,6 @@ public class DialogueManager : MonoBehaviour
         IsInDialogue = false;
 
         firstPersonController.CanUseHeadbob = true;
-
-        //visualPart.SetActive(false);
 
         if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {

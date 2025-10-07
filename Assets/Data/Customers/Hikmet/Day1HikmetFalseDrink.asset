@@ -13,17 +13,21 @@ MonoBehaviour:
   m_Name: Day1HikmetFalseDrink
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: "M\xDC\u015ETER\u0130"
+  - fontType: 2
     DialogueToPrint: "Sar\u0131 Gula diil bu yav. Sar\u0131 Gula sar\u0131 rengliydi."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 3
+  - fontType: 1
     DialogueToPrint: "Ne kadar da ilgin\xE7 bir bilgi."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
     audioClip: {fileID: 0}
+    cam: 0
   type: 0
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
+  cutsceneType: 0
