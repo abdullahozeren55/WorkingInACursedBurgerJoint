@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSegments:
   - fontType: 2
+    talkingPerson: 1
     DialogueToPrint: "Sar\u0131 Gula diil bu yav. Sar\u0131 Gula sar\u0131 rengliydi."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
   - fontType: 1
+    talkingPerson: 0
     DialogueToPrint: "Ne kadar da ilgin\xE7 bir bilgi."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1

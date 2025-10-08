@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSegments:
   - fontType: 2
+    talkingPerson: 1
     DialogueToPrint: "Bana bi dene Glasik G\xF6fdeynen Sar\u0131 Gula m\u0131 ne
       verece\u011Fdin yeenim noldu o i\u015F?"
     DialogueOffset: {x: 0, y: 0}
@@ -21,6 +22,7 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     cam: 3
   - fontType: 1
+    talkingPerson: 0
     DialogueToPrint: "Haz\u0131rl\u0131yorum amcac\u0131m."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1

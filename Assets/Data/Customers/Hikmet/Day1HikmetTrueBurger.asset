@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSegments:
   - fontType: 2
+    talkingPerson: 1
     DialogueToPrint: "Saolas\u0131n yeenim. Bi dene de Sar\u0131 Gula verece\u011Fdin."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
   - fontType: 1
+    talkingPerson: 0
     DialogueToPrint: Hemen getiriyorum amca.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1

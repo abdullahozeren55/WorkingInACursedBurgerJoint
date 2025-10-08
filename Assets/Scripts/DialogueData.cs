@@ -10,6 +10,7 @@ public class DialogueData : ScriptableObject
     public class DialogueSegment
     {
         public DialogueManager.FontType fontType;
+        public DialogueManager.TalkingPerson talkingPerson;
 
         [TextArea] public string DialogueToPrint;
         public Vector2 DialogueOffset;

@@ -93,7 +93,7 @@ public class CutsceneManager : MonoBehaviour
             RectTransform bottomBar = cutsceneBars[1].GetComponent<RectTransform>();
 
             float barHeight = topBar.sizeDelta.y;
-            float duration = 0.5f;
+            float duration = 1.5f;
 
             // Barlarýn anchored position’larýný hedef pozisyonlara göre ayarla
             Vector2 topTarget = shouldGetReady ? Vector2.zero : new Vector2(0, barHeight);

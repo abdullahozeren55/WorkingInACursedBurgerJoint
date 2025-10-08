@@ -24,6 +24,13 @@ public class DialogueManager : MonoBehaviour
         TalkWithYourselfAfterInteraction
     }
 
+    public enum TalkingPerson
+    {
+        Sinan,
+        Customer0,
+        Customer1,
+    }
+
     public enum FontType
     {
         Default,
@@ -42,15 +49,21 @@ public class DialogueManager : MonoBehaviour
     [Space]
     [SerializeField] private FirstPersonController firstPersonController;
     [Space]
-    [SerializeField] private TAnimPlayerBase textAnimPlayerBase;
+    [SerializeField] private TAnimPlayerBase sinanTextAnim;
+    [SerializeField] private TAnimPlayerBase customer0TextAnim;
+    [SerializeField] private TAnimPlayerBase customer1TextAnim;
     [Space]
     [SerializeField] private AudioClip defaultDialogueAudio;
     [Space]
-    [SerializeField] private TMP_Text dialogueText;
+    [SerializeField] private TMP_Text sinanDialogueText;
+    [SerializeField] private TMP_Text customer0DialogueText;
+    [SerializeField] private TMP_Text customer1DialogueText;
     [Space]
     [SerializeField] private ShopSeller shopSeller;
 
-    private DialogueData dialogueData;
+    private DialogueData currentDialogueData;
+    private TMP_Text currentDialogueText;
+    private TAnimPlayerBase currentTextAnim;
 
     private int dialogueIndex = 0;
     private TalkType talkType;
@@ -72,7 +85,9 @@ public class DialogueManager : MonoBehaviour
         }
 
         //Clone it so changes on material only effects itself
-        dialogueText.fontMaterial = new Material(dialogueText.fontMaterial);
+        sinanDialogueText.fontMaterial = new Material(sinanDialogueText.fontMaterial);
+        customer0DialogueText.fontMaterial = new Material(customer0DialogueText.fontMaterial);
+        customer1DialogueText.fontMaterial = new Material(customer1DialogueText.fontMaterial);
 
         Instance = this;
 
@@ -97,14 +112,14 @@ public class DialogueManager : MonoBehaviour
             {
                 if (!IsSkipped && !IsDialogueComplete)
                 {
-                    textAnimPlayerBase.SkipTypewriter();
+                    currentTextAnim.SkipTypewriter();
                     IsSkipped = true;
                 }
                 else if (IsSkipped || IsDialogueComplete)
                 {
                     dialogueIndex++;
 
-                    if (dialogueIndex >= dialogueData.dialogueSegments.Length)
+                    if (dialogueIndex >= currentDialogueData.dialogueSegments.Length)
                     {
                         if (talkType == TalkType.TalkWithCustomer)
                             EndCustomerDialogue();
@@ -128,18 +143,65 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
+    private void DecideCurrentText()
+    {
+        switch (currentDialogueData.dialogueSegments[dialogueIndex].talkingPerson)
+        {
+            case TalkingPerson.Sinan:
+
+                if (currentDialogueText != sinanDialogueText)
+                {
+                    if (currentDialogueText != null)
+                        currentTextAnim.StartDisappearingText();
+
+                    currentDialogueText = sinanDialogueText;
+                    currentTextAnim = sinanTextAnim;
+                }
+
+                break;
+
+            case TalkingPerson.Customer0:
+
+                if (currentDialogueText != customer0DialogueText)
+                {
+                    if (currentDialogueText != null)
+                        currentTextAnim.StartDisappearingText();
+
+                    currentDialogueText = customer0DialogueText;
+                    currentTextAnim = customer0TextAnim;
+                }
+                
+                break;
+
+            case TalkingPerson.Customer1:
+
+                if (currentDialogueText != customer1DialogueText)
+                {
+                    if (currentDialogueText != null)
+                        currentTextAnim.StartDisappearingText();
+
+                    currentDialogueText = customer1DialogueText;
+                    currentTextAnim = customer1TextAnim;
+                }
+                
+                break;
+        }
+    }
+
     private void HandleDialogue()
     {
         IsSkipped = false;
         IsDialogueComplete = false;
 
-        CameraManager.Instance.SwitchToCamera(dialogueData.dialogueSegments[dialogueIndex].cam);
+        DecideCurrentText();
 
-        RectTransform rect = dialogueText.rectTransform;
-        rect.anchoredPosition += dialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
+        CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
 
-        DecideFontType(dialogueData.dialogueSegments[dialogueIndex].fontType);
-        dialogueText.SetText(dialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+        RectTransform rect = currentDialogueText.rectTransform;
+        rect.anchoredPosition += currentDialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
+
+        DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
+        currentDialogueText.SetText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
 
     }
 
@@ -151,11 +213,9 @@ public class DialogueManager : MonoBehaviour
     public void StartCustomerDialogue(ICustomer customer, DialogueData data)
     {
         GameManager.Instance.SetOrderThrowArea(false);
-        dialogueData = data;
+        currentDialogueData = data;
 
         IsInDialogue = true;
-        IsSkipped = false;
-        IsDialogueComplete = false;
 
         talkType = TalkType.TalkWithCustomer;
 
@@ -173,11 +233,11 @@ public class DialogueManager : MonoBehaviour
         IsSkipped = false;
         IsDialogueComplete = false;
 
-        if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
+        if (currentDialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
         {
 
-            ChoiceManager.Instance.StartTheCustomerChoice(dialogueData.question, dialogueData.optionA, dialogueData.optionD,
-                                    currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, dialogueData.choiceCam);
+            ChoiceManager.Instance.StartTheCustomerChoice(currentDialogueData.question, currentDialogueData.optionA, currentDialogueData.optionD,
+                                    currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, currentDialogueData.choiceCam);
         }
         else
         {
@@ -186,14 +246,14 @@ public class DialogueManager : MonoBehaviour
 
         IsInDialogue = false;
 
-        textAnimPlayerBase.StartDisappearingText();
+        currentTextAnim.StartDisappearingText();
 
         firstPersonController.CanUseHeadbob = true;
     }
 
     public void StartAfterInteractionSelfDialogue(IInteractable interactable, DialogueData data)
     {
-        dialogueData = data;
+        currentDialogueData = data;
 
         IsInDialogue = true;
 
@@ -218,7 +278,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartSellerDialogue(DialogueData data)
     {
-        dialogueData = data;
+        currentDialogueData = data;
 
         IsInDialogue = true;
 
@@ -240,7 +300,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartSelfDialogue(DialogueData data)
     {
-        dialogueData = data;
+        currentDialogueData = data;
 
         IsInDialogue = true;
 
@@ -263,7 +323,7 @@ public class DialogueManager : MonoBehaviour
 
     public void StartSelfDialogueInCutscene(DialogueData data)
     {
-        dialogueData = data;
+        currentDialogueData = data;
 
         IsInDialogue = true;
 
@@ -280,10 +340,10 @@ public class DialogueManager : MonoBehaviour
 
         firstPersonController.CanUseHeadbob = true;
 
-        if (dialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
+        if (currentDialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {
             CutsceneManager.Instance.StopCutscene();
-            CutsceneManager.Instance.PlayCutscene(dialogueData.cutsceneType);
+            CutsceneManager.Instance.PlayCutscene(currentDialogueData.cutsceneType);
         }
     }
 
@@ -293,7 +353,9 @@ public class DialogueManager : MonoBehaviour
         {
             if (type == fontAtlasDatas[i].type)
             {
-                dialogueText.fontMaterial.SetTexture("_MainTex", fontAtlasDatas[i].atlasSprite);
+                if (currentDialogueText.fontMaterial.GetTexture("_MainTex") != fontAtlasDatas[i].atlasSprite)
+                    currentDialogueText.fontMaterial.SetTexture("_MainTex", fontAtlasDatas[i].atlasSprite);
+
                 break;
             }
         }

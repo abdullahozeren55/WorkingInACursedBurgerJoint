@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueSegments:
   - fontType: 2
+    talkingPerson: 1
     DialogueToPrint: "Tamam yeenim gals\u0131n. Bu gadar d\xFC\u015F\xFCncek ne var\u0131d\u0131?
       Ald\u0131 \xFCsd\xFC yar\u0131n verece\u011Fdim baras\u0131n\u0131. H\u0131rs\u0131z
       m\u0131y\u0131m ben?"
@@ -22,6 +23,7 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     cam: 3
   - fontType: 1
+    talkingPerson: 0
     DialogueToPrint: Amca be-
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
