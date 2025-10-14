@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 075a3b9d60a19f444836bb2aba352f11, type: 3}
   m_Name: WHITEPOP
   m_EditorClassIdentifier: 
+  focusText: Beyaz Kula
   drinkType: 2
   handGrabType: 1
   isUseable: 0

@@ -22,8 +22,7 @@ public class Drink : MonoBehaviour, IGrabable
 
     public DrinkData data;
 
-    public string FocusText { get => focusText; set => focusText = value; }
-    [SerializeField] private string focusText;
+    public string FocusText { get => data.focusText; set => data.focusText = value; }
     [Space]
 
     private AudioSource audioSource;

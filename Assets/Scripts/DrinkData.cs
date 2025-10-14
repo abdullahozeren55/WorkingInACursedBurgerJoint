@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewDrinkData", menuName = "Data/Drink")]
 public class DrinkData : ScriptableObject
 {
+    public string focusText;
     public GameManager.DrinkTypes drinkType;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
