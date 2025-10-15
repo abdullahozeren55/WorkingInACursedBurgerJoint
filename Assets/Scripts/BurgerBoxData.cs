@@ -7,7 +7,7 @@ using UnityEngine;
 public class BurgerBoxData : ScriptableObject
 {
     public bool isUseable = false;
-    public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandGrabTypes[] handGrabTypes; //0 for open, 1 for close
     [Space]
     public float timeToPutOnTray = 0.3f;
     [Space]

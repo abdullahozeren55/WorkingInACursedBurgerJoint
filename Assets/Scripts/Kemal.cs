@@ -73,6 +73,8 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private GameObject[] ordersInRightHand;
     [SerializeField] private GameObject[] ordersInLeftHand;
 
+    public bool TrueDrinkReceived { get => trueDrinkReceived; set => trueDrinkReceived = value; }
+    public bool TrueBurgerReceived { get => trueBurgerReceived; set => trueBurgerReceived = value; }
     private bool trueBurgerReceived;
     private bool trueDrinkReceived;
 
@@ -99,7 +101,9 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;
-    [Space]
+
+    public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
+    [SerializeField] private Transform cameraLookAt;
 
     [Header("Push Player Settings")]
     [SerializeField] private Transform rayPointForPushingPlayer;
@@ -127,8 +131,8 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
     {
         day = GameManager.Instance.DayCount;
 
-        trueBurgerReceived = false;
-        trueDrinkReceived = false;
+        TrueBurgerReceived = false;
+        TrueDrinkReceived = false;
 
         for (int i = 0; i < CustomerDayChanges.Length; i++)
         {
@@ -292,17 +296,17 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
         if (CurrentAction == ICustomer.Action.ReadyToOrder)
         {
             CurrentAction = ICustomer.Action.WaitingForOrder;
-            ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+            ChangeLayer(interactableLayer);
             GameManager.Instance.SetOrderThrowArea(true);
         }
         else if (CurrentAction == ICustomer.Action.WaitingForOrder)
         {
-            ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+            ChangeLayer(interactableLayer);
             GameManager.Instance.SetOrderThrowArea(true);
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseBurger)
         {
-            if (trueDrinkReceived)
+            if (TrueDrinkReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueDrink;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -317,7 +321,7 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseDrink)
         {
-            if (trueBurgerReceived)
+            if (TrueBurgerReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueBurger;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -377,7 +381,7 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
     public void OnFocus()
     {
-        ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+        ChangeLayer(interactableLayer);
     }
 
     public void OnLoseFocus()
@@ -415,9 +419,9 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleBurgerTrue()
     {
-        trueBurgerReceived = true;
+        TrueBurgerReceived = true;
 
-        if (trueDrinkReceived)
+        if (TrueDrinkReceived)
         {
             ordersInLeftHand[0].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;
@@ -441,9 +445,9 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleDrinkTrue(GameManager.DrinkTypes drinkType)
     {
-        trueDrinkReceived = true;
+        TrueDrinkReceived = true;
 
-        if (trueBurgerReceived)
+        if (TrueBurgerReceived)
         {
             ordersInLeftHand[(int)drinkType + 1].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;

@@ -68,6 +68,8 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
+    public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
+    [SerializeField] private Transform cameraLookAt;
 
     [SerializeField] DialogueData sukranSelfTalkData;
     [SerializeField] DialogueData finalDialogueData; 
@@ -97,6 +99,11 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     private bool shouldPlayFootstep;
     private Material currentGroundMaterial;
     private AudioClip lastPlayedFootstep;
+
+    public bool TrueDrinkReceived { get => trueDrinkReceived; set => trueDrinkReceived = value; }
+    public bool TrueBurgerReceived { get => trueBurgerReceived; set => trueBurgerReceived = value; }
+    private bool trueBurgerReceived;
+    private bool trueDrinkReceived;
 
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;

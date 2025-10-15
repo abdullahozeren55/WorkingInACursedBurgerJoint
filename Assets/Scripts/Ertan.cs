@@ -65,6 +65,8 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
+    public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
+    [SerializeField] private Transform cameraLookAt;
 
     [SerializeField] private Transform restaurantDestination; //destinationToArrive
     [SerializeField] private Transform homeDestination; //destinationToDisappear
@@ -72,6 +74,8 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private GameObject[] ordersInRightHand;
     [SerializeField] private GameObject[] ordersInLeftHand;
 
+    public bool TrueDrinkReceived { get => trueDrinkReceived; set => trueDrinkReceived = value; }
+    public bool TrueBurgerReceived { get => trueBurgerReceived; set => trueBurgerReceived = value; }
     private bool trueBurgerReceived;
     private bool trueDrinkReceived;
 
@@ -122,8 +126,8 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     private void OnEnable()
     {
-        trueBurgerReceived = false;
-        trueDrinkReceived = false;
+        TrueBurgerReceived = false;
+        TrueDrinkReceived = false;
 
         foreach (GameObject item in ordersInLeftHand)
         {
@@ -288,7 +292,7 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseBurger)
         {
-            if (trueDrinkReceived)
+            if (TrueDrinkReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueDrink;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -303,7 +307,7 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseDrink)
         {
-            if (trueBurgerReceived)
+            if (TrueBurgerReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueBurger;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -413,9 +417,9 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleBurgerTrue()
     {
-        trueBurgerReceived = true;
+        TrueBurgerReceived = true;
 
-        if (trueDrinkReceived)
+        if (TrueDrinkReceived)
         {
             ordersInLeftHand[0].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;
@@ -439,9 +443,9 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleDrinkTrue(GameManager.DrinkTypes drinkType)
     {
-        trueDrinkReceived = true;
+        TrueDrinkReceived = true;
 
-        if (trueBurgerReceived)
+        if (TrueBurgerReceived)
         {
             ordersInLeftHand[(int)drinkType + 1].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;

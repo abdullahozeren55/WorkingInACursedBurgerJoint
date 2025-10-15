@@ -79,6 +79,7 @@ public class CameraManager : MonoBehaviour
     private float normalFOV;
 
     private CinemachineVirtualCamera firstPersonCam;
+    private CinemachineVirtualCamera customerDialogueCam;
 
     private CinemachineBasicMultiChannelPerlin perlin;
     private Vignette vignette;
@@ -111,8 +112,10 @@ public class CameraManager : MonoBehaviour
                 perlin = firstPersonCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
 
                 normalFOV = firstPersonCam.m_Lens.FieldOfView;
-
-                break;
+            }
+            else if (entry.camName == CameraName.CustomerDialogue)
+            {
+                customerDialogueCam = entry.vCam;
             }
         }
 
@@ -160,6 +163,11 @@ public class CameraManager : MonoBehaviour
     public CinemachineVirtualCamera GetCamera()
     {
         return currentCam.vCam;
+    }
+
+    public void SetCustomerCamLookAt(Transform lookAt)
+    {
+        customerDialogueCam.LookAt = lookAt;
     }
 
     public void SwitchToFirstPersonCamera()

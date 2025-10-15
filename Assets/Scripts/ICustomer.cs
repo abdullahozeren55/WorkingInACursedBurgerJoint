@@ -93,4 +93,9 @@ public interface ICustomer
     public GameManager.BurgerTypes BurgerType { get; set; }
     public GameManager.DrinkTypes DrinkType { get; set; }
 
+    public Transform CameraLookAt { get; set; }
+
+    public bool TrueDrinkReceived { get; set; }
+    public bool TrueBurgerReceived { get; set; }
+
 }

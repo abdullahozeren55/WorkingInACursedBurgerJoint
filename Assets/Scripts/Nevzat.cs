@@ -67,6 +67,8 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
+    public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
+    [SerializeField] private Transform cameraLookAt;
 
     [SerializeField] private Transform restaurantDestination; //destinationToArrive
     [SerializeField] private Transform homeDestination; //destinationToDisappear
@@ -74,6 +76,11 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private GameObject[] ordersInRightHand;
 
     private Transform currentDestination;
+
+    public bool TrueDrinkReceived { get => trueDrinkReceived; set => trueDrinkReceived = value; }
+    public bool TrueBurgerReceived { get => trueBurgerReceived; set => trueBurgerReceived = value; }
+    private bool trueBurgerReceived;
+    private bool trueDrinkReceived;
 
     [Header("Components")]
     private Animator anim;

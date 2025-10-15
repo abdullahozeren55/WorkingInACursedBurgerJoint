@@ -226,11 +226,14 @@ public class GameManager : MonoBehaviour
         DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
     }
 
-    public void SetCurrentCustomer(ICustomer customer) => currentCustomer = customer;
-
+    public void SetCurrentCustomer(ICustomer customer)
+    {
+        currentCustomer = customer;
+        CameraManager.Instance.SetCustomerCamLookAt(currentCustomer.CameraLookAt);
+    }
     public void CustomerReceiveDrink(Drink drink)
     {
-        if (currentCustomer != null)
+        if (currentCustomer != null && !currentCustomer.TrueDrinkReceived)
         {
             currentCustomer.ReceiveDrink(drink);
             lastThrowedDrink = drink;
@@ -244,7 +247,7 @@ public class GameManager : MonoBehaviour
 
     public void CustomerReceiveBurger(BurgerBox burgerBox)
     {
-        if (currentCustomer != null)
+        if (currentCustomer != null && !currentCustomer.TrueBurgerReceived)
         {
             currentCustomer.ReceiveBurger(burgerBox);
             lastThrowedBurgerBox = burgerBox;

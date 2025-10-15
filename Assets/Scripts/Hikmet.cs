@@ -67,6 +67,8 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     [SerializeField] private bool outlineShouldBeRed;
+    public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
+    [SerializeField] private Transform cameraLookAt;
 
     [SerializeField] private Transform restaurantDestination; //destinationToArrive
     [SerializeField] private Transform homeDestination; //destinationToDisappear
@@ -74,6 +76,8 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private GameObject[] ordersInRightHand;
     [SerializeField] private GameObject[] ordersInLeftHand;
 
+    public bool TrueDrinkReceived { get => trueDrinkReceived; set => trueDrinkReceived = value; }
+    public bool TrueBurgerReceived { get => trueBurgerReceived; set => trueBurgerReceived = value; }
     private bool trueBurgerReceived;
     private bool trueDrinkReceived;
 
@@ -133,8 +137,8 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
     {
         day = GameManager.Instance.DayCount;
 
-        trueBurgerReceived = false;
-        trueDrinkReceived = false;
+        TrueBurgerReceived = false;
+        TrueDrinkReceived = false;
         
         agent.speed = normalWalkSpeed;
 
@@ -303,17 +307,17 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
         if (CurrentAction == ICustomer.Action.ReadyToOrder)
         {
             CurrentAction = ICustomer.Action.WaitingForOrder;
-            ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+            ChangeLayer(interactableLayer);
             GameManager.Instance.SetOrderThrowArea(true);
         }
         else if (CurrentAction == ICustomer.Action.WaitingForOrder)
         {
-            ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+            ChangeLayer(interactableLayer);
             GameManager.Instance.SetOrderThrowArea(true);
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseBurger)
         {
-            if (trueDrinkReceived)
+            if (TrueDrinkReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueDrink;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -328,7 +332,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseDrink)
         {
-            if (trueBurgerReceived)
+            if (TrueBurgerReceived)
                 CurrentAction = ICustomer.Action.ReceivedTrueBurger;
             else
                 CurrentAction = ICustomer.Action.WaitingForOrder;
@@ -343,6 +347,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.GotAnswerD || CurrentAction == ICustomer.Action.NotGotAnswer)
         {
+            ChangeLayer(customerLayer);
             skinnedMeshRenderer.material = hikmetOutfit1Angry;
             anim.SetBool("giveOtherBack", true);
             anim.SetTrigger("giveBack");
@@ -437,9 +442,9 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleBurgerTrue()
     {
-        trueBurgerReceived = true;
+        TrueBurgerReceived = true;
 
-        if (trueDrinkReceived)
+        if (TrueDrinkReceived)
         {
             ordersInRightHand[0].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;
@@ -463,9 +468,9 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleDrinkTrue(GameManager.DrinkTypes drinkType)
     {
-        trueDrinkReceived = true;
+        TrueDrinkReceived = true;
 
-        if (trueBurgerReceived)
+        if (TrueBurgerReceived)
         {
             ordersInRightHand[(int)drinkType + 1].SetActive(true);
             CurrentAction = ICustomer.Action.ReceivedAllOrder;
