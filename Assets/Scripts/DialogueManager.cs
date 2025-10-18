@@ -12,7 +12,7 @@ public class DialogueManager : MonoBehaviour
     public class FontAtlasData
     {
         public FontType type;
-        public Texture2D atlasSprite;
+        public Color fontColor;
     }
     public enum TalkType
     {
@@ -83,11 +83,6 @@ public class DialogueManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        //Clone it so changes on material only effects itself
-        sinanDialogueText.fontMaterial = new Material(sinanDialogueText.fontMaterial);
-        customer0DialogueText.fontMaterial = new Material(customer0DialogueText.fontMaterial);
-        customer1DialogueText.fontMaterial = new Material(customer1DialogueText.fontMaterial);
 
         Instance = this;
 
@@ -355,8 +350,8 @@ public class DialogueManager : MonoBehaviour
         {
             if (type == fontAtlasDatas[i].type)
             {
-                if (currentDialogueText.fontMaterial.GetTexture("_MainTex") != fontAtlasDatas[i].atlasSprite)
-                    currentDialogueText.fontMaterial.SetTexture("_MainTex", fontAtlasDatas[i].atlasSprite);
+                if (currentDialogueText.color != fontAtlasDatas[i].fontColor)
+                    currentDialogueText.color = fontAtlasDatas[i].fontColor;
 
                 break;
             }

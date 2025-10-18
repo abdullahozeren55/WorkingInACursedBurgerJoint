@@ -21,8 +21,9 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     cam: 3
   type: 1
-  question: FSDFSFSFSDFSDFSFSDGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
-  optionA: GDSSSSS
-  optionD: DSGGGGGGG
+  question: "Burgeri vermeli miyim? Belki de paras\u0131n\u0131 yar\u0131n getirir.
+    Ama ya getirmezse?"
+  optionA: VER
+  optionD: VERME
   choiceCam: 0
   cutsceneType: 0

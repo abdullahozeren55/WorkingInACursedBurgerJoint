@@ -46,7 +46,8 @@ public class ChoiceManager : MonoBehaviour
     [Space]
     [SerializeField] private Volume volume;
     private ColorAdjustments colorAdjust;
-    [SerializeField] private float fadeTime = 0.5f;
+    [SerializeField] private float fadeInTime = 1.5f;
+    [SerializeField] private float fadeOutTime = 0.75f;
     [SerializeField] private float slowedDownTimeSpeed = 0.25f;
     [SerializeField] private float cameraFovMultiplier = 2f;
     [SerializeField] private float timeToChoose = 5f;
@@ -61,6 +62,12 @@ public class ChoiceManager : MonoBehaviour
     [SerializeField] private AudioClip slowMoBeginSound;
     [SerializeField] private AudioClip slowMoEndsSound;
     [SerializeField] private AudioClip clockTickingSoundFx;
+    [Space]
+    [SerializeField] private float shakeIntensity = 0.5f; // 0.5–1.5 arası dene
+    [SerializeField] private float shakeSpeed = 50f; // titreşim hızı
+    private Vector2 aBasePos;
+    private Vector2 dBasePos;
+    private bool isShaking = false;
 
     [Header("Dialogue Parameters")]
     [SerializeField] private DialogueData optionADialogueData;
@@ -93,14 +100,13 @@ public class ChoiceManager : MonoBehaviour
 
     private void Awake()
     {
-        // Eğer Instance zaten varsa, bu nesneyi yok et
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
+        DontDestroyOnLoad(gameObject);
 
         volume.profile.TryGet(out colorAdjust);
 
@@ -230,6 +236,39 @@ public class ChoiceManager : MonoBehaviour
             }
 
         }
+
+        if (isShaking)
+        {
+            float t = Time.unscaledTime * shakeSpeed;
+
+            keyboardAImage.rectTransform.anchoredPosition = aBasePos + new Vector2(
+                Mathf.PerlinNoise(t, 0f) - 0.5f,
+                Mathf.PerlinNoise(0f, t) - 0.5f
+            ) * shakeIntensity;
+
+            keyboardDImage.rectTransform.anchoredPosition = dBasePos + new Vector2(
+                Mathf.PerlinNoise(t + 10f, 0f) - 0.5f,
+                Mathf.PerlinNoise(0f, t + 10f) - 0.5f
+            ) * shakeIntensity;
+        }
+    }
+
+    private void StartKeyboardShake()
+    {
+        if (isShaking) return;
+        isShaking = true;
+
+        aBasePos = keyboardAImage.rectTransform.anchoredPosition;
+        dBasePos = keyboardDImage.rectTransform.anchoredPosition;
+    }
+
+    private void StopKeyboardShake()
+    {
+        isShaking = false;
+
+        // geri sıfırla
+        keyboardAImage.rectTransform.anchoredPosition = aBasePos;
+        keyboardDImage.rectTransform.anchoredPosition = dBasePos;
     }
 
     private void HandleKeyboardImages()
@@ -262,9 +301,9 @@ public class ChoiceManager : MonoBehaviour
         CameraManager.CameraName camToSwitch
         )
     {
-        questionTextAnim.ShowText(question);
-        optionATextAnim.ShowText(optionA);
-        optionDTextAnim.ShowText(optionD);
+        questionTextAnim.ShowText("<shake>" + question + "</shake>");
+        optionATextAnim.ShowText("<shake>" + optionA + "</shake>");
+        optionDTextAnim.ShowText("<shake>" + optionD + "</shake>");
 
         timerImage.fillAmount = 1f;
 
@@ -284,6 +323,8 @@ public class ChoiceManager : MonoBehaviour
         changedCameraFov = originalCameraFov * cameraFovMultiplier;
 
         IsInChoice = true;
+
+        StartKeyboardShake();
 
         fadeInAndOutCoroutine = StartCoroutine(FadeInAndOut());
     }
@@ -330,9 +371,9 @@ public class ChoiceManager : MonoBehaviour
         float elapsedTime = 0f;
         float value = 0f;
 
-        while (elapsedTime < fadeTime)
+        while (elapsedTime < fadeOutTime)
         {
-            value = elapsedTime / fadeTime;
+            value = elapsedTime / fadeOutTime;
 
             colorAdjust.saturation.value = Mathf.Lerp(-100f, 0f, value);
             virtualCamera.m_Lens.FieldOfView = Mathf.Lerp(currentFov, originalCameraFov, value);
@@ -394,9 +435,9 @@ public class ChoiceManager : MonoBehaviour
         float timeElapsed = 0f;
         float value = 0f;
 
-        while (timeElapsed < fadeTime)
+        while (timeElapsed < fadeInTime)
         {
-            value = timeElapsed / fadeTime;
+            value = timeElapsed / fadeInTime;
 
             colorAdjust.saturation.value = Mathf.Lerp(0f, -100f, value);
             Time.timeScale = Mathf.Lerp(1f, slowedDownTimeSpeed, value);
@@ -463,6 +504,7 @@ public class ChoiceManager : MonoBehaviour
         timeElapsed = 0f;
         value = 0f;
 
+        startCameraFov = virtualCamera.m_Lens.FieldOfView;
         timerImageColor = timerImage.color;
         timerBackgroundImageColor = timerBackgroundImage.color;
         keyboardAImageColor = keyboardAImage.color;
@@ -470,9 +512,9 @@ public class ChoiceManager : MonoBehaviour
 
         slowMoEndsSource.PlayOneShot(slowMoEndsSound);
 
-        while (timeElapsed < fadeTime)
+        while (timeElapsed < fadeOutTime)
         {
-            value = timeElapsed / fadeTime;
+            value = timeElapsed / fadeOutTime;
 
             colorAdjust.saturation.value = Mathf.Lerp(-100f, 0f, value);
             Time.timeScale = Mathf.Lerp(slowedDownTimeSpeed, 1f, value);
