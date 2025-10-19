@@ -35,6 +35,7 @@ public class FirstPersonController : MonoBehaviour
     public KeyCode crouchKey = KeyCode.LeftControl;
     public KeyCode interactKey = KeyCode.Mouse0;
     public KeyCode throwKey = KeyCode.Mouse1;
+    public KeyCode phoneKey = KeyCode.Tab;
 
     [Header("Movement Parameters")]
     [SerializeField] private float walkSpeed = 3.0f;
@@ -187,6 +188,10 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 handUseStartOffset;
     private Vector3 handUseDelta; // mouse hareketlerini biriktirecek
 
+    [Header("Phone Settings")]
+    [SerializeField] GameObject phoneGO;
+    private IGrabable phoneGrabable;
+
     [Header("UI Settings")]
     [SerializeField] private GameObject interactUI;
     [SerializeField] private GameObject interact2UI;
@@ -212,6 +217,8 @@ public class FirstPersonController : MonoBehaviour
         mainCamera = Camera.main;
         characterController = GetComponent<CharacterController>();
         anim = GetComponent<Animator>();
+
+        phoneGrabable = phoneGO.GetComponent<IGrabable>();
 
         defaultCrosshairSize = crosshairText.fontSize;
         defaultCrosshairPosition = crosshairText.rectTransform.localPosition;
@@ -270,6 +277,15 @@ public class FirstPersonController : MonoBehaviour
 
             if (useFootsteps)
                 HandleFootsteps();
+
+            if (Input.GetKeyDown(phoneKey) && (currentGrabable == null || !currentGrabable.IsGrabbed))
+            {
+                if (!phoneGrabable.IsGrabbed)
+                {
+                    ChangeCurrentGrabable(phoneGrabable);
+                }
+                    
+            }
                 
 
             ApplyFinalMovements();
@@ -902,79 +918,107 @@ public class FirstPersonController : MonoBehaviour
     {
         if (currentGrabable != null && currentGrabable.IsGrabbed && !isUsingGrabbedItem)
         {
-            if (Input.GetKeyDown(throwKey)) // right click starts
+            if (phoneGrabable.IsGrabbed)
             {
-                ResetHandAnim();
-
-                CameraManager.Instance.PlayThrowEffects(true);
-
-                anim.SetBool("chargingThrow", true);
-
-                DecideOutlineAndCrosshair();
-
-                if (singleHandThrowCoroutine != null)
+                if (Input.GetKeyDown(phoneKey))
                 {
-                    StopCoroutine(singleHandThrowCoroutine);
-                    singleHandThrowCoroutine = null;
+                    if (rightHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(rightHandRigLerpCoroutine);
+                        rightHandRigLerpCoroutine = null;
+                    }
+
+                    rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(false, false));
+
+                    ResetHandAnim();
+
+                    SetHandAnimBoolsOff();
+
+                    phoneGrabable.OnDrop(Vector3.zero, 0f);
+
+                    currentGrabable = null;
+
+                    DecideOutlineAndCrosshair();
                 }
-
-                singleHandThrowCoroutine = StartCoroutine(SingleHandThrow());
-
+                
             }
-            if (Input.GetKeyUp(throwKey))
+            else
             {
-
-                CameraManager.Instance.PlayThrowEffects(false);
-
-                SetHandAnimBoolsOff();
-
-                if (singleHandThrowCoroutine != null)
+                if (Input.GetKeyDown(throwKey)) // right click starts
                 {
-                    StopCoroutine(singleHandThrowCoroutine);
-                    singleHandThrowCoroutine = null;
-                }
+                    ResetHandAnim();
 
-                if (rightHandRigLerpCoroutine != null)
+                    CameraManager.Instance.PlayThrowEffects(true);
+
+                    anim.SetBool("chargingThrow", true);
+
+                    DecideOutlineAndCrosshair();
+
+                    if (singleHandThrowCoroutine != null)
+                    {
+                        StopCoroutine(singleHandThrowCoroutine);
+                        singleHandThrowCoroutine = null;
+                    }
+
+                    singleHandThrowCoroutine = StartCoroutine(SingleHandThrow());
+
+                }
+                if (Input.GetKeyUp(throwKey))
                 {
-                    StopCoroutine(rightHandRigLerpCoroutine);
-                    rightHandRigLerpCoroutine = null;
+
+                    CameraManager.Instance.PlayThrowEffects(false);
+
+                    
+
+                    if (singleHandThrowCoroutine != null)
+                    {
+                        StopCoroutine(singleHandThrowCoroutine);
+                        singleHandThrowCoroutine = null;
+                    }
+
+                    if (rightHandRigLerpCoroutine != null)
+                    {
+                        StopCoroutine(rightHandRigLerpCoroutine);
+                        rightHandRigLerpCoroutine = null;
+                    }
+
+                    rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(false, false));
+
+                    ResetHandAnim();
+
+                    //TARGET CALCULATION START
+
+                    Vector3 targetPoint;
+                    Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+
+                    if (Physics.Raycast(ray, out RaycastHit hit, 50f, ~LayerMask.GetMask("Player")))
+                        targetPoint = hit.point; // crosshair neye bakýyorsa
+                    else
+                        targetPoint = ray.GetPoint(50f); // boþluða doðru uzaða
+
+                    Vector3 throwDir = (targetPoint - grabPoint.position).normalized;
+
+                    //TARGET CALCULATION END
+
+                    if (throwChargeTimer <= quickTapThreshold)
+                    {
+                        currentGrabable.OnDrop(throwDir, isCrouching ? minThrowForce * 0.5f : IsSprinting ? minThrowForce * 1.5f : minThrowForce);
+                    }
+                    else
+                    {
+                        currentGrabable.OnThrow(throwDir, isCrouching ? currentThrowForce * 0.5f : IsSprinting ? currentThrowForce * 1.5f : currentThrowForce);
+                    }
+
+                    throwChargeTimer = 0f;
+
+                    anim.SetBool("throw", false);
+
+                    currentGrabable = null;
+
+                    DecideOutlineAndCrosshair();
                 }
-
-                rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(false, false));
-
-                ResetHandAnim();
-
-                //TARGET CALCULATION START
-
-                Vector3 targetPoint;
-                Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-
-                if (Physics.Raycast(ray, out RaycastHit hit, 50f, ~LayerMask.GetMask("Player")))
-                    targetPoint = hit.point; // crosshair neye bakýyorsa
-                else
-                    targetPoint = ray.GetPoint(50f); // boþluða doðru uzaða
-
-                Vector3 throwDir = (targetPoint - grabPoint.position).normalized;
-
-                //TARGET CALCULATION END
-
-                if (throwChargeTimer <= quickTapThreshold)
-                {
-                    currentGrabable.OnDrop(throwDir, isCrouching ? minThrowForce * 0.5f : IsSprinting ? minThrowForce * 1.5f : minThrowForce);
-                }
-                else
-                {
-                    currentGrabable.OnThrow(throwDir, isCrouching ? currentThrowForce * 0.5f : IsSprinting ? currentThrowForce * 1.5f : currentThrowForce);
-                }
-
-                throwChargeTimer = 0f;
-
-                anim.SetBool("throw", false);
-
-                currentGrabable = null;
-
-                DecideOutlineAndCrosshair();
             }
+            
         }
         else if (Input.GetKeyDown(interactKey) && currentGrabable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
         {
@@ -990,17 +1034,10 @@ public class FirstPersonController : MonoBehaviour
                     rightHandRigLerpCoroutine = null;
                 }
 
-                if (leftHandRigLerpCoroutine != null)
-                {
-                    StopCoroutine(leftHandRigLerpCoroutine);
-                    leftHandRigLerpCoroutine = null;
-                }
-
                 currentPositionOffsetForRightHand = currentGrabable.GrabPositionOffset;
                 currentRotationOffsetForRightHand = currentGrabable.GrabRotationOffset;
 
                 rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
-                leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
 
                 DecideOutlineAndCrosshair();
             }
