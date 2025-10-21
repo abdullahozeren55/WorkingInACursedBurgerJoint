@@ -47,12 +47,16 @@ public class Phone : MonoBehaviour, IGrabable
 
     private Coroutine useCoroutine;
 
+    private float lastGrabbedTime;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
         meshRenderer = GetComponent<MeshRenderer>();
 
         meshRenderer.enabled = false;
+
+        lastGrabbedTime = 0f;
 
         IsGrabbed = false;
     }
@@ -64,6 +68,8 @@ public class Phone : MonoBehaviour, IGrabable
         meshRenderer.enabled = true;
 
         PlayAudioWithRandomPitch(0);
+
+        lastGrabbedTime = Time.time;
 
     }
     public void OnFocus()
@@ -81,15 +87,26 @@ public class Phone : MonoBehaviour, IGrabable
 
     public void OnDrop(Vector3 direction, float force)
     {
-
-        Invoke("TurnOffMeshRenderer", 0.15f);
-
-        if (useCoroutine != null)
+        if (Time.time >= lastGrabbedTime + 0.2f)
         {
-            StopCoroutine(useCoroutine);
-            useCoroutine = null;
+            Invoke("TurnOffMeshRenderer", 0.15f);
+
+            if (useCoroutine != null)
+            {
+                StopCoroutine(useCoroutine);
+                useCoroutine = null;
+            }
+        }
+        else
+        {
+            Invoke("OnDropDelay", 0.2f - (Time.time - lastGrabbedTime));
         }
 
+    }
+
+    private void OnDropDelay()
+    {
+        OnDrop(Vector3.zero, 0f);
     }
 
     public void OnThrow(Vector3 direction, float force)

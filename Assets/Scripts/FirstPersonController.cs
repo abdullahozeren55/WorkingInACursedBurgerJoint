@@ -189,10 +189,14 @@ public class FirstPersonController : MonoBehaviour
     private Vector3 handUseDelta; // mouse hareketlerini biriktirecek
 
     [Header("Phone Settings")]
-    [SerializeField] GameObject phoneGO;
+    [SerializeField] private GameObject phoneGO;
+    [SerializeField] private float phoneCoyoteForInteract = 0.35f;
+    [SerializeField] private float phoneCoyoteForGrab = 0.19f;
     private IGrabable phoneGrabable;
+    private Phone phoneSC;
     private bool canUsePhone;
     private float lastPhoneKeyPressedTime;
+    private float coyoteTimeForPhone;
 
     [Header("UI Settings")]
     [SerializeField] private GameObject interactUI;
@@ -221,6 +225,7 @@ public class FirstPersonController : MonoBehaviour
         anim = GetComponent<Animator>();
 
         phoneGrabable = phoneGO.GetComponent<IGrabable>();
+        phoneSC = phoneGO.GetComponent<Phone>();
 
         defaultCrosshairSize = crosshairText.fontSize;
         defaultCrosshairPosition = crosshairText.rectTransform.localPosition;
@@ -723,7 +728,7 @@ public class FirstPersonController : MonoBehaviour
         if (currentGrabable == null || !currentGrabable.IsGrabbed || !currentGrabable.IsUseable)
         {
             // EL BOS normal interact (tap)
-            if (Input.GetKeyDown(interactKey) && !phoneGrabable.IsGrabbed)
+            if (Input.GetKeyDown(interactKey))
             {
                 TryToInteract();
             }
@@ -747,7 +752,7 @@ public class FirstPersonController : MonoBehaviour
 
             if (Input.GetKeyUp(interactKey))
             {
-                if (!isUsingGrabbedItem && !phoneGrabable.IsGrabbed)
+                if (!isUsingGrabbedItem)
                 {
                     // kýsa týk interact
                     TryToInteract();
@@ -766,7 +771,7 @@ public class FirstPersonController : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyUp(interactKey) && !phoneGrabable.IsGrabbed)
+            if (Input.GetKeyUp(interactKey))
             {
                 TryToInteract();
             }
@@ -786,9 +791,8 @@ public class FirstPersonController : MonoBehaviour
 
                     anim.SetTrigger("talk");
                 }
-                else if ((currentGrabable == null || !currentGrabable.IsGrabbed))
+                else if ((currentGrabable == null || !currentGrabable.IsGrabbed) && !phoneGrabable.IsGrabbed)
                 {
-                    canUsePhone = false;
 
                     if (rightHandRigLerpCoroutine != null)
                     {
@@ -802,6 +806,8 @@ public class FirstPersonController : MonoBehaviour
                         currentPositionOffsetForRightHand = positionOffsetForRightHandInteraction;
                         currentRotationOffsetForRightHand = rotationOffsetForRightHandInteraction;
                     }
+
+                    coyoteTimeForPhone = phoneCoyoteForInteract;
 
                     rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, true));
                 }
@@ -1053,7 +1059,6 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable && !phoneGrabable.IsGrabbed)
             {
-                canUsePhone = false;
 
                 currentGrabable.OnGrab(grabPoint);
                 DecideOutlineAndCrosshair();
@@ -1067,6 +1072,8 @@ public class FirstPersonController : MonoBehaviour
 
                 currentPositionOffsetForRightHand = currentGrabable.GrabPositionOffset;
                 currentRotationOffsetForRightHand = currentGrabable.GrabRotationOffset;
+
+                coyoteTimeForPhone = phoneCoyoteForGrab;
 
                 rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
 
@@ -1208,8 +1215,6 @@ public class FirstPersonController : MonoBehaviour
 
     public void ChangeCurrentGrabable(IGrabable grabObject)
     {
-        canUsePhone = false;
-
         currentGrabable = grabObject;
         currentGrabable.OnGrab(grabPoint);
         DecideGrabAnimBool();
@@ -1223,6 +1228,8 @@ public class FirstPersonController : MonoBehaviour
 
         currentPositionOffsetForRightHand = currentGrabable.GrabPositionOffset;
         currentRotationOffsetForRightHand = currentGrabable.GrabRotationOffset;
+
+        coyoteTimeForPhone = phoneCoyoteForGrab;
 
         rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
     }
@@ -1476,8 +1483,7 @@ public class FirstPersonController : MonoBehaviour
 
     private IEnumerator LerpRightHandRig(bool shouldReach, bool shouldGoBack)
     {
-
-        float coyoteTimeForPhone = shouldGoBack ? 0.35f : 0.19f;
+        canUsePhone = false;
 
         float startWeight = twoBoneIKConstraintRightHand.weight;
         float targetWeight = shouldReach ? 1.0f : 0.0f;
