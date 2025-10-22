@@ -12,22 +12,24 @@ using UnityEngine.UI;
 
 public class FirstPersonController : MonoBehaviour
 {
-    public bool CanMove = true;
+    public bool CanPlay = true;
     public bool IsUsingItemX = false;
     public bool IsUsingItemY = false;
-    private bool IsSprinting => canSprint && Input.GetKey(sprintKey);
+    private bool IsSprinting => CanSprint && Input.GetKey(sprintKey);
     private bool ShouldJump => Input.GetKeyDown(jumpKey) && characterController.isGrounded;
     private bool ShouldCrouch => Input.GetKey(crouchKey);
 
     [Header("Functional Options")]
-    [SerializeField] private bool canSprint = true;
-    [SerializeField] private bool canJump = true;
-    [SerializeField] private bool canCrouch = true;
+    public bool CanSprint = true;
+    public bool CanJump = true;
+    public bool CanCrouch = true;
     public bool CanUseHeadbob = true;
     [SerializeField] private bool willSlideOnSlopes = true;
     public bool CanInteract = true;
     public bool CanGrab = true;
     [SerializeField] private bool useFootsteps = true;
+    public bool CanMove = true;
+    public bool CanLook = true;
 
     [Header("Controls")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -253,11 +255,12 @@ public class FirstPersonController : MonoBehaviour
 
     private void Update()
     {
-        if (CanMove)
+        if (CanPlay)
         {
-            HandleMovementInput();
+            if (CanMove)
+                HandleMovementInput();
 
-            if (canJump)
+            if (CanJump)
                 HandleJump();
 
             if (!characterController.isGrounded)
@@ -269,7 +272,7 @@ public class FirstPersonController : MonoBehaviour
             }
                 
 
-            if (canCrouch)
+            if (CanCrouch)
                 HandleCrouch();
 
             if (CanInteract)
@@ -328,9 +331,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void LateUpdate()
     {   
-        if (CanMove)
+        if (CanPlay)
         {
-            HandleMouseAndHandControl();
+            if (CanLook)
+                HandleMouseAndHandControl();
+
             HandleHandTargetPositions();
         }
 

@@ -358,7 +358,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
         }
 
         CameraManager.Instance.SwitchToFirstPersonCamera();
-        PlayerManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.SetPlayerCanPlay(true);
 
     }
 

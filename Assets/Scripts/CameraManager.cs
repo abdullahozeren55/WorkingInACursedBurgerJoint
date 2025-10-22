@@ -180,10 +180,17 @@ public class CameraManager : MonoBehaviour
         .SetUpdate(true)
         .OnComplete(() =>
         {
+            PlayerManager.Instance.SetPlayerBasicMovements(false);
             phoneUI.SetActive(true);
 
             phoneUIRectTransform.DOScale(Vector3.one, duration/2f)
-            .SetEase(Ease.OutBack);
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            });
         });
     }
 

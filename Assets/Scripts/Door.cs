@@ -61,7 +61,7 @@ public class Door : MonoBehaviour, IInteractable
     {
         PlayerManager.Instance.SetPlayerCanInteract(true);
         gameObject.layer = interactableLayer;
-        PlayerManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.SetPlayerCanPlay(true);
     }
 
     public void OnInteract()

@@ -339,7 +339,7 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
             HandleHeadHome();
         }
 
-        PlayerManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.SetPlayerCanPlay(true);
 
     }
 

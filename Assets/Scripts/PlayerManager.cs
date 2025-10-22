@@ -79,6 +79,16 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.ResetInteract(interactable);
     }
 
+    public void SetPlayerBasicMovements(bool can)
+    {
+        firstPersonController.CanMove = can;
+        firstPersonController.CanSprint = can;
+        firstPersonController.CanJump = can;
+        firstPersonController.CanCrouch = can;
+        firstPersonController.CanInteract = can;
+        firstPersonController.CanGrab = can;
+        firstPersonController.CanLook = can;
+    }
     public void SetPlayerCanInteract(bool can)
     {
         firstPersonController.CanInteract = can;
@@ -95,9 +105,14 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.CanInteract = can;
     }
 
-    public void ChangePlayerCanMove(bool canMove)
+    public void SetPlayerCanPlay(bool can)
     {
-        firstPersonController.CanMove = canMove;
+        firstPersonController.CanPlay = can;
+    }
+
+    public void SetPlayerCanHeadBob(bool can)
+    {
+        firstPersonController.CanUseHeadbob = can;
     }
 
     public void ChangePlayerCurrentGrabable(IGrabable objectToGrab)

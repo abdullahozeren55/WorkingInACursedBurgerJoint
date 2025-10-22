@@ -325,7 +325,7 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
             HandleHeadHome();
         }
 
-        PlayerManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.SetPlayerCanPlay(true);
 
     }
 

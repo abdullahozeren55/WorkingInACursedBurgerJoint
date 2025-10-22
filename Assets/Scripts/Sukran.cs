@@ -386,7 +386,7 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
             StartCoroutine(Ascend());
         }
 
-        PlayerManager.Instance.ChangePlayerCanMove(true);
+        PlayerManager.Instance.SetPlayerCanPlay(true);
 
     }
 

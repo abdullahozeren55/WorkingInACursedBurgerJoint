@@ -46,9 +46,6 @@ public class DialogueManager : MonoBehaviour
     public bool IsSkipped;
     public bool IsDialogueComplete;
 
-    [Space]
-    [SerializeField] private FirstPersonController firstPersonController;
-    [Space]
     [SerializeField] private TypewriterCore sinanTextAnim;
     [SerializeField] private TypewriterCore customer0TextAnim;
     [SerializeField] private TypewriterCore customer1TextAnim;
@@ -70,7 +67,7 @@ public class DialogueManager : MonoBehaviour
 
     private AudioSource audioSource;
 
-    private KeyCode skipKey;
+    private KeyCode skipKey = KeyCode.Mouse0;
 
     private ICustomer currentCustomer;
     private IInteractable currentInteractable;
@@ -88,8 +85,6 @@ public class DialogueManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         audioSource = GetComponent<AudioSource>();
-
-        skipKey = firstPersonController.interactKey;
 
         currentCustomer = null;
         currentInteractable = null;
@@ -217,8 +212,8 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithCustomer;
 
-        firstPersonController.CanMove = false;
-        firstPersonController.CanUseHeadbob = false;
+        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
 
         currentCustomer = customer;
@@ -246,7 +241,7 @@ public class DialogueManager : MonoBehaviour
 
         currentTextAnim.StartDisappearingText();
 
-        firstPersonController.CanUseHeadbob = true;
+        PlayerManager.Instance.SetPlayerCanHeadBob(true);
     }
 
     public void StartAfterInteractionSelfDialogue(IInteractable interactable, DialogueData data)
@@ -257,8 +252,8 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithYourselfAfterInteraction;
 
-        firstPersonController.CanMove = false;
-        firstPersonController.CanUseHeadbob = false;
+        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
 
         currentInteractable = interactable;
@@ -271,7 +266,7 @@ public class DialogueManager : MonoBehaviour
 
         IsInDialogue = false;
 
-        firstPersonController.CanUseHeadbob = true;
+        PlayerManager.Instance.SetPlayerCanHeadBob(true);
     }
 
     public void StartSellerDialogue(DialogueData data)
@@ -282,8 +277,8 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithSeller;
 
-        firstPersonController.CanMove = false;
-        firstPersonController.CanUseHeadbob = false;
+        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
     }
 
@@ -292,7 +287,7 @@ public class DialogueManager : MonoBehaviour
         shopSeller.HandleFinishDialogue();
         IsInDialogue = false;
 
-        firstPersonController.CanUseHeadbob = true;
+        PlayerManager.Instance.SetPlayerCanHeadBob(true);
 
     }
 
@@ -304,8 +299,8 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithYourself;
 
-        firstPersonController.CanMove = false;
-        firstPersonController.CanUseHeadbob = false;
+        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
 
     }
@@ -314,9 +309,9 @@ public class DialogueManager : MonoBehaviour
     {
         IsInDialogue = false;
 
-        firstPersonController.CanUseHeadbob = true;
+        PlayerManager.Instance.SetPlayerCanHeadBob(true);
 
-        firstPersonController.CanMove = true;
+        PlayerManager.Instance.SetPlayerCanPlay(true);
     }
 
     public void StartSelfDialogueInCutscene(DialogueData data)
@@ -327,8 +322,8 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithYourselfInCutscene;
 
-        firstPersonController.CanMove = false;
-        firstPersonController.CanUseHeadbob = false;
+        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
     }
 
@@ -336,7 +331,7 @@ public class DialogueManager : MonoBehaviour
     {
         IsInDialogue = false;
 
-        firstPersonController.CanUseHeadbob = true;
+        PlayerManager.Instance.SetPlayerCanHeadBob(true);
 
         if (currentDialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {
