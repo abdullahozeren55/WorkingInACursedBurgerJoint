@@ -389,11 +389,6 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleHandTargetPositions()
     {
-        /*if (currentGrabable != null && currentGrabable.IsGrabbed)
-        {
-            currentPositionOffsetForRightHand = currentGrabable.GrabPositionOffset;
-            currentRotationOffsetForRightHand = currentGrabable.GrabRotationOffset;
-        }*/
 
         leftHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForLeftHand);
         leftHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForLeftHand);

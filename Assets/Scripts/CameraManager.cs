@@ -78,6 +78,10 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float releaseSpeedMultiplier = 4f;
     private float normalFOV;
 
+    [Header("Phone UI Settings")]
+    [SerializeField] private GameObject phoneUI;
+    [SerializeField] private RectTransform phoneUIRectTransform;
+
     private CinemachineVirtualCamera firstPersonCam;
     private CinemachineVirtualCamera customerDialogueCam;
 
@@ -86,6 +90,8 @@ public class CameraManager : MonoBehaviour
 
     private CameraEntry currentCam;
     private int basePriority = 10;
+
+    private Tween firstPersonCamFOVTween;
 
     private void Awake()
     {
@@ -158,6 +164,61 @@ public class CameraManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void ChangeFirstPersonCameraFOVForPhone(float targetFOV, float duration)
+    {
+        firstPersonCamFOVTween?.Kill();
+
+        firstPersonCamFOVTween = DOTween.To(
+            () => firstPersonCam.m_Lens.FieldOfView,
+            x => firstPersonCam.m_Lens.FieldOfView = x,
+            targetFOV,
+            duration
+        )
+        .SetEase(Ease.OutBack)
+        .SetUpdate(true)
+        .OnComplete(() =>
+        {
+            phoneUI.SetActive(true);
+
+            phoneUIRectTransform.DOScale(Vector3.one, duration/2f)
+            .SetEase(Ease.OutBack);
+        });
+    }
+
+    public void ResetFirstPersonCameraFOVForPhone(float duration, float delay)
+    {
+        firstPersonCamFOVTween?.Kill();
+    }
+
+    public void ChangeFirstPersonCameraFOV(float targetFOV, float duration, float delay)
+    {
+        firstPersonCamFOVTween?.Kill();
+
+        firstPersonCamFOVTween = DOTween.To(
+            () => firstPersonCam.m_Lens.FieldOfView,
+            x => firstPersonCam.m_Lens.FieldOfView = x,
+            targetFOV,
+            duration
+        )
+        .SetEase(Ease.OutBack)
+        .SetDelay(delay)
+        .SetUpdate(true);
+    }
+
+    public void ResetFirstPersonCameraFOV(float duration)
+    {
+        firstPersonCamFOVTween?.Kill();
+
+        firstPersonCamFOVTween = DOTween.To(
+            () => firstPersonCam.m_Lens.FieldOfView,
+            x => firstPersonCam.m_Lens.FieldOfView = x,
+            normalFOV,
+            duration
+        )
+        .SetEase(Ease.OutBack)
+        .SetUpdate(true);
     }
 
     public CinemachineVirtualCamera GetCamera()
