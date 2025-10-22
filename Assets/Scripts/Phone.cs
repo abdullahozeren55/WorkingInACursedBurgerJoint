@@ -172,15 +172,15 @@ public class Phone : MonoBehaviour, IGrabable
         {
             value = elapsedTime / timeToUse;
 
-            transform.localPosition = Vector3.Lerp(startPos, endPos, value);
-            transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
+            //transform.localPosition = Vector3.Lerp(startPos, endPos, value);
+            //transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.localPosition = endPos;
-        transform.localRotation = endRot;
+        //transform.localPosition = endPos;
+        //transform.localRotation = endRot;
 
         useCoroutine = null;
 
