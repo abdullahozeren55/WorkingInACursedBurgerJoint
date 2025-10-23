@@ -59,9 +59,7 @@ public class Door : MonoBehaviour, IInteractable
 
     public void HandleFinishDialogue()
     {
-        PlayerManager.Instance.SetPlayerCanInteract(true);
         gameObject.layer = interactableLayer;
-        PlayerManager.Instance.SetPlayerCanPlay(true);
     }
 
     public void OnInteract()
@@ -135,8 +133,6 @@ public class Door : MonoBehaviour, IInteractable
 
     private void HandleJumpscare()
     {
-        PlayerManager.Instance.SetPlayerCanInteract(false);
-        PlayerManager.Instance.ResetPlayerInteract(this);
 
         gameObject.layer = uninteractableLayer;
         isOpened = true;

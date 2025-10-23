@@ -196,7 +196,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float phoneCoyoteForInteract = 0.35f;
     [SerializeField] private float phoneCoyoteForGrab = 0.19f;
     private IGrabable phoneGrabable;
-    private Phone phoneSC;
     private bool canUsePhone;
     private float lastPhoneKeyPressedTime;
     private float coyoteTimeForPhone;
@@ -228,7 +227,6 @@ public class FirstPersonController : MonoBehaviour
         anim = GetComponent<Animator>();
 
         phoneGrabable = phoneGO.GetComponent<IGrabable>();
-        phoneSC = phoneGO.GetComponent<Phone>();
 
         defaultCrosshairSize = crosshairText.fontSize;
         defaultCrosshairPosition = crosshairText.rectTransform.localPosition;

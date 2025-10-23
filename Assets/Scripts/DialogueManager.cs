@@ -258,21 +258,27 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithYourselfAfterInteraction;
 
-        PlayerManager.Instance.SetPlayerCanPlay(false);
-        PlayerManager.Instance.SetPlayerCanHeadBob(false);
+        currentInteractable = interactable;
+
+        PlayerManager.Instance.ResetPlayerInteract(currentInteractable);
+
         dialogueIndex = 0;
 
-        currentInteractable = interactable;
+        HandleDialogue();
     }
 
     private void EndAfterInteractionSelfDialogue()
     {
+        IsSkipped = false;
+        IsDialogueComplete = false;
 
         currentInteractable.HandleFinishDialogue();
 
         IsInDialogue = false;
 
-        PlayerManager.Instance.SetPlayerCanHeadBob(true);
+        currentTextAnim.StartDisappearingText();
+
+        currentInteractable = null;
     }
 
     public void StartSellerDialogue(DialogueData data)
