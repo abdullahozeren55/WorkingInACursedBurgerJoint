@@ -189,6 +189,9 @@ public class PhoneManager : MonoBehaviour
             }
         }
 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         currentCallTime = 0f;
         isInCall = true;
 
