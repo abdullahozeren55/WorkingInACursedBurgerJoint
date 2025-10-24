@@ -12,7 +12,7 @@ public class StoreBlocker : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            DialogueManager.Instance.StartSelfDialogue(dialogueData);
+            DialogueManager.Instance.StartSelfDialogue(dialogueData, true);
         }
     }
 }

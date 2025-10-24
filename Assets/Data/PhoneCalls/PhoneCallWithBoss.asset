@@ -22,7 +22,7 @@ MonoBehaviour:
     cam: 0
   - fontType: 1
     talkingPerson: 0
-    DialogueToPrint: "Ha alo patron \u015Fey... Bu arka odada palya\xE7o gibi br
+    DialogueToPrint: "Ha alo patron \u015Fey... Bu arka odada palya\xE7o gibi bir
       \u015Fey var da..."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1

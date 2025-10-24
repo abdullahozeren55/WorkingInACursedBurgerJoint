@@ -74,6 +74,8 @@ public class DialogueManager : MonoBehaviour
     private ICustomer currentCustomer;
     private IInteractable currentInteractable;
 
+    private bool shouldStopWhileSelfTalking;
+
     private void Awake()
     {
         // Eðer Instance zaten varsa, bu nesneyi yok et
@@ -303,7 +305,7 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    public void StartSelfDialogue(DialogueData data)
+    public void StartSelfDialogue(DialogueData data, bool shouldStop)
     {
         currentDialogueData = data;
 
@@ -311,19 +313,32 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithYourself;
 
-        PlayerManager.Instance.SetPlayerCanPlay(false);
-        PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
+
+        shouldStopWhileSelfTalking = shouldStop;
+
+        if (shouldStopWhileSelfTalking)
+        {
+            PlayerManager.Instance.SetPlayerBasicMovements(false);
+        }
+
+        HandleDialogue();
 
     }
 
     private void EndSelfDialogue()
     {
+        IsSkipped = false;
+        IsDialogueComplete = false;
+
         IsInDialogue = false;
 
-        PlayerManager.Instance.SetPlayerCanHeadBob(true);
+        currentTextAnim.StartDisappearingText();
 
-        PlayerManager.Instance.SetPlayerCanPlay(true);
+        if (shouldStopWhileSelfTalking)
+        {
+            PlayerManager.Instance.SetPlayerBasicMovements(true);
+        }
     }
 
     public void StartPhoneDialogue(DialogueData data)

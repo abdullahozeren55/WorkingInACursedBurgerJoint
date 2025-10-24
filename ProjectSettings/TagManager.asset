@@ -55,7 +55,7 @@ TagManager:
   - MANAGERS
   - 
   - 
-  - 
+  - PlayerBlocker
   - Screen
   - PostProcess
   m_SortingLayers:

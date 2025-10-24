@@ -21,7 +21,7 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     cam: 0
   - fontType: 1
-    talkingPerson: 0
+    talkingPerson: 1
     DialogueToPrint: "D\xFCkkan\u0131n maskotu falan herhalde. Patron bundan bahsetmemi\u015Fti."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
     audioClip: {fileID: 0}
     cam: 0
   - fontType: 1
-    talkingPerson: 0
+    talkingPerson: 1
     DialogueToPrint: "En iyisi patrona soray\u0131m ya \u015Fimdi atar\u0131m k\u0131ymete
       biner falan. Durduk yere ba\u015F\u0131ma i\u015F almayay\u0131m."
     DialogueOffset: {x: 0, y: 0}

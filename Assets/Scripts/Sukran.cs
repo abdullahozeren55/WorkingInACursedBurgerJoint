@@ -392,7 +392,7 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
     private void StartSelfTalk()
     {
-        DialogueManager.Instance.StartSelfDialogue(sukranSelfTalkData);
+        DialogueManager.Instance.StartSelfDialogue(sukranSelfTalkData, true);
         ChangeLayer(interactableLayer);
         GameManager.Instance.SetOrderThrowArea(true);
     }
