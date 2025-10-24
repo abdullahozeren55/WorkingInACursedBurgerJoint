@@ -27,7 +27,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private bool willSlideOnSlopes = true;
     public bool CanInteract = true;
     public bool CanGrab = true;
-    [SerializeField] private bool useFootsteps = true;
+    public bool CanFootstep = true;
     public bool CanMove = true;
     public bool CanLook = true;
 
@@ -280,6 +280,16 @@ public class FirstPersonController : MonoBehaviour
 
             if (CanCrouch)
                 HandleCrouch();
+            else
+            {
+                if (CrouchStandCoroutine != null)
+                {
+                    StopCoroutine(CrouchStandCoroutine);
+                    CrouchStandCoroutine = null;
+                }
+
+                CrouchStandCoroutine = StartCoroutine(CrouchStand(false));
+            }
 
             if (CanInteract)
             {
@@ -299,7 +309,7 @@ public class FirstPersonController : MonoBehaviour
                 HandleGrabCheck();
             }
 
-            if (useFootsteps)
+            if (CanFootstep)
                 HandleFootsteps();
 
             if (Input.GetKeyDown(phoneKey))

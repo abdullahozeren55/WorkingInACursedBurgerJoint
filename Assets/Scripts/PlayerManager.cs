@@ -88,6 +88,7 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.CanInteract = can;
         firstPersonController.CanGrab = can;
         firstPersonController.CanLook = can;
+        firstPersonController.CanFootstep = can;
     }
     public void SetPlayerCanInteract(bool can)
     {
