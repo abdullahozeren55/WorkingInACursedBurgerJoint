@@ -37,7 +37,8 @@ public interface ICustomer
         SUKRAN,
         ERTAN,
         ALEYNA,
-        KEKO
+        KEKO,
+        NPCCUSTOMER0
     }
 
     [System.Serializable]

@@ -37,7 +37,8 @@ public class DialogueManager : MonoBehaviour
         Default,
         Sinan,
         Hikmet,
-        Phone
+        Phone,
+        NPCCustomer0
     }
     public static DialogueManager Instance { get; private set; }
     [Space]
