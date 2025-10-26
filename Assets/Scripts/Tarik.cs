@@ -399,4 +399,9 @@ public class Tarik : MonoBehaviour, ICustomer, IInteractable
         OptionADialogueData = changes.OptionADialogueData;
         OptionDDialogueData = changes.OptionDDialogueData;
     }
+
+    public void HandleTalk()
+    {
+        throw new System.NotImplementedException();
+    }
 }

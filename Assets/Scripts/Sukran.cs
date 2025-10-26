@@ -595,4 +595,9 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
         Destroy(gameObject);
     }
+
+    public void HandleTalk()
+    {
+        throw new System.NotImplementedException();
+    }
 }

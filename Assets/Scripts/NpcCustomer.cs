@@ -108,6 +108,9 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
     [Header("Push Player Settings")]
     [SerializeField] private Transform rayPointForPushingPlayer;
 
+    [Header("Other Settings")]
+    [SerializeField] private float giveOrderBackMultiplier = 1f;
+
     private int day;
     private Tween rotateTween;
     private void Awake()
@@ -367,7 +370,6 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
 
         if (CurrentAction == ICustomer.Action.ReadyToOrder)
         {
-            anim.SetTrigger("talk");
             DialogueManager.Instance.StartCustomerDialogue(this, beforeOrderDialogueData);
         }
 
@@ -413,6 +415,12 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
         {
             item.layer = layer;
         }
+    }
+
+    public void HandleTalk()
+    {
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Talk") && CurrentAction != ICustomer.Action.ReceivedFalseDrink && CurrentAction != ICustomer.Action.ReceivedFalseBurger)
+            anim.SetTrigger("talk");
     }
 
     private void HandleBurgerTrue()
@@ -518,12 +526,12 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
     {
         if (ordersInRightHand[0].activeSelf)
         {
-            GameManager.Instance.CustomerGiveBackBurger(ordersInRightHand[0].transform, customerData.throwForce * transform.forward);
+            GameManager.Instance.CustomerGiveBackBurger(ordersInRightHand[0].transform, customerData.throwForce * transform.forward * giveOrderBackMultiplier);
             ordersInRightHand[0].SetActive(false);
         }
         else
         {
-            GameManager.Instance.CustomerGiveBackDrink(ordersInRightHand[1].transform, customerData.throwForce * transform.forward);
+            GameManager.Instance.CustomerGiveBackDrink(ordersInRightHand[1].transform, customerData.throwForce * transform.forward * giveOrderBackMultiplier);
             ordersInRightHand[1].SetActive(false);
             ordersInRightHand[2].SetActive(false);
             ordersInRightHand[3].SetActive(false);

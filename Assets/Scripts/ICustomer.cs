@@ -38,7 +38,8 @@ public interface ICustomer
         ERTAN,
         ALEYNA,
         KEKO,
-        NPCCUSTOMER0
+        NPCCUSTOMER0,
+        NPCCUSTOMER1,
     }
 
     [System.Serializable]
@@ -85,6 +86,7 @@ public interface ICustomer
     public void HandlePathFollow(Transform destination);
     public void HandleFootsteps();
     public void HandleIdle();
+    public void HandleTalk();
 
     public void ChangeLayer(int layer);
 

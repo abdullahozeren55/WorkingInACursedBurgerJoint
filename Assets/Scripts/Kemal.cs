@@ -532,4 +532,9 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
         }
         
     }
+
+    public void HandleTalk()
+    {
+        throw new System.NotImplementedException();
+    }
 }

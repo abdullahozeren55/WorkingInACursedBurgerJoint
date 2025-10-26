@@ -512,4 +512,9 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
         }
 
     }
+
+    public void HandleTalk()
+    {
+        throw new System.NotImplementedException();
+    }
 }

@@ -38,7 +38,8 @@ public class DialogueManager : MonoBehaviour
         Sinan,
         Hikmet,
         Phone,
-        NPCCustomer0
+        NPCCustomer0,
+        NPCCustomer1,
     }
     public static DialogueManager Instance { get; private set; }
     [Space]
@@ -220,6 +221,8 @@ public class DialogueManager : MonoBehaviour
         dialogueIndex = 0;
 
         currentCustomer = customer;
+
+        currentCustomer.HandleTalk();
 
         HandleDialogue();
     }
