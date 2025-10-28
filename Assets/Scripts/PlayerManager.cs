@@ -141,6 +141,16 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.SetUseHandLerp(targetPos, targetRot, timeToDo);
     }
 
+    public void SetPlayerLeftUseHandLerp(Vector3 targetPos, Vector3 targetRot)
+    {
+        firstPersonController.SetLeftUseHandLerp(targetPos, targetRot);
+    }
+
+    public void PlayerResetLeftHandLerp()
+    {
+        firstPersonController.ResetLeftHandLerp();
+    }
+
     public void PlayerStopUsingObject()
     {
         firstPersonController.StopUsingObject();

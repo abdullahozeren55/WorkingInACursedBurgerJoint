@@ -1463,6 +1463,31 @@ public class FirstPersonController : MonoBehaviour
         grabbedUseCoroutine = StartCoroutine(UseGrabbed(targetPos, targetRot, timeToDo));
     }
 
+    public void SetLeftUseHandLerp(Vector3 targetPos, Vector3 targetRot)
+    {
+        currentPositionOffsetForLeftHand = targetPos;
+        currentRotationOffsetForLeftHand = targetRot;
+
+        if (leftHandRigLerpCoroutine != null)
+        {
+            StopCoroutine(leftHandRigLerpCoroutine);
+            leftHandRigLerpCoroutine = null;
+        }
+
+        leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(true, true));
+    }
+
+    public void ResetLeftHandLerp()
+    {
+        if (leftHandRigLerpCoroutine != null)
+        {
+            StopCoroutine(leftHandRigLerpCoroutine);
+            leftHandRigLerpCoroutine = null;
+        }
+
+        leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
+    }
+
     public IInteractable GetCurrentInteractable() { return currentInteractable; }
     public IGrabable GetCurrentGrabable() { return currentGrabable; }
 

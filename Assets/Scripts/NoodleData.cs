@@ -19,6 +19,9 @@ public class NoodleData : ScriptableObject
     public Vector3 usePositionOffset;
     public Vector3 useRotationOffset;
     [Space]
+    public Vector3 useLeftPositionOffset;
+    public Vector3 useLeftRotationOffset;
+    [Space]
     public Vector3 useLocalPositionOffset;
     public Vector3 useLocalRotationOffset;
     [Space]

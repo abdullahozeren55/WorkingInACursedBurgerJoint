@@ -293,11 +293,16 @@ public class Noodle : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        throw new System.NotImplementedException();
+        PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
+        PlayerManager.Instance.SetPlayerLeftUseHandLerp(data.useLeftPositionOffset, data.useLeftRotationOffset);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
     }
 
     public void OnUseRelease()
     {
-        throw new System.NotImplementedException();
+        PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse / 2f);
+        PlayerManager.Instance.PlayerResetLeftHandLerp();
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
     }
 }
