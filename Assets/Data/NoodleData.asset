@@ -15,8 +15,15 @@ MonoBehaviour:
   isUseable: 0
   handGrabType: 7
   timeToPutOnHologram: 0.3
-  grabPositionOffset: {x: 0.00027969177, y: 0.00037357793, z: 0.00031330824}
-  grabRotationOffset: {x: 84.91662, y: 291.5111, z: 7.4244943}
+  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabRotationOffset: {x: -5, y: -70, z: -70}
+  grabLocalPositionOffset: {x: 0.00027969177, y: 0.00037357793, z: 0.00031330824}
+  grabLocalRotationOffset: {x: 84.91662, y: 291.5111, z: 7.4244943}
+  usePositionOffset: {x: 0, y: 0, z: 0}
+  useRotationOffset: {x: 0, y: 0, z: 0}
+  useLocalPositionOffset: {x: 0, y: 0, z: 0}
+  useLocalRotationOffset: {x: 0, y: 0, z: 0}
+  timeToUse: 0.3
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}
