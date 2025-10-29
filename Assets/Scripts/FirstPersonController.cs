@@ -1488,7 +1488,7 @@ public class FirstPersonController : MonoBehaviour
         leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
     }
 
-    public void OnUseReleaseGrabable()
+    public void OnUseReleaseGrabable(bool shouldDecideOutlineAndCrosshair)
     {
         if (isUsingGrabbedItem)
         {
@@ -1498,6 +1498,9 @@ public class FirstPersonController : MonoBehaviour
 
         interactChargeTimer = 0f;
         isUsingGrabbedItem = false;
+
+        if (shouldDecideOutlineAndCrosshair)
+            DecideOutlineAndCrosshair();
     }
 
     public IInteractable GetCurrentInteractable() { return currentInteractable; }

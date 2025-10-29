@@ -21,8 +21,8 @@ public class NoodleData : ScriptableObject
     public Vector3 useLeftPositionOffset;
     public Vector3 useLeftRotationOffset;
     [Space]
-    public Vector3 useLocalPositionOffset;
-    public Vector3 useLocalRotationOffset;
+    public Vector3 use2PositionOffset;
+    public Vector3 use2RotationOffset;
     [Space]
     public float timeToUse = 0.3f;
     public float timeToHandleLid = 0.2f;

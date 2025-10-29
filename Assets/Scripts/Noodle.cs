@@ -22,8 +22,6 @@ public class Noodle : MonoBehaviour, IGrabable
     public bool IsGettingPutOnHologram;
 
     public NoodleData data;
-
-    [SerializeField] private GameObject hologramPart;
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;
     [Space]
@@ -32,10 +30,14 @@ public class Noodle : MonoBehaviour, IGrabable
     [SerializeField] private Collider bottomCollider;
     [SerializeField] private Collider lidCollider;
 
+    [Header("Other Settings")]
+    [SerializeField] private Transform saucePackInstantiatePoint;
+    [SerializeField] private GameObject saucePack;
+    [SerializeField] private GameObject saucePackVisual;
+
     private SkinnedMeshRenderer skinnedMeshRederer;
     private AudioSource audioSource;
     private Rigidbody rb;
-    private Renderer hologramRenderer;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -52,8 +54,10 @@ public class Noodle : MonoBehaviour, IGrabable
 
     private bool isOpened;
     private bool lidAnimStarted;
+    private bool saucePackInstantiated;
 
     private Coroutine openLidCoroutine;
+    private Coroutine instantiateSaucePackCoroutine;
 
 
     private void Awake()
@@ -61,16 +65,6 @@ public class Noodle : MonoBehaviour, IGrabable
         skinnedMeshRederer = GetComponent<SkinnedMeshRenderer>();
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
-        hologramRenderer = hologramPart.GetComponent<Renderer>();
-
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -90,7 +84,7 @@ public class Noodle : MonoBehaviour, IGrabable
     {
         IsGettingPutOnHologram = true;
 
-        hologramPart.SetActive(false);
+        NoodleManager.Instance.SetHologramHouseNoodle(false);
 
         gameObject.layer = ungrabableLayer;
 
@@ -116,14 +110,7 @@ public class Noodle : MonoBehaviour, IGrabable
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 40f/255f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramHouseNoodle(true);
 
         IsGrabbed = true;
 
@@ -157,14 +144,7 @@ public class Noodle : MonoBehaviour, IGrabable
 
         transform.SetParent(null);
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramHouseNoodle(false);
 
         rb.useGravity = true;
 
@@ -181,14 +161,7 @@ public class Noodle : MonoBehaviour, IGrabable
 
         transform.SetParent(null);
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramHouseNoodle(false);
 
         rb.useGravity = true;
 
@@ -303,6 +276,19 @@ public class Noodle : MonoBehaviour, IGrabable
                 openLidCoroutine = StartCoroutine(OpenLid());
             }
         }
+        else if (!saucePackInstantiated)
+        {
+            PlayerManager.Instance.SetPlayerUseHandLerp(data.use2PositionOffset, data.use2RotationOffset, data.timeToUse);
+            PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
+            if (instantiateSaucePackCoroutine != null)
+            {
+                StopCoroutine(instantiateSaucePackCoroutine);
+                instantiateSaucePackCoroutine = null;
+            }
+
+            instantiateSaucePackCoroutine = StartCoroutine(InstantiateSaucePack());
+        }
         
     }
 
@@ -318,6 +304,32 @@ public class Noodle : MonoBehaviour, IGrabable
             openLidCoroutine = null;
         }
 
+        if (instantiateSaucePackCoroutine != null && !saucePackInstantiated)
+        {
+            StopCoroutine(instantiateSaucePackCoroutine);
+            instantiateSaucePackCoroutine = null;
+        }
+
+        if (saucePackInstantiated)
+        {
+            IsUseable = false;
+        }
+
+    }
+
+    private IEnumerator InstantiateSaucePack()
+    {
+        yield return new WaitForSeconds(data.timeToHandleLid);
+
+        Instantiate(saucePack, saucePackInstantiatePoint.position, Random.rotation);
+
+        Destroy(saucePackVisual);
+
+        saucePackInstantiated = true;
+
+        yield return new WaitForSeconds(data.timeToUse);
+
+        PlayerManager.Instance.PlayerOnUseReleaseGrabable(true);
     }
 
     private IEnumerator OpenLid()
@@ -346,7 +358,7 @@ public class Noodle : MonoBehaviour, IGrabable
 
         isOpened = true;
 
-        PlayerManager.Instance.PlayerOnUseReleaseGrabable();
+        PlayerManager.Instance.PlayerOnUseReleaseGrabable(false);
 
         openLidCoroutine = null;
 

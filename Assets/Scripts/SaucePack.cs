@@ -122,6 +122,8 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         IsGrabbed = true;
 
+        NoodleManager.Instance.SetCurrentSaucePack(gameObject);
+
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
         transform.localPosition = data.grabPositionOffset;

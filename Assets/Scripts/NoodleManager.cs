@@ -13,9 +13,12 @@ public class NoodleManager : MonoBehaviour
         Ready,
         Trash
     }
+    [Header("Holograms")]
+    [SerializeField] private GameObject hologramHouseNoodle;
+    [SerializeField] private GameObject hologramKettle;
+
     [Header("Noodle Water Settings")]
     public Kettle kettle;
-    public GameObject hologramKettle;
     public Collider waterCollider;
     [Space]
     private Vector3 waterStartPos;
@@ -36,6 +39,10 @@ public class NoodleManager : MonoBehaviour
 
     private Material currentWaterMat;
     private Collider currentNoodleCollider;
+
+    private Material hologramHouseNoodleMat;
+
+    private Color hologramHouseNoodleMatDefaultColor;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -62,6 +69,16 @@ public class NoodleManager : MonoBehaviour
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         interactableLayer = LayerMask.NameToLayer("Interactable");
+
+        hologramHouseNoodleMat = hologramHouseNoodle.GetComponent<SkinnedMeshRenderer>().material;
+        hologramHouseNoodleMatDefaultColor = hologramHouseNoodleMat.color;
+
+        SetHologramHouseNoodle(false);
+    }
+
+    public void SetHologramHouseNoodle(bool shouldTurnOn)
+    {
+        hologramHouseNoodleMat.color = shouldTurnOn ? hologramHouseNoodleMatDefaultColor : Color.clear;
     }
 
     public void SetCurrentNoodle(GameObject noodle)
@@ -69,7 +86,6 @@ public class NoodleManager : MonoBehaviour
         currentNoodleGO = noodle;
         currentSmokeGO = noodle.transform.Find("Smoke").gameObject;
         currentWaterGO = noodle.transform.Find("Water").gameObject;
-        currentSaucePackGO = noodle.transform.Find("SaucePack").gameObject;
 
         currentNoodleStatus = NoodleStatus.Unprepared;
 
@@ -80,6 +96,11 @@ public class NoodleManager : MonoBehaviour
 
         waterStartPos = currentWaterGO.transform.localPosition;
         waterStartScale = currentWaterGO.transform.localScale;
+    }
+
+    public void SetCurrentSaucePack(GameObject saucePack)
+    {
+        currentSaucePackGO = saucePack;
     }
 
     public void AddWaterToNoodle()

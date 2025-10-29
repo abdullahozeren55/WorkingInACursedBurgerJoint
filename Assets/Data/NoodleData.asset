@@ -12,19 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82b750d8b2482424a8243f39feb945b0, type: 3}
   m_Name: NoodleData
   m_EditorClassIdentifier: 
-  isUseable: 1
   handGrabType: 7
   timeToPutOnHologram: 0.3
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.00017081886, y: 0.00048341294, z: 0.0002936248}
-  grabLocalRotationOffset: {x: 6.024242, y: 269.62048, z: 90.63723}
+  grabLocalPositionOffset: {x: 0.00005477914, y: 0.00038489606, z: 0.0003486338}
+  grabLocalRotationOffset: {x: 6.0249596, y: 269.62137, z: 90.63576}
   usePositionOffset: {x: -0.2, y: -0.2, z: 2}
   useRotationOffset: {x: -5, y: -70, z: -70}
   useLeftPositionOffset: {x: 0.3, y: 0, z: 2}
   useLeftRotationOffset: {x: 45, y: 100, z: 70}
-  useLocalPositionOffset: {x: 0.00017081886, y: 0.00048341294, z: 0.0002936248}
-  useLocalRotationOffset: {x: 6.024242, y: 269.62048, z: 90.63723}
+  use2PositionOffset: {x: 0.5, y: 1, z: 3}
+  use2RotationOffset: {x: 180, y: -100, z: -90}
   timeToUse: 0.3
   timeToHandleLid: 0.2
   audioClips:
