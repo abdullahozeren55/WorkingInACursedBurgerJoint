@@ -22,9 +22,11 @@ public class Noodle : MonoBehaviour, IGrabable
     [SerializeField] private bool isUseable = true;
 
     public bool IsGettingPutOnHologram;
+    public bool CanGetFocused;
 
     public NoodleData data;
     public string FocusText { get => focusText; set => focusText = value; }
+
     [SerializeField] private string focusText;
     [Space]
 
@@ -73,6 +75,8 @@ public class Noodle : MonoBehaviour, IGrabable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
 
+        CanGetFocused = true;
+
         IsGrabbed = false;
         IsGettingPutOnHologram = false;
 
@@ -85,10 +89,15 @@ public class Noodle : MonoBehaviour, IGrabable
     public void PutOnHologram(Vector3 hologramPos, Quaternion hologramRotation)
     {
         IsGettingPutOnHologram = true;
+        isJustThrowed = false;
+        isJustDropped = false;
 
         NoodleManager.Instance.SetHologramHouseNoodle(false);
 
-        NoodleStatus = NoodleManager.NoodleStatus.OnHouseHologram;
+        if (NoodleStatus == NoodleManager.NoodleStatus.SaucePackInstantiated)
+            NoodleStatus = NoodleManager.NoodleStatus.OnHouseHologram;
+        else if (NoodleStatus == NoodleManager.NoodleStatus.LidClosed)
+            NoodleStatus = NoodleManager.NoodleStatus.WaitingToBeReady;
 
         gameObject.layer = ungrabableLayer;
 
@@ -110,13 +119,14 @@ public class Noodle : MonoBehaviour, IGrabable
 
         PlayAudioWithRandomPitch(0);
 
+        rb.isKinematic = false;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
 
         NoodleManager.Instance.SetCurrentNoodle(gameObject);
 
-        if (saucePackInstantiated)
+        if (NoodleStatus == NoodleManager.NoodleStatus.SaucePackInstantiated || NoodleStatus == NoodleManager.NoodleStatus.LidClosed)
             NoodleManager.Instance.SetHologramHouseNoodle(true);
 
         IsGrabbed = true;
@@ -128,7 +138,7 @@ public class Noodle : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
             gameObject.layer = grabableOutlinedLayer;
         }
@@ -136,7 +146,7 @@ public class Noodle : MonoBehaviour, IGrabable
     }
     public void OnLoseFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
             gameObject.layer = grabableLayer;
         }
@@ -257,6 +267,15 @@ public class Noodle : MonoBehaviour, IGrabable
 
         transform.position = hologramPos;
         transform.rotation = hologramRotation;
+
+        CanGetFocused = false;
+        IsGettingPutOnHologram = false;
+
+        if (NoodleStatus == NoodleManager.NoodleStatus.WaitingToBeReady)
+        {
+            if (GameManager.Instance.DayCount == 0)
+                GameManager.Instance.HandleAfterFirstNoodle();
+        }
     }
 
     public void OnUseHold()
@@ -275,7 +294,7 @@ public class Noodle : MonoBehaviour, IGrabable
                     openLidCoroutine = null;
                 }
 
-                openLidCoroutine = StartCoroutine(OpenLid());
+                openLidCoroutine = StartCoroutine(HandleLid(true));
             }
         }
         else if (!saucePackInstantiated)
@@ -290,6 +309,23 @@ public class Noodle : MonoBehaviour, IGrabable
             }
 
             instantiateSaucePackCoroutine = StartCoroutine(InstantiateSaucePack());
+        }
+        else
+        {
+            PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
+            PlayerManager.Instance.SetPlayerLeftUseHandLerp(data.use2LeftPositionOffset, data.use2LeftRotationOffset);
+            PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
+            if (!lidAnimStarted)
+            {
+                if (openLidCoroutine != null)
+                {
+                    StopCoroutine(openLidCoroutine);
+                    openLidCoroutine = null;
+                }
+
+                openLidCoroutine = StartCoroutine(HandleLid(false));
+            }
         }
         
     }
@@ -312,7 +348,7 @@ public class Noodle : MonoBehaviour, IGrabable
             instantiateSaucePackCoroutine = null;
         }
 
-        if (saucePackInstantiated)
+        if (saucePackInstantiated && NoodleStatus != NoodleManager.NoodleStatus.SauceAdded)
         {
             IsUseable = false;
         }
@@ -338,14 +374,14 @@ public class Noodle : MonoBehaviour, IGrabable
         PlayerManager.Instance.PlayerOnUseReleaseGrabable(true);
     }
 
-    private IEnumerator OpenLid()
+    private IEnumerator HandleLid(bool shouldOpen)
     {
         yield return new WaitForSeconds(data.timeToHandleLid);
 
         lidAnimStarted = true;
 
         float startVal = skinnedMeshRederer.GetBlendShapeWeight(0);
-        float endVal = 0f;
+        float endVal = shouldOpen ? 0f : 100f;
 
         float elapsedTime = 0f;
         float value = startVal;
@@ -355,18 +391,30 @@ public class Noodle : MonoBehaviour, IGrabable
             value = Mathf.Lerp(startVal, endVal, elapsedTime / data.timeToHandleLid);
 
             skinnedMeshRederer.SetBlendShapeWeight(0, value);
+            NoodleManager.Instance.HandleHologramNoodleLid(value);
 
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         skinnedMeshRederer.SetBlendShapeWeight(0, endVal);
+        NoodleManager.Instance.HandleHologramNoodleLid(endVal);
 
-        NoodleStatus = NoodleManager.NoodleStatus.LidOpened;
+        NoodleStatus = shouldOpen ? NoodleManager.NoodleStatus.LidOpened : NoodleManager.NoodleStatus.LidClosed;
 
-        isOpened = true;
+        isOpened = shouldOpen;
 
-        PlayerManager.Instance.PlayerOnUseReleaseGrabable(false);
+        if (shouldOpen)
+            PlayerManager.Instance.PlayerOnUseReleaseGrabable(false);
+        else
+        {
+            NoodleManager.Instance.SetHologramHouseNoodle(true);
+            NoodleManager.Instance.SetHologramHouseNoodleCollider(true);
+            NoodleManager.Instance.SetCurrentSmokeParticleSystem(false);
+            PlayerManager.Instance.PlayerOnUseReleaseGrabable(true);
+        }    
+
+        lidAnimStarted = false;
 
         openLidCoroutine = null;
 

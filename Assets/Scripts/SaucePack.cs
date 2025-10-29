@@ -22,6 +22,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     [SerializeField] private bool isUseable = true;
 
     public bool IsGettingPutOnHologram;
+    public bool CanGetFocused;
 
     public NoodleData data;
     public string FocusText { get => focusText; set => focusText = value; }
@@ -58,6 +59,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         IsGrabbed = false;
         IsGettingPutOnHologram = false;
+        CanGetFocused = true;
 
         isJustThrowed = false;
         isJustDropped = false;
@@ -68,6 +70,8 @@ public class SaucePack : MonoBehaviour, IGrabable
     public void PutOnHologram(Vector3 hologramPos, Quaternion hologramRotation)
     {
         IsGettingPutOnHologram = true;
+        isJustThrowed = false;
+        isJustDropped = false;
 
         NoodleManager.Instance.SetHologramSaucePack(false);
 
@@ -111,7 +115,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
             gameObject.layer = grabableOutlinedLayer;
         }
@@ -119,7 +123,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     }
     public void OnLoseFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
             gameObject.layer = grabableLayer;
         }
@@ -186,7 +190,6 @@ public class SaucePack : MonoBehaviour, IGrabable
             if (collision.gameObject.CompareTag("Noodle"))
             {
                 NoodleManager.Instance.AddSauceToWater();
-                Destroy(gameObject);
             }
             else if (!collision.gameObject.CompareTag("Player"))
             {
@@ -245,6 +248,7 @@ public class SaucePack : MonoBehaviour, IGrabable
         transform.position = hologramPos;
         transform.rotation = hologramRotation;
 
+        CanGetFocused = false;
         IsGettingPutOnHologram = false;
     }
 

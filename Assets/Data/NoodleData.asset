@@ -24,6 +24,8 @@ MonoBehaviour:
   useLeftRotationOffset: {x: 45, y: 100, z: 70}
   use2PositionOffset: {x: 0.5, y: 1, z: 3}
   use2RotationOffset: {x: 180, y: -100, z: -90}
+  use2LeftPositionOffset: {x: 0.3, y: 0.3, z: 2}
+  use2LeftRotationOffset: {x: 45, y: 100, z: 70}
   timeToUse: 0.3
   timeToHandleLid: 0.2
   audioClips:

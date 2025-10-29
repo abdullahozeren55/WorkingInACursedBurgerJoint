@@ -11,33 +11,21 @@ public class Hologram : MonoBehaviour
         HouseKettle
     }
 
-    private Collider col;
-
     [SerializeField] private HologramType hologramType;
 
-    private void Awake()
-    {
-        col = GetComponent<Collider>();
-    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Noodle") && hologramType == HologramType.HouseNoodle)
         {
-            col.enabled = false;
-
             NoodleManager.Instance.PutCurrentNoodleOnHologramHouse();
         }
         else if (other.CompareTag("SaucePack") && hologramType == HologramType.HouseSaucePack)
         {
-            col.enabled = false;
-
             NoodleManager.Instance.PutCurrentSaucePackOnHologram();
         }
         else if (other.CompareTag("Kettle") && hologramType == HologramType.HouseKettle)
         {
-            col.enabled = false;
-
-            other.GetComponent<Kettle>().PutOnHologram(transform.position, transform.rotation);
+            NoodleManager.Instance.PutKettleOnHologram();
         }
     }
 }

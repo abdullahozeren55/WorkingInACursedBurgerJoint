@@ -21,8 +21,11 @@ public class NoodleData : ScriptableObject
     public Vector3 useLeftPositionOffset;
     public Vector3 useLeftRotationOffset;
     [Space]
-    public Vector3 use2PositionOffset;
+    public Vector3 use2PositionOffset; //When rotating
     public Vector3 use2RotationOffset;
+    [Space]
+    public Vector3 use2LeftPositionOffset; //When reacing for the top of the lid because lid is open
+    public Vector3 use2LeftRotationOffset;
     [Space]
     public float timeToUse = 0.3f;
     public float timeToHandleLid = 0.2f;

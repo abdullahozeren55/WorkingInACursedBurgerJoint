@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Kettle : MonoBehaviour, IGrabable
 {
@@ -21,17 +22,15 @@ public class Kettle : MonoBehaviour, IGrabable
 
     [Space]
 
-    [SerializeField] private Vector3 stabPositionOffset = new Vector3(0.2f, 0.3f, 1.5f);
-    [SerializeField] private Vector3 stabRotationOffset = new Vector3(2.5f, -70f, -100f);
+    [SerializeField] private Vector3 usePositionOffset;
+    [SerializeField] private Vector3 useRotationOffset;
     public bool IsUseable { get => isUseable; set => isUseable = value; }
     [SerializeField] private bool isUseable = true;
 
-    [HideInInspector] public bool IsGettingPutOnHologram;
+    public bool IsGettingPutOnHologram;
+    public bool CanGetFocused;
 
     public AudioClip[] audioClips;
-
-    [Header("Regular Settings")]
-    [SerializeField] private GameObject hologramPart;
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;
     [Space]
@@ -40,11 +39,7 @@ public class Kettle : MonoBehaviour, IGrabable
 
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
-    [Space]
-    public Vector3 stabLocalPositionOffset;
-    public Vector3 stabLocalRotationOffset;
-    [Space]
-    public float timeToStab = 0.3f;
+    public float timeToUse = 0.3f;
 
     private bool isPlayingParticles;
 
@@ -65,7 +60,7 @@ public class Kettle : MonoBehaviour, IGrabable
 
     private float audioLastPlayedTime;
 
-    private Coroutine stabCoroutine;
+    private Coroutine waterPourCoroutine;
 
     private void Awake()
     {
@@ -78,6 +73,9 @@ public class Kettle : MonoBehaviour, IGrabable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
 
+        IsGettingPutOnHologram = false;
+        CanGetFocused = true;
+
         IsGrabbed = false;
 
         isJustThrowed = false;
@@ -89,8 +87,10 @@ public class Kettle : MonoBehaviour, IGrabable
     public void PutOnHologram(Vector3 hologramPos, Quaternion hologramRotation)
     {
         IsGettingPutOnHologram = true;
+        isJustThrowed = false;
+        isJustDropped = false;
 
-        hologramPart.SetActive(false);
+        NoodleManager.Instance.SetHologramKettle(false);
 
         audioSource.enabled = false;
 
@@ -126,12 +126,12 @@ public class Kettle : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
             gameObject.layer = grabableOutlinedLayer;
     }
     public void OnLoseFocus()
     {
-        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed)
+        if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
             gameObject.layer = grabableLayer;
     }
 
@@ -142,12 +142,6 @@ public class Kettle : MonoBehaviour, IGrabable
         IsGrabbed = false;
 
         Invoke("TurnOnCollider", 0.1f);
-
-        if (stabCoroutine != null)
-        {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
-        }
 
         transform.SetParent(null);
 
@@ -165,12 +159,6 @@ public class Kettle : MonoBehaviour, IGrabable
         IsGrabbed = false;
 
         Invoke("TurnOnCollider", 0.1f);
-
-        if (stabCoroutine != null)
-        {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
-        }
 
         transform.SetParent(null);
 
@@ -261,74 +249,51 @@ public class Kettle : MonoBehaviour, IGrabable
         transform.rotation = hologramRotation;
 
         gameObject.layer = ungrabableLayer;
-        NoodleManager.Instance.currentSaucePackGO.layer = grabableLayer;
 
+        CanGetFocused = false;
         IsGettingPutOnHologram = false;
     }
 
     public void OnUseHold()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(stabPositionOffset, stabRotationOffset, timeToStab);
+        PlayerManager.Instance.SetPlayerUseHandLerp(usePositionOffset, useRotationOffset, timeToUse);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
-        if (stabCoroutine != null)
+        if (waterPourCoroutine != null)
         {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
+            StopCoroutine(waterPourCoroutine);
+            waterPourCoroutine = null;
         }
 
-        stabCoroutine = StartCoroutine(Stab(true));
+        waterPourCoroutine = StartCoroutine(PourWater());
     }
 
     public void OnUseRelease()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, timeToStab / 2f);
+        PlayerManager.Instance.SetPlayerUseHandLerp(grabPositionOffset, grabRotationOffset, timeToUse / 2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
+        if (waterPourCoroutine != null)
+        {
+            StopCoroutine(waterPourCoroutine);
+            waterPourCoroutine = null;
+        }
 
         pourParticle.Stop();
         isPlayingParticles = false;
-
-        if (stabCoroutine != null)
-        {
-            StopCoroutine(stabCoroutine);
-            stabCoroutine = null;
-        }
-
-        stabCoroutine = StartCoroutine(Stab(false));
     }
 
-    private IEnumerator Stab(bool shouldStab)
+    private IEnumerator PourWater()
     {
-        Vector3 startPos = transform.localPosition;
-        Quaternion startRot = transform.localRotation;
+        yield return new WaitForSeconds(timeToUse * 2/3);
 
-        Vector3 endPos = shouldStab ? stabLocalPositionOffset : grabLocalPositionOffset;
-        Quaternion endRot = shouldStab ? Quaternion.Euler(stabLocalRotationOffset) : Quaternion.Euler(grabLocalRotationOffset);
-
-        float elapsedTime = 0f;
-        float value = 0f;
-
-        while (elapsedTime < timeToStab)
+        if (!isPlayingParticles)
         {
-            value = elapsedTime / timeToStab;
-
-            transform.localPosition = Vector3.Lerp(startPos, endPos, value);
-            transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
-
-            if (shouldStab && !isPlayingParticles && value > 0.6f)
-            {
-                pourParticle.Play();
-                isPlayingParticles = true;
-            }
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            pourParticle.Play();
+            isPlayingParticles = true;
         }
 
-        transform.localPosition = endPos;
-        transform.localRotation = endRot;
-
-        stabCoroutine = null;
+        waterPourCoroutine = null;
 
     }
 }
