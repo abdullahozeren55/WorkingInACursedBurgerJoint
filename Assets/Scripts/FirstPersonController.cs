@@ -1488,6 +1488,18 @@ public class FirstPersonController : MonoBehaviour
         leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(false, false));
     }
 
+    public void OnUseReleaseGrabable()
+    {
+        if (isUsingGrabbedItem)
+        {
+            // uzun basma býrakýldý kullaným bitti
+            currentGrabable.OnUseRelease();
+        }
+
+        interactChargeTimer = 0f;
+        isUsingGrabbedItem = false;
+    }
+
     public IInteractable GetCurrentInteractable() { return currentInteractable; }
     public IGrabable GetCurrentGrabable() { return currentGrabable; }
 

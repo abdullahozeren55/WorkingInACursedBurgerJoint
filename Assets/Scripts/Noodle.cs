@@ -16,7 +16,8 @@ public class Noodle : MonoBehaviour, IGrabable
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
-    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
+    public bool IsUseable { get => isUseable; set => isUseable = value; }
+    [SerializeField] private bool isUseable = true;
 
     public bool IsGettingPutOnHologram;
 
@@ -27,10 +28,9 @@ public class Noodle : MonoBehaviour, IGrabable
     [SerializeField] private string focusText;
     [Space]
 
-    [Header("Collider Settings")]
-    [SerializeField] private Collider[] bodyColliders;
-    [SerializeField] private Collider[] closeLidColliders;
-    [SerializeField] private Collider[] openLidColliders;
+    [Header("Colliders")]
+    [SerializeField] private Collider bottomCollider;
+    [SerializeField] private Collider lidCollider;
 
     private SkinnedMeshRenderer skinnedMeshRederer;
     private AudioSource audioSource;
@@ -51,6 +51,9 @@ public class Noodle : MonoBehaviour, IGrabable
     private float audioLastPlayedTime;
 
     private bool isOpened;
+    private bool lidAnimStarted;
+
+    private Coroutine openLidCoroutine;
 
 
     private void Awake()
@@ -215,20 +218,8 @@ public class Noodle : MonoBehaviour, IGrabable
 
     private void SetColliders(bool value)
     {
-        foreach (Collider col in bodyColliders)
-        {
-            col.enabled = value;
-        }
-
-        foreach (Collider col in closeLidColliders)
-        {
-            col.enabled = value == false ? false : !isOpened;
-        }
-
-        foreach (Collider col in openLidColliders)
-        {
-            col.enabled = value == false ? false : isOpened;
-        }
+        bottomCollider.enabled = value;
+        lidCollider.enabled = value == true ? isOpened : false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -295,11 +286,24 @@ public class Noodle : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
-        PlayerManager.Instance.SetPlayerLeftUseHandLerp(data.useLeftPositionOffset, data.useLeftRotationOffset);
-        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        if (!isOpened)
+        {
+            PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
+            PlayerManager.Instance.SetPlayerLeftUseHandLerp(data.useLeftPositionOffset, data.useLeftRotationOffset);
+            PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
-        skinnedMeshRederer.SetBlendShapeWeight(0, 0F);
+            if (!lidAnimStarted)
+            {
+                if (openLidCoroutine != null)
+                {
+                    StopCoroutine(openLidCoroutine);
+                    openLidCoroutine = null;
+                }
+
+                openLidCoroutine = StartCoroutine(OpenLid());
+            }
+        }
+        
     }
 
     public void OnUseRelease()
@@ -307,6 +311,44 @@ public class Noodle : MonoBehaviour, IGrabable
         PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse / 2f);
         PlayerManager.Instance.PlayerResetLeftHandLerp();
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
+        if (openLidCoroutine != null && !lidAnimStarted)
+        {
+            StopCoroutine(openLidCoroutine);
+            openLidCoroutine = null;
+        }
+
+    }
+
+    private IEnumerator OpenLid()
+    {
+        yield return new WaitForSeconds(data.timeToHandleLid);
+
+        lidAnimStarted = true;
+
+        float startVal = skinnedMeshRederer.GetBlendShapeWeight(0);
+        float endVal = 0f;
+
+        float elapsedTime = 0f;
+        float value = startVal;
+
+        while (elapsedTime < data.timeToHandleLid)
+        {
+            value = Mathf.Lerp(startVal, endVal, elapsedTime / data.timeToHandleLid);
+
+            skinnedMeshRederer.SetBlendShapeWeight(0, value);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        skinnedMeshRederer.SetBlendShapeWeight(0, endVal);
+
+        isOpened = true;
+
+        PlayerManager.Instance.PlayerOnUseReleaseGrabable();
+
+        openLidCoroutine = null;
 
     }
 }

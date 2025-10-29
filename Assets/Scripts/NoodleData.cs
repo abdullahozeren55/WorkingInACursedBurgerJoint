@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewNoodleData", menuName = "Data/Noodle")]
 public class NoodleData : ScriptableObject
 {
-    public bool isUseable = true;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public float timeToPutOnHologram = 0.3f;
@@ -26,6 +25,7 @@ public class NoodleData : ScriptableObject
     public Vector3 useLocalRotationOffset;
     [Space]
     public float timeToUse = 0.3f;
+    public float timeToHandleLid = 0.2f;
     [Space]
     public AudioClip[] audioClips;
 }

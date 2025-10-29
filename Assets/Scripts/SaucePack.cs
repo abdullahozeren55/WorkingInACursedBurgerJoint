@@ -18,7 +18,8 @@ public class SaucePack : MonoBehaviour, IGrabable
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
     [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
 
-    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
+    public bool IsUseable { get => isUseable; set => isUseable = value; }
+    [SerializeField] private bool isUseable = true;
 
     public bool IsGettingPutOnHologram;
 

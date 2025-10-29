@@ -79,6 +79,11 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.ResetInteract(interactable);
     }
 
+    public void PlayerOnUseReleaseGrabable()
+    {
+        firstPersonController.OnUseReleaseGrabable();
+    }
+
     public void SetPlayerBasicMovements(bool can)
     {
         firstPersonController.CanMove = can;
