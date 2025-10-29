@@ -193,11 +193,6 @@ public class Kettle : MonoBehaviour, IGrabable
         }
     }
 
-    public void SetGrabable()
-    {
-        gameObject.layer = grabableLayer;
-    }
-
     private void PlayAudioWithRandomPitch(int index)
     {
         audioLastPlayedTime = Time.time;

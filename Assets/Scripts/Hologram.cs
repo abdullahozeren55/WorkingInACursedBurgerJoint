@@ -25,13 +25,13 @@ public class Hologram : MonoBehaviour
         {
             col.enabled = false;
 
-            other.GetComponent<Noodle>().PutOnHologram(transform.position, transform.rotation);
+            NoodleManager.Instance.PutCurrentNoodleOnHologramHouse();
         }
         else if (other.CompareTag("SaucePack") && hologramType == HologramType.HouseSaucePack)
         {
             col.enabled = false;
 
-            other.GetComponent<SaucePack>().PutOnHologram(transform.position, transform.rotation);
+            NoodleManager.Instance.PutCurrentSaucePackOnHologram();
         }
         else if (other.CompareTag("Kettle") && hologramType == HologramType.HouseKettle)
         {

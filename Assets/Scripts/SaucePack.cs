@@ -24,8 +24,6 @@ public class SaucePack : MonoBehaviour, IGrabable
     public bool IsGettingPutOnHologram;
 
     public NoodleData data;
-
-    [SerializeField] private GameObject hologramPart;
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;
     [Space]
@@ -33,7 +31,6 @@ public class SaucePack : MonoBehaviour, IGrabable
     private AudioSource audioSource;
     private Rigidbody rb;
     private Collider col;
-    private Renderer hologramRenderer;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -53,16 +50,6 @@ public class SaucePack : MonoBehaviour, IGrabable
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
-        hologramRenderer = hologramPart.GetComponent<Renderer>();
-
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -82,7 +69,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     {
         IsGettingPutOnHologram = true;
 
-        hologramPart.SetActive(false);
+        NoodleManager.Instance.SetHologramSaucePack(false);
 
         audioSource.enabled = false;
 
@@ -111,14 +98,7 @@ public class SaucePack : MonoBehaviour, IGrabable
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 40f / 255f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramSaucePack(true);
 
         IsGrabbed = true;
 
@@ -154,14 +134,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         transform.SetParent(null);
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramSaucePack(false);
 
         rb.useGravity = true;
 
@@ -178,14 +151,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         transform.SetParent(null);
 
-        foreach (Material material in hologramRenderer.materials)
-        {
-            Color color = material.color;
-
-            color.a = 0f;
-
-            material.color = color;
-        }
+        NoodleManager.Instance.SetHologramSaucePack(false);
 
         rb.useGravity = true;
 
@@ -215,38 +181,38 @@ public class SaucePack : MonoBehaviour, IGrabable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && !IsGettingPutOnHologram && !collision.gameObject.CompareTag("Player"))
+        if (!IsGrabbed && !IsGettingPutOnHologram)
         {
-            if (isJustThrowed)
+            if (collision.gameObject.CompareTag("Noodle"))
             {
-                gameObject.layer = grabableLayer;
-
-                PlayAudioWithRandomPitch(2);
-
-                isJustThrowed = false;
+                NoodleManager.Instance.AddSauceToWater();
+                Destroy(gameObject);
             }
-            else if (isJustDropped)
+            else if (!collision.gameObject.CompareTag("Player"))
             {
-                gameObject.layer = grabableLayer;
+                if (isJustThrowed)
+                {
+                    gameObject.layer = grabableLayer;
 
-                if (Time.time > audioLastPlayedTime + 0.1f)
+                    PlayAudioWithRandomPitch(2);
+
+                    isJustThrowed = false;
+                }
+                else if (isJustDropped)
+                {
+                    gameObject.layer = grabableLayer;
+
+                    if (Time.time > audioLastPlayedTime + 0.1f)
+                        PlayAudioWithRandomPitch(1);
+
+                    isJustDropped = false;
+                }
+                else if (Time.time > audioLastPlayedTime + 0.1f)
+                {
                     PlayAudioWithRandomPitch(1);
-
-                isJustDropped = false;
+                }
             }
-            else if (Time.time > audioLastPlayedTime + 0.1f)
-            {
-                PlayAudioWithRandomPitch(1);
-            }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!IsGrabbed && !IsGettingPutOnHologram && other.CompareTag("Water"))
-        {
-            NoodleManager.Instance.AddSauceToWater();
-            Destroy(gameObject);
+            
         }
     }
 
@@ -278,8 +244,6 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         transform.position = hologramPos;
         transform.rotation = hologramRotation;
-
-        NoodleManager.Instance.kettle.SetGrabable();
 
         IsGettingPutOnHologram = false;
     }

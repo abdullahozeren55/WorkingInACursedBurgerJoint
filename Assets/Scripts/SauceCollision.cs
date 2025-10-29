@@ -25,7 +25,7 @@ public class SauceCollision : MonoBehaviour
             {
                 GameManager.Instance.AddSauceToTray(sauceType);
             }
-            else if (sauceType == SauceBottle.SauceType.Water && other.CompareTag("Water"))
+            else if (sauceType == SauceBottle.SauceType.Water && other.CompareTag("Noodle"))
             {
                 NoodleManager.Instance.AddWaterToNoodle();
             }

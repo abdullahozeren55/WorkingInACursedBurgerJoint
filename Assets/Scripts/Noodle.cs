@@ -9,6 +9,8 @@ public class Noodle : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public NoodleManager.NoodleStatus NoodleStatus;
+
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
@@ -86,6 +88,8 @@ public class Noodle : MonoBehaviour, IGrabable
 
         NoodleManager.Instance.SetHologramHouseNoodle(false);
 
+        NoodleStatus = NoodleManager.NoodleStatus.OnHouseHologram;
+
         gameObject.layer = ungrabableLayer;
 
         IsGrabbed = false;
@@ -110,7 +114,10 @@ public class Noodle : MonoBehaviour, IGrabable
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
 
-        NoodleManager.Instance.SetHologramHouseNoodle(true);
+        NoodleManager.Instance.SetCurrentNoodle(gameObject);
+
+        if (saucePackInstantiated)
+            NoodleManager.Instance.SetHologramHouseNoodle(true);
 
         IsGrabbed = true;
 
@@ -250,11 +257,6 @@ public class Noodle : MonoBehaviour, IGrabable
 
         transform.position = hologramPos;
         transform.rotation = hologramRotation;
-
-        NoodleManager.Instance.SetCurrentNoodle(gameObject);
-
-
-        IsGettingPutOnHologram = false;
     }
 
     public void OnUseHold()
@@ -327,6 +329,10 @@ public class Noodle : MonoBehaviour, IGrabable
 
         saucePackInstantiated = true;
 
+        NoodleStatus = NoodleManager.NoodleStatus.SaucePackInstantiated;
+
+        NoodleManager.Instance.SetHologramHouseNoodle(true);
+
         yield return new WaitForSeconds(data.timeToUse);
 
         PlayerManager.Instance.PlayerOnUseReleaseGrabable(true);
@@ -355,6 +361,8 @@ public class Noodle : MonoBehaviour, IGrabable
         }
 
         skinnedMeshRederer.SetBlendShapeWeight(0, endVal);
+
+        NoodleStatus = NoodleManager.NoodleStatus.LidOpened;
 
         isOpened = true;
 

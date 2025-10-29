@@ -8,19 +8,28 @@ public class NoodleManager : MonoBehaviour
 
     public enum NoodleStatus
     {
-        Unprepared,
-        Prepared,
+        JustGrabbed,
+        OnStoreHologram,
+        JustBought,
+        ReadyToPrepare,
+        LidOpened,
+        SaucePackInstantiated,
+        OnHouseHologram,
+        FilledWithWater,
+        SauceAdded,
+        WaitingToBeReady,
         Ready,
-        Trash
+        Finished
     }
     [Header("Holograms")]
     [SerializeField] private GameObject hologramHouseNoodle;
     [SerializeField] private GameObject hologramKettle;
+    [SerializeField] private GameObject hologramSaucePack;
+
+    [Header("GameObjects")]
+    [SerializeField] private GameObject kettleGO;
 
     [Header("Noodle Water Settings")]
-    public Kettle kettle;
-    public Collider waterCollider;
-    [Space]
     private Vector3 waterStartPos;
     public Vector3 waterEndPos;
     private Vector3 waterStartScale;
@@ -36,13 +45,19 @@ public class NoodleManager : MonoBehaviour
     [HideInInspector] public GameObject currentWaterGO;
     [HideInInspector] public GameObject currentSaucePackGO;
     [HideInInspector] public NoodleStatus currentNoodleStatus;
+    private Noodle currentNoodleScript;
+    private SaucePack currentSaucePackScript;
+
+    private bool saucePackIsOnHologram;
 
     private Material currentWaterMat;
     private Collider currentNoodleCollider;
 
     private Material hologramHouseNoodleMat;
+    private Material hologramSaucePackMat;
 
     private Color hologramHouseNoodleMatDefaultColor;
+    private Color hologramSaucePackMatDefaultColor;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -70,15 +85,51 @@ public class NoodleManager : MonoBehaviour
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         interactableLayer = LayerMask.NameToLayer("Interactable");
 
-        hologramHouseNoodleMat = hologramHouseNoodle.GetComponent<SkinnedMeshRenderer>().material;
+        hologramHouseNoodleMat = hologramHouseNoodle.GetComponent<Renderer>().material;
+        hologramSaucePackMat = hologramSaucePack.GetComponent<Renderer>().material;
+
         hologramHouseNoodleMatDefaultColor = hologramHouseNoodleMat.color;
+        hologramSaucePackMatDefaultColor = hologramSaucePackMat.color;
 
         SetHologramHouseNoodle(false);
+        SetHologramSaucePack(false);
+    }
+
+    public void SetKettleGrabable()
+    {
+        kettleGO.layer = grabableLayer;
+    }
+
+    private void TrySettingKettleGrabable()
+    {
+        if (saucePackIsOnHologram && currentNoodleScript.NoodleStatus == NoodleStatus.OnHouseHologram)
+            SetKettleGrabable();
     }
 
     public void SetHologramHouseNoodle(bool shouldTurnOn)
     {
         hologramHouseNoodleMat.color = shouldTurnOn ? hologramHouseNoodleMatDefaultColor : Color.clear;
+    }
+
+    public void SetHologramSaucePack(bool shouldTurnOn)
+    {
+        hologramSaucePackMat.color = shouldTurnOn ? hologramSaucePackMatDefaultColor : Color.clear;
+    }
+
+    public void PutCurrentNoodleOnHologramHouse()
+    {
+        if (currentNoodleScript.NoodleStatus == NoodleStatus.SaucePackInstantiated)
+        {
+            currentNoodleScript.PutOnHologram(hologramHouseNoodle.transform.position, hologramHouseNoodle.transform.rotation);
+            TrySettingKettleGrabable();
+        }
+    }
+
+    public void PutCurrentSaucePackOnHologram()
+    {
+        currentSaucePackScript.PutOnHologram(hologramSaucePack.transform.position, hologramSaucePack.transform.rotation);
+        saucePackIsOnHologram = true;
+        TrySettingKettleGrabable();
     }
 
     public void SetCurrentNoodle(GameObject noodle)
@@ -87,12 +138,10 @@ public class NoodleManager : MonoBehaviour
         currentSmokeGO = noodle.transform.Find("Smoke").gameObject;
         currentWaterGO = noodle.transform.Find("Water").gameObject;
 
-        currentNoodleStatus = NoodleStatus.Unprepared;
+        currentNoodleScript = noodle.GetComponent<Noodle>();
 
         currentWaterMat = currentWaterGO.GetComponent<MeshRenderer>().material;
         currentNoodleCollider = currentNoodleGO.GetComponent<Collider>();
-
-        waterCollider.enabled = true;
 
         waterStartPos = currentWaterGO.transform.localPosition;
         waterStartScale = currentWaterGO.transform.localScale;
@@ -101,6 +150,7 @@ public class NoodleManager : MonoBehaviour
     public void SetCurrentSaucePack(GameObject saucePack)
     {
         currentSaucePackGO = saucePack;
+        currentSaucePackScript = saucePack.GetComponent<SaucePack>();
     }
 
     public void AddWaterToNoodle()
@@ -120,7 +170,6 @@ public class NoodleManager : MonoBehaviour
 
         if (t > 0.9f)
         {
-            waterCollider.isTrigger = true;
             hologramKettle.SetActive(true);
         }
     }
