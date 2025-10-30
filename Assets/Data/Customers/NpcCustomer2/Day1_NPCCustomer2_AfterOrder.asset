@@ -13,27 +13,25 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer2_AfterOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - fontType: 6
     talkingPerson: 1
-    DialogueToPrint: Bro bi X Burger bi Siyah Kula dediydik...
+    fontStyle: 0
+    DialogueToPrint: "Evlad\u0131m bi klasik olan\u0131ndan bi de k\u0131rm\u0131z\u0131
+      paketli i\xE7ecekten istemi\u015Ftim."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
-    DialogueToPrint: "Haz\u0131rl\u0131yorum... Bro."
+    fontStyle: 0
+    DialogueToPrint: "Haz\u0131rl\u0131yorum teyzecim"
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 4
-    talkingPerson: 1
-    DialogueToPrint: "Tamamd\u0131r usta bekliyorum."
-    DialogueOffset: {x: 0, y: 0}
-    Skippable: 1
-    audioClip: {fileID: 0}
-    cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

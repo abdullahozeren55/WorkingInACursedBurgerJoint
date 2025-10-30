@@ -13,21 +13,33 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer2_CompleteOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - fontType: 6
     talkingPerson: 1
-    DialogueToPrint: "Sa\u011Folas\u0131n kankam eline koluna sa\u011Fl\u0131k. Ne
-      kadar borcumuz?"
+    fontStyle: 0
+    DialogueToPrint: "Ne kadar tuttu evlad\u0131m?"
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
-    DialogueToPrint: Afiyet olsun. 500 OP toplam a- Ee... Kanka.
+    fontStyle: 0
+    DialogueToPrint: 350 teyzecim.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
+  - fontType: 6
+    talkingPerson: 1
+    fontStyle: 0
+    DialogueToPrint: "\u015E\xF6yle b\u0131rakt\u0131m. Hadi kolay gelsin."
+    DialogueOffset: {x: 0, y: 0}
+    Skippable: 1
+    audioClip: {fileID: 0}
+    cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

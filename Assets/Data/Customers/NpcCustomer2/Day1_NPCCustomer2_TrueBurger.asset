@@ -13,21 +13,24 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer2_TrueBurger
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - fontType: 6
     talkingPerson: 1
-    DialogueToPrint: "Effsanesin be aslan par\xE7as\u0131! Leziz g\xF6r\xFCn\xFCyo.
-      Bi tane de Siyah Kula yap\u0131\u015Ft\u0131r."
+    fontStyle: 0
+    DialogueToPrint: "Eline sa\u011Fl\u0131k evlad\u0131m. Bi de i\xE7ecek vard\u0131."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
-    DialogueToPrint: "Veriyorum hemen.. A-aslan par\xE7as\u0131.."
+    fontStyle: 0
+    DialogueToPrint: Hemen getiriyorum.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

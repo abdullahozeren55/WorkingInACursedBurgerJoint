@@ -22,14 +22,16 @@ MonoBehaviour:
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
     fontStyle: 0
-    DialogueToPrint: Tabi efendim.
+    DialogueToPrint: Tabii teyzecim.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

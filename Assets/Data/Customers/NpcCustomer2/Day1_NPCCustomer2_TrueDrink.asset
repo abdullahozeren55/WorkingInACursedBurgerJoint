@@ -13,20 +13,24 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer2_TrueDrink
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - fontType: 6
     talkingPerson: 1
-    DialogueToPrint: "Eyyyvalllah dostum. Bi de X Burger vard\u0131."
+    fontStyle: 0
+    DialogueToPrint: "Sa\u011Folas\u0131n \xE7ocu\u011Fum. Bi de burgerim vard\u0131."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
-    DialogueToPrint: Hallediyorum.. Dostum...
+    fontStyle: 0
+    DialogueToPrint: Hallediyorum.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 
