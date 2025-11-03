@@ -5,6 +5,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Collider))]
 public class Car : MonoBehaviour
 {
+    public System.Action<GameObject> OnCarDestroyed;
+
     [Header("AI Settings")]
     public Transform target;
     public Transform castOrigin;
@@ -20,6 +22,12 @@ public class Car : MonoBehaviour
 
     [Header("Material Settings")]
     public MeshRenderer[] renderers; // only the color change ones
+
+    [Header("CarNPC Settings")]
+    public GameObject[] carNPCList;
+
+    [Header("Speed Settings")]
+    public float speed = 8f;
 
     private NavMeshAgent agent;
     private Collider selfCollider;
@@ -41,6 +49,8 @@ public class Car : MonoBehaviour
     private void OnEnable()
     {
         ChangeCarColor(CarManager.Instance.GetRandomCar0Material());
+        DecideCarNPC();
+        DecideSpeed();
     }
 
     private void Update()
@@ -60,6 +70,21 @@ public class Car : MonoBehaviour
 
         if (!agent.pathPending)
             agent.SetDestination(target.position);
+    }
+
+    private void DecideSpeed()
+    {
+        agent.speed = Random.Range(speed * 0.7f, speed * 1.4f);
+    }
+
+    private void DecideCarNPC()
+    {
+        foreach (GameObject driver in carNPCList)
+        {
+            driver.SetActive(false);
+        }
+
+        carNPCList[Random.Range(0, carNPCList.Length)].SetActive(true);
     }
 
     private void ChangeCarColor(Material mat)
@@ -91,6 +116,7 @@ public class Car : MonoBehaviour
             }
             else
             {
+                OnCarDestroyed?.Invoke(gameObject);
                 Destroy(gameObject);
             }
         }

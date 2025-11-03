@@ -6,6 +6,13 @@ public class CarManager : MonoBehaviour
 {
     public static CarManager Instance;
 
+    [Header("Random Car0 Spawning Settings")]
+    public bool CanSpawn;
+    public float spawnCooldown = 5f;
+    public int maxCarCount = 30;
+    private Coroutine car0SpawnCoroutine;
+    private readonly List<GameObject> activeCars = new List<GameObject>();
+
     [System.Serializable]
     public class CarDestinations
     {
@@ -33,11 +40,8 @@ public class CarManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        SpawnRandomCar0();
-        SpawnRandomCar0();
-        SpawnRandomCar0();
-        SpawnRandomCar0();
-        SpawnRandomCar0();
+        car0SpawnCoroutine = StartCoroutine(SpawnRandomCar0Repeatedly());
+
     }
 
     public Material GetRandomCar0Material() => car0Materials[Random.Range(0, car0Materials.Length)];
@@ -46,13 +50,33 @@ public class CarManager : MonoBehaviour
 
     public void SpawnRandomCar0()
     {
-        var chosen = GetRandomDestination();
+        if (!CanSpawn || activeCars.Count >= maxCarCount) return;
 
+        var chosen = GetRandomDestination();
         GameObject car = Instantiate(car0GO, chosen.spawnPoint.position, chosen.spawnQuaternion);
 
-        // yeni arabaya rotayý direkt aktar
+        activeCars.Add(car);
+
         var carScript = car.GetComponent<Car>();
         if (carScript != null)
+        {
             carScript.DecideDestinations(chosen);
+            carScript.OnCarDestroyed += HandleCarDestroyed;
+        }
+    }
+
+    private void HandleCarDestroyed(GameObject car)
+    {
+        if (activeCars.Contains(car))
+            activeCars.Remove(car);
+    }
+
+    private IEnumerator SpawnRandomCar0Repeatedly()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(spawnCooldown * 0.8f, spawnCooldown * 1.2f));
+            SpawnRandomCar0();
+        }
     }
 }
