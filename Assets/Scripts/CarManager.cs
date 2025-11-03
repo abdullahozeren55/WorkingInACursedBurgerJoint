@@ -17,8 +17,6 @@ public class CarManager : MonoBehaviour
     [SerializeField] private Material[] car0Materials;
     [SerializeField] private CarDestinations[] carDestinations;
     [SerializeField] private GameObject car0GO;
-
-    private CarDestinations currentDestinations;
     private void Awake()
     {
         if (Instance == null)
@@ -35,58 +33,26 @@ public class CarManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        StartCoroutine(SpawnEachCar());
+        SpawnRandomCar0();
+        SpawnRandomCar0();
+        SpawnRandomCar0();
+        SpawnRandomCar0();
+        SpawnRandomCar0();
     }
 
     public Material GetRandomCar0Material() => car0Materials[Random.Range(0, car0Materials.Length)];
 
     private CarDestinations GetRandomDestination() => carDestinations[Random.Range(0, carDestinations.Length)];
 
-    public CarDestinations GetCurrentDestination() => currentDestinations;
-
     public void SpawnRandomCar0()
     {
-        currentDestinations = GetRandomDestination();
+        var chosen = GetRandomDestination();
 
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-    }
+        GameObject car = Instantiate(car0GO, chosen.spawnPoint.position, chosen.spawnQuaternion);
 
-    private IEnumerator SpawnEachCar()
-    {
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[0];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[1];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[2];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[3];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[4];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
-
-        yield return new WaitForSeconds(3);
-
-        currentDestinations = carDestinations[5];
-
-        Instantiate(car0GO, currentDestinations.spawnPoint.position, currentDestinations.spawnQuaternion);
+        // yeni arabaya rotayý direkt aktar
+        var carScript = car.GetComponent<Car>();
+        if (carScript != null)
+            carScript.DecideDestinations(chosen);
     }
 }

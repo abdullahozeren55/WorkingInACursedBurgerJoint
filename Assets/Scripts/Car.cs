@@ -41,7 +41,6 @@ public class Car : MonoBehaviour
     private void OnEnable()
     {
         ChangeCarColor(CarManager.Instance.GetRandomCar0Material());
-        DecideDestinations(CarManager.Instance.GetCurrentDestination());
     }
 
     private void Update()
@@ -51,7 +50,7 @@ public class Car : MonoBehaviour
         HandleReachingTarget();
     }
 
-    private void DecideDestinations(CarManager.CarDestinations dest)
+    public void DecideDestinations(CarManager.CarDestinations dest)
     {
         destinations = dest;
 
@@ -123,11 +122,19 @@ public class Car : MonoBehaviour
         {
             agent.isStopped = true;
             isStoppedByObstacle = true;
+
+            //Animasyonu durdur
+            if (animator != null)
+                animator.speed = 0f;
         }
         else if (!obstacleDetected && isStoppedByObstacle)
         {
             agent.isStopped = false;
             isStoppedByObstacle = false;
+
+            //Animasyonu devam ettir
+            if (animator != null)
+                animator.speed = 1f;
         }
     }
 
