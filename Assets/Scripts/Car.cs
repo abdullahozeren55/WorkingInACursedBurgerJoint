@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,7 +17,6 @@ public class Car : MonoBehaviour
     public LayerMask obstacleMask;
 
     [Header("Animation Settings")]
-    private Animator animator;
     public float turnThreshold = 2f;   // kaç derece fark olunca dönüyor saysýn
     public float turnCooldown = 0.1f;  // anim spam’ini engeller
 
@@ -29,12 +29,27 @@ public class Car : MonoBehaviour
     [Header("Speed Settings")]
     public float speed = 8f;
 
+    [Header("Audio Settings")]
+    public AudioClip engineLoopSound;
+    public AudioClip waitingLoopSound;
+    public AudioClip breakSound;
+    public AudioClip honkSound;
+    [Space]
+    public float engineLoopSoundVolume = 1f;
+    public float waitingLoopSoundVolume = 1f;
+    public float breakSoundVolume = 1f;
+    public float honkSoundVolume = 1f;
+    public float honkSoundCooldown = 5f;
+    private Coroutine honkingCoroutine;
+
+    private Animator animator;
+    private AudioSource audioSource;
     private NavMeshAgent agent;
     private Collider selfCollider;
+
     private bool isStoppedByObstacle;
     private bool obstacleDetected;
     private float lastTurnTime;
-
     private int currentIndex;
 
     private CarManager.CarDestinations destinations;
@@ -42,6 +57,7 @@ public class Car : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         agent = GetComponent<NavMeshAgent>();
         selfCollider = GetComponent<Collider>();
     }
@@ -70,6 +86,15 @@ public class Car : MonoBehaviour
 
         if (!agent.pathPending)
             agent.SetDestination(target.position);
+    }
+
+    private void HandleLoopSound(bool isMoving)
+    {
+        audioSource.Stop();
+        audioSource.pitch = Random.Range(0.85f, 1.15f);
+        audioSource.volume = isMoving ? engineLoopSoundVolume : waitingLoopSoundVolume;
+        audioSource.clip = isMoving ? engineLoopSound : waitingLoopSound;
+        audioSource.Play();
     }
 
     private void DecideSpeed()
@@ -152,6 +177,12 @@ public class Car : MonoBehaviour
             //Animasyonu durdur
             if (animator != null)
                 animator.speed = 0f;
+
+            HandleLoopSound(!isStoppedByObstacle);
+
+            SoundManager.Instance.PlaySoundFX(breakSound, transform, breakSoundVolume, 0.85f, 1.15f);
+
+            honkingCoroutine = StartCoroutine(Honk());
         }
         else if (!obstacleDetected && isStoppedByObstacle)
         {
@@ -161,6 +192,14 @@ public class Car : MonoBehaviour
             //Animasyonu devam ettir
             if (animator != null)
                 animator.speed = 1f;
+
+            HandleLoopSound(!isStoppedByObstacle);
+
+            if (honkingCoroutine != null)
+            {
+                StopCoroutine(honkingCoroutine);
+                honkingCoroutine = null;
+            }
         }
     }
 
@@ -216,5 +255,14 @@ public class Car : MonoBehaviour
         Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(origin, origin + transform.forward * stopDistance);
+    }
+
+    private IEnumerator Honk()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(honkSoundCooldown * 0.8f, honkSoundCooldown * 1.2f));
+            SoundManager.Instance.PlaySoundFX(honkSound, transform, honkSoundVolume, 0.85f, 1.15f);
+        }
     }
 }
