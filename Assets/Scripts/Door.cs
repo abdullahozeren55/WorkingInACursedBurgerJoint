@@ -16,7 +16,18 @@ public class Door : MonoBehaviour, IInteractable
         Jumpscare
     }
 
+    public enum SpecialDoorState
+    {
+        None,
+        ShouldTurnUninteractableAfterClosing
+    }
+
     public DoorState doorState = DoorState.Normal;
+    [Space]
+    public SpecialDoorState specialDoorState = SpecialDoorState.None;
+
+    [Header("Special Settings")]
+    public DialogueData shouldTurnUninteractableAfterClosingDialogue;
 
     [Header("Settings")] 
     [SerializeField] private GameObject jumpscareGO;
@@ -59,7 +70,8 @@ public class Door : MonoBehaviour, IInteractable
 
     public void HandleFinishDialogue()
     {
-        gameObject.layer = interactableLayer;
+        if (specialDoorState == SpecialDoorState.None)
+            gameObject.layer = interactableLayer;
     }
 
     public void OnInteract()
@@ -104,6 +116,12 @@ public class Door : MonoBehaviour, IInteractable
         transform.parent.DOKill();
         transform.parent.DOLocalRotate(isOpened ? openEuler : closeEuler, data.timeToRotate)
             .SetEase(Ease.InOutSine);
+
+        if (!isOpened && specialDoorState == SpecialDoorState.ShouldTurnUninteractableAfterClosing)
+        {
+            gameObject.layer = uninteractableLayer;
+            DialogueManager.Instance.StartAfterInteractionSelfDialogue(this, shouldTurnUninteractableAfterClosingDialogue);
+        }
     }
 
     private void HandleLocked()

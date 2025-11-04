@@ -13,18 +13,29 @@ MonoBehaviour:
   m_Name: AfterFirstNoodleSelfTalk
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: BEN
+  - fontType: 1
+    talkingPerson: 0
+    fontStyle: 2
     DialogueToPrint: "Bir ka\xE7 dakikaya haz\u0131r olur."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
+    autoSkipTime: 4
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 1
+    talkingPerson: 1
+    fontStyle: 2
     DialogueToPrint: "Ben de o ara kap\u0131n\u0131n \xF6n\xFCnde bi hava alay\u0131m."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
+    autoSkipTime: 4
     audioClip: {fileID: 0}
+    cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
   cutsceneType: 1

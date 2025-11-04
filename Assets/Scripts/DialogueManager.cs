@@ -127,8 +127,6 @@ public class DialogueManager : MonoBehaviour
                     {
                         if (talkType == TalkType.TalkWithCustomer)
                             EndCustomerDialogue();
-                        else if (talkType == TalkType.TalkWithYourselfAfterInteraction)
-                            EndAfterInteractionSelfDialogue();
                         else if (talkType == TalkType.TalkWithSeller)
                             EndSellerDialogue();
                         else if (talkType == TalkType.TalkWithPhone)
@@ -287,7 +285,7 @@ public class DialogueManager : MonoBehaviour
     {
         currentDialogueData = data;
 
-        IsInDialogue = true;
+        IsInSelfDialogue = true;
 
         talkType = TalkType.TalkWithYourselfAfterInteraction;
 
@@ -297,19 +295,22 @@ public class DialogueManager : MonoBehaviour
 
         dialogueIndex = 0;
 
-        HandleDialogue();
+        HandleSelfDialogue();
     }
 
     private void EndAfterInteractionSelfDialogue()
     {
-        IsSkipped = false;
-        IsDialogueComplete = false;
+        if (skippingSelfTalkCoroutine != null)
+        {
+            StopCoroutine(skippingSelfTalkCoroutine);
+            skippingSelfTalkCoroutine = null;
+        }
 
         currentInteractable.HandleFinishDialogue();
 
-        IsInDialogue = false;
+        IsInSelfDialogue = false;
 
-        currentTextAnim.StartDisappearingText();
+        sinanSelfTalkTextAnim.StartDisappearingText();
 
         currentInteractable = null;
     }
@@ -486,6 +487,8 @@ public class DialogueManager : MonoBehaviour
                 EndSelfDialogueInCutscene();
             else if (talkType == TalkType.TalkWithYourself)
                 EndSelfDialogue();
+            else if (talkType == TalkType.TalkWithYourselfAfterInteraction)
+                EndAfterInteractionSelfDialogue();
         }
         else
         {

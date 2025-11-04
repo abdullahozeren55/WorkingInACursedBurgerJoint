@@ -19,33 +19,42 @@ MonoBehaviour:
     DialogueToPrint: Bu ne ya?
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 4
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 1
     fontStyle: 2
     DialogueToPrint: "D\xFCkkan\u0131n maskotu falan herhalde. Patron bundan bahsetmemi\u015Fti."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 6
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
     fontStyle: 2
-    DialogueToPrint: "Bunu da \xE7\xF6pe atmam gerekiyor mu acaba?"
+    DialogueToPrint: "Bunu da \xE7\xF6pe atmam gerekiyor mu acaba? Ya da d\u0131\u015Far\u0131
+      falan m\u0131 koysam m\xFC\u015Fteri \xE7eker belki?"
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 10
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 1
     fontStyle: 2
     DialogueToPrint: "En iyisi patrona soray\u0131m ya \u015Fimdi atar\u0131m k\u0131ymete
-      biner falan. Durduk yere ba\u015F\u0131ma i\u015F almayay\u0131m."
+      biner falan. Durduk yere ba\u015F\u0131ma i\u015F almay\u0131m."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 0
+    autoSkipTime: 10
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

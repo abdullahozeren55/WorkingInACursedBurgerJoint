@@ -13,13 +13,19 @@ MonoBehaviour:
   m_Name: AfterFirstNoodleCutsceneSelfTalk
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: BEN
+  - fontType: 1
+    talkingPerson: 0
+    fontStyle: 2
     DialogueToPrint: "Demek hayat\u0131m bundan sonra b\xF6yle olacak..."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
+    autoSkipTime: 6
     audioClip: {fileID: 0}
+    cam: 0
+    dialogueAnim: 0
   type: 2
   question: 
   optionA: 
   optionD: 
+  choiceCam: 0
   cutsceneType: 1
