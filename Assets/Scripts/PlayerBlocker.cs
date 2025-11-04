@@ -12,7 +12,7 @@ public class PlayerBlocker : MonoBehaviour
             if (!DialogueManager.Instance.IsInDialogue)
             {
                 int rand = Random.Range(0, dialogues.Length);
-                DialogueManager.Instance.StartSelfDialogue(dialogues[rand], false);
+                DialogueManager.Instance.StartSelfDialogue(dialogues[rand]);
             }
         }
     }

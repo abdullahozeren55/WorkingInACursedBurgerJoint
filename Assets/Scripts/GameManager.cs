@@ -223,7 +223,7 @@ public class GameManager : MonoBehaviour
     public void HandleAfterFirstNoodle()
     {
         afterFirstNoodleCutsceneTrigger.SetActive(true);
-        DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk, true);
+        DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
     }
 
     public void SetCurrentCustomer(ICustomer customer)

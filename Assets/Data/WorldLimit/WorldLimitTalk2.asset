@@ -19,6 +19,7 @@ MonoBehaviour:
     DialogueToPrint: "Uzakla\u015Fma! Yabanc\u0131 semtteyiz."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 5
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0

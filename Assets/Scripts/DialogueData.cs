@@ -17,6 +17,7 @@ public class DialogueData : ScriptableObject
         [TextArea] public string DialogueToPrint;
         public Vector2 DialogueOffset;
         public bool Skippable;
+        public float autoSkipTime = 10f; //for self dialogue auto skip
 
         [Space]
         public AudioClip audioClip;

@@ -49,18 +49,21 @@ public class DialogueManager : MonoBehaviour
     [Space]
 
     public bool IsInDialogue;
+    public bool IsInSelfDialogue;
     public bool IsSkipped;
     public bool IsDialogueComplete;
 
     [SerializeField] private TypewriterCore sinanTextAnim;
     [SerializeField] private TypewriterCore customer0TextAnim;
     [SerializeField] private TypewriterCore customer1TextAnim;
+    [SerializeField] private TypewriterCore sinanSelfTalkTextAnim;
     [Space]
     [SerializeField] private AudioClip defaultDialogueAudio;
     [Space]
     [SerializeField] private TMP_Text sinanDialogueText;
     [SerializeField] private TMP_Text customer0DialogueText;
     [SerializeField] private TMP_Text customer1DialogueText;
+    [SerializeField] private TMP_Text sinanSelfTalkDialogueText;
     [Space]
     [SerializeField] private ShopSeller shopSeller;
 
@@ -78,7 +81,7 @@ public class DialogueManager : MonoBehaviour
     private ICustomer currentCustomer;
     private IInteractable currentInteractable;
 
-    private bool shouldStopWhileSelfTalking;
+    private Coroutine skippingSelfTalkCoroutine;
 
     private void Awake()
     {
@@ -128,10 +131,6 @@ public class DialogueManager : MonoBehaviour
                             EndAfterInteractionSelfDialogue();
                         else if (talkType == TalkType.TalkWithSeller)
                             EndSellerDialogue();
-                        else if (talkType == TalkType.TalkWithYourself)
-                            EndSelfDialogue();
-                        else if (talkType == TalkType.TalkWithYourselfInCutscene)
-                            EndSelfDialogueInCutscene();
                         else if (talkType == TalkType.TalkWithPhone)
                             EndPhoneDialogue();
                     }
@@ -192,6 +191,19 @@ public class DialogueManager : MonoBehaviour
         IsSkipped = false;
         IsDialogueComplete = false;
 
+        if (IsInSelfDialogue)
+        {
+            if (skippingSelfTalkCoroutine != null)
+            {
+                StopCoroutine(skippingSelfTalkCoroutine);
+                skippingSelfTalkCoroutine = null;
+            }
+
+            sinanSelfTalkTextAnim.StartDisappearingText();
+
+            IsInSelfDialogue = false;
+        }
+
         DecideCurrentText();
 
         CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
@@ -204,6 +216,21 @@ public class DialogueManager : MonoBehaviour
         DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
         currentDialogueText.SetText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
 
+    }
+
+    private void HandleSelfDialogue()
+    {
+        sinanSelfTalkDialogueText.SetText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+
+        if (skippingSelfTalkCoroutine != null)
+        {
+            StopCoroutine(skippingSelfTalkCoroutine);
+            skippingSelfTalkCoroutine = null;
+        }
+
+        DecideFontTypeForSelfTalk(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
+
+        skippingSelfTalkCoroutine = StartCoroutine(SkipSelfTalk());
     }
 
     public void SetIsDialogueComplete(bool value)
@@ -322,40 +349,30 @@ public class DialogueManager : MonoBehaviour
 
     }
 
-    public void StartSelfDialogue(DialogueData data, bool shouldStop)
+    public void StartSelfDialogue(DialogueData data)
     {
         currentDialogueData = data;
 
-        IsInDialogue = true;
+        IsInSelfDialogue = true;
 
         talkType = TalkType.TalkWithYourself;
 
         dialogueIndex = 0;
 
-        shouldStopWhileSelfTalking = shouldStop;
-
-        if (shouldStopWhileSelfTalking)
-        {
-            PlayerManager.Instance.SetPlayerBasicMovements(false);
-        }
-
-        HandleDialogue();
-
+        HandleSelfDialogue();
     }
 
     private void EndSelfDialogue()
     {
-        IsSkipped = false;
-        IsDialogueComplete = false;
-
-        IsInDialogue = false;
-
-        currentTextAnim.StartDisappearingText();
-
-        if (shouldStopWhileSelfTalking)
+        if (skippingSelfTalkCoroutine != null)
         {
-            PlayerManager.Instance.SetPlayerBasicMovements(true);
+            StopCoroutine(skippingSelfTalkCoroutine);
+            skippingSelfTalkCoroutine = null;
         }
+
+        IsInSelfDialogue = false;
+
+        sinanSelfTalkTextAnim.StartDisappearingText();
     }
 
     public void StartPhoneDialogue(DialogueData data)
@@ -393,23 +410,26 @@ public class DialogueManager : MonoBehaviour
     {
         currentDialogueData = data;
 
-        IsInDialogue = true;
+        IsInSelfDialogue = true;
 
         talkType = TalkType.TalkWithYourselfInCutscene;
 
         dialogueIndex = 0;
 
-        HandleDialogue();
+        HandleSelfDialogue();
     }
 
     private void EndSelfDialogueInCutscene()
     {
-        IsSkipped = false;
-        IsDialogueComplete = false;
+        if (skippingSelfTalkCoroutine != null)
+        {
+            StopCoroutine(skippingSelfTalkCoroutine);
+            skippingSelfTalkCoroutine = null;
+        }
 
-        IsInDialogue = false;
+        IsInSelfDialogue = false;
 
-        currentTextAnim.StartDisappearingText();
+        sinanSelfTalkTextAnim.StartDisappearingText();
 
         if (currentDialogueData.type == DialogueData.DialogueType.ENDSWITHACUTSCENE)
         {
@@ -433,10 +453,43 @@ public class DialogueManager : MonoBehaviour
         
     }
 
+    private void DecideFontTypeForSelfTalk(FontType type)
+    {
+        for (int i = 0; i < fontAtlasDatas.Length; i++)
+        {
+            if (type == fontAtlasDatas[i].type)
+            {
+                if (sinanSelfTalkDialogueText.color != fontAtlasDatas[i].fontColor)
+                    sinanSelfTalkDialogueText.color = fontAtlasDatas[i].fontColor;
+
+                break;
+            }
+        }
+    }
+
     private void SetRandomPitch()
     {
         float pitch = Random.Range(1, 1.2f);
 
         audioSource.pitch = pitch;
+    }
+
+    private IEnumerator SkipSelfTalk()
+    {
+        yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].autoSkipTime);
+
+        dialogueIndex++;
+
+        if (dialogueIndex >= currentDialogueData.dialogueSegments.Length)
+        {
+            if (talkType == TalkType.TalkWithYourselfInCutscene)
+                EndSelfDialogueInCutscene();
+            else if (talkType == TalkType.TalkWithYourself)
+                EndSelfDialogue();
+        }
+        else
+        {
+            HandleSelfDialogue();
+        }
     }
 }

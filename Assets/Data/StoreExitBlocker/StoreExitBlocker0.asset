@@ -19,6 +19,7 @@ MonoBehaviour:
     DialogueToPrint: "Noodle'\u0131n paras\u0131n\u0131 \xF6demeliyim."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 5
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
