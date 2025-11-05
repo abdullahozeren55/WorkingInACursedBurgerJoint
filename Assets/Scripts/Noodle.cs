@@ -251,10 +251,7 @@ public class Noodle : MonoBehaviour, IGrabable
         IsGettingPutOnHologram = false;
 
         if (NoodleStatus == NoodleManager.NoodleStatus.WaitingToBeReady)
-        {
-            if (GameManager.Instance.DayCount == 0)
-                GameManager.Instance.HandleAfterFirstNoodle();
-        }
+            NoodleManager.Instance.HandleAfterNoodle();
     }
 
     public void OnUseHold()

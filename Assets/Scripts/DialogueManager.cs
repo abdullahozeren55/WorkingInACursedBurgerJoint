@@ -82,6 +82,8 @@ public class DialogueManager : MonoBehaviour
     private IInteractable currentInteractable;
 
     private Coroutine skippingSelfTalkCoroutine;
+    private Coroutine showingTextCoroutine;
+    private Coroutine showingSelfTextCoroutine;
 
     private void Awake()
     {
@@ -202,33 +204,25 @@ public class DialogueManager : MonoBehaviour
             IsInSelfDialogue = false;
         }
 
-        DecideCurrentText();
+        if (showingTextCoroutine != null)
+        {
+            StopCoroutine (showingTextCoroutine);
+            showingTextCoroutine = null;
+        }
 
-        CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
-
-        RectTransform rect = currentDialogueText.rectTransform;
-        rect.anchoredPosition += currentDialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
-
-        currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
-
-        DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
-        currentDialogueText.SetText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+        showingTextCoroutine = StartCoroutine(ShowTextWithDelay());
 
     }
 
     private void HandleSelfDialogue()
     {
-        sinanSelfTalkDialogueText.SetText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
-
-        if (skippingSelfTalkCoroutine != null)
+        if (showingSelfTextCoroutine != null)
         {
-            StopCoroutine(skippingSelfTalkCoroutine);
-            skippingSelfTalkCoroutine = null;
+            StopCoroutine(showingSelfTextCoroutine);
+            showingSelfTextCoroutine = null;
         }
 
-        DecideFontTypeForSelfTalk(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
-
-        skippingSelfTalkCoroutine = StartCoroutine(SkipSelfTalk());
+        showingSelfTextCoroutine = StartCoroutine(ShowSelfTextWithDelay());
     }
 
     public void SetIsDialogueComplete(bool value)
@@ -494,5 +488,39 @@ public class DialogueManager : MonoBehaviour
         {
             HandleSelfDialogue();
         }
+    }
+
+    private IEnumerator ShowTextWithDelay()
+    {
+        yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].delay);
+
+        DecideCurrentText();
+
+        CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
+
+        RectTransform rect = currentDialogueText.rectTransform;
+        rect.anchoredPosition += currentDialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
+
+        currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
+
+        DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
+        currentTextAnim.ShowText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+    }
+
+    private IEnumerator ShowSelfTextWithDelay()
+    {
+        yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].delay);
+
+        sinanSelfTalkTextAnim.ShowText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+
+        if (skippingSelfTalkCoroutine != null)
+        {
+            StopCoroutine(skippingSelfTalkCoroutine);
+            skippingSelfTalkCoroutine = null;
+        }
+
+        DecideFontTypeForSelfTalk(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
+
+        skippingSelfTalkCoroutine = StartCoroutine(SkipSelfTalk());
     }
 }

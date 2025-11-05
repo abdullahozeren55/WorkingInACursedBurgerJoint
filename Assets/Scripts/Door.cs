@@ -27,7 +27,6 @@ public class Door : MonoBehaviour, IInteractable
     public bool shouldPlayDialogueAfterInteraction;
     [Space]
     public DialogueData dialogueAfterInteraction;
-    public float dialoguePlayDelay;
     private bool isDialoguePlayed = false;
     private bool isLockedAnimating = false;
 
@@ -94,15 +93,9 @@ public class Door : MonoBehaviour, IInteractable
 
         if (shouldPlayDialogueAfterInteraction && !isDialoguePlayed)
         {
-            StartCoroutine(PlayDialogueWithDelay(dialoguePlayDelay));
+            DialogueManager.Instance.StartAfterInteractionSelfDialogue(this, shouldBeUninteractableAfterInteraction, dialogueAfterInteraction);
             isDialoguePlayed = true;
         }
-    }
-
-    private IEnumerator PlayDialogueWithDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        DialogueManager.Instance.StartAfterInteractionSelfDialogue(this, shouldBeUninteractableAfterInteraction, dialogueAfterInteraction);
     }
 
     public void HandleRotation()

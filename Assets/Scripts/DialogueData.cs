@@ -18,6 +18,7 @@ public class DialogueData : ScriptableObject
         public Vector2 DialogueOffset;
         public bool Skippable;
         public float autoSkipTime = 10f; //for self dialogue auto skip
+        public float delay = 0f; //waiting before start showing text
 
         [Space]
         public AudioClip audioClip;

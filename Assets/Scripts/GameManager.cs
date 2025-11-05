@@ -115,10 +115,6 @@ public class GameManager : MonoBehaviour
     public CustomerDaySortSegment[] DayCustomerSort;
     private int customerCounter = 0;
 
-    [Header("Day1 Settings")]
-    [SerializeField] private GameObject afterFirstNoodleCutsceneTrigger;
-    [SerializeField] private DialogueData afterFirstNoodleSelfTalk;
-
     private ICustomer currentCustomer;
 
     private int customerLayer;
@@ -218,12 +214,6 @@ public class GameManager : MonoBehaviour
     public void AddSauceToTray(SauceBottle.SauceType type)
     {
         tray.AddSauce(type);
-    }
-
-    public void HandleAfterFirstNoodle()
-    {
-        afterFirstNoodleCutsceneTrigger.SetActive(true);
-        DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
     }
 
     public void SetCurrentCustomer(ICustomer customer)

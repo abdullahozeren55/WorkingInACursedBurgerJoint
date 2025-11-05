@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02eb87e73e22d8241af6e84e70b394ab, type: 3}
-  m_Name: ShouldTurnUninteractableAfterClosing
+  m_Name: CloseTheDoorAndStartNoodlePrepare
   m_EditorClassIdentifier: 
   dialogueSegments:
   - fontType: 1
@@ -20,6 +20,7 @@ MonoBehaviour:
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     autoSkipTime: 4
+    delay: 0.5
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0

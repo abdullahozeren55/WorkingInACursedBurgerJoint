@@ -22,6 +22,11 @@ public class NoodleManager : MonoBehaviour
         Ready,
         Finished
     }
+
+    [Header("Day1 Settings")]
+    [SerializeField] private GameObject afterFirstNoodleCutsceneTrigger;
+    [SerializeField] private DialogueData afterFirstNoodleSelfTalk;
+
     [Header("Holograms")]
     [SerializeField] private GameObject hologramHouseNoodle;
     [SerializeField] private GameObject hologramKettle;
@@ -29,6 +34,7 @@ public class NoodleManager : MonoBehaviour
 
     [Header("GameObjects")]
     [SerializeField] private GameObject kettleGO;
+    [SerializeField] private GameObject playerTriggerCloseTheDoorAndStartNoodlePrepare;
 
     [Header("Noodle Water Settings")]
     private Vector3 waterStartPos;
@@ -229,6 +235,16 @@ public class NoodleManager : MonoBehaviour
 
         waterStartPos = currentWaterGO.transform.localPosition;
         waterStartScale = currentWaterGO.transform.localScale;
+
+        playerTriggerCloseTheDoorAndStartNoodlePrepare.SetActive(true);
+    }
+
+    public void SetCurrentNoodleUseable()
+    {
+        if (currentNoodleScript == null) return;
+
+        currentNoodleScript.IsUseable = true;
+        PlayerManager.Instance.DecideUIText();
     }
 
     public void SetCurrentSaucePack(GameObject saucePack)
@@ -287,6 +303,16 @@ public class NoodleManager : MonoBehaviour
             StartCoroutine(LerpColor());
         }
         
+    }
+
+    public void HandleAfterNoodle()
+    {
+        if (GameManager.Instance.DayCount == 0)
+        {
+            afterFirstNoodleCutsceneTrigger.SetActive(true);
+            DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
+        }
+            
     }
 
     private IEnumerator LerpColor()

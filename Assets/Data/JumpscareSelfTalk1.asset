@@ -19,7 +19,8 @@ MonoBehaviour:
     DialogueToPrint: Bu ne ya?
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    autoSkipTime: 4
+    autoSkipTime: 2.5
+    delay: 1.5
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
@@ -29,7 +30,8 @@ MonoBehaviour:
     DialogueToPrint: "D\xFCkkan\u0131n maskotu falan herhalde. Patron bundan bahsetmemi\u015Fti."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    autoSkipTime: 6
+    autoSkipTime: 4
+    delay: 0
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
@@ -40,7 +42,8 @@ MonoBehaviour:
       falan m\u0131 koysam m\xFC\u015Fteri \xE7eker belki?"
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    autoSkipTime: 10
+    autoSkipTime: 5
+    delay: 0
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
@@ -51,7 +54,8 @@ MonoBehaviour:
       biner falan. Durduk yere ba\u015F\u0131ma i\u015F almay\u0131m."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 0
-    autoSkipTime: 10
+    autoSkipTime: 5
+    delay: 0
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0

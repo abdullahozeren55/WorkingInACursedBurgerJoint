@@ -662,7 +662,7 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    private void DecideUIText()
+    public void DecideUIText()
     {
         if (isUsingGrabbedItem)
         {
@@ -1255,7 +1255,15 @@ public class FirstPersonController : MonoBehaviour
 
             currentInteractable = null;
             DecideOutlineAndCrosshair();
-        }     
+        }
+        else if (interactable != null)
+        {
+            if (shouldBeUninteractable)
+            {
+                interactable.CanInteract = false;
+                interactable.ChangeLayer(uninteractableLayer);
+            }
+        }
     }
 
     public void ChangeCurrentGrabable(IGrabable grabObject)

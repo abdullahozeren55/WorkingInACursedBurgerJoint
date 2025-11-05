@@ -176,4 +176,9 @@ public class PlayerManager : MonoBehaviour
     {
         firstPersonController.TryChangingFocusText(grabable, text);
     }
+
+    public void DecideUIText()
+    {
+        firstPersonController.DecideUIText();
+    }
 }
