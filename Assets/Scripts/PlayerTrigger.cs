@@ -11,11 +11,6 @@ public class PlayerTrigger : MonoBehaviour
 
     public TriggerType type;
 
-
-    [Header("CloseTheDoorAndStartNoodlePrepare")]
-    public Door houseDoor;
-    public DialogueData closeTheDoorAndStartNoodlePrepareDialogue;
-
     private Collider col;
 
     private void Awake()
@@ -30,25 +25,7 @@ public class PlayerTrigger : MonoBehaviour
             col.enabled = false;
 
             if (type == TriggerType.CloseTheDoorAndStartNoodlePrepare)
-                HandleCloseTheDoorAndStartNoodlePrepare();
+                NoodleManager.Instance.HandleCloseTheDoorAndStartNoodlePrepare();
         }
-    }
-
-    private void HandleCloseTheDoorAndStartNoodlePrepare()
-    {
-        if (!houseDoor.isOpened)
-        {
-            PlayerManager.Instance.ResetPlayerInteract(houseDoor, true);
-            DialogueManager.Instance.StartSelfDialogue(closeTheDoorAndStartNoodlePrepareDialogue);
-        }
-            
-        else
-        {
-            houseDoor.dialogueAfterInteraction = closeTheDoorAndStartNoodlePrepareDialogue;
-            houseDoor.shouldBeUninteractableAfterInteraction = true;
-            houseDoor.shouldPlayDialogueAfterInteraction = true;
-        }
-
-        NoodleManager.Instance.SetCurrentNoodleUseable();
     }
 }

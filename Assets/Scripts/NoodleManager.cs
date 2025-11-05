@@ -34,7 +34,11 @@ public class NoodleManager : MonoBehaviour
 
     [Header("GameObjects")]
     [SerializeField] private GameObject kettleGO;
+
+    [Header("Close The Door And Prepare Noodle Settings")]
     [SerializeField] private GameObject playerTriggerCloseTheDoorAndStartNoodlePrepare;
+    [SerializeField] private Door houseDoor;
+    [SerializeField] private DialogueData[] closeTheDoorAndStartNoodlePrepareDialogues;
 
     [Header("Noodle Water Settings")]
     private Vector3 waterStartPos;
@@ -87,6 +91,7 @@ public class NoodleManager : MonoBehaviour
     private Collider hologramSaucePackCollider;
 
     private int grabableLayer;
+    private int interactableLayer;
 
     private void Awake()
     {
@@ -105,6 +110,7 @@ public class NoodleManager : MonoBehaviour
         }
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
+        interactableLayer = LayerMask.NameToLayer("Interactable");
 
         hologramHouseNoodleMat = hologramHouseNoodle.GetComponent<Renderer>().material;
         hologramSaucePackMat = hologramSaucePack.GetComponent<Renderer>().material;
@@ -239,9 +245,24 @@ public class NoodleManager : MonoBehaviour
         playerTriggerCloseTheDoorAndStartNoodlePrepare.SetActive(true);
     }
 
-    public void SetCurrentNoodleUseable()
+    public void HandleCloseTheDoorAndStartNoodlePrepare()
     {
         if (currentNoodleScript == null) return;
+
+        int rand = Random.Range(0, closeTheDoorAndStartNoodlePrepareDialogues.Length);
+
+        if (!houseDoor.isOpened)
+        {
+            PlayerManager.Instance.ResetPlayerInteract(houseDoor, true);
+            DialogueManager.Instance.StartSelfDialogue(closeTheDoorAndStartNoodlePrepareDialogues[rand]);
+        }
+
+        else
+        {
+            houseDoor.dialogueAfterInteraction = closeTheDoorAndStartNoodlePrepareDialogues[rand];
+            houseDoor.shouldBeUninteractableAfterInteraction = true;
+            houseDoor.shouldPlayDialogueAfterInteraction = true;
+        }
 
         currentNoodleScript.IsUseable = true;
         PlayerManager.Instance.DecideUIText();
@@ -311,6 +332,13 @@ public class NoodleManager : MonoBehaviour
         {
             afterFirstNoodleCutsceneTrigger.SetActive(true);
             DialogueManager.Instance.StartSelfDialogue(afterFirstNoodleSelfTalk);
+
+            houseDoor.dialogueAfterInteraction = null;
+            houseDoor.shouldBeUninteractableAfterInteraction = false;
+            houseDoor.shouldPlayDialogueAfterInteraction = false;
+
+            houseDoor.CanInteract = true;
+            houseDoor.ChangeLayer(interactableLayer);
         }
             
     }
