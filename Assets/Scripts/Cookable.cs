@@ -24,7 +24,9 @@ public class Cookable : MonoBehaviour
     private bool isCooking;
     private float currentCookedTime;
 
-    private GameObject currentCookingParticles;
+    private ParticleSystem currentCookingParticles;
+    private ParticleSystem currentSmokeParticlesWorld;
+    private ParticleSystem currentSmokeParticlesLocal;
 
     private BurgerIngredient burgerIngredient;
 
@@ -34,8 +36,6 @@ public class Cookable : MonoBehaviour
         burgerIngredient = GetComponent<BurgerIngredient>();
 
         currentCookedTime = 0;
-
-        //ChangeCookAmount(0);
 
     }
 
@@ -52,7 +52,7 @@ public class Cookable : MonoBehaviour
                 ChangeCookAmount(2);
 
                 if (currentCookingParticles != null)
-                    DestroyCookingParticles();
+                    StopCookingParticles();
 
                 if (audioSource.isPlaying)
                     AudioStopWithFadeOut();
@@ -69,12 +69,29 @@ public class Cookable : MonoBehaviour
     private void CreateCookingParticles()
     {
         currentCookingParticles =  Instantiate(cookableData.cookingParticles, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
+        currentSmokeParticlesWorld =  Instantiate(cookableData.smokeParticlesWorld, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
+        
+        if (currentSmokeParticlesLocal == null)
+        {
+            currentSmokeParticlesLocal = Instantiate(cookableData.smokeParticlesLocal, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
+        }
+
+        
     }
 
-    private void DestroyCookingParticles()
+    private void StopCookingParticles()
     {
-        Destroy(currentCookingParticles);
+        currentCookingParticles.Stop();
+        currentSmokeParticlesWorld.Stop();
+
         currentCookingParticles = null;
+        currentSmokeParticlesWorld = null;
+
+        if (cookAmount == CookAmount.RAW)
+        {
+            currentSmokeParticlesLocal.Stop();
+            currentSmokeParticlesLocal = null;
+        }
     }
 
     private void ChangeCookAmount(int index)
@@ -108,7 +125,7 @@ public class Cookable : MonoBehaviour
             isCooking = false;
 
             if (currentCookingParticles != null)
-                DestroyCookingParticles();
+                StopCookingParticles();
 
             if (audioSource.isPlaying)
                 audioSource.Pause();

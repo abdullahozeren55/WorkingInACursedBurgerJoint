@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: WHOLEONION
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 6fa55c3561c008b4dbf18488feafb5df, type: 3}
+  instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusText: "So\u011Fan"
   isUseable: 0
   handGrabType: 9

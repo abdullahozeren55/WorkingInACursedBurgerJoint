@@ -5,7 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCookableData", menuName = "Data/Cookable")]
 public class CookableData : ScriptableObject
 {
-    public GameObject cookingParticles;
+    public ParticleSystem cookingParticles;
+    public ParticleSystem smokeParticlesWorld;
+    public ParticleSystem smokeParticlesLocal;
     public AudioClip cookingSound;
     public float audioFadeOutDuration = 1f;
 

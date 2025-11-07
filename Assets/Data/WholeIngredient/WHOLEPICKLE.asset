@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLEPICKLE
   m_EditorClassIdentifier: 
-  destroyParticle: {fileID: 939900511580441035, guid: 50c3fc7e83a5ec643b86ae10043b30d4, type: 3}
+  destroyParticle: {fileID: 3451705259810622206, guid: 0a7065ebaeeabfb45b4dbc0c5a12be58, type: 3}
+  instantiateRotationOffset: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
   focusText: "Tur\u015Fu"
   isUseable: 0
   handGrabType: 6

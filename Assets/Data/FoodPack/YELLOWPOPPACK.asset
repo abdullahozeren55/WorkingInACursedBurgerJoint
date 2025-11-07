@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6f1ea6c3ffc8a942b17df31987d356e, type: 3}
   m_Name: YELLOWPOPPACK
   m_EditorClassIdentifier: 
-  destroyParticle: {fileID: 939900511580441035, guid: b1aa171ede49dd14ca4966340bcad396, type: 3}
+  destroyParticle: {fileID: 3451705259810622206, guid: 8e60696b3ef07a741951951e31b26d9f, type: 3}
   isUseable: 0
   handGrabType: 10
   minForce: 0.2

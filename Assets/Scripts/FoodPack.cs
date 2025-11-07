@@ -140,12 +140,12 @@ public class FoodPack : MonoBehaviour, IGrabable
             {
                 allTransform[i].GetComponent<WholeIngredient>().HandlePackOpening();
             }
-            // Generate a random force direction and magnitude
-            Vector3 randomForce = new Vector3(
-                Random.Range(-0.5f, 0.5f), // Random x direction
-                Random.Range(0.5f, 1f), // Random y direction
-                Random.Range(-0.5f, 0.5f)  // Random z direction
-            ).normalized * Random.Range(data.minForce, data.maxForce); // Apply random magnitude
+                // Generate a random force direction and magnitude
+                Vector3 randomForce = new Vector3(
+                    Random.Range(-0.5f, 0.5f), // Random x direction
+                    Random.Range(0.5f, 1f), // Random y direction
+                    Random.Range(-0.5f, 0.5f)  // Random z direction
+                ).normalized * Random.Range(data.minForce, data.maxForce); // Apply random magnitude
 
             allRB[i].isKinematic = false;
             allRB[i].AddForce(randomForce, ForceMode.Impulse);

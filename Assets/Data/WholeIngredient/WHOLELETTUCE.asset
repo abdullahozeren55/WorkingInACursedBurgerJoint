@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLELETTUCE
   m_EditorClassIdentifier: 
-  destroyParticle: {fileID: 939900511580441035, guid: a6058814c04a42c4f95093706247cc4e, type: 3}
+  destroyParticle: {fileID: 3451705259810622206, guid: 24b13e32064c53a47ba3730f061b6a66, type: 3}
+  instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusText: Marul
   isUseable: 0
   handGrabType: 10

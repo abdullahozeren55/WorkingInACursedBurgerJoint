@@ -159,7 +159,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
                 
             }
 
-            Instantiate(data.destroyParticle, transform.position, Quaternion.Euler(transform.rotation.x - 90f, transform.rotation.y + 90f, transform.rotation.z + 90f));
+            Instantiate(data.destroyParticle, transform.position, transform.rotation * data.instantiateRotationOffset);
 
             Destroy(gameObject);
         }  

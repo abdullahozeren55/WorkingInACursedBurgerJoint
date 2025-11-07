@@ -7,6 +7,7 @@ using UnityEngine;
 public class WholeIngredientData : ScriptableObject
 {
     public GameObject destroyParticle;
+    public Quaternion instantiateRotationOffset;
     [Space]
     public string focusText;
     public bool isUseable = false;

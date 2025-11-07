@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLEBUN
   m_EditorClassIdentifier: 
-  destroyParticle: {fileID: 939900511580441035, guid: b177dc38e30a5d746bf5bceed40353b7, type: 3}
+  destroyParticle: {fileID: 3451705259810622206, guid: 61b3a3664ae5d31479e614ab89281c03, type: 3}
+  instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusText: Ekmek
   isUseable: 0
   handGrabType: 11

@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c4a1f97ec1b644aa2aab2f266b34a8, type: 3}
   m_Name: BUN
   m_EditorClassIdentifier: 
-  cookingParticles: {fileID: 3451705259810622206, guid: c63e6c5a9c31cc54c8e13bc2c071867e, type: 3}
+  cookingParticles: {fileID: 8670732574423207768, guid: c63e6c5a9c31cc54c8e13bc2c071867e, type: 3}
+  smokeParticlesWorld: {fileID: 1436701112834747369, guid: 5a8f625499965e746a672b9b8cecffaf, type: 3}
+  smokeParticlesLocal: {fileID: 1436701112834747369, guid: 87bf2995f86b3844faf3ab36cd89d9dc, type: 3}
   cookingSound: {fileID: 8300000, guid: f1409505fc2935e4e8c4abbfde6a52ec, type: 3}
   audioFadeOutDuration: 1
   materials:

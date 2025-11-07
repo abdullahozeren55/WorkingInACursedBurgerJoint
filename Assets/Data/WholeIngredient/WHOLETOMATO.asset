@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: WHOLETOMATO
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 3563ddfbd416f7a4ea221db036f7ea1b, type: 3}
+  instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusText: Domates
   isUseable: 0
   handGrabType: 9
