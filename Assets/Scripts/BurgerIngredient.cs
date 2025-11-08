@@ -1,13 +1,5 @@
 using DG.Tweening;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UI;
-using static Cookable;
-using Random = UnityEngine.Random;
 
 public class BurgerIngredient : MonoBehaviour, IGrabable
 {
@@ -51,6 +43,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     public Cookable.CookAmount cookAmount;
 
     private Transform decalParent;
+
+    private Quaternion collisionRotation;
 
     private void Awake()
     {
@@ -261,6 +255,23 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         isStuck = true;
     }
 
+    private void CalculateCollisionRotation(Collision collision)
+    {
+        ContactPoint contact = collision.contacts[0];
+
+        Vector3 normal = contact.normal;
+        Vector3 hitPoint = contact.point + normal * 0.02f;
+
+        Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+        if (tangent == Vector3.zero)
+            tangent = Vector3.Cross(normal, Vector3.forward);
+        tangent.Normalize();
+        Vector3 bitangent = Vector3.Cross(normal, tangent);
+
+        // Normal yönüne göre rotation hesapla
+        collisionRotation = Quaternion.LookRotation(normal) * Quaternion.Euler(0, 180, 0);
+    }
+
     private void HandleSauceDrops(Collision collision)
     {
         int countToDrop = Mathf.CeilToInt(decalParent.childCount / 2f);
@@ -279,9 +290,6 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         // Rastgele offset (yüzeye paralel düzlemde)
         float spreadRadius = 0.05f;
 
-        // Normal yönüne göre rotation hesapla
-        Quaternion finalRotation = Quaternion.LookRotation(normal) * Quaternion.Euler(0, 180, 0);
-
         for (int i = 0; i < countToDrop; i++)
         {
             Transform child = decalParent.GetChild(i);
@@ -293,7 +301,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             Vector3 spawnPoint = hitPoint + randomOffset;
 
             child.transform.position = spawnPoint;
-            child.transform.rotation = finalRotation;
+            child.transform.rotation = collisionRotation;
         }
 
         if (decalParent.childCount > 0)
@@ -318,19 +326,19 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
         if (value == 0)
         {
-            cookAmount = CookAmount.RAW;
+            cookAmount = Cookable.CookAmount.RAW;
             canStick = true;
 
             
         }
         else if (value == 1)
         {
-            cookAmount = CookAmount.REGULAR;
+            cookAmount = Cookable.CookAmount.REGULAR;
             canStick = false;
         }
         else
         {
-            cookAmount = CookAmount.BURNT;
+            cookAmount = Cookable.CookAmount.BURNT;
             canStick = false;
         }
 
@@ -346,6 +354,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     {
         if (!IsGrabbed && !isGettingPutOnTray && !collision.gameObject.CompareTag("Player"))
         {
+
+            CalculateCollisionRotation(collision);
 
             if (decalParent != null && decalParent.childCount > 0)
                 HandleSauceDrops(collision);
@@ -377,6 +387,9 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
                 gameObject.layer = grabableLayer;
 
+                if (data.throwParticles[(int)cookAmount] != null)
+                    Instantiate(data.throwParticles[(int)cookAmount], transform.position, collisionRotation);
+
                 isJustThrowed = false;
             }
             else if (isJustDropped)
@@ -384,6 +397,9 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 gameObject.layer = grabableLayer;
                 
                 SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, 1f, 0.85f, 1.15f);
+
+                if (data.dropParticles[(int)cookAmount] != null)
+                    Instantiate(data.dropParticles[(int)cookAmount], transform.position, collisionRotation);
 
                 isJustDropped = false;
             }

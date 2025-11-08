@@ -6,10 +6,13 @@ public class PlayerTrigger : MonoBehaviour
 {
     public enum TriggerType
     {
-        CloseTheDoorAndStartNoodlePrepare
+        CloseTheDoorAndStartNoodlePrepare,
+        EnterColdRoom,
+        ExitColdRoom
     }
 
     public TriggerType type;
+    public bool shouldTurnOffAfterTrigger = true;
 
     private Collider col;
 
@@ -22,10 +25,14 @@ public class PlayerTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            col.enabled = false;
+            col.enabled = !shouldTurnOffAfterTrigger;
 
             if (type == TriggerType.CloseTheDoorAndStartNoodlePrepare)
                 NoodleManager.Instance.HandleCloseTheDoorAndStartNoodlePrepare();
+            else if (type == TriggerType.EnterColdRoom)
+                PlayerManager.Instance.HandlePlayerEnterExitColdRoom(true);
+            else if (type == TriggerType.ExitColdRoom)
+                PlayerManager.Instance.HandlePlayerEnterExitColdRoom(false);
         }
     }
 }

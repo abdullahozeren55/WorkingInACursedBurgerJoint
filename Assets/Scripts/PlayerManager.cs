@@ -7,6 +7,10 @@ public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
 
+    [Header("Enter Cold Room Settings")]
+    [SerializeField] private DialogueData[] enterColdRoomDialogues;
+    private bool isInColdRoom;
+
     public enum HandRigTypes
     {
         Interaction,
@@ -180,5 +184,28 @@ public class PlayerManager : MonoBehaviour
     public void DecideUIText()
     {
         firstPersonController.DecideUIText();
+    }
+
+    public void HandlePlayerEnterExitColdRoom(bool isEntering)
+    {
+
+        if (isEntering)
+        {
+            firstPersonController.CanBreathe = true;
+
+            if (!isInColdRoom)
+            {
+                DialogueManager.Instance.StartSelfDialogue(enterColdRoomDialogues[Random.Range(0, enterColdRoomDialogues.Length)]);
+
+                isInColdRoom = true;
+            }
+        }
+        else
+        {
+            firstPersonController.CanBreathe = false;
+
+            isInColdRoom = false;
+        }
+            
     }
 }

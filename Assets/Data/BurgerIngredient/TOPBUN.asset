@@ -25,6 +25,14 @@ MonoBehaviour:
   - "\xDCst Ekmek (Normal)"
   - "\xDCst Ekmek (K\u0131zarm\u0131\u015F)"
   - "\xDCst Ekmek (Yanm\u0131\u015F)"
+  dropParticles:
+  - {fileID: 8670732574423207768, guid: ab78f840ceb57194d937ddac5ab26831, type: 3}
+  - {fileID: 8670732574423207768, guid: c4b5fef3bcfcd6244bc291261ff664b5, type: 3}
+  - {fileID: 8670732574423207768, guid: 9bd8c9a815572c842bef2d14a7d734fd, type: 3}
+  throwParticles:
+  - {fileID: 8670732574423207768, guid: 2afe1ca5897ddb341bafaf5eb9885e2f, type: 3}
+  - {fileID: 8670732574423207768, guid: e42000ca3a147d247b500bfadce367bd, type: 3}
+  - {fileID: 8670732574423207768, guid: f513bc2922bdd9f43bc45eba9de401e9, type: 3}
   audioClips:
   - {fileID: 8300000, guid: 4b125dc5bc95ec04e867f0357eff41bf, type: 3}
   - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}

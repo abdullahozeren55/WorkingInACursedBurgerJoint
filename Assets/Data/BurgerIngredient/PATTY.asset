@@ -25,6 +25,14 @@ MonoBehaviour:
   - "K\xF6fte (\xC7i\u011F)"
   - "K\xF6fte (Pi\u015Fmi\u015F)"
   - "K\xF6fte (Yanm\u0131\u015F)"
+  dropParticles:
+  - {fileID: 8670732574423207768, guid: 7fde14b160a03cd44ab10a8133c5af80, type: 3}
+  - {fileID: 8670732574423207768, guid: e4ff0f07c7aa77b46a68aed92ba20c11, type: 3}
+  - {fileID: 8670732574423207768, guid: 70f0b63ba1780994eb6aa7b00e4d232a, type: 3}
+  throwParticles:
+  - {fileID: 8670732574423207768, guid: 78c02f135b9d0cf4b80b0f881964cc53, type: 3}
+  - {fileID: 8670732574423207768, guid: 634bb6021ec139b42a887f1de2ae68a9, type: 3}
+  - {fileID: 8670732574423207768, guid: df8c56c3d5d664f4db40f011dab56022, type: 3}
   audioClips:
   - {fileID: 8300000, guid: b93dbdd756280f6419be6d697d852f4f, type: 3}
   - {fileID: 8300000, guid: 3e28540a4e7b19447a5cf58012f58e56, type: 3}

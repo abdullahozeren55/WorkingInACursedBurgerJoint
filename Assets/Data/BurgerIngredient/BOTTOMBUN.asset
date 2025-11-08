@@ -25,6 +25,14 @@ MonoBehaviour:
   - Alt Ekmek (Normal)
   - "Alt Ekmek (K\u0131zarm\u0131\u015F)"
   - "Alt Ekmek (Yanm\u0131\u015F)"
+  dropParticles:
+  - {fileID: 8670732574423207768, guid: a3e391bc82a86e245aecd100e7c55c91, type: 3}
+  - {fileID: 8670732574423207768, guid: d8f99a11e822f574d934da98a6830c75, type: 3}
+  - {fileID: 8670732574423207768, guid: 955803163e976cb46abd518722c6cd51, type: 3}
+  throwParticles:
+  - {fileID: 8670732574423207768, guid: 14d322b8b5b7b4044b65ea31d9155cca, type: 3}
+  - {fileID: 8670732574423207768, guid: 19b389b915016cd4aa495aa1b34c0656, type: 3}
+  - {fileID: 8670732574423207768, guid: 96517e9030c7f0a49abc9239e98c9bf0, type: 3}
   audioClips:
   - {fileID: 8300000, guid: 4b125dc5bc95ec04e867f0357eff41bf, type: 3}
   - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}

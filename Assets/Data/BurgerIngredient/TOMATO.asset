@@ -23,6 +23,10 @@ MonoBehaviour:
   grabLocalRotationOffset: {x: 8.777145, y: 107.60691, z: 132.65611}
   focusTexts:
   - Domates Dilimi
+  dropParticles:
+  - {fileID: 8670732574423207768, guid: 539ab9f709f4aa249b7618332bec72e2, type: 3}
+  throwParticles:
+  - {fileID: 8670732574423207768, guid: b72321641e44c9f429d28b53ebccdb32, type: 3}
   audioClips:
   - {fileID: 8300000, guid: 6bb232783a14c814eafe9995837763fd, type: 3}
   - {fileID: 8300000, guid: 5ae132e105a2fdb4b9d2a24417df0a6f, type: 3}

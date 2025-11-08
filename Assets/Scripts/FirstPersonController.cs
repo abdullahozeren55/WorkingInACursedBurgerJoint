@@ -2,6 +2,7 @@ using Cinemachine;
 using Febucci.UI.Core;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -30,6 +31,7 @@ public class FirstPersonController : MonoBehaviour
     public bool CanFootstep = true;
     public bool CanMove = true;
     public bool CanLook = true;
+    public bool CanBreathe = true;
 
     [Header("Controls")]
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -46,6 +48,15 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float slopeSpeed = 8.0f;
     [SerializeField] private float pushForce = 1f;
     [HideInInspector] public bool isBeingPushedByACustomer = false;
+
+    [Header("Breathe Parameters")]
+    [SerializeField] private Transform breathingParticlePoint;
+    [SerializeField] private ParticleSystem breathingParticles;
+    [SerializeField] private float breatheCooldownForSprint = 1f;
+    [SerializeField] private float breatheCooldownForWalk = 3f;
+    [SerializeField] private float breatheCooldownForCrouch = 5f;
+    private float currentBreatheCooldown;
+    private float breatheParticleLastInstantiateTime;
 
     [Header("Look Parameters")]
     [SerializeField] private Transform headBone;
@@ -354,7 +365,12 @@ public class FirstPersonController : MonoBehaviour
             anim.SetFloat("speed", 0f, 0.15f, Time.deltaTime);
 
         }
-                
+
+        if (CanBreathe)
+        {
+            HandleBreatheParticle();
+        }
+
     }
 
     private void LateUpdate()
@@ -368,6 +384,18 @@ public class FirstPersonController : MonoBehaviour
 
         if (CanUseHeadbob)
             HandleHeadbob();
+    }
+
+    private void HandleBreatheParticle()
+    {
+        currentBreatheCooldown = IsSprinting ? breatheCooldownForSprint : isCrouching ? breatheCooldownForCrouch : breatheCooldownForWalk;
+
+        if (Time.time > breatheParticleLastInstantiateTime + currentBreatheCooldown)
+        {
+            ParticleSystem ps = Instantiate(breathingParticles, breathingParticlePoint.position, breathingParticlePoint.rotation, breathingParticlePoint);
+
+            breatheParticleLastInstantiateTime = Time.time;
+        }
     }
 
     private void HandleMouseAndHandControl()

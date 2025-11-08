@@ -66,6 +66,14 @@ public class Cookable : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (currentSmokeParticlesLocal != null)
+        {
+            currentSmokeParticlesLocal.transform.position = transform.position;
+        }
+    }
+
     private void CreateCookingParticles()
     {
         currentCookingParticles =  Instantiate(cookableData.cookingParticles, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
@@ -73,7 +81,7 @@ public class Cookable : MonoBehaviour
         
         if (currentSmokeParticlesLocal == null)
         {
-            currentSmokeParticlesLocal = Instantiate(cookableData.smokeParticlesLocal, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
+            currentSmokeParticlesLocal = Instantiate(cookableData.smokeParticlesLocal, transform.position, Quaternion.Euler(-90f, 0f, 0f));
         }
 
         

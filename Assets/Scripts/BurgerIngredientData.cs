@@ -21,8 +21,9 @@ public class BurgerIngredientData : ScriptableObject
     [Space]
     public string[] focusTexts;
     [Space]
-
-
+    public ParticleSystem[] dropParticles;
+    public ParticleSystem[] throwParticles;
+    [Space]
     public AudioClip[] audioClips;
     public enum IngredientType
     {

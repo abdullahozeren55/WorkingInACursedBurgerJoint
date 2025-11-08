@@ -23,6 +23,10 @@ MonoBehaviour:
   grabLocalRotationOffset: {x: 77.947105, y: 218.30144, z: 205.52403}
   focusTexts:
   - Marul Dilimi
+  dropParticles:
+  - {fileID: 8670732574423207768, guid: fa16a5b48bb58d941959e8b286e98642, type: 3}
+  throwParticles:
+  - {fileID: 8670732574423207768, guid: d5ae8a1be8c04884f9e71a8e16b58d51, type: 3}
   audioClips:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
   - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}
