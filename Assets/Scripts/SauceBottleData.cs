@@ -22,6 +22,7 @@ public class SauceBottleData : ScriptableObject
     public Vector3 useLocalRotationOffset;
     [Space]
     public float timeToUse = 0.3f;
+    public float usingFOV = 70f;
     [Space]
     public AudioClip[] audioClips;
 }

@@ -317,6 +317,11 @@ public class CameraManager : MonoBehaviour
             .SetId(tweenId);
     }
 
+    public void EndFOV(float delay, float duration)
+    {
+        StartCoroutine(EndFOVCoroutine(delay, duration));
+    }
+
     public void PlayColdRoomEffects(bool isEntering)
     {
         float durationVig = isEntering ? vigIncreaseTimeForColdRoom : vigDecreaseTimeForColdRoom;
@@ -365,12 +370,12 @@ public class CameraManager : MonoBehaviour
         // FOV
         PlayFOV(preset.fov, preset.fovLerpDuration, Ease.OutSine);
 
-        StartCoroutine(EndScreenShake(preset.shakeTotalDuration, preset.shakeResetLerpDuration, type));
-        StartCoroutine(EndVignette(preset.vignetteTotalDuration, preset.vignetteResetLerpDuration, type));
-        StartCoroutine(EndFOV(preset.fovTotalDuration, preset.fovResetLerpDuration, type));
+        StartCoroutine(EndScreenShake(preset.shakeTotalDuration, preset.shakeResetLerpDuration));
+        StartCoroutine(EndVignette(preset.vignetteTotalDuration, preset.vignetteResetLerpDuration));
+        StartCoroutine(EndFOVCoroutine(preset.fovTotalDuration, preset.fovResetLerpDuration));
     }
 
-    private IEnumerator EndScreenShake(float delay, float duration, JumpscareType type)
+    private IEnumerator EndScreenShake(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
 
@@ -379,14 +384,14 @@ public class CameraManager : MonoBehaviour
         PlayScreenShake(0f, 0f, duration, Ease.OutExpo);
     }
 
-    private IEnumerator EndVignette(float delay, float duration, JumpscareType type)
+    private IEnumerator EndVignette(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
 
         PlayVignette(normalVignetteValue, duration, normalVignetteColor, Ease.InSine);
     }
 
-    private IEnumerator EndFOV(float delay, float duration, JumpscareType type)
+    private IEnumerator EndFOVCoroutine(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
 

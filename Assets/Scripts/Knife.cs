@@ -243,6 +243,7 @@ public class Knife : MonoBehaviour, IGrabable
     {
         PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, true);
+        CameraManager.Instance.PlayFOV(data.usingFOV, data.timeToUse);
 
         triggerCol.enabled = true;
 
@@ -259,6 +260,7 @@ public class Knife : MonoBehaviour, IGrabable
     {
         PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse/2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        CameraManager.Instance.EndFOV(0f, data.timeToUse/2f);
 
         triggerCol.enabled = false;
 

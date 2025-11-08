@@ -22,6 +22,7 @@ MonoBehaviour:
   useRotationOffset: {x: 0, y: -70, z: -130}
   useLocalPositionOffset: {x: -0.0000010572512, y: 0.00051305967, z: 0.000011773997}
   useLocalRotationOffset: {x: 9.527423, y: 61.804817, z: 280.1402}
+  usingFOV: 70
   timeToUse: 0.3
   focusText: "B\u0131\xE7ak"
   audioClips:

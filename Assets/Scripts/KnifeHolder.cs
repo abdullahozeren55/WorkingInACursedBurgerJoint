@@ -25,12 +25,9 @@ public class KnifeHolder : MonoBehaviour, IInteractable
 
     [Header("Knife Settings")]
     [SerializeField] private GameObject knife;
-    [SerializeField] private Transform pointToSpawnKnife;
 
     private void Awake()
     {
-        int childCount = transform.childCount;
-
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
@@ -76,7 +73,7 @@ public class KnifeHolder : MonoBehaviour, IInteractable
     {
         if (!CanInteract) return;
 
-        GameObject instantiatedKnife = Instantiate(knife, pointToSpawnKnife.position, Quaternion.Euler(0f, -90f, 180f), null);
+        GameObject instantiatedKnife = Instantiate(knife);
         PlayerManager.Instance.ResetPlayerGrabAndInteract();
         PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedKnife.GetComponent<IGrabable>());
     }

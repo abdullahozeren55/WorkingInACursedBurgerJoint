@@ -207,6 +207,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
     {
         PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        CameraManager.Instance.PlayFOV(data.usingFOV, data.timeToUse);
 
         if (useCoroutine != null)
         {
@@ -221,6 +222,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
     {
         PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse / 2f);
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        CameraManager.Instance.EndFOV(0f, data.timeToUse / 2f);
 
         pourParticle.Stop();
         isPlayingParticles = false;

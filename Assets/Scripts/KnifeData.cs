@@ -21,6 +21,7 @@ public class KnifeData : ScriptableObject
     public Vector3 useLocalPositionOffset;
     public Vector3 useLocalRotationOffset;
     [Space]
+    public float usingFOV = 50f;
     public float timeToUse = 0.3f;
     [Space]
     public string focusText;

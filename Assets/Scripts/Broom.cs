@@ -9,26 +9,22 @@ public class Broom : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
-    public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
-    [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
-
+    public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
-    public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
-    [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
-    public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
-    [SerializeField] private Vector3 grabRotationOffset = new Vector3(-5f, -70f, -70f);
+    public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
+    public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
-    public string FocusText { get => focusText; set => focusText = value; }
-    [SerializeField] private string focusText;
-    public bool IsUseable { get => isUseable; set => isUseable = value; }
-    [SerializeField] private bool isUseable = true;
+    public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
 
+    public KnifeData data;
+    public string FocusText { get => data.focusText; set => data.focusText = value; }
     [Space]
-    [SerializeField] private AudioClip[] audioClips;
+    [SerializeField] private Collider triggerCol;
 
     private Rigidbody rb;
-    private Collider col;
+    [SerializeField] private Collider col1;
+    [SerializeField] private Collider col2;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -37,11 +33,13 @@ public class Broom : MonoBehaviour, IGrabable
 
     private bool isJustThrowed;
     private bool isJustDropped;
+    private bool isStuck;
+
+    private Coroutine useCoroutine;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        col = GetComponent<Collider>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -52,47 +50,25 @@ public class Broom : MonoBehaviour, IGrabable
 
         isJustThrowed = false;
         isJustDropped = false;
-
-        transform.rotation = Random.rotation;
-    }
-
-    public void OnGrab(Transform grabPoint)
-    {
-        gameObject.layer = ungrabableLayer;
-
-        SoundManager.Instance.PlaySoundFX(audioClips[0], transform, 1f, 0.85f, 1.15f);
-
-        rb.velocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
-        rb.useGravity = false;
-
-        IsGrabbed = true;
-
-        transform.SetParent(grabPoint);
-        transform.position = grabPoint.position;
-        transform.localPosition = grabPositionOffset;
-        transform.localRotation = Quaternion.Euler(grabRotationOffset);
-    }
-    public void OnFocus()
-    {
-        if (!isJustDropped && !isJustThrowed )
-        {
-            gameObject.layer = grabableOutlinedLayer;
-        }
-
-    }
-    public void OnLoseFocus()
-    {
-        if (!isJustDropped && !isJustThrowed)
-        {
-            gameObject.layer = grabableLayer;
-        }
-
+        isStuck = false;
     }
 
     public void OnDrop(Vector3 direction, float force)
     {
+        col1.enabled = true;
+        col2.enabled = true;
+
         IsGrabbed = false;
+
+        if (useCoroutine != null)
+        {
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
+        }
+
+        triggerCol.enabled = false;
+
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
 
@@ -103,11 +79,76 @@ public class Broom : MonoBehaviour, IGrabable
         isJustDropped = true;
     }
 
+    public void OnFocus()
+    {
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableOutlinedLayer;
+    }
+
+    public void OnGrab(Transform grabPoint)
+    {
+        gameObject.layer = ungrabableLayer;
+
+        if (isStuck)
+            Unstick();
+
+        triggerCol.enabled = false;
+        col1.enabled = false;
+        col2.enabled = false;
+
+        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, 1f, 0.85f, 1.15f);
+
+        isJustThrowed = false;
+
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.useGravity = false;
+
+        IsGrabbed = true;
+
+        transform.SetParent(grabPoint);
+        transform.position = grabPoint.position;
+        transform.localPosition = data.grabLocalPositionOffset;
+        transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+    }
+
+    public void OnLoseFocus()
+    {
+        if (!isJustDropped && !isJustThrowed)
+            gameObject.layer = grabableLayer;
+    }
+
     public void OnThrow(Vector3 direction, float force)
     {
+        col1.enabled = true;
+        col2.enabled = true;
+
         IsGrabbed = false;
 
+        if (useCoroutine != null)
+        {
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
+        }
+
+        triggerCol.enabled = true;
+
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+
         transform.SetParent(null);
+
+        Vector3 throwDirection = Camera.main.transform.forward;
+        Quaternion lookRotation = Quaternion.LookRotation(throwDirection);
+
+        // Decompose to Euler angles to modify just Y and Z
+        Vector3 euler = lookRotation.eulerAngles;
+
+        // Modify Y and Z as needed
+        euler.y += 180f;
+        euler.z = 180f;
+
+        // Apply the final rotation
+        transform.rotation = Quaternion.Euler(euler);
 
         rb.useGravity = true;
 
@@ -128,14 +169,59 @@ public class Broom : MonoBehaviour, IGrabable
         }
     }
 
+    private void StickToSurface(Collision collision)
+    {
+        // Get the surface normal from the collision
+        Vector3 surfaceNormal = collision.contacts[0].normal;
+
+        // Define the sharp edge direction of the knife (e.g., forward direction)
+        Vector3 sharpEdgeDirection = transform.forward;
+
+        // Calculate the target rotation to align the sharp edge with the surface normal
+        Quaternion targetRotation = Quaternion.FromToRotation(sharpEdgeDirection, surfaceNormal) * transform.rotation;
+
+        // Zero out the Z rotation while keeping the X and Y rotations
+        targetRotation = Quaternion.Euler(targetRotation.eulerAngles.x, targetRotation.eulerAngles.y, 180f);
+
+        // Apply the rotation to the object
+        transform.rotation = targetRotation;
+
+        // Stop the object’s movement
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        // Attach the knife to the surface (set parent to the wall or surface)
+        transform.SetParent(collision.transform);
+        rb.isKinematic = true;
+
+        // Set the flag that the object is stuck
+        isStuck = true;
+    }
+
+    private void Unstick()
+    {
+        transform.SetParent(null);
+
+        rb.isKinematic = false;
+        isStuck = false;
+    }
+
+    private void TurnOffTriggerCol()
+    {
+        triggerCol.enabled = false;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Door") || collision.gameObject.CompareTag("Customer")))
+        if (!IsGrabbed && !collision.gameObject.CompareTag("Player"))
         {
             if (isJustThrowed)
             {
+                StickToSurface(collision);
 
-                SoundManager.Instance.PlaySoundFX(audioClips[2], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, 1f, 0.85f, 1.15f);
+
+                Invoke("TurnOffTriggerCol", 0.1f);
 
                 gameObject.layer = grabableLayer;
 
@@ -145,7 +231,7 @@ public class Broom : MonoBehaviour, IGrabable
             {
                 gameObject.layer = grabableLayer;
 
-                SoundManager.Instance.PlaySoundFX(audioClips[1], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, 1f, 0.85f, 1.15f);
 
                 isJustDropped = false;
             }
@@ -157,11 +243,65 @@ public class Broom : MonoBehaviour, IGrabable
 
     public void OnUseHold()
     {
-        throw new System.NotImplementedException();
+        PlayerManager.Instance.SetPlayerUseHandLerp(data.usePositionOffset, data.useRotationOffset, data.timeToUse);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(true, false);
+        CameraManager.Instance.PlayFOV(data.usingFOV, data.timeToUse);
+
+        triggerCol.enabled = true;
+
+        if (useCoroutine != null)
+        {
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
+        }
+
+        useCoroutine = StartCoroutine(Use(true));
     }
 
     public void OnUseRelease()
     {
-        throw new System.NotImplementedException();
+        PlayerManager.Instance.SetPlayerUseHandLerp(GrabPositionOffset, GrabRotationOffset, data.timeToUse / 2f);
+        PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
+        CameraManager.Instance.EndFOV(0f, data.timeToUse / 2f);
+
+        triggerCol.enabled = false;
+
+        if (useCoroutine != null)
+        {
+            StopCoroutine(useCoroutine);
+            useCoroutine = null;
+        }
+
+        useCoroutine = StartCoroutine(Use(false));
+    }
+
+    private IEnumerator Use(bool shouldUse)
+    {
+        Vector3 startPos = transform.localPosition;
+        Quaternion startRot = transform.localRotation;
+        Vector3 startScale = transform.localScale;
+
+        Vector3 endPos = shouldUse ? data.useLocalPositionOffset : data.grabLocalPositionOffset;
+        Quaternion endRot = shouldUse ? Quaternion.Euler(data.useLocalRotationOffset) : Quaternion.Euler(data.grabLocalRotationOffset);
+
+        float elapsedTime = 0f;
+        float value = 0f;
+
+        while (elapsedTime < data.timeToUse)
+        {
+            value = elapsedTime / data.timeToUse;
+
+            transform.localPosition = Vector3.Lerp(startPos, endPos, value);
+            transform.localRotation = Quaternion.Lerp(startRot, endRot, value);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localPosition = endPos;
+        transform.localRotation = endRot;
+
+        useCoroutine = null;
+
     }
 }

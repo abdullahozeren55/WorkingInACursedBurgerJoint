@@ -8,6 +8,12 @@ public class BroomHolder : MonoBehaviour, IInteractable
 {
     public bool CanInteract { get => canInteract; set => canInteract = value; }
     [SerializeField] private bool canInteract;
+    public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private PlayerManager.HandRigTypes handRigType;
+
+    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
+    [SerializeField] private bool outlineShouldBeRed;
+
     public string FocusText { get => focusText; set => focusText = value; }
     [SerializeField] private string focusText;
     [Space]
@@ -17,14 +23,8 @@ public class BroomHolder : MonoBehaviour, IInteractable
     private int interactableOutlinedLayer;
     private int interactableOutlinedRedLayer;
 
-    [Header("Broom Settings")]
+    [Header("Knife Settings")]
     [SerializeField] private GameObject broom;
-    [SerializeField] private Transform pointToSpawnKnife;
-
-    public PlayerManager.HandRigTypes HandRigType { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-    public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
-    [SerializeField] private bool outlineShouldBeRed;
 
     private void Awake()
     {
@@ -33,14 +33,14 @@ public class BroomHolder : MonoBehaviour, IInteractable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
     }
 
-    public void HandleFinishDialogue()
-    {
-
-    }
-
     public void ChangeLayer(int layerIndex)
     {
         gameObject.layer = layerIndex;
+    }
+
+    public void HandleFinishDialogue()
+    {
+
     }
 
     public void OnFocus()
@@ -57,15 +57,6 @@ public class BroomHolder : MonoBehaviour, IInteractable
         ChangeLayer(interactableLayer);
     }
 
-    public void OnInteract()
-    {
-        if (!CanInteract) return;
-
-        GameObject instantiatedKnife = Instantiate(broom, pointToSpawnKnife.position, Quaternion.Euler(-135f, 0f, 0f), null);
-        PlayerManager.Instance.ResetPlayerGrabAndInteract();
-        PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedKnife.GetComponent<IGrabable>());
-    }
-
     public void OutlineChangeCheck()
     {
         if (gameObject.layer == interactableOutlinedLayer && OutlineShouldBeRed)
@@ -76,5 +67,14 @@ public class BroomHolder : MonoBehaviour, IInteractable
         {
             ChangeLayer(interactableOutlinedLayer);
         }
+    }
+
+    public void OnInteract()
+    {
+        if (!CanInteract) return;
+
+        GameObject instantiatedBroom = Instantiate(broom);
+        PlayerManager.Instance.ResetPlayerGrabAndInteract();
+        PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedBroom.GetComponent<IGrabable>());
     }
 }
