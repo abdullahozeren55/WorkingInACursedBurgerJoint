@@ -56,8 +56,6 @@ public class Cookable : MonoBehaviour
 
                 if (audioSource.isPlaying)
                     AudioStopWithFadeOut();
-
-                this.enabled = false;
             }
             else if (currentCookedTime > cookableData.cookTime[0])
             {
@@ -179,5 +177,11 @@ public class Cookable : MonoBehaviour
         {
             StopCooking();
         }
+    }
+
+    private void OnDestroy()
+    {
+        if (currentSmokeParticlesLocal != null)
+            Destroy(currentSmokeParticlesLocal.gameObject);
     }
 }

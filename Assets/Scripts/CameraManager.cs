@@ -308,12 +308,12 @@ public class CameraManager : MonoBehaviour
         seq.Play();
     }
 
-    public void PlayFOV(float targetFOV, float duration, Ease ease = Ease.OutSine, string tweenId = "FOV")
+    public void PlayFOV(float targetFOV, float duration, Ease ease = Ease.OutSine, float easeValue = 1.7f, string tweenId = "FOV")
     {
         DOTween.Kill(tweenId);
 
         DOTween.To(() => firstPersonCam.m_Lens.FieldOfView, x => firstPersonCam.m_Lens.FieldOfView = x, targetFOV, duration)
-            .SetEase(ease)
+            .SetEase(ease, easeValue)
             .SetId(tweenId);
     }
 
@@ -347,7 +347,7 @@ public class CameraManager : MonoBehaviour
                      duration, isCharging ? throwChargeColor : normalVignetteColor, ease);
 
         PlayFOV(isCharging ? maxFOV : normalFOV,
-                duration, ease);
+                duration, Ease.InOutBack, 3f);
     }
 
     public void PlayJumpscareEffects(JumpscareType type)

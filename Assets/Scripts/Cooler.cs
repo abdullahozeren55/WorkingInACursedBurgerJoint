@@ -38,8 +38,6 @@ public class Cooler : MonoBehaviour, IInteractable
     [SerializeField] private PlayerManager.HandRigTypes handRigType;
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
-    
-
     [SerializeField] private bool outlineShouldBeRed;
 
     void Awake()
@@ -110,6 +108,8 @@ public class Cooler : MonoBehaviour, IInteractable
     {
         isOpened = !isOpened;
 
+        SoundManager.Instance.PlaySoundFX(isOpened ? openSound : closeSound, transform);
+
         coolerStateNum = isOpened ? 1 : 0;
 
         PlayerManager.Instance.TryChangingFocusText(this, FocusText);
@@ -119,23 +119,8 @@ public class Cooler : MonoBehaviour, IInteractable
             StopCoroutine(rotateCoroutine);
             rotateCoroutine = null;
         }
-
-        PlaySound(!isOpened);
+ 
         rotateCoroutine = StartCoroutine(ToogleRotate(isOpened));
-    }
-
-    private void PlaySound(bool isOpen)
-    {
-        audioSource.Stop();
-
-        if (isOpen)
-        {
-            audioSource.PlayOneShot(closeSound);
-        }
-        else
-        {
-            audioSource.PlayOneShot(openSound);
-        }
     }
 
     public void ChangeLayer(int layerIndex)
