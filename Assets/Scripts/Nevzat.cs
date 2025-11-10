@@ -345,9 +345,6 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         {
             HandleHeadHome();
         }
-
-        PlayerManager.Instance.SetPlayerCanPlay(true);
-
     }
 
     private bool IsOnlyPicklesInside(List<BurgerIngredientData.IngredientType> ingredients)
@@ -528,6 +525,8 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         agent.enabled = false;
         HandleFootsteps();
         anim.SetBool("idle", true);
+
+        CameraManager.Instance.SetCustomerCamLookAt(CameraLookAt, CameraManager.CameraName.CustomerDialogueAtTheDoor);
         DialogueManager.Instance.StartCustomerDialogue(this, falseBurgerDialogueData);
     }
 
@@ -567,7 +566,7 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
     {
         if (dialogueAnim == DialogueAnim.WAVE)
             anim.SetTrigger("wave");
-        else if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk") && CurrentAction != ICustomer.Action.ReceivedFalseDrink && CurrentAction != ICustomer.Action.ReceivedFalseBurger)
+        else if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk"))
             anim.SetTrigger("talk");
     }
 }

@@ -592,6 +592,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     public void HandleDialogueAnim(DialogueAnim dialogueAnim)
     {
-        throw new System.NotImplementedException();
+        if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk"))
+            anim.SetTrigger("talk");
     }
 }

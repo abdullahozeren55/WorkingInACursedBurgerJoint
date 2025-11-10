@@ -42,6 +42,7 @@ public class DialogueManager : MonoBehaviour
         NPCCustomer1,
         NPCCustomer2,
         Metin,
+        Nevzat,
     }
     public static DialogueManager Instance { get; private set; }
     [Space]
@@ -262,6 +263,10 @@ public class DialogueManager : MonoBehaviour
         else
         {
             currentCustomer.HandleFinishDialogue();
+
+            CameraManager.Instance.SwitchToFirstPersonCamera();
+            PlayerManager.Instance.SetPlayerCanPlay(true);
+            PlayerManager.Instance.SetPlayerCanHeadBob(true);
         }
 
         IsInDialogue = false;
@@ -269,10 +274,6 @@ public class DialogueManager : MonoBehaviour
         currentTextAnim.StartDisappearingText();
 
         currentCustomer = null;
-
-        CameraManager.Instance.SwitchToFirstPersonCamera();
-        PlayerManager.Instance.SetPlayerCanPlay(true);
-        PlayerManager.Instance.SetPlayerCanHeadBob(true);
     }
 
     public void StartAfterInteractionSelfDialogue(IInteractable interactable, bool shouldBeUninteractable, DialogueData data)

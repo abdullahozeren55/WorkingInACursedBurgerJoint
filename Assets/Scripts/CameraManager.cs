@@ -49,7 +49,8 @@ public class CameraManager : MonoBehaviour
         Monitor,
         CustomerDialogue,
         PhoneLook,
-        ShopSellerDialogue
+        ShopSellerDialogue,
+        CustomerDialogueAtTheDoor
     }
 
     [System.Serializable]
@@ -98,6 +99,7 @@ public class CameraManager : MonoBehaviour
 
     private CinemachineVirtualCamera firstPersonCam;
     private CinemachineVirtualCamera customerDialogueCam;
+    private CinemachineVirtualCamera customerDialogueAtTheDoorCam;
 
     private CinemachineBasicMultiChannelPerlin perlin;
     private Vignette vignette;
@@ -137,6 +139,10 @@ public class CameraManager : MonoBehaviour
             else if (entry.camName == CameraName.CustomerDialogue)
             {
                 customerDialogueCam = entry.vCam;
+            }
+            else if (entry.camName == CameraName.CustomerDialogueAtTheDoor)
+            {
+                customerDialogueAtTheDoorCam = entry.vCam;
             }
         }
 
@@ -230,9 +236,12 @@ public class CameraManager : MonoBehaviour
         return currentCam.vCam;
     }
 
-    public void SetCustomerCamLookAt(Transform lookAt)
+    public void SetCustomerCamLookAt(Transform lookAt, CameraName name = CameraName.CustomerDialogue)
     {
-        customerDialogueCam.LookAt = lookAt;
+        if (name == CameraName.CustomerDialogue)
+            customerDialogueCam.LookAt = lookAt;
+        else if (name == CameraName.CustomerDialogueAtTheDoor)
+            customerDialogueAtTheDoorCam.LookAt = lookAt;
     }
 
     public void SwitchToFirstPersonCamera()

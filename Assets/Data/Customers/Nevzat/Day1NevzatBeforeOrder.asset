@@ -13,43 +13,87 @@ MonoBehaviour:
   m_Name: Day1NevzatBeforeOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - PersonName: NEVZAT
+  - fontType: 8
+    talkingPerson: 1
+    fontStyle: 0
     DialogueToPrint: Ne demek biliyor musun bu?
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: NEVZAT
+    cam: 3
+    dialogueAnim: 0
+  - fontType: 8
+    talkingPerson: 0
+    fontStyle: 0
     DialogueToPrint: "Hay\u0131r yapman gerekiyor. Acilen."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: NEVZAT
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 8
+    talkingPerson: 1
+    fontStyle: 0
     DialogueToPrint: Ve ben...
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: NEVZAT
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 8
+    talkingPerson: 0
+    fontStyle: 0
     DialogueToPrint: "...Ben bir hay\u0131r\u0131m."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: NEVZAT
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 8
+    talkingPerson: 1
+    fontStyle: 0
     DialogueToPrint: "\u015Eurdan bana bedava bi burger ver. K\u0131smetin a\xE7\u0131l\u0131r."
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: BEN
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 1
+    talkingPerson: 0
+    fontStyle: 0
     DialogueToPrint: ...
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 32
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
-  - PersonName: NEVZAT
+    cam: 0
+    dialogueAnim: 0
+  - fontType: 8
+    talkingPerson: 1
+    fontStyle: 0
     DialogueToPrint: Vallahi bilimsel bu.
+    DialogueOffset: {x: 0, y: 0}
     Skippable: 1
-    LettersPerSecond: 45
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
+    cam: 0
+    dialogueAnim: 0
   type: 1
-  question: "Nevzata burger vermeli miyim? \u015Eaibeli bir tipe benziyor ama...
-    Riske atmaya de\u011Fer mi?"
+  question: "\u015Eurdan bana bi bedava burger ver \u015Fefim. K\u0131smetin a\xE7\u0131l\u0131r.
+    Vallahi bilimsel bu."
   optionA: VER
   optionD: VERME
+  choiceCam: 3
+  cutsceneType: 0
