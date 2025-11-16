@@ -250,9 +250,6 @@ public class FirstPersonController : MonoBehaviour
         uninteractableLayer = LayerMask.NameToLayer("Uninteractable");
 
         DecideFocusText();
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     void Start()

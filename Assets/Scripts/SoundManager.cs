@@ -86,4 +86,9 @@ public class SoundManager : MonoBehaviour
     {
         audioMixer.SetFloat("AmbianceVolume", Mathf.Log10(value) * 20f);
     }
+
+    public void SetTypewriterVolume(float value)
+    {
+        audioMixer.SetFloat("TypewriterVolume", Mathf.Log10(value) * 20f);
+    }
 }

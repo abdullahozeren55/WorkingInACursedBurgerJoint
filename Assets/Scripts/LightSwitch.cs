@@ -48,8 +48,13 @@ public class LightSwitch : MonoBehaviour, IInteractable
     private Coroutine flickerLightCoroutine;
 
     [Header("Audio Settings")]
-    public AudioClip onSound;
-    public AudioClip offSound;
+    public AudioClip lightSwitchSound;
+    [Space]
+    public float minPitchForOn = 1f;
+    public float maxPitchForOn = 1.2f;
+    [Space]
+    public float minPitchForOff = 0.7f;
+    public float maxPitchForOff = 0.9f;
 
     [Header("Layer Settings")]
     private int interactableLayer;
@@ -121,7 +126,7 @@ public class LightSwitch : MonoBehaviour, IInteractable
     {
         isOn = !isOn;
 
-        SoundManager.Instance.PlaySoundFX(isOn ? onSound : offSound, transform);
+        SoundManager.Instance.PlaySoundFX(lightSwitchSound, transform, 1f, isOn ? minPitchForOn : minPitchForOff, isOn ? maxPitchForOn : maxPitchForOff);
 
         switchStateNum = isOn ? 1 : 0;
 

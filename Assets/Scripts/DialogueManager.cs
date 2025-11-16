@@ -59,7 +59,11 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TypewriterCore customer1TextAnim;
     [SerializeField] private TypewriterCore sinanSelfTalkTextAnim;
     [Space]
-    [SerializeField] private AudioClip defaultDialogueAudio;
+    [SerializeField] private AudioClip[] typewriterSounds;
+    private float minPitch = 0.85f;
+    private float maxPitch = 1.15f;
+    private bool pitchDecided;
+    private int typewriterIndex;
     [Space]
     [SerializeField] private TMP_Text sinanDialogueText;
     [SerializeField] private TMP_Text customer0DialogueText;
@@ -75,7 +79,7 @@ public class DialogueManager : MonoBehaviour
     private int dialogueIndex = 0;
     private TalkType talkType;
 
-    private AudioSource audioSource;
+    private AudioSource typewriterAudioSource;
 
     private KeyCode skipKey = KeyCode.Mouse0;
 
@@ -98,7 +102,7 @@ public class DialogueManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        audioSource = GetComponent<AudioSource>();
+        typewriterAudioSource = GetComponent<AudioSource>();
 
         currentCustomer = null;
         currentInteractable = null;
@@ -192,6 +196,8 @@ public class DialogueManager : MonoBehaviour
         IsSkipped = false;
         IsDialogueComplete = false;
 
+        pitchDecided = false;
+
         if (IsInSelfDialogue)
         {
             if (skippingSelfTalkCoroutine != null)
@@ -200,6 +206,7 @@ public class DialogueManager : MonoBehaviour
                 skippingSelfTalkCoroutine = null;
             }
 
+            sinanSelfTalkTextAnim.StopShowingText();
             sinanSelfTalkTextAnim.StartDisappearingText();
 
             IsInSelfDialogue = false;
@@ -217,6 +224,8 @@ public class DialogueManager : MonoBehaviour
 
     private void HandleSelfDialogue()
     {
+        pitchDecided = false;
+
         if (showingSelfTextCoroutine != null)
         {
             StopCoroutine(showingSelfTextCoroutine);
@@ -463,11 +472,36 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void SetRandomPitch()
+    private void SetPitch()
     {
-        float pitch = Random.Range(1, 1.2f);
+        if (pitchDecided) return;
 
-        audioSource.pitch = pitch;
+        minPitch = currentDialogueData.dialogueSegments[dialogueIndex].minAudioPitch;
+        maxPitch = currentDialogueData.dialogueSegments[dialogueIndex].maxAudioPitch;
+
+        float pitch = Random.Range(minPitch, maxPitch);
+
+        typewriterAudioSource.pitch = pitch;
+
+        pitchDecided = true;
+    }
+
+    private void SelectNextAudio()
+    {
+        typewriterAudioSource.clip = typewriterSounds[typewriterIndex];
+
+        if (typewriterIndex == typewriterSounds.Length - 1)
+            typewriterIndex = 0;
+        else
+            typewriterIndex++;
+    }
+
+    public void PlayTypewriterAudio()
+    {
+        SelectNextAudio();
+        SetPitch();
+
+        typewriterAudioSource.Play();
     }
 
     private IEnumerator SkipSelfTalk()

@@ -172,6 +172,9 @@ public class GameManager : MonoBehaviour
         NextState();
 
         SetOrderThrowArea(false);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void CallCustomer()

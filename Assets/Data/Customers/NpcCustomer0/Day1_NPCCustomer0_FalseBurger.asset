@@ -15,19 +15,27 @@ MonoBehaviour:
   dialogueSegments:
   - fontType: 4
     talkingPerson: 1
+    fontStyle: 0
     DialogueToPrint: "Babo\u015F ben X Burger istemi\u015Ftim."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
     cam: 3
+    dialogueAnim: 0
   - fontType: 1
     talkingPerson: 0
+    fontStyle: 0
     DialogueToPrint: "\xC7ok \xF6z\xFCr dilerim b-babo\u015F... Yanl\u0131\u015F
       olmu\u015F yenisini haz\u0131rl\u0131yorum hemen."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 10
+    delay: 0
     audioClip: {fileID: 0}
     cam: 0
+    dialogueAnim: 0
   type: 0
   question: 
   optionA: 

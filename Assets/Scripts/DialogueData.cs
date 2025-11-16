@@ -19,6 +19,8 @@ public class DialogueData : ScriptableObject
         public bool Skippable;
         public float autoSkipTime = 10f; //for self dialogue auto skip
         public float delay = 0f; //waiting before start showing text
+        public float minAudioPitch = 0.85f;
+        public float maxAudioPitch = 1.15f;
 
         [Space]
         public AudioClip audioClip;

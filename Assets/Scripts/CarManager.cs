@@ -11,7 +11,6 @@ public class CarManager : MonoBehaviour
     public bool CanSpawn;
     public float spawnCooldown = 5f;
     public int maxCarCount = 30;
-    private Coroutine car0SpawnCoroutine;
     private readonly List<GameObject> activeCars = new List<GameObject>();
 
     [System.Serializable]
@@ -52,7 +51,7 @@ public class CarManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        car0SpawnCoroutine = StartCoroutine(SpawnRandomCar0Repeatedly());
+        StartCoroutine(SpawnRandomCar0Repeatedly());
 
         //walking1agent.SetDestination(destination.position);
 

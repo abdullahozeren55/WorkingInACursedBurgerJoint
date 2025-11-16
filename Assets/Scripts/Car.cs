@@ -28,6 +28,8 @@ public class Car : MonoBehaviour
 
     [Header("Speed Settings")]
     public float speed = 8f;
+    private float originalSpeed;
+    private bool matchingSpeed;
 
     [Header("Audio Settings")]
     public AudioClip engineLoopSound;
@@ -100,6 +102,8 @@ public class Car : MonoBehaviour
     private void DecideSpeed()
     {
         agent.speed = Random.Range(speed * 0.7f, speed * 1.4f);
+
+        originalSpeed = agent.speed;
     }
 
     private void DecideCarNPC()
@@ -153,47 +157,86 @@ public class Car : MonoBehaviour
         Quaternion rotation = transform.rotation;
         Vector3 direction = transform.forward;
 
-        bool hitForward = Physics.BoxCast(origin, boxHalfExtents, direction, out RaycastHit hit, rotation, stopDistance, obstacleMask, QueryTriggerInteraction.Ignore);
+        // Ön bölgedeki tüm colliderlar
+        Collider[] hits = Physics.OverlapBox(
+            origin + direction * stopDistance * 0.5f,
+            boxHalfExtents,
+            rotation,
+            obstacleMask,
+            QueryTriggerInteraction.Ignore
+        );
 
-        Collider[] hits = Physics.OverlapBox(origin + direction * stopDistance * 0.5f, boxHalfExtents, rotation, obstacleMask, QueryTriggerInteraction.Ignore);
+        Car frontCar = null;
+        bool hasObstacle = false;
 
-        bool hitInside = false;
         foreach (var col in hits)
         {
-            if (col != selfCollider)
+            if (col == selfCollider) continue;
+
+            hasObstacle = true;
+
+            // Araba mý?
+            Car car = col.GetComponentInParent<Car>();
+            if (car != null)
             {
-                hitInside = true;
+                frontCar = car;
                 break;
             }
         }
 
-        obstacleDetected = hitForward || hitInside;
-
-        if (obstacleDetected && !isStoppedByObstacle)
+        if (frontCar != null)
         {
-            agent.isStopped = true;
-            isStoppedByObstacle = true;
+            matchingSpeed = true;
+            isStoppedByObstacle = false;      // DÝKKAT: Durma modunu kapatýyoruz
+            agent.isStopped = false;          // ASLA durma tetiklenmesin
 
-            //Animasyonu durdur
-            if (animator != null)
-                animator.speed = 0f;
+            // Bir týk daha düþük hýz
+            float targetSpeed = frontCar.agent.speed * 0.95f;
+            agent.speed = Mathf.Lerp(agent.speed, targetSpeed, Time.deltaTime * 5f);
 
-            HandleLoopSound(!isStoppedByObstacle);
-
-            SoundManager.Instance.PlaySoundFX(breakSound, transform, breakSoundVolume, 0.85f, 1.15f);
-
-            honkingCoroutine = StartCoroutine(Honk());
-        }
-        else if (!obstacleDetected && isStoppedByObstacle)
-        {
-            agent.isStopped = false;
-            isStoppedByObstacle = false;
-
-            //Animasyonu devam ettir
             if (animator != null)
                 animator.speed = 1f;
 
-            HandleLoopSound(!isStoppedByObstacle);
+            // Fren & korna yok
+            return;     // EN KRÝTÝK NOKTA
+        }
+
+        if (hasObstacle)
+        {
+            if (!isStoppedByObstacle)
+            {
+                isStoppedByObstacle = true;
+
+                agent.isStopped = true;
+
+                if (animator != null)
+                    animator.speed = 0f;
+
+                HandleLoopSound(false);
+
+                SoundManager.Instance.PlaySoundFX(breakSound, transform, breakSoundVolume, 0.85f, 1.15f);
+
+                honkingCoroutine = StartCoroutine(Honk());
+            }
+
+            return;
+        }
+
+        if (matchingSpeed)
+        {
+            agent.speed = Mathf.Lerp(agent.speed, originalSpeed, Time.deltaTime * 2f);
+            matchingSpeed = false;
+        }
+
+        if (isStoppedByObstacle)
+        {
+            isStoppedByObstacle = false;
+            agent.isStopped = false;
+
+            if (animator != null)
+                animator.speed = 1f;
+
+            HandleLoopSound(true);
 
             if (honkingCoroutine != null)
             {
