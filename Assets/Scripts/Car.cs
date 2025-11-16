@@ -44,6 +44,13 @@ public class Car : MonoBehaviour
     public float honkSoundCooldown = 5f;
     private Coroutine honkingCoroutine;
 
+    [Header("Knockback Player Settings")]
+    public bool CanKnockback = true;
+    public float turnOffDelayAfterStopping = 1f;
+    public float turnOnDelayAfterMoving = 2f;
+    public float knockbackMultiplier = 1.8f;
+    public float airMultiplier = 0.7f;
+
     private Animator animator;
     private AudioSource audioSource;
     private NavMeshAgent agent;
@@ -217,6 +224,8 @@ public class Car : MonoBehaviour
                 SoundManager.Instance.PlaySoundFX(breakSound, transform, breakSoundVolume, 0.85f, 1.15f);
 
                 honkingCoroutine = StartCoroutine(Honk());
+
+                StartCoroutine(SetCanKnockBack(false));
             }
 
             return;
@@ -243,6 +252,8 @@ public class Car : MonoBehaviour
                 StopCoroutine(honkingCoroutine);
                 honkingCoroutine = null;
             }
+
+            StartCoroutine(SetCanKnockBack(true));
         }
     }
 
@@ -285,6 +296,18 @@ public class Car : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (CanKnockback && other.CompareTag("Player"))
+        {
+            Vector3 forceDir = (transform.forward + Vector3.up * airMultiplier).normalized;
+
+            float forcePower = agent.speed * knockbackMultiplier;
+
+            PlayerManager.Instance.ApplyKnockback(forceDir, forcePower);
+        }
+    }
+
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying)
@@ -307,5 +330,14 @@ public class Car : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(honkSoundCooldown * 0.8f, honkSoundCooldown * 1.2f));
             SoundManager.Instance.PlaySoundFX(honkSound, transform, honkSoundVolume, 0.85f, 1.15f);
         }
+    }
+
+    private IEnumerator SetCanKnockBack(bool shouldTurnOn)
+    {
+        yield return new WaitForSeconds(shouldTurnOn ? turnOnDelayAfterMoving : turnOffDelayAfterStopping);
+
+        CanKnockback = shouldTurnOn;
+
+        yield break;
     }
 }

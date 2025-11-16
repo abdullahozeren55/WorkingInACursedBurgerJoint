@@ -6,6 +6,14 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager Instance;
+    [Space]
+    public Animator playerAnim;
+
+    [Header("Knockback Settings")]
+    public float knockbackDuration = 0.35f;
+
+    private Vector3 knockbackVelocity;
+    private bool isKnockbackActive;
 
     public enum HandRigTypes
     {
@@ -135,9 +143,17 @@ public class PlayerManager : MonoBehaviour
         characterController.Move(moveForce);
     }
 
+    public void ApplyKnockback(Vector3 direction, float force)
+    {
+        isKnockbackActive = true;
+        knockbackVelocity = direction * force;
+
+        StartCoroutine(KnockbackRoutine(knockbackDuration));
+    }
+
     public void SetPlayerAnimBool(string boolName, bool value)
     {
-        firstPersonController.SetAnimBool(boolName, value);
+        playerAnim.SetBool(boolName, value);
     }
 
     public void SetPlayerUseHandLerp(Vector3 targetPos, Vector3 targetRot, float timeToDo)
@@ -197,5 +213,28 @@ public class PlayerManager : MonoBehaviour
             firstPersonController.CanBreathe = false;
         }
             
+    }
+
+    private IEnumerator KnockbackRoutine(float duration)
+    {
+        float t = 0f;
+        isKnockbackActive = true;
+
+        while (t < duration)
+        {
+            characterController.Move(knockbackVelocity * Time.deltaTime);
+
+            knockbackVelocity += Physics.gravity * 0.5f * Time.deltaTime;
+            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, Time.deltaTime * 2f);
+
+            // Yere çarpýnca erken bitir
+            if (characterController.isGrounded && knockbackVelocity.y < 0.2f)
+                break;
+
+            t += Time.deltaTime;
+            yield return null;
+        }
+
+        isKnockbackActive = false;
     }
 }

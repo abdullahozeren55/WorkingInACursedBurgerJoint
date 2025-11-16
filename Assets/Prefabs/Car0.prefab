@@ -4525,6 +4525,7 @@ GameObject:
   - component: {fileID: 6901390455247597006}
   - component: {fileID: 5289974780603241866}
   - component: {fileID: 433410925610633405}
+  - component: {fileID: 4847896813034816819}
   m_Layer: 0
   m_Name: Car0
   m_TagString: Untagged
@@ -4635,6 +4636,11 @@ MonoBehaviour:
   breakSoundVolume: 1
   honkSoundVolume: 1
   honkSoundCooldown: 5
+  CanKnockback: 1
+  turnOffDelayAfterStopping: 0.5
+  turnOnDelayAfterMoving: 1.5
+  knockbackMultiplier: 15
+  airMultiplier: 2
 --- !u!95 &5289974780603241866
 Animator:
   serializedVersion: 5
@@ -4752,6 +4758,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &4847896813034816819
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5894574859802320710}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.6585889, y: 1.5025885, z: 1.7498333}
+  m_Center: {x: -0.07428098, y: 0.7715272, z: 1.5800327}
 --- !u!1 &5928051661999465314
 GameObject:
   m_ObjectHideFlags: 0

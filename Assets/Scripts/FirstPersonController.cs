@@ -1486,11 +1486,6 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    public void SetAnimBool(string boolName, bool value)
-    {
-        anim.SetBool(boolName, value);
-    }
-
     public void SetUseHandLerp(Vector3 targetPos, Vector3 targetRot, float timeToDo)
     {
         if (grabbedUseCoroutine != null)
