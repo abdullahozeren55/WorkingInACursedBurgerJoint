@@ -29,10 +29,6 @@ public class Door : MonoBehaviour, IInteractable
     public DialogueData dialogueAfterInteraction;
     private bool isDialoguePlayed = false;
     private bool isLockedAnimating = false;
-
-
-    [Header("Audio")]
-    [SerializeField] private AudioSource jumpscareAudioSource;
     
     public string FocusTextKey { get => data.focusTextKeys[doorStateNum]; set => data.focusTextKeys[doorStateNum] = value; }
     private int doorStateNum = 0;
@@ -100,7 +96,7 @@ public class Door : MonoBehaviour, IInteractable
     public void HandleRotation()
     {
         isOpened = !isOpened;
-        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform);
+        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, 1f, 0.98f, 1.02f);
 
         doorStateNum = isOpened ? 1 : 0;
 
@@ -116,7 +112,7 @@ public class Door : MonoBehaviour, IInteractable
         if (isLockedAnimating) return;
         isLockedAnimating = true;
 
-        SoundManager.Instance.PlaySoundFX(data.lockedSound, transform);
+        SoundManager.Instance.PlaySoundFX(data.lockedSound, transform, 1f, 0.98f, 1.02f);
 
         transform.parent.DOKill();
         transform.parent.localRotation = Quaternion.Euler(closeEuler);
@@ -142,7 +138,7 @@ public class Door : MonoBehaviour, IInteractable
         ChangeLayer(uninteractableLayer);
         isOpened = true;
 
-        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform);
+        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, 1f, 0.98f, 1.02f);
 
         // Baþlangýç pozisyonu
         Vector3 startPos = jumpscareGO.transform.position;
@@ -164,7 +160,7 @@ public class Door : MonoBehaviour, IInteractable
 
         seq.InsertCallback(data.timeToRotate * data.jumpscareSoundEffectPercentValue, () =>
         {
-            jumpscareAudioSource.PlayOneShot(data.jumpscareSound);
+            SoundManager.Instance.PlaySoundFX(data.jumpscareSound, transform, 1f, 0.98f, 1.02f);
         });
 
         seq.InsertCallback(data.timeToRotate * data.jumpscareEffectPercentValue, () =>

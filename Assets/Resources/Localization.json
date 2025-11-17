@@ -50,9 +50,111 @@
     },
 
     {
+      "key": "INTERACTABLE_LIFT_TOILET_LID",
+      "tr": "Kapağı Kaldır",
+      "en": "Lift The Lid"
+    },
+
+    {
+      "key": "INTERACTABLE_LOWER_TOILET_LID",
+      "tr": "Kapağı İndir",
+      "en": "Lower The Lid"
+    },
+
+    {
       "key": "INTERACTABLE_KNIFE_HOLDER",
       "tr": "Bıçak Al",
       "en": "Take A Knife"
+    },
+
+    {
+      "key": "INTERACTABLE_BURGER_BOX_BOX",
+      "tr": "Burger Kutusu Al",
+      "en": "Take A Burger Box"
+    },
+
+    {
+      "key": "INTERACTABLE_BUN_BOX",
+      "tr": "Ekmek Paketi Al",
+      "en": "Take A Bun Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_PATTY_BOX",
+      "tr": "Köfte Paketi Al",
+      "en": "Take A Patty Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_CHEESE_BOX",
+      "tr": "Peynir Paketi Al",
+      "en": "Take A Cheese Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_PICKLE_BOX",
+      "tr": "Turşu Paketi Al",
+      "en": "Take A Pickle Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_TOMATO_BOX",
+      "tr": "Domates Paketi Al",
+      "en": "Take A Tomato Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_ONION_BOX",
+      "tr": "Soğan Paketi Al",
+      "en": "Take An Onion Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_LETTUCE_BOX",
+      "tr": "Marul Paketi Al",
+      "en": "Take A Lettuce Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_BLACK_POP_BOX",
+      "tr": "Siyah Kula Paketi Al",
+      "en": "Take A Black Kula Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_YELLOW_POP_BOX",
+      "tr": "Sarı Kula Paketi Al",
+      "en": "Take A Yellow Kula Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_WHITE_POP_BOX",
+      "tr": "Beyaz Kula Paketi Al",
+      "en": "Take A White Kula Pack"
+    },
+
+    {
+      "key": "INTERACTABLE_KETCHUP_BOX",
+      "tr": "Ketçap Şişesi Al",
+      "en": "Take A Ketchup Bottle"
+    },
+
+    {
+      "key": "INTERACTABLE_MAYONNAISE_BOX",
+      "tr": "Mayonez Şişesi Al",
+      "en": "Take A Mayo Bottle"
+    },
+
+    {
+      "key": "INTERACTABLE_MUSTARD_BOX",
+      "tr": "Hardal Şişesi Al",
+      "en": "Take A Mustard Bottle"
+    },
+
+    {
+      "key": "INTERACTABLE_BBQ_SAUCE_BOX",
+      "tr": "Barbekü Sosu Şişesi Al",
+      "en": "Take A BBQ Sauce Bottle"
     },
 
     {
@@ -65,6 +167,294 @@
       "key": "INTERACTABLE_TURN_OFF_LIGHT",
       "tr": "Işığı Kapat",
       "en": "Turn Off The Light"
+    },
+
+    {
+      "key": "GRABABLE_BUN",
+      "tr": "Ekmek",
+      "en": "Bun"
+    },
+
+    {
+      "key": "GRABABLE_PICKLE",
+      "tr": "Turşu",
+      "en": "Pickle"
+    },
+
+    {
+      "key": "GRABABLE_TOMATO",
+      "tr": "Domates",
+      "en": "Tomato"
+    },
+
+    {
+      "key": "GRABABLE_ONION",
+      "tr": "Soğan",
+      "en": "Onion"
+    },
+
+    {
+      "key": "GRABABLE_LETTUCE",
+      "tr": "Marul",
+      "en": "Lettuce"
+    },
+
+    {
+      "key": "GRABABLE_BLACK_POP_PACK",
+      "tr": "Siyah Kula Paketi",
+      "en": "Black Kula Pack"
+    },
+
+    {
+      "key": "GRABABLE_YELLOW_POP_PACK",
+      "tr": "Sarı Kula Paketi",
+      "en": "Yellow Kula Pack"
+    },
+
+    {
+      "key": "GRABABLE_WHITE_POP_PACK",
+      "tr": "Beyaz Kula Paketi",
+      "en": "White Kula Pack"
+    },
+
+    {
+      "key": "GRABABLE_BUN_PACK",
+      "tr": "Ekmek Paketi",
+      "en": "Bun Pack"
+    },
+
+    {
+      "key": "GRABABLE_PATTY_PACK",
+      "tr": "Köfte Paketi",
+      "en": "Patty Pack"
+    },
+
+    {
+      "key": "GRABABLE_CHEESE_PACK",
+      "tr": "Peynir Paketi",
+      "en": "Cheese Pack"
+    },
+
+    {
+      "key": "GRABABLE_PICKLE_PACK",
+      "tr": "Turşu Paketi",
+      "en": "Pickle Pack"
+    },
+
+    {
+      "key": "GRABABLE_TOMATO_PACK",
+      "tr": "Domates Paketi",
+      "en": "Tomato Pack"
+    },
+
+    {
+      "key": "GRABABLE_ONION_PACK",
+      "tr": "Soğan Paketi",
+      "en": "Onion Pack"
+    },
+
+    {
+      "key": "GRABABLE_LETTUCE_PACK",
+      "tr": "Marul Paketi",
+      "en": "Lettuce Pack"
+    },
+
+    {
+      "key": "GRABABLE_BOTTOM_BUN_RAW",
+      "tr": "Alt Ekmek (Normal)",
+      "en": "Bottom Bun (Normal)"
+    },
+
+    {
+      "key": "GRABABLE_BOTTOM_BUN_COOKED",
+      "tr": "Alt Ekmek (Kızarmış)",
+      "en": "Bottom Bun (Toasted)"
+    },
+
+    {
+      "key": "GRABABLE_BOTTOM_BUN_BURNT",
+      "tr": "Alt Ekmek (Yanmış)",
+      "en": "Bottom Bun (Burnt)"
+    },
+
+    {
+      "key": "GRABABLE_TOP_BUN_RAW",
+      "tr": "Üst Ekmek (Normal)",
+      "en": "Top Bun (Normal)"
+    },
+
+    {
+      "key": "GRABABLE_TOP_BUN_COOKED",
+      "tr": "Üst Ekmek (Kızarmış)",
+      "en": "Top Bun (Toasted)"
+    },
+
+    {
+      "key": "GRABABLE_TOP_BUN_BURNT",
+      "tr": "Üst Ekmek (Yanmış)",
+      "en": "Top Bun (Burnt)"
+    },
+
+    {
+      "key": "GRABABLE_PATTY_RAW",
+      "tr": "Köfte (Çiğ)",
+      "en": "Patty (Raw)"
+    },
+
+    {
+      "key": "GRABABLE_PATTY_COOKED",
+      "tr": "Köfte (Pişmiş)",
+      "en": "Patty (Cooked)"
+    },
+
+    {
+      "key": "GRABABLE_PATTY_BURNT",
+      "tr": "Köfte (Yanmış)",
+      "en": "Patty (Burnt)"
+    },
+
+    {
+      "key": "GRABABLE_CHEESE_SLICE",
+      "tr": "Peynir Dilimi",
+      "en": "Cheese Slice"
+    },
+
+    {
+      "key": "GRABABLE_PICKLE_SLICE",
+      "tr": "Turşu Dilimi",
+      "en": "Pickle Slice"
+    },
+
+    {
+      "key": "GRABABLE_TOMATO_SLICE",
+      "tr": "Domates Dilimi",
+      "en": "Tomato Slice"
+    },
+
+    {
+      "key": "GRABABLE_ONION_SLICE",
+      "tr": "Soğan Dilimi",
+      "en": "Onion Slice"
+    },
+
+    {
+      "key": "GRABABLE_LETTUCE_SLICE",
+      "tr": "Marul Dilimi",
+      "en": "Lettuce Slice"
+    },
+
+    {
+      "key": "GRABABLE_KNIFE",
+      "tr": "Bıçak",
+      "en": "Knife"
+    },
+
+    {
+      "key": "GRABABLE_BLACK_POP",
+      "tr": "Siyah Kula",
+      "en": "Black Kula"
+    },
+
+    {
+      "key": "GRABABLE_YELLOW_POP",
+      "tr": "Sarı Kula",
+      "en": "Yellow Kula"
+    },
+
+    {
+      "key": "GRABABLE_WHITE_POP",
+      "tr": "Beyaz Kula",
+      "en": "White Kula"
+    },
+
+    {
+      "key": "BURGER_BOX",
+      "tr": "Burger Kutusu",
+      "en": "Burger Box"
+    },
+
+    {
+      "key": "BURGER_CLASSIC",
+      "tr": "Klasik Burger",
+      "en": "Classic Burger"
+    },
+
+    {
+      "key": "BURGER_CHEESE",
+      "tr": "Çizburger",
+      "en": "Cheeseburger"
+    },
+
+    {
+      "key": "BURGER_DOUBLE_CHEESE",
+      "tr": "Duble Çizburger",
+      "en": "Double Cheeseburger"
+    },
+
+    {
+      "key": "BURGER_FULLY_LOADED",
+      "tr": "Full Karışık Burger",
+      "en": "Fully Loaded Burger"
+    },
+
+    {
+      "key": "BURGER_BUDGET",
+      "tr": "Öğrenci Burger",
+      "en": "Budget Burger"
+    },
+
+    {
+      "key": "BURGER_BROKE_AHH",
+      "tr": "Fukara Burger",
+      "en": "Broke Ahh Burger"
+    },
+
+    {
+      "key": "BURGER_GOUT",
+      "tr": "Gut Burger",
+      "en": "Gout Burger"
+    },
+
+    {
+      "key": "BURGER_X",
+      "tr": "X Burger",
+      "en": "X Burger"
+    },
+
+    {
+      "key": "BURGER_LONG_AHH",
+      "tr": "Zurna Burger",
+      "en": "Long Ahh Burger"
+    },
+
+    {
+      "key": "BURGER_RANDOM_BULLSHIT",
+      "tr": "Saçma Sapan Bi Burger",
+      "en": "Random Bullshit Burger"
+    },
+
+    {
+      "key": "GRABABLE_KETCHUP_BOTTLE",
+      "tr": "Ketçap Şişesi",
+      "en": "Ketchup Bottle"
+    },
+
+    {
+      "key": "GRABABLE_MAYONNAISE_BOTTLE",
+      "tr": "Mayonez Şişesi",
+      "en": "Mayo Bottle"
+    },
+
+    {
+      "key": "GRABABLE_MUSTARD_BOTTLE",
+      "tr": "Hardal Şişesi",
+      "en": "Mustard Bottle"
+    },
+
+    {
+      "key": "GRABABLE_BBQ_SAUCE_BOTTLE",
+      "tr": "Barbekü Sosu Şişesi",
+      "en": "BBQ Sauce Bottle"
     }
 
   ]

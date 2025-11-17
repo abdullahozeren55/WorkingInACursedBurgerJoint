@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 61b3a3664ae5d31479e614ab89281c03, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
-  focusText: Ekmek
+  focusTextKey: GRABABLE_BUN
   isUseable: 0
   handGrabType: 11
   minForce: 0.35

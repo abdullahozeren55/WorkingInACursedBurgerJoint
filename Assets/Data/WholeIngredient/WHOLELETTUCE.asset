@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 24b13e32064c53a47ba3730f061b6a66, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
-  focusText: Marul
+  focusTextKey: GRABABLE_LETTUCE
   isUseable: 0
   handGrabType: 10
   minForce: 0.3

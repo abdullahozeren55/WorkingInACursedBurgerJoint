@@ -44,13 +44,13 @@ public class GameManager : MonoBehaviour
         ClassicBurger,
         CheeseBurger,
         DoubleCheeseBurger,
-        FullMixedBurger,
-        StudentBurger,
-        EconomicalStudentBurger,
+        FullyLoadedBurger,
+        BudgetBurger,
+        BrokeAhhBurger,
         GoutBurger,
         XBurger,
+        LongAhhBurger,
         RandomBullShitBurger,
-        ErtanFullMixedBurger
     }
 
     public enum DrinkTypes
@@ -70,14 +70,14 @@ public class GameManager : MonoBehaviour
     public List<BurgerIngredientData.IngredientType> doubleCheeseBurger = new List<BurgerIngredientData.IngredientType>();
     public List<SauceBottle.SauceType> doubleCheeseBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
-    public List<BurgerIngredientData.IngredientType> fullMixedBurger = new List<BurgerIngredientData.IngredientType>();
-    public List<SauceBottle.SauceType> fullMixedBurgerSauces = new List<SauceBottle.SauceType>();
+    public List<BurgerIngredientData.IngredientType> fullyLoadedBurger = new List<BurgerIngredientData.IngredientType>();
+    public List<SauceBottle.SauceType> fullyLoadedBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
-    public List<BurgerIngredientData.IngredientType> studentBurger = new List<BurgerIngredientData.IngredientType>();
-    public List<SauceBottle.SauceType> studentBurgerSauces = new List<SauceBottle.SauceType>();
+    public List<BurgerIngredientData.IngredientType> budgetBurger = new List<BurgerIngredientData.IngredientType>();
+    public List<SauceBottle.SauceType> budgetBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
-    public List<BurgerIngredientData.IngredientType> economicalStudentBurger = new List<BurgerIngredientData.IngredientType>();
-    public List<SauceBottle.SauceType> economicalStudentBurgerSauces = new List<SauceBottle.SauceType>();
+    public List<BurgerIngredientData.IngredientType> brokeAhhBurger = new List<BurgerIngredientData.IngredientType>();
+    public List<SauceBottle.SauceType> brokeAhhBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
     public List<BurgerIngredientData.IngredientType> goutBurger = new List<BurgerIngredientData.IngredientType>();
     public List<SauceBottle.SauceType> goutBurgerSauces = new List<SauceBottle.SauceType>();
@@ -85,8 +85,8 @@ public class GameManager : MonoBehaviour
     public List<BurgerIngredientData.IngredientType> xBurger = new List<BurgerIngredientData.IngredientType>();
     public List<SauceBottle.SauceType> xBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
-    public List<BurgerIngredientData.IngredientType> ertanFullMixedBurger = new List<BurgerIngredientData.IngredientType>();
-    public List<SauceBottle.SauceType> ertanFullMixedBurgerSauces = new List<SauceBottle.SauceType>();
+    public List<BurgerIngredientData.IngredientType> longAhhBurger = new List<BurgerIngredientData.IngredientType>();
+    public List<SauceBottle.SauceType> longAhhBurgerSauces = new List<SauceBottle.SauceType>();
     [Space]
 
     private List<List<BurgerIngredientData.IngredientType>> allBurgerMenus;
@@ -151,12 +151,12 @@ public class GameManager : MonoBehaviour
             classicBurger,
             cheeseBurger,
             doubleCheeseBurger,
-            fullMixedBurger,
-            studentBurger,
-            economicalStudentBurger,
+            fullyLoadedBurger,
+            budgetBurger,
+            brokeAhhBurger,
             goutBurger,
             xBurger,
-            ertanFullMixedBurger
+            longAhhBurger,
         };
 
         allCustomersName = new ICustomer.CustomerName[allCustomers.Length]; // initialize
@@ -307,13 +307,12 @@ public class GameManager : MonoBehaviour
                 box.SetBurgerType(BurgerTypes.ClassicBurger);
                 box.SetBurgerType(BurgerTypes.CheeseBurger);
                 box.SetBurgerType(BurgerTypes.DoubleCheeseBurger);
-                box.SetBurgerType(BurgerTypes.FullMixedBurger);
-                box.SetBurgerType(BurgerTypes.StudentBurger);
-                box.SetBurgerType(BurgerTypes.EconomicalStudentBurger);
+                box.SetBurgerType(BurgerTypes.FullyLoadedBurger);
+                box.SetBurgerType(BurgerTypes.BudgetBurger);
+                box.SetBurgerType(BurgerTypes.BrokeAhhBurger);
                 box.SetBurgerType(BurgerTypes.GoutBurger);
                 box.SetBurgerType(BurgerTypes.XBurger);
                 box.SetBurgerType(BurgerTypes.RandomBullShitBurger);
-                box.SetBurgerType(BurgerTypes.ErtanFullMixedBurger);
 
                 if (menu == classicBurger)
                     matchedType = BurgerTypes.ClassicBurger;
@@ -324,22 +323,20 @@ public class GameManager : MonoBehaviour
                 else if (menu == doubleCheeseBurger)
                     matchedType = BurgerTypes.DoubleCheeseBurger;
 
-                else if (menu == fullMixedBurger)
-                    matchedType = BurgerTypes.FullMixedBurger;
+                else if (menu == fullyLoadedBurger)
+                    matchedType = BurgerTypes.FullyLoadedBurger;
 
-                else if (menu == studentBurger)
-                    matchedType = BurgerTypes.StudentBurger;
+                else if (menu == budgetBurger)
+                    matchedType = BurgerTypes.BudgetBurger;
 
-                else if (menu == economicalStudentBurger)
-                    matchedType = BurgerTypes.EconomicalStudentBurger;
+                else if (menu == brokeAhhBurger)
+                    matchedType = BurgerTypes.BrokeAhhBurger;
 
                 else if (menu == goutBurger)
                     matchedType = BurgerTypes.GoutBurger;
 
                 else if (menu == xBurger)
                     matchedType = BurgerTypes.XBurger;
-                else if (menu == ertanFullMixedBurger)
-                    matchedType = BurgerTypes.ErtanFullMixedBurger;
 
                 break;
 
@@ -367,19 +364,19 @@ public class GameManager : MonoBehaviour
                 requiredSauces = doubleCheeseBurgerSauces;
             }
                 
-            else if (matchedType == BurgerTypes.FullMixedBurger)
+            else if (matchedType == BurgerTypes.FullyLoadedBurger)
             {
-                requiredSauces = fullMixedBurgerSauces;
+                requiredSauces = fullyLoadedBurgerSauces;
             }
                 
-            else if (matchedType == BurgerTypes.StudentBurger)
+            else if (matchedType == BurgerTypes.BudgetBurger)
             {
-                requiredSauces = studentBurgerSauces;
+                requiredSauces = budgetBurgerSauces;
             }
                 
-            else if (matchedType == BurgerTypes.EconomicalStudentBurger)
+            else if (matchedType == BurgerTypes.BrokeAhhBurger)
             {
-                requiredSauces = economicalStudentBurgerSauces;
+                requiredSauces = brokeAhhBurgerSauces;
             }
                 
             else if (matchedType == BurgerTypes.GoutBurger)
@@ -390,10 +387,6 @@ public class GameManager : MonoBehaviour
             else if (matchedType == BurgerTypes.XBurger)
             {
                 requiredSauces = xBurgerSauces;
-            }
-            else if (matchedType == BurgerTypes.ErtanFullMixedBurger)
-            {
-                requiredSauces = ertanFullMixedBurgerSauces;
             }
 
 

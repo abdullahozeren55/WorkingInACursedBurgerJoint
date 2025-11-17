@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00017944007, y: 0.00088617083, z: 0.00021549959}
   grabLocalRotationOffset: {x: 35.501827, y: 131.96713, z: 122.1275}
-  focusTexts:
-  - "Tur\u015Fu Dilimi"
+  focusTextKeys:
+  - GRABABLE_PICKLE_SLICE
   dropParticles:
   - {fileID: 8670732574423207768, guid: 666ce5457b56e8a4eb9a14c61bc0f70e, type: 3}
   throwParticles:

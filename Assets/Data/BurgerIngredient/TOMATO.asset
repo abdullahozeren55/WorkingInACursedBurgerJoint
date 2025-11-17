@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00019217812, y: 0.00087203964, z: 0.00029419482}
   grabLocalRotationOffset: {x: 8.777145, y: 107.60691, z: 132.65611}
-  focusTexts:
-  - Domates Dilimi
+  focusTextKeys:
+  - GRABABLE_TOMATO_SLICE
   dropParticles:
   - {fileID: 8670732574423207768, guid: 539ab9f709f4aa249b7618332bec72e2, type: 3}
   throwParticles:

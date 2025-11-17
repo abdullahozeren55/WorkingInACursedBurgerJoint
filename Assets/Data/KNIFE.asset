@@ -24,7 +24,7 @@ MonoBehaviour:
   useLocalRotationOffset: {x: 9.527423, y: 61.804817, z: 280.1402}
   usingFOV: 70
   timeToUse: 0.3
-  focusText: "B\u0131\xE7ak"
+  focusTextKey: GRABABLE_KNIFE
   audioClips:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
   - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}

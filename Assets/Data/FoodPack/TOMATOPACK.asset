@@ -22,7 +22,7 @@ MonoBehaviour:
   grabRotationOffset: {x: -5, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.00013179066, y: -0.00011555188, z: 0.00038333554}
   grabLocalRotationOffset: {x: 84.01358, y: 271.8142, z: 355.00342}
-  focusText: Domates Paketi
+  focusTextKey: GRABABLE_TOMATO_PACK
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}

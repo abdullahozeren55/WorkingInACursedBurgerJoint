@@ -21,10 +21,10 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.000029034101, y: 0.00093181024, z: 0.00039220246}
   grabLocalRotationOffset: {x: 49.996616, y: 180.00002, z: 170.60837}
-  focusTexts:
-  - "K\xF6fte (\xC7i\u011F)"
-  - "K\xF6fte (Pi\u015Fmi\u015F)"
-  - "K\xF6fte (Yanm\u0131\u015F)"
+  focusTextKeys:
+  - GRABABLE_PATTY_RAW
+  - GRABABLE_PATTY_COOKED
+  - GRABABLE_PATTY_BURNT
   dropParticles:
   - {fileID: 8670732574423207768, guid: 7fde14b160a03cd44ab10a8133c5af80, type: 3}
   - {fileID: 8670732574423207768, guid: e4ff0f07c7aa77b46a68aed92ba20c11, type: 3}

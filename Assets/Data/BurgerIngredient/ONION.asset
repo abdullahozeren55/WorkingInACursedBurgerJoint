@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.0004459106, y: 0.0008278559, z: 0.00031688198}
   grabLocalRotationOffset: {x: 58.003017, y: 201.66911, z: 206.0773}
-  focusTexts:
-  - "So\u011Fan Dilimi"
+  focusTextKeys:
+  - GRABABLE_ONION_SLICE
   dropParticles:
   - {fileID: 8670732574423207768, guid: f72a5dc2ac8befb47b4fc072b5db7c5a, type: 3}
   throwParticles:

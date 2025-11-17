@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00042557187, y: 0.00079134916, z: 0.00010146905}
   grabLocalRotationOffset: {x: 77.947105, y: 218.30144, z: 205.52403}
-  focusTexts:
-  - Marul Dilimi
+  focusTextKeys:
+  - GRABABLE_LETTUCE_SLICE
   dropParticles:
   - {fileID: 8670732574423207768, guid: fa16a5b48bb58d941959e8b286e98642, type: 3}
   throwParticles:

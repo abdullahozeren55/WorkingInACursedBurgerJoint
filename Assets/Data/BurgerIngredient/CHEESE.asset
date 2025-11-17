@@ -21,8 +21,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00028700283, y: 0.00088999077, z: 0.00031317494}
   grabLocalRotationOffset: {x: 61.406578, y: 170.88994, z: 171.5047}
-  focusTexts:
-  - Peynir Dilimi
+  focusTextKeys:
+  - GRABABLE_CHEESE_SLICE
   dropParticles:
   - {fileID: 8670732574423207768, guid: be860dc1c093c20498315859527889f4, type: 3}
   throwParticles:

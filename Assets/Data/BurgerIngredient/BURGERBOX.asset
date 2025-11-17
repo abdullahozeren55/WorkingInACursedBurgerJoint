@@ -27,18 +27,18 @@ MonoBehaviour:
   grabLocalRotationOffset:
   - {x: 351.06442, y: 271.22836, z: 132.20628}
   - {x: 344.64236, y: 354.95905, z: 345.82324}
-  focusTexts:
-  - Burger Kutusu
-  - Klasik Burger
-  - "\xC7izburger"
-  - "Duble \xC7izburger"
-  - "Full Kar\u0131\u015F\u0131k Burger"
-  - "\xD6\u011Frenci Burger"
-  - "Ekonomik \xD6\u011Frenci Burger"
-  - Gut Burger
-  - X Burger
-  - "Sa\xE7ma Sapan Bi Burger"
-  - "Sa\xE7ma Sapan Bi Burger"
+  focusTextKeys:
+  - BURGER_BOX
+  - BURGER_CLASSIC
+  - BURGER_CHEESE
+  - BURGER_DOUBLE_CHEESE
+  - BURGER_FULLY_LOADED
+  - BURGER_BUDGET
+  - BURGER_BROKE_AHH
+  - BURGER_GOUT
+  - BURGER_X
+  - BURGER_LONG_AHH
+  - BURGER_RANDOM_BULLSHIT
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 0a7065ebaeeabfb45b4dbc0c5a12be58, type: 3}
   instantiateRotationOffset: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
-  focusText: "Tur\u015Fu"
+  focusTextKey: GRABABLE_PICKLE
   isUseable: 0
   handGrabType: 6
   minForce: 0.3

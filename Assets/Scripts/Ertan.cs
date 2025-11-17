@@ -332,23 +332,11 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     }
 
-    private bool IsCheeseInside(List<BurgerIngredientData.IngredientType> ingredients)
-    {
-        for (int i = 1; i < ingredients.Count - 1; i++)
-        {
-            if (ingredients[i] == BurgerIngredientData.IngredientType.CHEESE)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void ReceiveBurger(BurgerBox burgerBox)
     {
         ChangeLayer(uninteractableLayer);
 
-        if (burgerBox.burgerType == GameManager.BurgerTypes.FullMixedBurger || burgerBox.burgerType == GameManager.BurgerTypes.ErtanFullMixedBurger)
+        if (burgerBox.burgerType == BurgerType)
             HandleBurgerTrue();
         else
             HandleBurgerFalse();

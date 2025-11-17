@@ -12,7 +12,7 @@ public class Window : MonoBehaviour, IInteractable
     [Header("Audio Settings")]
     public AudioClip openSound;
     public AudioClip closeSound;
-    private AudioSource audioSource;
+    public AudioClip lockedSound;
 
     public string FocusTextKey { get => focusTextKeys[windowStateNum]; set => focusTextKeys[windowStateNum] = value; }
     [SerializeField] private string[] focusTextKeys;
@@ -35,7 +35,6 @@ public class Window : MonoBehaviour, IInteractable
 
     [Header("Lock Settings")]
     public bool IsLocked;
-    public AudioClip lockedSound;
     [SerializeField] private float timeToLockOpen = 0.12f;
     [SerializeField] private float lockOpenZPosition = 0.1f;
     private Vector3 lockedOpenPosition;
@@ -69,8 +68,6 @@ public class Window : MonoBehaviour, IInteractable
         closePosition = windowParts[0].transform.position;
         openPosition = new Vector3(closePosition.x, closePosition.y, openZPosition);
         lockedOpenPosition = new Vector3(closePosition.x, closePosition.y, lockOpenZPosition);
-
-        audioSource = windowParts[0].GetComponent<AudioSource>();
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
@@ -132,6 +129,11 @@ public class Window : MonoBehaviour, IInteractable
     public void HandlePosition()
     {
         isOpened = !isOpened;
+        SoundManager.Instance.PlaySoundFX(isOpened ? openSound : closeSound, transform, 1f, 0.98f, 1.02f);
+
+        windowStateNum = isOpened ? 1 : 0;
+
+        PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
 
         if (openCoroutine != null)
         {
@@ -139,7 +141,6 @@ public class Window : MonoBehaviour, IInteractable
             openCoroutine = null;
         }
 
-        PlaySound(!isOpened);
         openCoroutine = StartCoroutine(ToggleReposition(isOpened));
     }
 
@@ -150,9 +151,7 @@ public class Window : MonoBehaviour, IInteractable
 
         ChangeLayer(uninteractableLayer);
 
-        audioSource.Stop();
-
-        audioSource.PlayOneShot(lockedSound);
+        SoundManager.Instance.PlaySoundFX(lockedSound, transform, 1f, 0.98f, 1.02f);
 
         if (openCoroutine != null)
         {
@@ -161,20 +160,6 @@ public class Window : MonoBehaviour, IInteractable
         }
 
         openCoroutine = StartCoroutine(ToggleLockReposition());
-    }
-
-    private void PlaySound(bool isOpen)
-    {
-        audioSource.Stop();
-
-        if (isOpen)
-        {
-            audioSource.PlayOneShot(closeSound);
-        }
-        else
-        {
-            audioSource.PlayOneShot(openSound);
-        }
     }
 
     public void ChangeLayer(int layerIndex)
@@ -249,6 +234,10 @@ public class Window : MonoBehaviour, IInteractable
         }
 
         windowParts[0].transform.position = closePosition;
+
+        windowStateNum = 2;
+
+        PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
 
         inLockOpen = false;
 

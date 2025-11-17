@@ -21,10 +21,10 @@ MonoBehaviour:
   grabRotationOffset: {x: -30, y: -80, z: -80}
   grabLocalPositionOffset: {x: 0.00013729444, y: 0.001098976, z: 0.0003289372}
   grabLocalRotationOffset: {x: 298.36368, y: 329.13412, z: 207.48238}
-  focusTexts:
-  - Alt Ekmek (Normal)
-  - "Alt Ekmek (K\u0131zarm\u0131\u015F)"
-  - "Alt Ekmek (Yanm\u0131\u015F)"
+  focusTextKeys:
+  - GRABABLE_BOTTOM_BUN_RAW
+  - GRABABLE_BOTTOM_BUN_COOKED
+  - GRABABLE_BOTTOM_BUN_BURNT
   dropParticles:
   - {fileID: 8670732574423207768, guid: a3e391bc82a86e245aecd100e7c55c91, type: 3}
   - {fileID: 8670732574423207768, guid: d8f99a11e822f574d934da98a6830c75, type: 3}
