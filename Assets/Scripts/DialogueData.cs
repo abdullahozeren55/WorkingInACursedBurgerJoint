@@ -9,12 +9,13 @@ public class DialogueData : ScriptableObject
     [System.Serializable]
     public class DialogueSegment
     {
+        public string DialogueKey;
+        [Space]
         public DialogueManager.FontType fontType;
         public DialogueManager.TalkingPerson talkingPerson;
         [Space]
         public FontStyle fontStyle;
 
-        [TextArea] public string DialogueToPrint;
         public Vector2 DialogueOffset;
         public bool Skippable;
         public float autoSkipTime = 10f; //for self dialogue auto skip
@@ -40,10 +41,10 @@ public class DialogueData : ScriptableObject
     public DialogueSegment[] dialogueSegments;
     [Space]
     public DialogueType type;
-
-    public string question;
-    public string optionA;
-    public string optionD;
+    [Space]
+    public string QuestionKey;
+    public string OptionAKey;
+    public string OptionDKey;
     public CameraManager.CameraName choiceCam;
     [Space]
     public CutsceneType cutsceneType;

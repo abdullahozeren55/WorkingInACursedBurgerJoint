@@ -266,7 +266,9 @@ public class DialogueManager : MonoBehaviour
         if (currentDialogueData.type == DialogueData.DialogueType.ENDSWITHACHOICE)
         {
 
-            ChoiceManager.Instance.StartTheCustomerChoice(currentDialogueData.question, currentDialogueData.optionA, currentDialogueData.optionD,
+            ChoiceManager.Instance.StartTheCustomerChoice(LocalizationManager.Instance.GetText(currentDialogueData.QuestionKey),
+                                                          LocalizationManager.Instance.GetText(currentDialogueData.OptionAKey),
+                                                          LocalizationManager.Instance.GetText(currentDialogueData.OptionDKey),
                                     currentCustomer, currentCustomer.OptionADialogueData, currentCustomer.OptionDDialogueData, currentCustomer.NotAnsweringDialogueData, currentDialogueData.choiceCam);
         }
         else
@@ -542,14 +544,17 @@ public class DialogueManager : MonoBehaviour
             currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
 
         DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
-        currentTextAnim.ShowText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+
+        string key = currentDialogueData.dialogueSegments[dialogueIndex].DialogueKey;
+        currentTextAnim.ShowText(LocalizationManager.Instance.GetText(key));
     }
 
     private IEnumerator ShowSelfTextWithDelay()
     {
         yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].delay);
 
-        sinanSelfTalkTextAnim.ShowText(currentDialogueData.dialogueSegments[dialogueIndex].DialogueToPrint);
+        string key = currentDialogueData.dialogueSegments[dialogueIndex].DialogueKey;
+        sinanSelfTalkTextAnim.ShowText(LocalizationManager.Instance.GetText(key));
 
         if (skippingSelfTalkCoroutine != null)
         {

@@ -13,53 +13,48 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer0_BeforeOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - DialogueKey: CUSTOMER_NPCCUSTOMER0_DAY_0_BEFORE_ORDER_0
+    fontType: 4
     talkingPerson: 1
     fontStyle: 0
-    DialogueToPrint: "Kral bi X Burger bi de Siyah Kula \xE7eksene bana."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     autoSkipTime: 10
     delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
     audioClip: {fileID: 0}
     cam: 3
     dialogueAnim: 0
-  - fontType: 1
+  - DialogueKey: CUSTOMER_NPCCUSTOMER0_DAY_0_BEFORE_ORDER_1
+    fontType: 1
     talkingPerson: 0
     fontStyle: 0
-    DialogueToPrint: "Tamamd\u0131r ab- Eee... K-kral..."
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     autoSkipTime: 10
     delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
-  - fontType: 4
+  - DialogueKey: CUSTOMER_NPCCUSTOMER0_DAY_0_BEFORE_ORDER_2
+    fontType: 4
     talkingPerson: 1
     fontStyle: 0
-    DialogueToPrint: Eyvallah reis.
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     autoSkipTime: 10
     delay: 0
-    audioClip: {fileID: 0}
-    cam: 0
-    dialogueAnim: 0
-  - fontType: 1
-    talkingPerson: 0
-    fontStyle: 0
-    DialogueToPrint: ...
-    DialogueOffset: {x: 0, y: 0}
-    Skippable: 1
-    autoSkipTime: 10
-    delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
     audioClip: {fileID: 0}
     cam: 0
     dialogueAnim: 0
   type: 0
-  question: 
-  optionA: 
-  optionD: 
+  QuestionKey: 
+  OptionAKey: 
+  OptionDKey: 
   choiceCam: 0
   cutsceneType: 0

@@ -13,30 +13,35 @@ MonoBehaviour:
   m_Name: Day1_NPCCustomer0_AfterOrder
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 4
+  - DialogueKey: CUSTOMER_NPCCUSTOMER0_DAY_0_AFTER_ORDER_0
+    fontType: 4
     talkingPerson: 1
-    DialogueToPrint: Bro bi X Burger bi Siyah Kula dediydik...
+    fontStyle: 0
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 10
+    delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
     audioClip: {fileID: 0}
     cam: 3
-  - fontType: 1
+    dialogueAnim: 0
+  - DialogueKey: CUSTOMER_NPCCUSTOMER0_DAY_0_AFTER_ORDER_1
+    fontType: 1
     talkingPerson: 0
-    DialogueToPrint: "Haz\u0131rl\u0131yorum... Bro."
+    fontStyle: 0
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
+    autoSkipTime: 10
+    delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
     audioClip: {fileID: 0}
     cam: 0
-  - fontType: 4
-    talkingPerson: 1
-    DialogueToPrint: "Tamamd\u0131r usta bekliyorum."
-    DialogueOffset: {x: 0, y: 0}
-    Skippable: 1
-    audioClip: {fileID: 0}
-    cam: 0
+    dialogueAnim: 0
   type: 0
-  question: 
-  optionA: 
-  optionD: 
+  QuestionKey: 
+  OptionAKey: 
+  OptionDKey: 
   choiceCam: 0
   cutsceneType: 0

@@ -304,9 +304,13 @@ public class ChoiceManager : MonoBehaviour
         CameraManager.CameraName camToSwitch
         )
     {
-        questionTextAnim.ShowText("<shake>" + question + "</shake>");
-        optionATextAnim.ShowText("<shake>" + optionA + "</shake>");
-        optionDTextAnim.ShowText("<shake>" + optionD + "</shake>");
+        string localizedQuestion = LocalizationManager.Instance.GetText(question);
+        string localizedOptionA = LocalizationManager.Instance.GetText(optionA);
+        string localizedOptionD = LocalizationManager.Instance.GetText(optionD);
+
+        questionTextAnim.ShowText("<shake>" + localizedQuestion + "</shake>");
+        optionATextAnim.ShowText("<shake>" + localizedOptionA + "</shake>");
+        optionDTextAnim.ShowText("<shake>" + localizedOptionD + "</shake>");
 
         timerImage.fillAmount = 1f;
 
