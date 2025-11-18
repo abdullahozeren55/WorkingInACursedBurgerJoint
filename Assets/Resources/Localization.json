@@ -568,7 +568,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_BEFORE_ORDER_0",
       "tr": "Ohooo adamım benim ya! Dünkü verdiğin burger varya efsoydu. Ondan yine almaya geldim.",
-      "en": "Yooo my man! That burger you gave me yesterday was straight fire. Came back for another one."
+      "en": "Yooo, my man! That burger you gave me yesterday was straight fire. Came back for another one."
     },
 
     {
@@ -580,7 +580,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_BEFORE_ORDER_2",
       "tr": "Ayyyynen baboş ayyyynen. Bi de Sarı Kula yapıştır.",
-      "en": "Yooos buddy-boy, exactly. And hit me with a Yellow Kula too."
+      "en": "Yooos, buddy-boy, exactly. And hit me with a Yellow Kula too."
     },
 
     {
@@ -598,61 +598,61 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_AFTER_ORDER_0",
       "tr": "Dostum bi X Burger bi Sarı Kula dedik ama avcumuzu yalattın bize.",
-      "en": "My friend, I asked for an X Burger and a Yellow Kula, and yet... Here I am, still standing empty-handed."
+      "en": "Champ, I asked for an X Burger and a Yellow Kula, and yet... Here I am, still standing empty-handed."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_AFTER_ORDER_1",
       "tr": "Kusura bakma abi ya... Biraz uzun sürüyo da...",
-      "en": ""
+      "en": "Sorry bro... It’s taking a bit."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_FALSE_BURGER_0",
       "tr": "Oğlum... X Burger mi sence bu?",
-      "en": ""
+      "en": "My bro-guy... You seriously think this is an X Burger?"
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_FALSE_BURGER_1",
       "tr": "Çok özür dilerim. Yeni bi tane yapıyorum hemen.",
-      "en": ""
+      "en": "My bad, bro. I’ll make a fresh one right now."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_FALSE_DRINK_0",
       "tr": "Dayıoğlu Sarı Kula istedim ben.",
-      "en": ""
+      "en": "Nah, cuz-bro, I ordered a Yellow Kula."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_FALSE_DRINK_1",
       "tr": "Kusura bakma abi kafam karıştı da.",
-      "en": ""
+      "en": "Sorry man, I got mixed up."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_TRUE_BURGER_0",
       "tr": "Eline, koluna, yüreğine sağlık abim. Sarı Kula vardı bi de.",
-      "en": ""
+      "en": "Bless your hands, my browski. There was a Yellow Kula as well."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_TRUE_BURGER_1",
       "tr": "Hemen getiriyorum abi.",
-      "en": ""
+      "en": "Bringing it right over, man."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_TRUE_DRINK_0",
       "tr": "Sağolasın babacan. Bi de X Burger'i yapıştır da kaçayım ben'.",
-      "en": ""
+      "en": "Thanks, big fella. Hit me with that X Burger too so I can bounce."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_TRUE_DRINK_1",
       "tr": "Tamamdır abi",
-      "en": ""
+      "en": "Got you, bro."
     }
 
   ]
