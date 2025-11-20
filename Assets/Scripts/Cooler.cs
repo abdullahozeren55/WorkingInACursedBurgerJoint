@@ -106,7 +106,7 @@ public class Cooler : MonoBehaviour, IInteractable
     {
         isOpened = !isOpened;
 
-        SoundManager.Instance.PlaySoundFX(isOpened ? openSound : closeSound, transform, 1f, 0.99f, 1.01f, audioTag);
+        SoundManager.Instance.PlaySoundFX(isOpened ? openSound : closeSound, transform, 1f, 1f, 1f, audioTag);
 
         coolerStateNum = isOpened ? 1 : 0;
 

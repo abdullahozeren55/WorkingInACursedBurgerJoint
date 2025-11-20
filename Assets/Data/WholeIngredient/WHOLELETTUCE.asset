@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: WHOLELETTUCE
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 24b13e32064c53a47ba3730f061b6a66, type: 3}
+  destroyParticleExplode: {fileID: 3451705259810622206, guid: 30a992fa50c21ad4392a66e3b5a381e8, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusTextKey: GRABABLE_LETTUCE
   isUseable: 0
   handGrabType: 10
-  minForce: 0.3
-  maxForce: 0.5
+  minForce: 0.2
+  maxForce: 0.4
+  minForceExplode: 0.4
+  maxForceExplode: 0.8
   objectAmount: 6
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -30, y: -120, z: -50}
@@ -28,3 +31,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
   - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}
   - {fileID: 8300000, guid: 663ad0518d9d3c04f89c09b876621b22, type: 3}
+  - {fileID: 8300000, guid: 663ad0518d9d3c04f89c09b876621b22, type: 3}
+  - {fileID: 8300000, guid: 663ad0518d9d3c04f89c09b876621b22, type: 3}
+  grabSoundVolume: 1
+  grabSoundMinPitch: 0.95
+  grabSoundMaxPitch: 1.05
+  dropSoundVolume: 0.7
+  dropSoundMinPitch: 1
+  dropSoundMaxPitch: 1.3
+  throwSoundVolume: 0.8
+  throwSoundMinPitch: 0.8
+  throwSoundMaxPitch: 1.2
+  explodeSoundVolume: 0.8
+  explodeSoundMinPitch: 0.8
+  explodeSoundMaxPitch: 1.2

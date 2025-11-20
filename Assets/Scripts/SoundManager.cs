@@ -56,7 +56,7 @@ public class SoundManager : MonoBehaviour
         }
 
         // Yeni ses objesini oluþtur
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity, spawnTransform);
 
         audioSource.clip = audioClip;
         audioSource.volume = volume;
@@ -79,12 +79,27 @@ public class SoundManager : MonoBehaviour
         Destroy(audioSource.gameObject, duration);
     }
 
+    public void PlaySoundFXWithRandomDelay(AudioClip audioClip, Transform spawnTransform, float volume = 1f, float minPitch = 0.85f, float maxPitch = 1.15f, float minDelay = 0.05f, float maxDelay = 0.25f)
+    {
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity, spawnTransform);
+
+        audioSource.clip = audioClip;
+
+        audioSource.volume = volume;
+
+        audioSource.pitch = Random.Range(minPitch, maxPitch);
+
+        float clipLength = audioSource.clip.length / audioSource.pitch;
+
+        StartCoroutine(PlayWithDelay(audioSource, minDelay, maxDelay, clipLength));
+    }
+
     public void PlayRandomSoundFX(AudioClip[] audioClip, Transform spawnTransform, float volume, float minPitch, float maxPitch)
     {
 
         int rand = Random.Range(0, audioClip.Length);
 
-        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity);
+        AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity, spawnTransform);
 
         audioSource.clip = audioClip[rand];
 
@@ -94,7 +109,7 @@ public class SoundManager : MonoBehaviour
 
         audioSource.Play();
 
-        float clipLength = audioSource.clip.length;
+        float clipLength = audioSource.clip.length / audioSource.pitch;
 
         Destroy(audioSource.gameObject, clipLength);
     }
@@ -133,5 +148,14 @@ public class SoundManager : MonoBehaviour
         {
             taggedSounds.Remove(tag);
         }
+    }
+
+    private IEnumerator PlayWithDelay(AudioSource audioSource, float minDelay, float maxDelay, float clipLength)
+    {
+        yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
+
+        audioSource.Play();
+
+        Destroy(audioSource.gameObject, clipLength);
     }
 }

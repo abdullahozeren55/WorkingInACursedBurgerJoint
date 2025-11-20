@@ -9,6 +9,8 @@ public class KnifeData : ScriptableObject
     public bool isUseable = true;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
+    public LayerMask stabableLayers;
+    [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
     [Space]
@@ -25,5 +27,18 @@ public class KnifeData : ScriptableObject
     public float timeToUse = 0.3f;
     [Space]
     public string focusTextKey;
+    [Space]
     public AudioClip[] audioClips;
+    [Space]
+    public float grabSoundVolume = 1f;
+    public float grabSoundMinPitch = 0.95f;
+    public float grabSoundMaxPitch = 1.05f;
+    [Space]
+    public float dropSoundVolume = 0.7f;
+    public float dropSoundMinPitch = 1f;
+    public float dropSoundMaxPitch = 1.3f;
+    [Space]
+    public float throwSoundVolume = 0.8f;
+    public float throwSoundMinPitch = 0.8f;
+    public float throwSoundMaxPitch = 1.2f;
 }

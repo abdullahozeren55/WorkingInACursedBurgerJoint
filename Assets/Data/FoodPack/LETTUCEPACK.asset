@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: LETTUCEPACK
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 264ff8cd6a9bb234d9efe4b98b9b0a94, type: 3}
+  destroyParticleExplode: {fileID: 3451705259810622206, guid: bb8bf2e2ff31bb848a249683a3a1fbf8, type: 3}
   isUseable: 0
   handGrabType: 10
-  minForce: 0.3
-  maxForce: 0.6
+  minForce: 0.2
+  maxForce: 0.4
+  minForceExplode: 0.4
+  maxForceExplode: 0.8
   haveWholeIngredient: 1
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
@@ -24,6 +27,29 @@ MonoBehaviour:
   grabLocalRotationOffset: {x: 80.05537, y: 273.77078, z: 356.9674}
   focusTextKey: GRABABLE_LETTUCE_PACK
   audioClips:
-  - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
+  - {fileID: 8300000, guid: 7f53f894e4f5514479c44c13474d1b4c, type: 3}
   - {fileID: 8300000, guid: 4f6e7709719ceb74891a868f79cab061, type: 3}
   - {fileID: 8300000, guid: eb9009cde0262ab47bab39f312e9823b, type: 3}
+  - {fileID: 8300000, guid: 937affb2c67daf44583c7d738d836bec, type: 3}
+  - {fileID: 8300000, guid: aade324c0b4985a45a105c83a668e313, type: 3}
+  - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}
+  grabSoundVolume: 0.8
+  grabSoundMinPitch: 0.85
+  grabSoundMaxPitch: 0.95
+  dropSoundVolume: 0.7
+  dropSoundMinPitch: 1
+  dropSoundMaxPitch: 1.3
+  throwSoundVolume: 0.8
+  throwSoundMinPitch: 0.8
+  throwSoundMaxPitch: 1.2
+  openSoundVolume: 0.8
+  openSoundMinPitch: 1
+  openSoundMaxPitch: 1.2
+  explodeSoundVolume: 0.8
+  explodeSoundMinPitch: 0.8
+  explodeSoundMaxPitch: 1.2
+  instantiatedSoundMinDelay: 0.1
+  instantiatedSoundMaxDelay: 0.3
+  instantiatedSoundVolume: 1
+  instantiatedSoundMinPitch: 0.85
+  instantiatedSoundMaxPitch: 1.15

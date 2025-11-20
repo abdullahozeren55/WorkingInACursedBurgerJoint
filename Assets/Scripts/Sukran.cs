@@ -407,28 +407,14 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
         DialogueManager.Instance.StartCustomerDialogue(this, trueDrinkDialogueData);
     }
 
-    private bool IsOnlyPicklesInside(List<BurgerIngredientData.IngredientType> ingredients)
-    {
-        if (ingredients.Count <= 2) return false; // Only buns, no filling
-
-        for (int i = 1; i < ingredients.Count - 1; i++)
-        {
-            if (ingredients[i] != BurgerIngredientData.IngredientType.PICKLE)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void ReceiveBurger(BurgerBox burgerBox)
     {
         ChangeLayer(uninteractableLayer);
 
-        if (IsOnlyPicklesInside(burgerBox.allBurgerIngredientTypes))
-            HandleBurgerTrue();
-        else
-            HandleBurgerFalse();
+        //if (IsOnlyPicklesInside(burgerBox.allBurgerIngredientTypes))
+          //  HandleBurgerTrue();
+        //else
+          //  HandleBurgerFalse();
     }
 
     public void ReceiveDrink(Drink drink)

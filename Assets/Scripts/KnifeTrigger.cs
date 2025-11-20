@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class KnifeTrigger : MonoBehaviour
 {
+    public bool IsJustThrowed = false;
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("WholeIngredient"))
-            other.GetComponent<WholeIngredient>().Slice();
+            other.GetComponent<WholeIngredient>().Slice(IsJustThrowed);
         else if (other.CompareTag("FoodPack"))
-            other.GetComponent<FoodPack>().Open();
+            other.GetComponent<FoodPack>().Open(IsJustThrowed);
     }
 }

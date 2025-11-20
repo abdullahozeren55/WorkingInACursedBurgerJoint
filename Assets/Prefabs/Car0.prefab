@@ -4577,7 +4577,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 1479372276
   m_Radius: 0.954233
-  m_Speed: 8
+  m_Speed: 10
   m_Acceleration: 10
   avoidancePriority: 50
   m_AngularSpeed: 100
@@ -4626,13 +4626,13 @@ MonoBehaviour:
   - {fileID: 9083598775487136177}
   - {fileID: 5368511386703180681}
   - {fileID: 5421399001762738824}
-  speed: 8
+  speed: 10
   engineLoopSound: {fileID: 8300000, guid: 27910f10b15c5514abcfc5f492211855, type: 3}
   waitingLoopSound: {fileID: 8300000, guid: a8c6be774e549814587852bb5ab165d7, type: 3}
   breakSound: {fileID: 8300000, guid: adaab6420f9ed7f4da716b63286e9d04, type: 3}
   honkSound: {fileID: 8300000, guid: b8c7e48fd2bd6e54187f6782f51de82c, type: 3}
-  engineLoopSoundVolume: 1
-  waitingLoopSoundVolume: 1
+  engineLoopSoundVolume: 0.7
+  waitingLoopSoundVolume: 0.7
   breakSoundVolume: 1
   honkSoundVolume: 1
   honkSoundCooldown: 5
@@ -4674,7 +4674,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: -6491915725387093496, guid: 0c899242f5fbe314eabb41b6ece036fb, type: 2}
   m_audioClip: {fileID: 8300000, guid: 27910f10b15c5514abcfc5f492211855, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 1
   Mute: 0

@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isUseable: 1
   handGrabType: 3
+  stabableLayers:
+    serializedVersion: 2
+    m_Bits: 69249
   grabPositionOffset: {x: 0.3, y: 0, z: 2}
   grabRotationOffset: {x: 45, y: -60, z: -90}
   grabLocalPositionOffset: {x: -0.0000010572512, y: 0.00051305967, z: 0.000011773997}
@@ -26,6 +29,15 @@ MonoBehaviour:
   timeToUse: 0.3
   focusTextKey: GRABABLE_KNIFE
   audioClips:
-  - {fileID: 8300000, guid: 7e272a7e565997f4fba70c1c132a9a0b, type: 3}
-  - {fileID: 8300000, guid: 4587f6a1fb32b344ca5c3bc310e32ca1, type: 3}
-  - {fileID: 8300000, guid: 663ad0518d9d3c04f89c09b876621b22, type: 3}
+  - {fileID: 8300000, guid: 19e9594bc172813438457584b8a663b6, type: 3}
+  - {fileID: 8300000, guid: b92f567054a7252448d18d6f96600d12, type: 3}
+  - {fileID: 8300000, guid: 5ac87daf57e5ddb4ebcfb5967ee44707, type: 3}
+  grabSoundVolume: 0.8
+  grabSoundMinPitch: 0.9
+  grabSoundMaxPitch: 1
+  dropSoundVolume: 0.5
+  dropSoundMinPitch: 0.9
+  dropSoundMaxPitch: 1.1
+  throwSoundVolume: 0.6
+  throwSoundMinPitch: 0.8
+  throwSoundMaxPitch: 1.2

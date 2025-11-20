@@ -490,7 +490,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_0_BEFORE_ORDER_0",
       "tr": "Kolay gelsin kral. Bi X Burger bi de Siyah Kula çek sana zahmet.",
-      "en": "Hey man, hope you're holding up. Lemme get an X Burger and a Black Kula, if you don’t mind."
+      "en": "Hey man, hope you're holding up. Lemme get an X Burger and a Black Kula, if you don't mind."
     },
 
     {
@@ -502,7 +502,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_0_BEFORE_ORDER_2",
       "tr": "Eyvallah usta. Bekliyorum.",
-      "en": "Appreciate it, boss. I’ll be right here."
+      "en": "Appreciate it, boss. I'll be right here."
     },
 
     {
@@ -520,19 +520,19 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_0_FALSE_BURGER_0",
       "tr": "Hocam ben X Burger istemiştim bi yanlışlık oldu sanırım.",
-      "en": "Hey buddy, I’d ordered an X Burger. Must've been a mix-up."
+      "en": "Hey buddy, I'd ordered an X Burger. Must've been a mix-up."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_0_FALSE_BURGER_1",
       "tr": "Çok pardon abi. Hemen yenisini hazırlıyorum.",
-      "en": "My bad, man. I’ll make a new one right away."
+      "en": "My bad, man. I'll make a new one right away."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_0_FALSE_DRINK_0",
       "tr": "Kuzen Siyah Kula değil bu.",
-      "en": "Cuz, this ain’t a Black Kula."
+      "en": "Cuz, this ain't a Black Kula."
     },
 
     {
@@ -586,13 +586,13 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_BEFORE_ORDER_3",
       "tr": "Tamamdır abi. Hazırlayıp getiriyorum hemen.",
-      "en": "Got it, man. I’ll get it ready right away."
+      "en": "Got it, man. I'll get it ready right away."
     },
 
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_BEFORE_ORDER_4",
       "tr": "Bekliyorum kardooo.",
-      "en": "I’ll be waitin’, brothaaa."
+      "en": "I'll be waitin', brothaaa."
     },
 
     {
@@ -604,7 +604,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_AFTER_ORDER_1",
       "tr": "Kusura bakma abi ya... Biraz uzun sürüyo da...",
-      "en": "Sorry bro... It’s taking a bit."
+      "en": "Sorry bro... It's taking a bit."
     },
 
     {
@@ -616,7 +616,7 @@
     {
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_FALSE_BURGER_1",
       "tr": "Çok özür dilerim. Yeni bi tane yapıyorum hemen.",
-      "en": "My bad, bro. I’ll make a fresh one right now."
+      "en": "My bad, bro. I'll make a fresh one right now."
     },
 
     {

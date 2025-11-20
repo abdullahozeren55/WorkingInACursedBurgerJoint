@@ -63,8 +63,6 @@ public class WholeIngredient : MonoBehaviour, IGrabable
 
         col.enabled = false;
 
-        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, 1f, 0.85f, 1.15f);
-
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
@@ -75,6 +73,8 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         transform.position = grabPoint.position;
         transform.localPosition = data.grabLocalPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+
+        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
     }
     public void OnFocus()
     {
@@ -129,7 +129,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         }
     }
 
-    public void Slice()
+    public void Slice(bool shouldExplode)
     {
         if (CanGetSliced)
         {
@@ -139,6 +139,8 @@ public class WholeIngredient : MonoBehaviour, IGrabable
             {
                 foreach (GameObject go in instantiateObjects)
                 {
+                    float rand = shouldExplode ? Random.Range(data.minForceExplode, data.maxForceExplode) : Random.Range(data.minForce, data.maxForce);
+
                     GameObject newObject = Instantiate(go, transform.position, Quaternion.identity);
 
                     Rigidbody rb = newObject.GetComponent<Rigidbody>();
@@ -150,7 +152,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
                             Random.Range(-0.5f, 0.5f), // Random x direction
                             Random.Range(0.5f, 1f), // Random y direction
                             Random.Range(-0.5f, 0.5f)  // Random z direction
-                        ).normalized * Random.Range(data.minForce, data.maxForce); // Apply random magnitude
+                        ).normalized * rand;
 
                         // Apply the random force to the Rigidbody
                         rb.AddForce(randomForce, ForceMode.Impulse);
@@ -159,7 +161,10 @@ public class WholeIngredient : MonoBehaviour, IGrabable
                 
             }
 
-            Instantiate(data.destroyParticle, transform.position, transform.rotation * data.instantiateRotationOffset);
+            Instantiate(shouldExplode ? data.destroyParticleExplode : data.destroyParticle, transform.position, transform.rotation * data.instantiateRotationOffset);
+
+            if (shouldExplode)
+                SoundManager.Instance.PlaySoundFX(data.audioClips[4], transform, data.explodeSoundVolume, data.explodeSoundMinPitch, data.explodeSoundMaxPitch);
 
             Destroy(gameObject);
         }  
@@ -168,7 +173,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     public void HandlePackOpening()
     {
         CanGetSliced = false;
-        Invoke("TurnOnSlice", 0.5f);
+        Invoke("TurnOnSlice", 0.2f);
     }
 
     private void TurnOnSlice()
@@ -189,7 +194,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
             {
                 gameObject.layer = grabableLayer;
 
-                SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, data.throwSoundVolume, data.throwSoundMinPitch, data.throwSoundMaxPitch);
 
                 isJustThrowed = false;
             }
@@ -197,7 +202,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
             {
                 gameObject.layer = grabableLayer;
 
-                SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, data.dropSoundVolume, data.dropSoundMinPitch, data.dropSoundMaxPitch);
 
                 isJustDropped = false;
             }

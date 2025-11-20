@@ -13,12 +13,15 @@ MonoBehaviour:
   m_Name: WHOLETOMATO
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 3563ddfbd416f7a4ea221db036f7ea1b, type: 3}
+  destroyParticleExplode: {fileID: 3451705259810622206, guid: 491d920c808df9c41b379bb1b09a9b80, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusTextKey: GRABABLE_TOMATO
   isUseable: 0
   handGrabType: 9
-  minForce: 0.25
-  maxForce: 0.35
+  minForce: 0.2
+  maxForce: 0.4
+  minForceExplode: 0.4
+  maxForceExplode: 0.8
   objectAmount: 4
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -30, y: -120, z: -50}
@@ -28,3 +31,17 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6bb232783a14c814eafe9995837763fd, type: 3}
   - {fileID: 8300000, guid: 5ae132e105a2fdb4b9d2a24417df0a6f, type: 3}
   - {fileID: 8300000, guid: 2339b7b3022feff4fa793f816291dc74, type: 3}
+  - {fileID: 8300000, guid: 2339b7b3022feff4fa793f816291dc74, type: 3}
+  - {fileID: 8300000, guid: 2339b7b3022feff4fa793f816291dc74, type: 3}
+  grabSoundVolume: 1
+  grabSoundMinPitch: 0.95
+  grabSoundMaxPitch: 1.05
+  dropSoundVolume: 0.7
+  dropSoundMinPitch: 1
+  dropSoundMaxPitch: 1.3
+  throwSoundVolume: 0.8
+  throwSoundMinPitch: 0.8
+  throwSoundMaxPitch: 1.2
+  explodeSoundVolume: 0.8
+  explodeSoundMinPitch: 0.8
+  explodeSoundMaxPitch: 1.2

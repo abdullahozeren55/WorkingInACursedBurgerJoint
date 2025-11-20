@@ -20,7 +20,8 @@ public class Knife : MonoBehaviour, IGrabable
     public KnifeData data;
     public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; }
     [Space]
-    [SerializeField] private Collider triggerCol; 
+    [SerializeField] private KnifeTrigger triggerSC;
+    [SerializeField] private Collider triggerCol;
 
     private Rigidbody rb;
     private Collider col;
@@ -95,8 +96,6 @@ public class Knife : MonoBehaviour, IGrabable
         triggerCol.enabled = false;
         col.enabled = false;
 
-        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, 1f, 0.85f, 1.15f);
-
         isJustThrowed = false;
 
         rb.velocity = Vector3.zero;
@@ -109,6 +108,8 @@ public class Knife : MonoBehaviour, IGrabable
         transform.position = grabPoint.position;
         transform.localPosition = data.grabLocalPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+
+        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
     }
 
     public void OnLoseFocus()
@@ -130,6 +131,7 @@ public class Knife : MonoBehaviour, IGrabable
         }
 
         triggerCol.enabled = true;
+        triggerSC.IsJustThrowed = true;
 
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
@@ -204,22 +206,23 @@ public class Knife : MonoBehaviour, IGrabable
         isStuck = false;
     }
 
-    private void TurnOffTriggerCol()
+    private void TurnOffTriggerSC()
     {
         triggerCol.enabled = false;
+        triggerSC.IsJustThrowed = false;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (!IsGrabbed && !collision.gameObject.CompareTag("Player"))
         {
-            if (isJustThrowed)
+            if (isJustThrowed && ((1 << collision.gameObject.layer) & data.stabableLayers) != 0)
             {
                 StickToSurface(collision);
 
-                SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, data.throwSoundVolume, data.throwSoundMinPitch, data.throwSoundMaxPitch);
 
-                Invoke("TurnOffTriggerCol", 0.1f);
+                Invoke("TurnOffTriggerSC", 0.1f);
 
                 gameObject.layer = grabableLayer;
 
@@ -229,7 +232,7 @@ public class Knife : MonoBehaviour, IGrabable
             {
                 gameObject.layer = grabableLayer;
 
-                SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, 1f, 0.85f, 1.15f);
+                SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, data.dropSoundVolume, data.dropSoundMinPitch, data.dropSoundMaxPitch);
 
                 isJustDropped = false;
             }

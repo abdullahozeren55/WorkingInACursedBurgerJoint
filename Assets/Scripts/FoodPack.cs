@@ -62,8 +62,6 @@ public class FoodPack : MonoBehaviour, IGrabable
 
         col.enabled = false;
 
-        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, 1f, 0.85f, 1.15f);
-
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
@@ -74,6 +72,8 @@ public class FoodPack : MonoBehaviour, IGrabable
         transform.position = grabPoint.position;
         transform.localPosition = data.grabLocalPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+
+        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
     }
     public void OnFocus()
     {
@@ -128,7 +128,7 @@ public class FoodPack : MonoBehaviour, IGrabable
         }
     }
 
-    public void Open()
+    public void Open(bool shouldExplode)
     {
         gameObject.layer = ungrabableLayer;
         meshRenderer.enabled = false;
@@ -136,16 +136,20 @@ public class FoodPack : MonoBehaviour, IGrabable
 
         for (int i = 0; i < allTransform.Length; i++)
         {
+            float rand = shouldExplode ? Random.Range(data.minForceExplode, data.maxForceExplode) : Random.Range(data.minForce, data.maxForce);
+
             if (data.haveWholeIngredient)
-            {
                 allTransform[i].GetComponent<WholeIngredient>().HandlePackOpening();
-            }
-                // Generate a random force direction and magnitude
-                Vector3 randomForce = new Vector3(
+
+            SoundManager.Instance.PlaySoundFXWithRandomDelay(data.audioClips[5], allTransform[i], data.instantiatedSoundVolume, data.instantiatedSoundMinPitch, data.instantiatedSoundMaxPitch, data.instantiatedSoundMinDelay, data.instantiatedSoundMaxDelay);
+
+
+            // Generate a random force direction and magnitude
+            Vector3 randomForce = new Vector3(
                     Random.Range(-0.5f, 0.5f), // Random x direction
                     Random.Range(0.5f, 1f), // Random y direction
                     Random.Range(-0.5f, 0.5f)  // Random z direction
-                ).normalized * Random.Range(data.minForce, data.maxForce); // Apply random magnitude
+                ).normalized * rand;
 
             allRB[i].isKinematic = false;
             allRB[i].AddForce(randomForce, ForceMode.Impulse);
@@ -154,7 +158,12 @@ public class FoodPack : MonoBehaviour, IGrabable
             allTransform[i].SetParent(null);
         }
 
-        Instantiate(data.destroyParticle, transform.position, Quaternion.Euler(transform.rotation.x - 90f, transform.rotation.y + 90f, transform.rotation.z + 90f));
+        Instantiate(shouldExplode? data.destroyParticleExplode : data.destroyParticle, transform.position, Quaternion.Euler(transform.rotation.x - 90f, transform.rotation.y + 90f, transform.rotation.z + 90f));
+
+        if (shouldExplode)
+            SoundManager.Instance.PlaySoundFX(data.audioClips[4], transform, data.explodeSoundVolume, data.explodeSoundMinPitch, data.explodeSoundMaxPitch);
+        else
+            SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.openSoundVolume, data.openSoundMinPitch, data.openSoundMaxPitch);
 
         Destroy(gameObject);
     }
