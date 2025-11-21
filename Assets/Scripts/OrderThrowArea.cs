@@ -6,30 +6,48 @@ public class OrderThrowArea : MonoBehaviour
 {
     [HideInInspector] public bool ShouldReceive;
 
+    [Header("Sukran Settings")]
+    [SerializeField] private BurgerBox sukranBurgerBox;
+
     private void OnTriggerEnter(Collider other)
     {
         if (ShouldReceive)
         {
-            if (other.CompareTag("Drink"))
+            if (GameManager.Instance.CurrentCustomer.PersonName == ICustomer.CustomerName.SUKRAN && other.CompareTag("WholeIngredient"))
             {
-                Drink drink = other.GetComponent<Drink>();
+                WholeIngredient wholeIngredient = other.GetComponent<WholeIngredient>();
 
-                if (!drink.IsGrabbed && drink.CanBeReceived)
+                if (wholeIngredient.data.Type == WholeIngredientData.WholeIngredientType.PICKLE)
                 {
-                    GameManager.Instance.CustomerReceiveDrink(drink);
+                    GameManager.Instance.CurrentCustomer.ReceiveBurger(sukranBurgerBox);
+
+                    Destroy(other.gameObject);
                 }
-                
             }
-            else if (other.CompareTag("BurgerBoxClosed"))
+            else
             {
-                BurgerBox burgerBox = other.GetComponent<BurgerBox>();
-
-                if (!burgerBox.IsGrabbed && burgerBox.CanBeReceived)
+                if (other.CompareTag("Drink"))
                 {
-                    GameManager.Instance.CustomerReceiveBurger(burgerBox);
+                    Drink drink = other.GetComponent<Drink>();
+
+                    if (!drink.IsGrabbed && drink.CanBeReceived)
+                    {
+                        GameManager.Instance.CustomerReceiveDrink(drink);
+                    }
+
                 }
-                
+                else if (other.CompareTag("BurgerBoxClosed"))
+                {
+                    BurgerBox burgerBox = other.GetComponent<BurgerBox>();
+
+                    if (!burgerBox.IsGrabbed && burgerBox.CanBeReceived)
+                    {
+                        GameManager.Instance.CustomerReceiveBurger(burgerBox);
+                    }
+
+                }
             }
+            
         }
     }
 }

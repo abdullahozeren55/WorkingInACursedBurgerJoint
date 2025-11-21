@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLEONION
   m_EditorClassIdentifier: 
+  Type: 3
   destroyParticle: {fileID: 3451705259810622206, guid: 6fa55c3561c008b4dbf18488feafb5df, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: 15efb02f1d16d504e9adc579e228dfbe, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}

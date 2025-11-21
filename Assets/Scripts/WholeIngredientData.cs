@@ -6,6 +6,17 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewWholeIngredientData", menuName = "Data/WholeIngredient")]
 public class WholeIngredientData : ScriptableObject
 {
+    public enum WholeIngredientType
+    {
+        BUN,
+        PICKLE,
+        TOMATO,
+        ONION,
+        LETTUCE
+    }
+
+    public WholeIngredientType Type;
+    [Space]
     public GameObject destroyParticle;
     public GameObject destroyParticleExplode;
     public Quaternion instantiateRotationOffset;

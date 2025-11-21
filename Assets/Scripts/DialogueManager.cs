@@ -43,6 +43,7 @@ public class DialogueManager : MonoBehaviour
         NPCCustomer2,
         Metin,
         Nevzat,
+        Sukran,
     }
     public static DialogueManager Instance { get; private set; }
     [Space]
@@ -54,10 +55,10 @@ public class DialogueManager : MonoBehaviour
     public bool IsSkipped;
     public bool IsDialogueComplete;
 
-    [SerializeField] private TypewriterCore sinanTextAnim;
-    [SerializeField] private TypewriterCore customer0TextAnim;
-    [SerializeField] private TypewriterCore customer1TextAnim;
-    [SerializeField] private TypewriterCore sinanSelfTalkTextAnim;
+    [SerializeField] private TypewriterByCharacter sinanTextAnim;
+    [SerializeField] private TypewriterByCharacter customer0TextAnim;
+    [SerializeField] private TypewriterByCharacter customer1TextAnim;
+    [SerializeField] private TypewriterByCharacter sinanSelfTalkTextAnim;
     [Space]
     [SerializeField] private AudioClip[] typewriterSounds;
     private float minPitch = 0.85f;
@@ -74,7 +75,11 @@ public class DialogueManager : MonoBehaviour
 
     private DialogueData currentDialogueData;
     private TMP_Text currentDialogueText;
-    private TypewriterCore currentTextAnim;
+    private TypewriterByCharacter currentTextAnim;
+    [Space]
+    private float defaultWaitNormal;
+    private float defaultWaitMiddle;
+    private float defaultWaitLong;
 
     private int dialogueIndex = 0;
     private TalkType talkType;
@@ -110,6 +115,10 @@ public class DialogueManager : MonoBehaviour
         IsInDialogue = false;
         IsSkipped = false;
         IsDialogueComplete = false;
+
+        defaultWaitNormal = sinanTextAnim.waitForNormalChars;
+        defaultWaitMiddle = sinanTextAnim.waitMiddle;
+        defaultWaitLong = sinanTextAnim.waitLong;
     }
 
     private void Update()
@@ -546,6 +555,11 @@ public class DialogueManager : MonoBehaviour
         DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
 
         string key = currentDialogueData.dialogueSegments[dialogueIndex].DialogueKey;
+
+        currentTextAnim.waitForNormalChars = defaultWaitNormal / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
+        currentTextAnim.waitMiddle = defaultWaitMiddle / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
+        currentTextAnim.waitLong = defaultWaitLong / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
+
         currentTextAnim.ShowText(LocalizationManager.Instance.GetText(key));
     }
 
@@ -554,6 +568,8 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].delay);
 
         string key = currentDialogueData.dialogueSegments[dialogueIndex].DialogueKey;
+
+        sinanSelfTalkTextAnim.SetTypewriterSpeed(currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed);
         sinanSelfTalkTextAnim.ShowText(LocalizationManager.Instance.GetText(key));
 
         if (skippingSelfTalkCoroutine != null)

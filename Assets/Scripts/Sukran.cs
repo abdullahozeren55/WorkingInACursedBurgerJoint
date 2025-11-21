@@ -13,8 +13,7 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class Sukran : MonoBehaviour, ICustomer, IInteractable
 {
-    //WARNING: SUKRAN TRUE DRINK USED FOR HER EPIC SPEAK PART 2 BEFORE SHE ASCENDS. SHE DOES NOT GET DRINK.
-
+    //TRUE BURGER USED FOR PICKLE, TRUE DRINK USED FOR AFTER ORDER SELF TALK, COMPLETE USED FOR FINISH ORDER SELF TALK
     public bool CanInteract { get => canInteract; set => canInteract = value; }
     [SerializeField] private bool canInteract;
     public ICustomer.CustomerDayChangesSegment[] CustomerDayChanges { get => customerDayChanges; set => customerDayChanges = value; }
@@ -75,13 +74,11 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     public Transform CameraLookAt { get => cameraLookAt; set => cameraLookAt = value; }
     [SerializeField] private Transform cameraLookAt;
 
-    [SerializeField] DialogueData sukranSelfTalkData;
-    [SerializeField] DialogueData finalDialogueData; 
-
     [SerializeField] private Transform restaurantDestination; //destinationToArrive
     [SerializeField] private Transform homeDestination; //destinationToDisappear
     [SerializeField] private Transform facingDirectionTransform;
     [SerializeField] private GameObject[] ordersInRightHand;
+    [SerializeField] private GameObject pickleOnHead;
 
     private Transform currentDestination;
 
@@ -113,26 +110,12 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private string focusTextKey;
     [Space]
 
-    [Header("Þükran Settings")]
-    [SerializeField] private float ascendTime = 0.5f;
-    [SerializeField] private float flyTime = 2f;
-    [SerializeField] private GameObject eyes;
-
-    [Header("Glow Settings")]
-    [SerializeField] private Color emissionColor = Color.white;
-    [SerializeField] private float targetGlow = 5f;
-    [SerializeField] private float approachSpeed = 2f;
-    [SerializeField] private float pulseRange = 1f;
-    [SerializeField] private float pulseSpeed = 2f;
+    [Header("Sükran Settings")]
+    [SerializeField] private BurgerBox sukranBurgerBox;
 
     [Header("Push Player Settings")]
     [SerializeField] private Transform rayPointForPushingPlayer;
 
-    private float[] currentGlows;
-    private bool reachedTarget = false;
-    private float pingPongTime = 0f;
-    private Material[] glowMats;
-    private bool shouldGlow = false;
     private Tween rotateTween;
 
     private void Awake()
@@ -154,7 +137,7 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
             item.SetActive(false);
         }
 
-        GetGlowMaterials();
+        pickleOnHead.SetActive(false);
 
         StartPathFollow(restaurantDestination);
     }
@@ -166,59 +149,6 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
             HandlePathFollow(currentDestination);
             HandleFootsteps();
             HandlePushingPlayer();
-        }
-
-        if (shouldGlow)
-            HandleGlow();
-    }
-
-    private void GetGlowMaterials()
-    {
-        glowMats = new Material[3];
-        glowMats[0] = eyes.transform.GetChild(0).GetComponent<Renderer>().material;
-        glowMats[1] = eyes.transform.GetChild(1).GetComponent<Renderer>().material;
-        glowMats[2] = ordersInRightHand[0].GetComponent<Renderer>().material;
-
-        foreach (var mat in glowMats)
-        {
-            mat.EnableKeyword("_EMISSION");
-            mat.SetColor("_EmissionColor", Color.black);
-        }
-
-        currentGlows = new float[glowMats.Length];
-    }
-
-    private void HandleGlow()
-    {
-
-        if (!reachedTarget)
-        {
-            bool allReached = true;
-
-            for (int i = 0; i < glowMats.Length; i++)
-            {
-                currentGlows[i] = Mathf.MoveTowards(currentGlows[i], targetGlow, Time.deltaTime * approachSpeed);
-                glowMats[i].SetColor("_EmissionColor", emissionColor * currentGlows[i]);
-
-                if (!Mathf.Approximately(currentGlows[i], targetGlow))
-                    allReached = false;
-            }
-
-            if (allReached)
-            {
-                reachedTarget = true;
-                pingPongTime = 0f;
-            }
-        }
-        else
-        {
-            pingPongTime += Time.deltaTime * pulseSpeed;
-
-            for (int i = 0; i < glowMats.Length; i++)
-            {
-                float glow = targetGlow + Mathf.Sin(pingPongTime) * pulseRange;
-                glowMats[i].SetColor("_EmissionColor", emissionColor * glow);
-            }
         }
     }
 
@@ -258,28 +188,6 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
     public void HandleFootsteps()
     {
-        FindCurrentGroundMaterial();
-
-        if (shouldPlayFootstep)
-        {
-            if (currentGroundMaterial != null)
-            {
-                if (currentGroundMaterial.name.Contains("Wood"))
-                    PlayFootstep(CustomerData.woodClips);
-                else if (currentGroundMaterial.name.Contains("Metal"))
-                    PlayFootstep(CustomerData.metalClips);
-                else if (currentGroundMaterial.name.Contains("Grass"))
-                    PlayFootstep(CustomerData.grassClips);
-                else if (currentGroundMaterial.name.Contains("Stone"))
-                    PlayFootstep(CustomerData.stoneClips);
-                else if (currentGroundMaterial.name.Contains("Tile"))
-                    PlayFootstep(CustomerData.tileClips);
-                else if (currentGroundMaterial.name.Contains("Gravel"))
-                    PlayFootstep(CustomerData.gravelClips);
-
-                ChangeShouldPlayFootstep();
-            }
-        }
     }
 
     private void PlayFootstep(AudioClip[] audioClips)
@@ -365,19 +273,18 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseBurger)
         {
-            HandleHeadHome();
+            CurrentAction = ICustomer.Action.WaitingForOrder;
+            ChangeLayer(interactableLayer);
+            GameManager.Instance.SetOrderThrowArea(true);
         }
         else if (CurrentAction == ICustomer.Action.ReceivedTrueBurger)
         {
-            ChangeLayer(uninteractableLayer);
-            eyes.SetActive(true);
-            shouldGlow = true;
-            Invoke("StartTrueBurgerPartTwo", 2f);
+            HandleHeadHome();
+            Invoke("StartSelfTalk2", 2f);
         }
         else if (CurrentAction == ICustomer.Action.ReceivedTrueDrink)
         {
-            anim.SetTrigger("float");
-            StartCoroutine(StartFloating());
+
         }
         else if (CurrentAction == ICustomer.Action.ReceivedFalseDrink)
         {
@@ -387,34 +294,31 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
         }
         else if (CurrentAction == ICustomer.Action.ReceivedAllOrder)
         {
-            StartCoroutine(Ascend());
-        }
 
-        PlayerManager.Instance.SetPlayerCanPlay(true);
+        }
 
     }
 
     private void StartSelfTalk()
     {
-        DialogueManager.Instance.StartSelfDialogue(sukranSelfTalkData);
+        DialogueManager.Instance.StartSelfDialogue(TrueDrinkDialogueData);
         ChangeLayer(interactableLayer);
         GameManager.Instance.SetOrderThrowArea(true);
     }
 
-    private void StartTrueBurgerPartTwo()
+    private void StartSelfTalk2()
     {
-        CurrentAction = ICustomer.Action.ReceivedTrueDrink;
-        DialogueManager.Instance.StartCustomerDialogue(this, trueDrinkDialogueData);
+        DialogueManager.Instance.StartSelfDialogue(CompleteOrderDialogueData);
     }
 
     public void ReceiveBurger(BurgerBox burgerBox)
     {
         ChangeLayer(uninteractableLayer);
 
-        //if (IsOnlyPicklesInside(burgerBox.allBurgerIngredientTypes))
-          //  HandleBurgerTrue();
-        //else
-          //  HandleBurgerFalse();
+        if (burgerBox == sukranBurgerBox)
+            HandleBurgerTrue(); //means its not burger but a whole pickle
+        else
+            HandleBurgerFalse();
     }
 
     public void ReceiveDrink(Drink drink)
@@ -480,8 +384,8 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
     private void HandleBurgerTrue()
     {
-        ordersInRightHand[0].SetActive(true);
-        anim.SetTrigger("carryBox");
+        ordersInRightHand[4].SetActive(true);
+        anim.SetTrigger("putPickleOnHead");
         CurrentAction = ICustomer.Action.ReceivedTrueBurger;
         DialogueManager.Instance.StartCustomerDialogue(this, TrueBurgerDialogueData);
     }
@@ -506,7 +410,6 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     {
         ChangeLayer(customerLayer);
         anim.SetBool("idle", false);
-        anim.SetBool("walkAway", true);
         currentDestination = homeDestination;
         agent.enabled = true;
         CurrentAction = ICustomer.Action.GoingToDestination;
@@ -532,7 +435,13 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
         }
     }
 
-    private void GiveOrderBack()
+    private void PutPickleOnHead() //called in animator
+    {
+        ordersInRightHand[4].SetActive(false); //pickle in hand
+        pickleOnHead.SetActive(true);
+    }
+
+    private void GiveOrderBack() //called in animator
     {
         if (ordersInRightHand[0].activeSelf)
         {
@@ -549,51 +458,9 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
 
     }
 
-    private void StartFinalDialogue()
-    {
-        CurrentAction = ICustomer.Action.ReceivedAllOrder;
-
-        DialogueManager.Instance.StartCustomerDialogue(this, finalDialogueData);
-    }
-
-    private IEnumerator StartFloating()
-    {
-        Vector3 startingPosition = transform.position;
-        Vector3 targetPosition = new Vector3(startingPosition.x, startingPosition.y + 0.7f, startingPosition.z);
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < flyTime)
-        {
-            transform.position = Vector3.Lerp(startingPosition, targetPosition, elapsedTime / flyTime);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.position = targetPosition;
-    }
-
-    private IEnumerator Ascend()
-    {
-        Vector3 startingScale = transform.localScale;
-        Vector3 targetScale = new Vector3(0f, startingScale.y, startingScale.z);
-
-        float elapsedTime = 0f;
-
-        while (elapsedTime < ascendTime)
-        {
-            transform.localScale = Vector3.Lerp(startingScale, targetScale, elapsedTime / ascendTime);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.localScale = targetScale;
-
-        Destroy(gameObject);
-    }
 
     public void HandleDialogueAnim(DialogueAnim dialogueAnim)
     {
-        throw new System.NotImplementedException();
+
     }
 }

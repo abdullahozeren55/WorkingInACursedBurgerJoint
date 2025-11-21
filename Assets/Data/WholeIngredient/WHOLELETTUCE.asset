@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLELETTUCE
   m_EditorClassIdentifier: 
+  Type: 4
   destroyParticle: {fileID: 3451705259810622206, guid: 24b13e32064c53a47ba3730f061b6a66, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: 30a992fa50c21ad4392a66e3b5a381e8, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}

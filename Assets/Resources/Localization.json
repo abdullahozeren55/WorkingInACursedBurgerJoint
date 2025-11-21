@@ -653,6 +653,132 @@
       "key": "CUSTOMER_NPCCUSTOMER0_DAY_1_TRUE_DRINK_1",
       "tr": "Tamamdır abi",
       "en": "Got you, bro."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_0",
+      "tr": "Buyrun, hoşgeldiniz. Siparişinizi alay-",
+      "en": "Hi, welcome. What can I get for yo-"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_1",
+      "tr": "TURŞU!",
+      "en": "PICKLE!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_2",
+      "tr": "...",
+      "en": "..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_3",
+      "tr": "N-ne?",
+      "en": "...Huh?"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_4",
+      "tr": "TURŞU... TURŞU!",
+      "en": "PICKLE... PICKLE!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_5",
+      "tr": "...",
+      "en": "..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_6",
+      "tr": "TURŞU!",
+      "en": "PICKLE!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_BEFORE_ORDER_7",
+      "tr": "Tamam anladık ya turşu!",
+      "en": "Alright, PICKLE, I get it!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_SELF_TALK_0",
+      "tr": "Ne diyo bu ya?",
+      "en": "What is she even saying?"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_SELF_TALK_1",
+      "tr": "Turşu istiyo... Galiba.",
+      "en": "She... wants a pickle? I think?"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_0",
+      "tr": "...",
+      "en": "..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_1",
+      "tr": "...",
+      "en": "..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_2",
+      "tr": "TURŞU! TURŞU!",
+      "en": "PICKLE! PICKLE!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_AFTER_ORDER_3",
+      "tr": "He he turşu.",
+      "en": "Yeah yeah pickle."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_FALSE_BURGER_0",
+      "tr": "Turşu...",
+      "en": "Pickle..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_FALSE_BURGER_1",
+      "tr": "...",
+      "en": "..."
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_FALSE_DRINK_0",
+      "tr": "TURŞUTURŞUTURŞUTURŞUTURŞUTURŞUTURŞUTUR-",
+      "en": "PICKLEPICKLEPICKLEPICKLEPICKLEPICKLEPI-"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_FALSE_DRINK_1",
+      "tr": "Hay turşu kadar kafana taş düşsün e mi ablacım!?",
+      "en": "May a giant PICKLE fall on your head lady!"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_0",
+      "tr": "<shake> T U R Ş U </shake>",
+      "en": "<shake> P I C K L E </shake>"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_SELF_TALK_0",
+      "tr": "Nere gidiyon paras-",
+      "en": "Where are you going without pa-"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_SELF_TALK_1",
+      "tr": "Amaan neyse. Bi turşu alt tarafı.",
+      "en": "You know what... Whatever."
     }
 
   ]

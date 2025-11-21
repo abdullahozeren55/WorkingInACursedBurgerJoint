@@ -15,6 +15,8 @@ public class DialogueData : ScriptableObject
         public DialogueManager.TalkingPerson talkingPerson;
         [Space]
         public FontStyle fontStyle;
+        [Space]
+        public float typeSpeed = 1f;
 
         public Vector2 DialogueOffset;
         public bool Skippable;

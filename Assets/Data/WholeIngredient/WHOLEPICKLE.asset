@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLEPICKLE
   m_EditorClassIdentifier: 
+  Type: 1
   destroyParticle: {fileID: 3451705259810622206, guid: 0a7065ebaeeabfb45b4dbc0c5a12be58, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: 4b2dbb41a5e35604abc0e9b39f4e956e, type: 3}
   instantiateRotationOffset: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}

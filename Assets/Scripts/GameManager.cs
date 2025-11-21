@@ -5,7 +5,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.VersionControl.Asset;
 
 public class GameManager : MonoBehaviour
 {
@@ -115,7 +114,7 @@ public class GameManager : MonoBehaviour
     public CustomerDaySortSegment[] DayCustomerSort;
     private int customerCounter = 0;
 
-    private ICustomer currentCustomer;
+    public ICustomer CurrentCustomer;
 
     private int customerLayer;
     private int ungrabableLayer;
@@ -221,14 +220,14 @@ public class GameManager : MonoBehaviour
 
     public void SetCurrentCustomer(ICustomer customer)
     {
-        currentCustomer = customer;
-        CameraManager.Instance.SetCustomerCamLookAt(currentCustomer.CameraLookAt);
+        CurrentCustomer = customer;
+        CameraManager.Instance.SetCustomerCamLookAt(CurrentCustomer.CameraLookAt);
     }
     public void CustomerReceiveDrink(Drink drink)
     {
-        if (currentCustomer != null && !currentCustomer.TrueDrinkReceived)
+        if (CurrentCustomer != null && !CurrentCustomer.TrueDrinkReceived)
         {
-            currentCustomer.ReceiveDrink(drink);
+            CurrentCustomer.ReceiveDrink(drink);
             lastThrowedDrink = drink;
 
             lastThrowedDrink.GetComponent<MeshRenderer>().enabled = false;
@@ -240,9 +239,9 @@ public class GameManager : MonoBehaviour
 
     public void CustomerReceiveBurger(BurgerBox burgerBox)
     {
-        if (currentCustomer != null && !currentCustomer.TrueBurgerReceived)
+        if (CurrentCustomer != null && !CurrentCustomer.TrueBurgerReceived)
         {
-            currentCustomer.ReceiveBurger(burgerBox);
+            CurrentCustomer.ReceiveBurger(burgerBox);
             lastThrowedBurgerBox = burgerBox;
 
             lastThrowedBurgerBoxMeshRenderers = lastThrowedBurgerBox.GetComponentsInChildren<MeshRenderer>();
@@ -260,7 +259,7 @@ public class GameManager : MonoBehaviour
 
     public void CustomerGiveBackDrink(Transform throwPoint, Vector3 force)
     {
-        currentCustomer.ChangeLayer(customerLayer);
+        CurrentCustomer.ChangeLayer(customerLayer);
         lastThrowedDrink.transform.position = throwPoint.position;
         lastThrowedDrink.transform.rotation = throwPoint.rotation;
         lastThrowedDrink.isJustThrowed = false;
@@ -275,7 +274,7 @@ public class GameManager : MonoBehaviour
 
     public void CustomerGiveBackBurger(Transform throwPoint, Vector3 force)
     {
-        currentCustomer.ChangeLayer(customerLayer);
+        CurrentCustomer.ChangeLayer(customerLayer);
         lastThrowedBurgerBox.transform.position = throwPoint.position;
         lastThrowedBurgerBox.transform.rotation = throwPoint.rotation;
         lastThrowedBurgerBox.isJustThrowed = false;
