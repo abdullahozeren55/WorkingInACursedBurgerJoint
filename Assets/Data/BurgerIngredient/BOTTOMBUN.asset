@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BOTTOMBUN
   m_EditorClassIdentifier: 
   isUseable: 0
-  IsCookable: 1
+  IsCookable: 0
   ingredientType: 0
   handGrabType: 5
   yHeight: 0.011

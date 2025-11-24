@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f8b42ae27ab51449898ba8fe526e87, type: 3}
   m_Name: WHOLEBUN
   m_EditorClassIdentifier: 
+  Type: 0
   destroyParticle: {fileID: 3451705259810622206, guid: 61b3a3664ae5d31479e614ab89281c03, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: b3b515298be3c1b478eb8df19f3c50b0, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
@@ -27,6 +28,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -5, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.00014703891, y: 0.0008375775, z: 0.00017851745}
   grabLocalRotationOffset: {x: 345.47952, y: 285.58902, z: 233.73474}
+  dropParticles: {fileID: 8670732574423207768, guid: e927c6ceba969244889adf71ad4f4473, type: 3}
+  throwParticles: {fileID: 8670732574423207768, guid: 7cd0342c14484444084823e35166ba0a, type: 3}
   audioClips:
   - {fileID: 8300000, guid: 4b125dc5bc95ec04e867f0357eff41bf, type: 3}
   - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}

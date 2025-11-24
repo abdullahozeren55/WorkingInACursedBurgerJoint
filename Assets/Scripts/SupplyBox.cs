@@ -25,7 +25,6 @@ public class SupplyBox : MonoBehaviour, IInteractable
 
     [Header("Supply Settings")]
     [SerializeField] private GameObject supply;
-    [SerializeField] private Transform pointToSpawn;
 
     private void Awake()
     {
@@ -76,7 +75,7 @@ public class SupplyBox : MonoBehaviour, IInteractable
     {
         if (!CanInteract) return;
 
-        GameObject instantiatedSupply = Instantiate(supply, pointToSpawn.position, Quaternion.Euler(0f, -90f, 180f), null);
+        GameObject instantiatedSupply = Instantiate(supply, transform.position, Quaternion.Euler(0f, -90f, 180f), null);
         PlayerManager.Instance.ResetPlayerGrabAndInteract();
         PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedSupply.GetComponent<IGrabable>());
     }

@@ -37,8 +37,8 @@ MonoBehaviour:
   grabSoundMinPitch: 0.95
   grabSoundMaxPitch: 1.05
   dropSoundVolume: 0.7
-  dropSoundMinPitch: 1
-  dropSoundMaxPitch: 1.2
+  dropSoundMinPitch: 1.1
+  dropSoundMaxPitch: 1.3
   throwSoundVolume: 0.5
   throwSoundMinPitch: 1.2
   throwSoundMaxPitch: 1.4

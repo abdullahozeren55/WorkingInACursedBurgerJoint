@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Cookable;
 
 public class WholeIngredient : MonoBehaviour, IGrabable
 {
@@ -39,6 +40,10 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     private bool isJustThrowed;
     private bool isJustDropped;
 
+    private Transform decalParent;
+
+    private Quaternion collisionRotation;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -48,6 +53,8 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+
+        decalParent = transform.Find("DecalParent");
 
         IsGrabbed = false;
 
@@ -129,6 +136,64 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         }
     }
 
+    private void CalculateCollisionRotation(Collision collision)
+    {
+        ContactPoint contact = collision.contacts[0];
+
+        Vector3 normal = contact.normal;
+        Vector3 hitPoint = contact.point + normal * 0.02f;
+
+        Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+        if (tangent == Vector3.zero)
+            tangent = Vector3.Cross(normal, Vector3.forward);
+        tangent.Normalize();
+        Vector3 bitangent = Vector3.Cross(normal, tangent);
+
+        // Normal yönüne göre rotation hesapla
+        collisionRotation = Quaternion.LookRotation(normal) * Quaternion.Euler(0, 180, 0);
+    }
+
+    private void HandleSauceDrops(Collision collision)
+    {
+        int countToDrop = Mathf.CeilToInt(decalParent.childCount / 2f);
+
+        ContactPoint contact = collision.contacts[0];
+
+        Vector3 normal = contact.normal;
+        Vector3 hitPoint = contact.point + normal * 0.02f;
+
+        Vector3 tangent = Vector3.Cross(normal, Vector3.up);
+        if (tangent == Vector3.zero)
+            tangent = Vector3.Cross(normal, Vector3.forward);
+        tangent.Normalize();
+        Vector3 bitangent = Vector3.Cross(normal, tangent);
+
+        // Rastgele offset (yüzeye paralel düzlemde)
+        float spreadRadius = 0.05f;
+
+        for (int i = 0; i < countToDrop; i++)
+        {
+            Transform child = decalParent.GetChild(i);
+            child.transform.parent = collision.transform;
+
+            Vector3 randomOffset = tangent * Random.Range(-spreadRadius, spreadRadius) +
+                               bitangent * Random.Range(-spreadRadius, spreadRadius);
+
+            Vector3 spawnPoint = hitPoint + randomOffset;
+
+            child.transform.position = spawnPoint;
+            child.transform.rotation = collisionRotation;
+        }
+
+        if (decalParent.childCount > 0)
+        {
+            for (int i = 0; i < decalParent.childCount; i++)
+            {
+                Destroy(decalParent.GetChild(i).gameObject);
+            }
+        }
+    }
+
     public void Slice(bool shouldExplode)
     {
         if (CanGetSliced)
@@ -190,11 +255,19 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     {
         if (!IsGrabbed && !collision.gameObject.CompareTag("Player"))
         {
+            CalculateCollisionRotation(collision);
+
+            if (decalParent != null && decalParent.childCount > 0)
+                HandleSauceDrops(collision);
+
             if (isJustThrowed)
             {
                 gameObject.layer = grabableLayer;
 
                 SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, data.throwSoundVolume, data.throwSoundMinPitch, data.throwSoundMaxPitch);
+
+                if (data.throwParticles != null)
+                    Instantiate(data.throwParticles, transform.position, collisionRotation);
 
                 isJustThrowed = false;
             }
@@ -203,6 +276,9 @@ public class WholeIngredient : MonoBehaviour, IGrabable
                 gameObject.layer = grabableLayer;
 
                 SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, data.dropSoundVolume, data.dropSoundMinPitch, data.dropSoundMaxPitch);
+
+                if (data.dropParticles != null)
+                    Instantiate(data.dropParticles, transform.position, collisionRotation);
 
                 isJustDropped = false;
             }

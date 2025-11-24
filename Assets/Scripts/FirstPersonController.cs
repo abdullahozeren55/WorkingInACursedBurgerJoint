@@ -1509,6 +1509,12 @@ public class FirstPersonController : MonoBehaviour
             focusTextAnim.SkipTypewriter();
             SetFocusTextComplete(true);
         }
+        else if (otherGrabable != null && otherGrabable == grabable && focusText.text != localizedText)
+        {
+            focusTextAnim.ShowText(localizedText);
+            focusTextAnim.SkipTypewriter();
+            SetFocusTextComplete(true);
+        }
     }
 
     public void SetUseHandLerp(Vector3 targetPos, Vector3 targetRot, float timeToDo)

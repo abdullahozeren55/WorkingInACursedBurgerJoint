@@ -37,6 +37,9 @@ public class WholeIngredientData : ScriptableObject
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
     [Space]
+    public ParticleSystem dropParticles;
+    public ParticleSystem throwParticles;
+    [Space]
     public AudioClip[] audioClips; //0 grab, 1 drop, 2 throw, 3 slice, 4 explode
     [Space]
     public float grabSoundVolume = 1f;
