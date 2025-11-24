@@ -510,8 +510,8 @@ public class Ertan : MonoBehaviour, ICustomer, IInteractable
 
     }
 
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim)
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay)
     {
-        throw new System.NotImplementedException();
+
     }
 }

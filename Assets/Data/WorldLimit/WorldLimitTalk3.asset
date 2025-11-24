@@ -13,19 +13,33 @@ MonoBehaviour:
   m_Name: WorldLimitTalk3
   m_EditorClassIdentifier: 
   dialogueSegments:
-  - fontType: 1
+  - DialogueKey: SELF_TALK_WORLD_LIMIT_3
+    fontType: 1
     talkingPerson: 0
     fontStyle: 2
-    DialogueToPrint: "Dalm\u0131\u015F\u0131m gidiyorum ya..."
+    typeSpeed: 1
     DialogueOffset: {x: 0, y: 0}
     Skippable: 1
     autoSkipTime: 5
-    audioClip: {fileID: 0}
+    delay: 0
+    minAudioPitch: 0.85
+    maxAudioPitch: 1.15
+    audioToPlay: {fileID: 0}
+    audioToPlayVolume: 1
+    audioToPlayMinPitch: 0.85
+    audioToPlayMaxPitch: 1.15
+    audioToPlayDelay: 0
     cam: 0
     dialogueAnim: 0
+    dialogueAnimDelay: 0
+    dialogueCamType: 0
+    TargetFOV: 60
+    FOVDuration: 1
+    FOVEase: 28
+    FOVEaseValue: 1.7
   type: 0
-  question: 
-  optionA: 
-  optionD: 
+  QuestionKey: 
+  OptionAKey: 
+  OptionDKey: 
   choiceCam: 0
   cutsceneType: 0

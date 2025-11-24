@@ -97,6 +97,8 @@ public class CameraManager : MonoBehaviour
     private float normalColorAdjustmentsPostExposureValue;
     private Color normalColorAdjustmentsColor;
 
+    private float normalFOVCurrentCam;
+
     private CinemachineVirtualCamera firstPersonCam;
     private CinemachineVirtualCamera customerDialogueCam;
     private CinemachineVirtualCamera customerDialogueAtTheDoorCam;
@@ -315,6 +317,24 @@ public class CameraManager : MonoBehaviour
             duration));
 
         seq.Play();
+    }
+
+    public void PlayCurrentCamFOV(float targetFOV, float duration, Ease ease = Ease.InOutBack, float easeValue = 1.7f, string tweenId = "FOVCurrentCam")
+    {
+        CinemachineVirtualCamera currentCam = GetCamera();
+
+        normalFOVCurrentCam = currentCam.m_Lens.FieldOfView;
+
+        DOTween.Kill(tweenId);
+
+        DOTween.To(() => currentCam.m_Lens.FieldOfView, x => currentCam.m_Lens.FieldOfView = x, targetFOV, duration)
+            .SetEase(ease, easeValue)
+            .SetId(tweenId);
+    }
+
+    public void EndCurrentCamFOV(float duration = 0.5f, Ease ease = Ease.InOutBack, float easeValue = 1.7f, string tweenId = "FOVCurrentCam")
+    {
+        PlayCurrentCamFOV(normalFOVCurrentCam, duration, ease, easeValue, tweenId);
     }
 
     public void PlayFOV(float targetFOV, float duration, Ease ease = Ease.OutSine, float easeValue = 1.7f, string tweenId = "FOV")

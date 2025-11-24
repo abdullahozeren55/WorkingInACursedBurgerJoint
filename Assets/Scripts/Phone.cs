@@ -173,6 +173,5 @@ public class Phone : MonoBehaviour, IGrabable
 
     public void OutlineChangeCheck()
     {
-        throw new System.NotImplementedException();
     }
 }

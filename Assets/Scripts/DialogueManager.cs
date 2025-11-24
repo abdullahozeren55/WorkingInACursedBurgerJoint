@@ -128,7 +128,9 @@ public class DialogueManager : MonoBehaviour
 
             if (Input.GetKeyDown(skipKey))
             {
-                if (!IsSkipped && !IsDialogueComplete)
+                PlayerManager.Instance.SetInteractKeyIsDone(true);
+
+                if (!IsSkipped && !IsDialogueComplete && currentDialogueData.dialogueSegments[dialogueIndex].Skippable)
                 {
                     sinanTextAnim.SkipTypewriter();
                     customer0TextAnim.SkipTypewriter();
@@ -258,7 +260,7 @@ public class DialogueManager : MonoBehaviour
 
         talkType = TalkType.TalkWithCustomer;
 
-        PlayerManager.Instance.SetPlayerCanPlay(false);
+        PlayerManager.Instance.SetPlayerBasicMovements(false);
         PlayerManager.Instance.SetPlayerCanHeadBob(false);
         dialogueIndex = 0;
 
@@ -282,11 +284,11 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            currentCustomer.HandleFinishDialogue();
-
             CameraManager.Instance.SwitchToFirstPersonCamera();
-            PlayerManager.Instance.SetPlayerCanPlay(true);
+            PlayerManager.Instance.SetPlayerBasicMovements(true);
             PlayerManager.Instance.SetPlayerCanHeadBob(true);
+
+            currentCustomer.HandleFinishDialogue();
         }
 
         IsInDialogue = false;
@@ -538,11 +540,22 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator ShowTextWithDelay()
     {
+        CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
+
+        if (currentDialogueData.dialogueSegments[dialogueIndex].dialogueCamType == DialogueData.DialogueCamType.CHANGEFOV)
+            CameraManager.Instance.PlayCurrentCamFOV(currentDialogueData.dialogueSegments[dialogueIndex].TargetFOV,
+                                                     currentDialogueData.dialogueSegments[dialogueIndex].FOVDuration,
+                                                     currentDialogueData.dialogueSegments[dialogueIndex].FOVEase,
+                                                     currentDialogueData.dialogueSegments[dialogueIndex].FOVEaseValue);
+
+        else if (currentDialogueData.dialogueSegments[dialogueIndex].dialogueCamType == DialogueData.DialogueCamType.RESETFOV)
+            CameraManager.Instance.EndCurrentCamFOV(currentDialogueData.dialogueSegments[dialogueIndex].FOVDuration,
+                                                     currentDialogueData.dialogueSegments[dialogueIndex].FOVEase,
+                                                     currentDialogueData.dialogueSegments[dialogueIndex].FOVEaseValue);
+
         yield return new WaitForSeconds(currentDialogueData.dialogueSegments[dialogueIndex].delay);
 
         DecideCurrentText();
-
-        CameraManager.Instance.SwitchToCamera(currentDialogueData.dialogueSegments[dialogueIndex].cam);
 
         RectTransform rect = currentDialogueText.rectTransform;
         rect.anchoredPosition += currentDialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
@@ -550,7 +563,7 @@ public class DialogueManager : MonoBehaviour
         if (talkType == TalkType.TalkWithSeller)
             shopSeller.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
         else
-            currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
+            currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim, currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnimDelay);
 
         DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
 
@@ -559,6 +572,9 @@ public class DialogueManager : MonoBehaviour
         currentTextAnim.waitForNormalChars = defaultWaitNormal / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
         currentTextAnim.waitMiddle = defaultWaitMiddle / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
         currentTextAnim.waitLong = defaultWaitLong / currentDialogueData.dialogueSegments[dialogueIndex].typeSpeed;
+
+        if (currentDialogueData.dialogueSegments[dialogueIndex].audioToPlay != null)
+            SoundManager.Instance.PlayUISoundFXWithDelay(currentDialogueData.dialogueSegments[dialogueIndex].audioToPlay, currentDialogueData.dialogueSegments[dialogueIndex].audioToPlayVolume, currentDialogueData.dialogueSegments[dialogueIndex].audioToPlayMinPitch, currentDialogueData.dialogueSegments[dialogueIndex].audioToPlayMaxPitch, currentDialogueData.dialogueSegments[dialogueIndex].audioToPlayDelay);
 
         currentTextAnim.ShowText(LocalizationManager.Instance.GetText(key));
     }

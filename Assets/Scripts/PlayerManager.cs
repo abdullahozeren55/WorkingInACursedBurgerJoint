@@ -117,6 +117,11 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.CanInteract = can;
     }
 
+    public void SetInteractKeyIsDone(bool value)
+    {
+        firstPersonController.InteractKeyIsDone = value;
+    }
+
     public void SetPlayerCanPlay(bool can)
     {
         firstPersonController.CanPlay = can;

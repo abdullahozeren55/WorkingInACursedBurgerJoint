@@ -50,7 +50,8 @@ public interface ICustomer
         LAUGH,
         WAVE,
         TURNHEADTOSIDE,
-        TURNHEADBACKTONORMAL
+        TURNHEADBACKTONORMAL,
+        PUTPICKLEONHEAD
     }
 
     [System.Serializable]
@@ -97,7 +98,7 @@ public interface ICustomer
     public void HandlePathFollow(Transform destination);
     public void HandleFootsteps();
     public void HandleIdle();
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim);
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay);
 
     public void ChangeLayer(int layer);
 

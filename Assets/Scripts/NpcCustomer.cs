@@ -116,6 +116,7 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
 
     private int day;
     private Tween rotateTween;
+    private Coroutine currentAnimCoroutine;
     private void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -425,13 +426,6 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
             item.layer = layer;
         }
     }
-
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim)
-    {
-        if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk"))
-            anim.SetTrigger("talk");
-    }
-
     private void HandleBurgerTrue()
     {
         TrueBurgerReceived = true;
@@ -546,5 +540,25 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
             ordersInRightHand[3].SetActive(false);
         }
 
+    }
+
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay)
+    {
+        if (currentAnimCoroutine != null)
+        {
+            StopCoroutine(currentAnimCoroutine);
+            currentAnimCoroutine = null;
+        }
+
+        currentAnimCoroutine = StartCoroutine(PlayAnimWithDelay(dialogueAnim, delay));
+        
+    }
+
+    private IEnumerator PlayAnimWithDelay(DialogueAnim dialogueAnim, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk"))
+            anim.SetTrigger("talk");
     }
 }

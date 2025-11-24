@@ -1,4 +1,5 @@
 using Cinemachine;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,11 +27,23 @@ public class DialogueData : ScriptableObject
         public float maxAudioPitch = 1.15f;
 
         [Space]
-        public AudioClip audioClip;
+        public AudioClip audioToPlay;
+        public float audioToPlayVolume = 1f;
+        public float audioToPlayMinPitch = 0.85f;
+        public float audioToPlayMaxPitch = 1.15f;
+        public float audioToPlayDelay = 0f;
         [Space]
         public CameraManager.CameraName cam;
         [Space]
         public ICustomer.DialogueAnim dialogueAnim;
+        public float dialogueAnimDelay = 0f;
+        [Space]
+        public DialogueCamType dialogueCamType;
+        [Space]
+        public float TargetFOV = 60;
+        public float FOVDuration = 1f;
+        public Ease FOVEase = Ease.InOutBack;
+        public float FOVEaseValue = 1.7f;
     }
 
     public enum DialogueType
@@ -38,6 +51,13 @@ public class DialogueData : ScriptableObject
         NORMAL,
         ENDSWITHACHOICE,
         ENDSWITHACUTSCENE
+    }
+
+    public enum DialogueCamType
+    {
+        NOTHING,
+        CHANGEFOV,
+        RESETFOV
     }
 
     public DialogueSegment[] dialogueSegments;

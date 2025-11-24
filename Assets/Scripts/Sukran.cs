@@ -79,6 +79,12 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private Transform facingDirectionTransform;
     [SerializeField] private GameObject[] ordersInRightHand;
     [SerializeField] private GameObject pickleOnHead;
+    [SerializeField] private ParticleSystem pickleParticles;
+    [Space]
+    [SerializeField] private AudioClip sukranPicklePlopSound;
+    [SerializeField] private float plopSoundVolume;
+    [SerializeField] private float plopSoundMinPitch;
+    [SerializeField] private float plopSoundMaxPitch;
 
     private Transform currentDestination;
 
@@ -117,6 +123,7 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private Transform rayPointForPushingPlayer;
 
     private Tween rotateTween;
+    private Coroutine currentAnimCoroutine;
 
     private void Awake()
     {
@@ -385,7 +392,6 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     private void HandleBurgerTrue()
     {
         ordersInRightHand[4].SetActive(true);
-        anim.SetTrigger("putPickleOnHead");
         CurrentAction = ICustomer.Action.ReceivedTrueBurger;
         DialogueManager.Instance.StartCustomerDialogue(this, TrueBurgerDialogueData);
     }
@@ -439,6 +445,8 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     {
         ordersInRightHand[4].SetActive(false); //pickle in hand
         pickleOnHead.SetActive(true);
+        Instantiate(pickleParticles, pickleOnHead.transform.position, Quaternion.identity);
+        SoundManager.Instance.PlaySoundFX(sukranPicklePlopSound, pickleOnHead.transform, plopSoundVolume, plopSoundMinPitch, plopSoundMaxPitch);
     }
 
     private void GiveOrderBack() //called in animator
@@ -459,8 +467,22 @@ public class Sukran : MonoBehaviour, ICustomer, IInteractable
     }
 
 
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim)
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay)
     {
+        if (currentAnimCoroutine != null)
+        {
+            StopCoroutine(currentAnimCoroutine);
+            currentAnimCoroutine = null;
+        }
 
+        currentAnimCoroutine = StartCoroutine(PlayAnimWithDelay(dialogueAnim, delay));
+    }
+
+    private IEnumerator PlayAnimWithDelay(DialogueAnim dialogueAnim, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (dialogueAnim == DialogueAnim.PUTPICKLEONHEAD && !anim.GetCurrentAnimatorStateInfo(1).IsName("PutPickleOnHead"))
+            anim.SetTrigger("putPickleOnHead");
     }
 }

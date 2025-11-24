@@ -113,6 +113,7 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
 
     private int day;
     private Tween rotateTween;
+    private Coroutine currentAnimCoroutine;
     private void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -542,8 +543,22 @@ public class Kemal : MonoBehaviour, ICustomer, IInteractable
         
     }
 
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim)
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay)
     {
+        if (currentAnimCoroutine != null)
+        {
+            StopCoroutine(currentAnimCoroutine);
+            currentAnimCoroutine = null;
+        }
+
+        currentAnimCoroutine = StartCoroutine(PlayAnimWithDelay(dialogueAnim, delay));
+        
+    }
+
+    private IEnumerator PlayAnimWithDelay(DialogueAnim dialogueAnim, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
         if (dialogueAnim == DialogueAnim.TALK && !anim.GetCurrentAnimatorStateInfo(0).IsName("Talk"))
             anim.SetTrigger("talk");
     }

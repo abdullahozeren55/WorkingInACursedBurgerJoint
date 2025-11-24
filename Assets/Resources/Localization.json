@@ -759,7 +759,7 @@
 
     {
       "key": "CUSTOMER_SUKRAN_DAY_0_FALSE_DRINK_1",
-      "tr": "Hay turşu kadar kafana taş düşsün e mi ablacım!?",
+      "tr": "Hay turşu kadar kafana taş düşsün e mi ablacım!",
       "en": "May a giant PICKLE fall on your head lady!"
     },
 
@@ -767,6 +767,12 @@
       "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_0",
       "tr": "<shake> T U R Ş U </shake>",
       "en": "<shake> P I C K L E </shake>"
+    },
+
+    {
+      "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_1",
+      "tr": "...",
+      "en": "..."
     },
 
     {
@@ -779,6 +785,42 @@
       "key": "CUSTOMER_SUKRAN_DAY_0_TRUE_BURGER_SELF_TALK_1",
       "tr": "Amaan neyse. Bi turşu alt tarafı.",
       "en": "You know what... Whatever."
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_O",
+      "tr": "Bu tarafta işim yok.",
+      "en": "Nothing for me that way."
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_1",
+      "tr": "Nere gidiyorum yav?",
+      "en": "Where am I even going?"
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_2",
+      "tr": "Çok uzaklaşmasam iyi olur.",
+      "en": "Better not stray too far."
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_3",
+      "tr": "Dalmışım gidiyorum ya...",
+      "en": "Totally zoned out there..."
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_4",
+      "tr": "Geri al... Geri al...",
+      "en": "Put it in reverse, Sinan!"
+    },
+
+    {
+      "key": "SELF_TALK_WORLD_LIMIT_5",
+      "tr": "Uzaklaşma! Yabancı semtteyiz.",
+      "en": "My Sinan-sense is tingling... I should stay close by."
     }
 
   ]

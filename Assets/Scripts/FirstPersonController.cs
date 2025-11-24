@@ -131,9 +131,11 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private LayerMask interactionLayers = default;
     private float interactChargeTimer = 0f;
     private IInteractable currentInteractable;
+    public bool InteractKeyIsDone;
 
     [Header("Grab Parameters")]
     [SerializeField] private LayerMask grabableLayers;
+    [SerializeField] private LayerMask throwRaycastLayers;
     [SerializeField] private TMP_Text crosshairText;
     [SerializeField] private float grabCrosshairSize = 32;
     [SerializeField] private Vector2 grabCrosshairPosition;
@@ -256,6 +258,8 @@ public class FirstPersonController : MonoBehaviour
 
         uninteractableLayer = LayerMask.NameToLayer("Uninteractable");
 
+        InteractKeyIsDone = false;
+
         DecideFocusText();
     }
 
@@ -317,18 +321,20 @@ public class FirstPersonController : MonoBehaviour
                 HandleInteractionInput();
                 HandleInteractionCheck();
             }
-            else if (currentInteractable != null)
-            {
-                currentInteractable.OnLoseFocus();
-                currentInteractable = null;
-                DecideOutlineAndCrosshair();
-            }
 
             if (CanGrab)
             {
                 HandleGrabInput();
                 HandleGrabCheck();
             }
+
+            else if (currentInteractable != null)
+            {
+                currentInteractable.OnLoseFocus();
+                currentInteractable = null;
+                DecideOutlineAndCrosshair();
+            }
+            
 
             if (CanFootstep)
                 HandleFootsteps();
@@ -616,7 +622,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void DecideCrosshairColor()
     {
-        if (currentInteractable != null && currentInteractable.OutlineShouldBeRed)
+        if ((currentInteractable != null && currentInteractable.OutlineShouldBeRed) || (currentGrabable == phoneGrabable && isUsingGrabbedItem))
         {
             ChangeCrosshairColor(useCrosshairColor);
         }
@@ -827,7 +833,7 @@ public class FirstPersonController : MonoBehaviour
 
             if (Input.GetKeyUp(interactKey))
             {
-                if (!isUsingGrabbedItem)
+                if (!isUsingGrabbedItem && !InteractKeyIsDone)
                 {
                     // kýsa týk interact
                     TryToInteract();
@@ -840,6 +846,7 @@ public class FirstPersonController : MonoBehaviour
 
                 interactChargeTimer = 0f;
                 isUsingGrabbedItem = false;
+                InteractKeyIsDone = false;
 
                 DecideOutlineAndCrosshair();
             }
@@ -873,11 +880,11 @@ public class FirstPersonController : MonoBehaviour
                     {
                         currentPositionOffsetForRightHand = positionOffsetForRightHandInteraction;
                         currentRotationOffsetForRightHand = rotationOffsetForRightHandInteraction;
+
+                        rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, true));
                     }
 
                     coyoteTimeForPhone = phoneCoyoteForInteract;
-
-                    rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, true));
                 }
                 else
                 {
@@ -887,9 +894,9 @@ public class FirstPersonController : MonoBehaviour
                     {
                         currentPositionOffsetForLeftHand = positionOffsetForLeftHandInteraction;
                         currentRotationOffsetForLeftHand = rotationOffsetForLeftHandInteraction;
-                    }
 
-                    leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(true, true));
+                        leftHandRigLerpCoroutine = StartCoroutine(LerpLeftHandRig(true, true));
+                    }
                 }
 
                 currentInteractable.OnInteract();
@@ -1092,7 +1099,7 @@ public class FirstPersonController : MonoBehaviour
                     Vector3 targetPoint;
                     Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-                    if (Physics.Raycast(ray, out RaycastHit hit, 50f, ~LayerMask.GetMask("Player")))
+                    if (Physics.Raycast(ray, out RaycastHit hit, 50f, throwRaycastLayers))
                         targetPoint = hit.point; // crosshair neye bakýyorsa
                     else
                         targetPoint = ray.GetPoint(50f); // boþluða doðru uzaða
@@ -1129,6 +1136,7 @@ public class FirstPersonController : MonoBehaviour
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable && !phoneGrabable.IsGrabbed)
             {
 
+                InteractKeyIsDone = true;
                 currentGrabable.OnGrab(grabPoint);
                 DecideOutlineAndCrosshair();
                 DecideGrabAnimBool();

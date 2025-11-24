@@ -9,6 +9,7 @@ public class CustomerData : ScriptableObject
     public float pushForce = 1f; //for pushing player
     public float rotationDuration = 0.3f;
     public float throwForce = 0.8f;
+    public float changeLayerDelay = 0.2f;
 
     [Header("Footstep Parameters")]
     public AudioClip[] woodClips = default;

@@ -13,6 +13,9 @@ public class SoundManager : MonoBehaviour
 
     [SerializeField] private AudioSource soundFXObject;
 
+    [Space]
+    [SerializeField] private AudioSource soundFXObjectForUI;
+
     private Dictionary<string, AudioSource> taggedSounds = new Dictionary<string, AudioSource>();
 
     private void Awake()
@@ -91,7 +94,22 @@ public class SoundManager : MonoBehaviour
 
         float clipLength = audioSource.clip.length / audioSource.pitch;
 
-        StartCoroutine(PlayWithDelay(audioSource, minDelay, maxDelay, clipLength));
+        StartCoroutine(PlayWithRandomDelay(audioSource, minDelay, maxDelay, clipLength));
+    }
+
+    public void PlayUISoundFXWithDelay(AudioClip audioClip, float volume = 1f, float minPitch = 0.85f, float maxPitch = 1.15f, float delay = 0f)
+    {
+        AudioSource audioSource = Instantiate(soundFXObjectForUI, Vector3.zero, Quaternion.identity);
+
+        audioSource.clip = audioClip;
+
+        audioSource.volume = volume;
+
+        audioSource.pitch = Random.Range(minPitch, maxPitch);
+
+        float clipLength = audioSource.clip.length / audioSource.pitch;
+
+        StartCoroutine(PlayWithDelay(audioSource, delay, clipLength));
     }
 
     public void PlayRandomSoundFX(AudioClip[] audioClip, Transform spawnTransform, float volume, float minPitch, float maxPitch)
@@ -150,9 +168,18 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayWithDelay(AudioSource audioSource, float minDelay, float maxDelay, float clipLength)
+    private IEnumerator PlayWithRandomDelay(AudioSource audioSource, float minDelay, float maxDelay, float clipLength)
     {
         yield return new WaitForSeconds(Random.Range(minDelay, maxDelay));
+
+        audioSource.Play();
+
+        Destroy(audioSource.gameObject, clipLength);
+    }
+
+    private IEnumerator PlayWithDelay(AudioSource audioSource, float delay, float clipLength)
+    {
+        yield return new WaitForSeconds(delay);
 
         audioSource.Play();
 

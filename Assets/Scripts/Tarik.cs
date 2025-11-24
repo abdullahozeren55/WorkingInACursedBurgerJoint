@@ -116,6 +116,7 @@ public class Tarik : MonoBehaviour, ICustomer, IInteractable
 
     private int day;
     private Tween rotateTween;
+    private Coroutine currentAnimCoroutine;
 
     private void Awake()
     {
@@ -410,8 +411,18 @@ public class Tarik : MonoBehaviour, ICustomer, IInteractable
         OptionDDialogueData = changes.OptionDDialogueData;
     }
 
-    public void HandleDialogueAnim(DialogueAnim dialogueAnim)
+    public void HandleDialogueAnim(DialogueAnim dialogueAnim, float delay)
     {
-        throw new System.NotImplementedException();
+        if (currentAnimCoroutine != null)
+        {
+            StopCoroutine(currentAnimCoroutine);
+            currentAnimCoroutine = null;
+        }
+
+        currentAnimCoroutine = StartCoroutine(PlayAnimWithDelay(dialogueAnim, delay));
+    }
+    private IEnumerator PlayAnimWithDelay(DialogueAnim dialogueAnim, float delay)
+    {
+        yield return new WaitForSeconds(delay);
     }
 }
