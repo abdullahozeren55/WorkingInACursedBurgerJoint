@@ -40,6 +40,14 @@ public class Phone : MonoBehaviour, IGrabable
     [SerializeField] private RectTransform phoneUIRectTransform;
     [Space]
     public AudioClip[] audioClips;
+    [Space]
+    public float grabSoundVolume = 1f;
+    public float grabSoundMinPitch = 0.85f;
+    public float grabSoundMaxPitch = 1.15f;
+    [Space]
+    public float dropSoundVolume = 1f;
+    public float dropSoundMinPitch = 0.85f;
+    public float dropSoundMaxPitch = 1.15f;
 
     private MeshRenderer meshRenderer;
 
@@ -66,7 +74,7 @@ public class Phone : MonoBehaviour, IGrabable
 
         meshRenderer.enabled = true;
 
-        SoundManager.Instance.PlaySoundFX(audioClips[0], transform, 1f, 0.85f, 1.15f);
+        SoundManager.Instance.PlaySoundFX(audioClips[0], transform, grabSoundVolume, grabSoundMinPitch, grabSoundMaxPitch);
 
         lastGrabbedTime = Time.time;
 
@@ -90,6 +98,7 @@ public class Phone : MonoBehaviour, IGrabable
     {
         if (Time.time >= lastGrabbedTime + 0.2f)
         {
+            SoundManager.Instance.PlaySoundFX(audioClips[1], transform, dropSoundVolume, dropSoundMinPitch, dropSoundMaxPitch);
             Invoke("TurnOffMeshRenderer", 0.15f);
         }
         else

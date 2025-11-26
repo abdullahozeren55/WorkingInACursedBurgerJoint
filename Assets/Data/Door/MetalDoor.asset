@@ -31,3 +31,7 @@ MonoBehaviour:
   closeSound: {fileID: 8300000, guid: 5a16781be51738940bab328d73b972b2, type: 3}
   lockedSound: {fileID: 0}
   jumpscareSound: {fileID: 0}
+  openVolume: 0.7
+  closeVolume: 0.7
+  lockedVolume: 1
+  jumpscareVolume: 1

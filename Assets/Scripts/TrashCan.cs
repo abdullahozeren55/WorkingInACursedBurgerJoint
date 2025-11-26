@@ -17,7 +17,8 @@ public class TrashCan : MonoBehaviour
             other.gameObject.CompareTag("Knife") ||
             other.gameObject.CompareTag("WholeIngredient") ||
             other.gameObject.CompareTag("FoodPack") ||
-            other.gameObject.CompareTag("Drink"))
+            other.gameObject.CompareTag("Drink") ||
+            other.gameObject.CompareTag("SauceBottle"))
         {
             SoundManager.Instance.PlaySoundFX(trashToCanSound, transform, trashToCanVolume, trashToCanMinPitch, trashToCanMaxPitch);
             Destroy(other.gameObject);

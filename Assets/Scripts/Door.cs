@@ -96,7 +96,7 @@ public class Door : MonoBehaviour, IInteractable
     public void HandleRotation()
     {
         isOpened = !isOpened;
-        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, 1f, 1f, 1f, true, data.audioTag);
+        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, data.openVolume, 1f, 1f, true, data.audioTag);
 
         doorStateNum = isOpened ? 1 : 0;
 
@@ -112,7 +112,7 @@ public class Door : MonoBehaviour, IInteractable
         if (isLockedAnimating) return;
         isLockedAnimating = true;
 
-        SoundManager.Instance.PlaySoundFX(data.lockedSound, transform, 1f, 1f, 1f);
+        SoundManager.Instance.PlaySoundFX(data.lockedSound, transform, data.lockedVolume, 1f, 1f);
 
         transform.parent.DOKill();
         transform.parent.localRotation = Quaternion.Euler(closeEuler);
@@ -138,7 +138,7 @@ public class Door : MonoBehaviour, IInteractable
         ChangeLayer(uninteractableLayer);
         isOpened = true;
 
-        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, 1f, 1f, 1f);
+        SoundManager.Instance.PlaySoundFX(isOpened ? data.openSound : data.closeSound, transform, data.openVolume, 1f, 1f);
 
         // Baþlangýç pozisyonu
         Vector3 startPos = jumpscareGO.transform.position;
@@ -160,7 +160,7 @@ public class Door : MonoBehaviour, IInteractable
 
         seq.InsertCallback(data.timeToRotate * data.jumpscareSoundEffectPercentValue, () =>
         {
-            SoundManager.Instance.PlaySoundFX(data.jumpscareSound, transform, 1f, 1f, 1f);
+            SoundManager.Instance.PlaySoundFX(data.jumpscareSound, transform, data.jumpscareVolume, 1f, 1f);
         });
 
         seq.InsertCallback(data.timeToRotate * data.jumpscareEffectPercentValue, () =>

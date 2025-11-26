@@ -26,4 +26,9 @@ public class DoorData : ScriptableObject
     public AudioClip closeSound;
     public AudioClip lockedSound;
     public AudioClip jumpscareSound;
+    [Space]
+    public float openVolume;
+    public float closeVolume;
+    public float lockedVolume;
+    public float jumpscareVolume;
 }
