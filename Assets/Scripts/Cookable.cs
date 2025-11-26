@@ -13,7 +13,6 @@ public class Cookable : MonoBehaviour
     }
 
     [SerializeField] private CookableData cookableData;
-    [SerializeField] private AudioSource audioSource;
     [SerializeField] private GameObject[] cookTexts;
 
     public CookAmount cookAmount;
@@ -41,8 +40,6 @@ public class Cookable : MonoBehaviour
 
     private void Update()
     {
-            
-
         if (isCooking && cookAmount != CookAmount.BURNT)
         {
             currentCookedTime += Time.deltaTime;
@@ -54,8 +51,7 @@ public class Cookable : MonoBehaviour
                 if (currentCookingParticles != null)
                     StopCookingParticles();
 
-                if (audioSource.isPlaying)
-                    AudioStopWithFadeOut();
+                SoundManager.Instance.RemoveItemFromGrill(burgerIngredient.data.ingredientType);
             }
             else if (currentCookedTime > cookableData.cookTime[0])
             {
@@ -119,11 +115,6 @@ public class Cookable : MonoBehaviour
         burgerIngredient.ChangeCookAmount(index);
     }
 
-    private void AudioStopWithFadeOut()
-    {
-        StartCoroutine(FadeOut(audioSource, cookableData.audioFadeOutDuration));
-    }
-
     public void StopCooking()
     {
         if (isCooking)
@@ -132,42 +123,21 @@ public class Cookable : MonoBehaviour
 
             if (currentCookingParticles != null)
                 StopCookingParticles();
-
-            if (audioSource.isPlaying)
-                audioSource.Pause();
         }
-    }
-
-    private IEnumerator FadeOut(AudioSource audioSource, float duration)
-    {
-        float startVolume = audioSource.volume;
-
-        for (float t = 0; t < duration; t += Time.deltaTime)
-        {
-            audioSource.volume = Mathf.Lerp(startVolume, 0, t / duration);
-            yield return null;
-        }
-
-        audioSource.Stop(); // Tamamen durdur
-        audioSource.volume = startVolume; // Ses seviyesini eski haline getir
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Grill") && isActiveAndEnabled)
         {
+            if (cookAmount == CookAmount.BURNT) return;
+
             isCooking = true;
 
             if (currentCookingParticles == null)
                 CreateCookingParticles();
 
-            if (!audioSource.isPlaying)
-            {
-                if (currentCookedTime > 0)
-                    audioSource.UnPause();
-                else
-                    audioSource.PlayOneShot(cookableData.cookingSound);
-            }
+            SoundManager.Instance.AddItemToGrill(burgerIngredient.data.ingredientType);
         }
     }
 
@@ -176,6 +146,8 @@ public class Cookable : MonoBehaviour
         if (other.gameObject.CompareTag("Grill") && isActiveAndEnabled)
         {
             StopCooking();
+
+            SoundManager.Instance.RemoveItemFromGrill(burgerIngredient.data.ingredientType);
         }
     }
 

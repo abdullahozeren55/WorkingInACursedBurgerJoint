@@ -6,22 +6,16 @@ public class TrashCan : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Trash"))
+        if (other.gameObject.CompareTag("Trash") ||
+            other.gameObject.CompareTag("BurgerBox") ||
+            other.gameObject.CompareTag("BurgerBoxClosed") ||
+            other.gameObject.CompareTag("BurgerIngredient") ||
+            other.gameObject.CompareTag("Knife") ||
+            other.gameObject.CompareTag("WholeIngredient") ||
+            other.gameObject.CompareTag("FoodPack") ||
+            other.gameObject.CompareTag("Drink"))
         {
             Destroy(other.gameObject);
-        }
-        else if (other.gameObject.CompareTag("BurgerBoxClosed"))
-        {
-            Destroy(other.gameObject);
-        }
-        else if (other.gameObject.CompareTag("BurgerIngredient"))
-        {
-            BurgerIngredient burgerIngredient = other.gameObject.GetComponent<BurgerIngredient>();
-
-            if (burgerIngredient.cookAmount == Cookable.CookAmount.BURNT)
-            {
-                Destroy(other.gameObject);
-            }
         }
     }
 }

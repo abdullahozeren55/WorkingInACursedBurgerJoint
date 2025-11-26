@@ -16,6 +16,17 @@ public class SoundManager : MonoBehaviour
     [Space]
     [SerializeField] private AudioSource soundFXObjectForUI;
 
+    [Header("Grill Settings")]
+    public float volumePerPatty = 0.3f; // Her köfte sesi ne kadar açsýn
+    public float volumePerBun = 0.3f; // Her köfte sesi ne kadar açsýn
+    public float grillAudioMaxVolume = 1.0f;
+    public float grillAudioFadeTime = 3.0f;
+    public AudioSource grillAudioSource;
+    private int cookingPattyCount = 0;
+    private int cookingBunCount = 0;
+    private float targetVolume = 0f;
+    private Coroutine cookingSoundCoroutine;
+
     private Dictionary<string, AudioSource> taggedSounds = new Dictionary<string, AudioSource>();
 
     private void Awake()
@@ -133,6 +144,44 @@ public class SoundManager : MonoBehaviour
         Destroy(audioSource.gameObject, clipLength);
     }
 
+    public void AddItemToGrill(BurgerIngredientData.IngredientType type)
+    {
+        if (type == BurgerIngredientData.IngredientType.PATTY)
+            cookingPattyCount++;
+        else if (type == BurgerIngredientData.IngredientType.BOTTOMBUN || type == BurgerIngredientData.IngredientType.TOPBUN)
+            cookingBunCount++;
+
+        RecalculateVolumeForGrill();
+    }
+
+    public void RemoveItemFromGrill(BurgerIngredientData.IngredientType type)
+    {
+        if (type == BurgerIngredientData.IngredientType.PATTY)
+            cookingPattyCount--;
+        else if (type == BurgerIngredientData.IngredientType.BOTTOMBUN || type == BurgerIngredientData.IngredientType.TOPBUN)
+            cookingBunCount--;
+
+        if (cookingPattyCount < 0) cookingPattyCount = 0;
+        if (cookingBunCount < 0) cookingBunCount = 0;
+
+        RecalculateVolumeForGrill();
+    }
+
+    private void RecalculateVolumeForGrill()
+    {
+        if (cookingSoundCoroutine != null)
+        {
+            StopCoroutine(cookingSoundCoroutine);
+            cookingSoundCoroutine = null;
+        }
+
+        float target = (cookingPattyCount * volumePerPatty) + (cookingBunCount * volumePerBun);
+
+        targetVolume = Mathf.Clamp(target, 0f, grillAudioMaxVolume);
+
+        cookingSoundCoroutine = StartCoroutine(LerpGrillSoundToTarget());
+    }
+
     public void SetMasterVolume (float value)
     {
         audioMixer.SetFloat("MasterVolume", Mathf.Log10(value) * 20f);
@@ -185,5 +234,22 @@ public class SoundManager : MonoBehaviour
         audioSource.Play();
 
         Destroy(audioSource.gameObject, clipLength);
+    }
+
+    private IEnumerator LerpGrillSoundToTarget()
+    {
+        float startVolume = grillAudioSource.volume;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < grillAudioFadeTime)
+        {
+            grillAudioSource.volume = Mathf.Lerp(startVolume, targetVolume, elapsedTime/grillAudioFadeTime);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        grillAudioSource.volume = targetVolume;
     }
 }
