@@ -83,7 +83,6 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
     private Animator anim;
     private NavMeshAgent agent;
     private Rigidbody rb;
-    private AudioSource audioSource;
     private SkinnedMeshRenderer skinnedMeshRenderer;
 
     [Header("Layer Settings")]
@@ -110,7 +109,6 @@ public class NpcCustomer : MonoBehaviour, ICustomer, IInteractable
         anim = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
         rb = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();
         skinnedMeshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
