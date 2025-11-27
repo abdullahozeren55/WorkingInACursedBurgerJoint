@@ -6,6 +6,8 @@ using UnityEngine;
 public class SauceCollision : MonoBehaviour
 {
     public SauceBottle.SauceType sauceType;
+    public float targetScale = 0.15f;
+    public float randomMultiplier = 1.2f;
 
     private ParticleSystem ps;
     private List<ParticleCollisionEvent> collisionEvents;
@@ -38,7 +40,11 @@ public class SauceCollision : MonoBehaviour
                 // Normal yönüne göre rotation hesapla
                 Quaternion finalRotation = Quaternion.LookRotation(normal) * Quaternion.Euler(0, 180, 0);
 
-                SauceManager.Instance.SpawnDrop(sauceType, hitPoint, finalRotation, other.transform);
+                float randomValue = Random.Range(targetScale / randomMultiplier, targetScale * randomMultiplier);
+
+                Vector3 finalScale = new Vector3(randomValue, randomValue, randomValue);
+
+                SauceManager.Instance.SpawnDrop(sauceType, hitPoint, finalRotation, finalScale, other.transform);
             }
         }
     }

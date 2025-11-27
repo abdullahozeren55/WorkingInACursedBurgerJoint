@@ -4902,3 +4902,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sauceType: 2
+  targetScale: 0.4
+  randomMultiplier: 1.3
