@@ -27,6 +27,11 @@ public class SoundManager : MonoBehaviour
     private float targetVolume = 0f;
     private Coroutine cookingSoundCoroutine;
 
+    [Header("Ambiance Settings")]
+    public AudioSource mainAmbianceSource;
+    public float mainAmbianceVolume;
+    public float mainAmbiancePitch;
+
     private Dictionary<string, AudioSource> taggedSounds = new Dictionary<string, AudioSource>();
 
     private void Awake()

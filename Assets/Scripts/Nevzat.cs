@@ -249,28 +249,11 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         }
     }
 
-    private bool IsOnlyPicklesInside(List<BurgerIngredientData.IngredientType> ingredients)
-    {
-        if (ingredients.Count <= 2) return false; // Only buns, no filling
-
-        for (int i = 1; i < ingredients.Count - 1; i++)
-        {
-            if (ingredients[i] != BurgerIngredientData.IngredientType.PICKLE)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void ReceiveBurger(BurgerBox burgerBox)
     {
         ChangeLayer(uninteractableLayer);
-
-        if (IsOnlyPicklesInside(burgerBox.allBurgerIngredientTypes))
-            HandleBurgerFalse();
-        else
-            HandleBurgerTrue();
+        
+        HandleBurgerTrue();
     }
 
     public void ReceiveDrink(Drink drink)
@@ -355,14 +338,6 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         DialogueManager.Instance.StartCustomerDialogue(this, TrueBurgerDialogueData);
     }
 
-    private void HandleBurgerFalse()
-    {
-        ordersInRightHand[0].SetActive(true);
-        CurrentAction = ICustomer.Action.ReceivedFalseBurger;
-        anim.SetTrigger("giveBack");
-        DialogueManager.Instance.StartCustomerDialogue(this, CompleteOrderDialogueData); //CompleteOrderDialogueData is used for pickle sandwich dialogue.
-    }
-
     private void HandleDrinkTrue(GameManager.DrinkTypes drinkType)
     {
         ordersInRightHand[(int)drinkType + 1].SetActive(true);
@@ -413,23 +388,6 @@ public class Nevzat : MonoBehaviour, ICustomer, IInteractable
         NotAnsweringDialogueData = changes.NotAnsweringDialogueData;
         OptionADialogueData = changes.OptionADialogueData;
         OptionDDialogueData = changes.OptionDDialogueData;
-    }
-
-    private void GiveOrderBack()
-    {
-        if (ordersInRightHand[0].activeSelf)
-        {
-            GameManager.Instance.CustomerGiveBackBurger(ordersInRightHand[0].transform, customerData.throwForce * (transform.forward + (transform.up * 2f)));
-            ordersInRightHand[0].SetActive(false);
-        }
-        else
-        {
-            GameManager.Instance.CustomerGiveBackDrink(ordersInRightHand[1].transform, customerData.throwForce * (transform.forward + (transform.up * 2f)));
-            ordersInRightHand[1].SetActive(false);
-            ordersInRightHand[2].SetActive(false);
-            ordersInRightHand[3].SetActive(false);
-        }
-
     }
 
     private void FirstMet()
