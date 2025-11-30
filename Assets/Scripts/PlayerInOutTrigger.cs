@@ -42,6 +42,20 @@ public class PlayerInOutTrigger : MonoBehaviour
     [SerializeField] private int maxFlickerCount = 12;
     [SerializeField] private float turnOffDelay = 3f;
 
+    [Space]
+
+    [SerializeField] private AudioClip turnOnLightSound;
+    [SerializeField] private float turnOnLightVolume = 1f;
+    [SerializeField] private float turnOnLightMinPitch = 0.8f;
+    [SerializeField] private float turnOnLightMaxPitch = 1.2f;
+
+    [Space]
+
+    [SerializeField] private AudioClip turnOffLightSound;
+    [SerializeField] private float turnOffLightVolume = 1f;
+    [SerializeField] private float turnOffLightMinPitch = 0.8f;
+    [SerializeField] private float turnOffLightMaxPitch = 1.2f;
+
     private Coroutine currentHandieLightCoroutine;
 
     private bool lightsOn;
@@ -153,6 +167,7 @@ public class PlayerInOutTrigger : MonoBehaviour
 
         if (lightsOn)
         {
+            SoundManager.Instance.PlaySoundFX(turnOnLightSound, buzzSoundSource.transform, turnOnLightVolume, turnOnLightMinPitch, turnOnLightMaxPitch);
             // IÞIKLARI AÇIYORUZ
             foreach (var setting in lightsToEffect)
             {
@@ -185,6 +200,7 @@ public class PlayerInOutTrigger : MonoBehaviour
         }
         else
         {
+            SoundManager.Instance.PlaySoundFX(turnOffLightSound, buzzSoundSource.transform, turnOffLightVolume, turnOffLightMinPitch, turnOffLightMaxPitch);
             // IÞIKLARI KAPATIYORUZ
             StopAllCoroutines();
 
