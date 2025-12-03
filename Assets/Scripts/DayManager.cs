@@ -8,7 +8,6 @@ public class DayManager : MonoBehaviour
     public static DayManager Instance;
 
     public bool DayInLoop = false;
-
     public int DayPartToInitialize;
 
     [System.Serializable]
@@ -16,7 +15,7 @@ public class DayManager : MonoBehaviour
     {
         [Header("Time Info")]
         [Range(0, 10)] public int Day;
-        [Range(0, 10)] public int Part; // Sabah, Öðle, Akþam vb. sýralamasý için
+        [Range(0, 10)] public int Part;
 
         [Header("Sun Settings")]
         public Vector3 sunRotation;
@@ -27,7 +26,7 @@ public class DayManager : MonoBehaviour
         public float skyboxExposure;
         public float skyboxRotate;
         public Color skyboxColor;
-        public Color environmentColor; // Ambient Light
+        public Color environmentColor;
 
         [Header("Atmosphere")]
         public Color fogColor;
@@ -38,16 +37,16 @@ public class DayManager : MonoBehaviour
     }
 
     [Header("Main Config")]
-    public int DayCount = 0; // 0. günden mi 1. günden mi baþlýyorsun dikkat et
+    public int DayCount = 0;
     public float transitionDuration = 10f;
 
     [Header("Scene References")]
     public Light sun;
-    [SerializeField] private Material originalSkyboxMat; // Referans materyal
+    [SerializeField] private Material originalSkyboxMat;
 
     [Header("Street Lights")]
-    [SerializeField] private Material[] lightMats; // Emissive materyaller
-    public List<GameObject> allLights = new List<GameObject>(); // Iþýk objeleri (Point/Spot lights)
+    [SerializeField] private Material[] lightMats; // Ana materyaller
+    public List<GameObject> allLights = new List<GameObject>();
 
     [Header("Data")]
     public DayState[] DayStates;
@@ -55,27 +54,46 @@ public class DayManager : MonoBehaviour
 
     private int currentIndex = 0;
     private Coroutine transitionRoutine;
-    private Material instancedSkybox; // Runtime'da kullanacaðýmýz kopya materyal
+    private Material instancedSkybox;
 
-    private bool lightsHandled;
+    // --- YENÝ DEÐÝÞKENLER (HAFIZA) ---
+    // Iþýklarýn orijinal parlaklýklarýný saklamak için
+    private Dictionary<Light, float> defaultLightIntensities = new Dictionary<Light, float>();
+    // Materyallerin orijinal renklerini saklamak için
+    private Dictionary<Material, Color> defaultEmissions = new Dictionary<Material, Color>();
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            // Eðer çok sahneli bir oyun yapýyorsan buradaki DontDestroyOnLoad baþýný aðrýtabilir.
-            // Iþýk referanslarýný kaybettiðin için. Þimdilik býrakýyorum.
             DontDestroyOnLoad(gameObject);
         }
         else
         {
             Destroy(gameObject);
-            return; // Önemli: Instance varsa alttaki kodlarý çalýþtýrma
+            return;
+        }
+
+        // --- HAFIZAYA ALMA ÝÞLEMÝ ---
+        // 1. Materyallerin orijinal Emission renklerini kaydet
+        foreach (var mat in lightMats)
+        {
+            if (mat != null && !defaultEmissions.ContainsKey(mat))
+            {
+                // Emission keyword'ü kapalý olsa bile rengi alalým
+                mat.EnableKeyword("_EMISSION");
+                defaultEmissions.Add(mat, mat.GetColor("_EmissionColor"));
+            }
+        }
+
+        // 2. Iþýklarýn orijinal Intensity deðerlerini kaydet (Register edilmiþse)
+        foreach (var obj in allLights)
+        {
+            RegisterLightInternal(obj); // Kod tekrarý olmasýn diye fonksiyona aldým
         }
 
         // --- MATERIAL FIX ---
-        // Orijinal materyali bozmamak için kopya oluþturuyoruz.
         if (originalSkyboxMat != null)
         {
             instancedSkybox = new Material(originalSkyboxMat);
@@ -85,33 +103,55 @@ public class DayManager : MonoBehaviour
         InitializeDay(DayCount, DayPartToInitialize);
     }
 
-    /*private void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
             NextDayState();
-    }*/
+    }
 
+    // --- IÞIK KAYIT SÝSTEMÝ GÜNCELLEME ---
+    public void RegisterLight(GameObject lightObj)
+    {
+        if (!allLights.Contains(lightObj))
+        {
+            allLights.Add(lightObj);
+            RegisterLightInternal(lightObj);
+
+            // Yeni gelen ýþýðý o anki duruma eþitle (Anýnda)
+            float currentLightVal = (CurrentDayState != null && CurrentDayState.shouldLightsUp) ? 1f : 0f;
+            UpdateSingleLight(lightObj, currentLightVal);
+        }
+    }
+
+    private void RegisterLightInternal(GameObject lightObj)
+    {
+        if (lightObj == null) return;
+
+        Light l = lightObj.GetComponent<Light>();
+        if (l == null) l = lightObj.GetComponentInChildren<Light>(); // Belki child'dadýr
+
+        if (l != null && !defaultLightIntensities.ContainsKey(l))
+        {
+            defaultLightIntensities.Add(l, l.intensity);
+        }
+    }
+
+    public void UnregisterLight(GameObject lightObj)
+    {
+        if (allLights.Contains(lightObj))
+            allLights.Remove(lightObj);
+
+        // Dictionary'den silmeye gerek yok, RAM'de yer kaplamaz, kalsýn.
+    }
+
+    // ... (NextDayState ve NextDay ayný kalýyor) ...
     public void NextDayState()
     {
-        // 1. O günün statelerini bul
-        // 2. Part numarasýna göre sýrala (Inspector hatasýný önler)
-        var todaysStates = DayStates
-            .Where(s => s.Day == DayCount)
-            .OrderBy(s => s.Part)
-            .ToArray();
+        var todaysStates = DayStates.Where(s => s.Day == DayCount).OrderBy(s => s.Part).ToArray();
+        if (todaysStates.Length == 0) return;
 
-        if (todaysStates.Length == 0)
-        {
-            Debug.LogWarning($"Day {DayCount} için state bulunamadý! Döngü baþa veya ertesi güne sarabilir.");
-            return;
-        }
-
-        // Mevcut state ve sonraki state'i belirle
-        // Not: Eðer günün son partýndaysan (currentIndex + 1) % length ile baþa (sabaha) döner.
-        // Eðer gün bitince "NextDay" çaðrýlacaksa bu mantýk doðru.
         int nextIndex = (currentIndex + 1) % todaysStates.Length;
 
-        // Geçiþi Baþlat
         if (transitionRoutine != null) StopCoroutine(transitionRoutine);
         transitionRoutine = StartCoroutine(TransitionRoutine(todaysStates[currentIndex], todaysStates[nextIndex]));
 
@@ -122,65 +162,85 @@ public class DayManager : MonoBehaviour
     {
         DayCount++;
         currentIndex = 0;
-        // Yeni günün ilk state'ine sert geçiþ mi yoksa yumuþak geçiþ mi istersin?
-        // Genelde oyuncu uyur ve uyanýr, o yüzden buraya bir "Fade In/Out" eklenebilir.
-        // Þimdilik sadece datayý güncelliyoruz.
-        Debug.Log("Gün deðiþti: " + DayCount);
     }
 
     public void InitializeDay(int dayIndex, int partNumber = 1)
     {
         DayCount = dayIndex;
+        // lightsHandled = false; // Buna gerek kalmadý, sürekli lerp yapacaðýz
 
-        lightsHandled = false;
-
-        // 1. Hedef State'i Bul
-        // (Hem gün hem de Part numarasý eþleþmeli)
-        var targetState = DayStates
-            .FirstOrDefault(s => s.Day == DayCount && s.Part == partNumber);
-
+        var targetState = DayStates.FirstOrDefault(s => s.Day == DayCount && s.Part == partNumber);
         CurrentDayState = targetState;
 
-        // 2. Index'i Güncelle
-        // NextDayState fonksiyonunun doðru sýradan devam etmesi için currentIndex'i ayarlamalýyýz.
-        var todaysStates = DayStates
-            .Where(s => s.Day == DayCount)
-            .OrderBy(s => s.Part)
-            .ToList();
-
+        var todaysStates = DayStates.Where(s => s.Day == DayCount).OrderBy(s => s.Part).ToList();
         currentIndex = todaysStates.IndexOf(targetState);
 
-        // 3. Varsa çalýþan geçiþi durdur (Çakýþma olmasýn)
         if (transitionRoutine != null) StopCoroutine(transitionRoutine);
 
-        // 4. Deðerleri ANINDA uygula
         ApplyStateInstant(targetState);
 
-        if (DayInLoop)
-            NextDayState();
+        if (DayInLoop) NextDayState();
     }
 
-    public void RegisterLight(GameObject lightObj)
+    // --- YENÝ LERP FONKSÝYONU ---
+    // percent: 0 (Karanlýk/Kapalý) - 1 (Aydýnlýk/Açýk)
+    private void UpdateCityLightsLerp(float percent)
     {
-        if (!allLights.Contains(lightObj))
-            allLights.Add(lightObj);
+        // 1. Materyaller (Emission Lerp)
+        foreach (var kvp in defaultEmissions)
+        {
+            Material mat = kvp.Key;
+            Color originalColor = kvp.Value;
+
+            if (mat != null)
+            {
+                // Siyahtan -> Orijinal Renge doðru geçiþ
+                Color targetEmission = Color.Lerp(Color.black, originalColor, percent);
+                mat.SetColor("_EmissionColor", targetEmission);
+
+                // Optimizasyon: Eðer tamamen siyahsa Emission hesaplamasýný kapat
+                if (percent <= 0.01f) mat.DisableKeyword("_EMISSION");
+                else mat.EnableKeyword("_EMISSION");
+            }
+        }
+
+        // 2. Iþýklar (Intensity Lerp)
+        foreach (var kvp in defaultLightIntensities)
+        {
+            Light l = kvp.Key;
+            float originalIntensity = kvp.Value;
+
+            if (l != null)
+            {
+                l.intensity = Mathf.Lerp(0f, originalIntensity, percent);
+
+                // Optimizasyon: Iþýk 0'sa objeyi kapat (Culling yemez, CPU rahatlar)
+                if (percent <= 0.01f) l.gameObject.SetActive(false);
+                else l.gameObject.SetActive(true);
+            }
+        }
     }
 
-    public void UnregisterLight(GameObject lightObj)
+    // Tekil ýþýk güncelleme (Yeni doðan ýþýklar için)
+    private void UpdateSingleLight(GameObject obj, float percent)
     {
-        if (allLights.Contains(lightObj))
-            allLights.Remove(lightObj);
+        Light l = obj.GetComponent<Light>();
+        if (l == null) l = obj.GetComponentInChildren<Light>();
+
+        if (l != null && defaultLightIntensities.ContainsKey(l))
+        {
+            l.intensity = Mathf.Lerp(0f, defaultLightIntensities[l], percent);
+            obj.SetActive(percent > 0.01f);
+        }
     }
 
-    // Kod tekrarýný önlemek ve temizlik için atama iþlemini ayýrdým
     private void ApplyStateInstant(DayState state)
     {
-        // Sun
+        // ... (Sun, Skybox, Fog ayný kalýyor) ...
         sun.transform.rotation = Quaternion.Euler(state.sunRotation);
         sun.intensity = state.sunIntensity;
         sun.color = state.sunColor;
 
-        // Skybox (Kopya materyal üzerinden)
         if (instancedSkybox != null)
         {
             instancedSkybox.SetFloat("_Exposure", state.skyboxExposure);
@@ -188,39 +248,34 @@ public class DayManager : MonoBehaviour
             instancedSkybox.SetColor("_Tint", state.skyboxColor);
         }
 
-        // Fog & Ambient
         RenderSettings.fogColor = state.fogColor;
         RenderSettings.fogDensity = state.fogDensity;
         RenderSettings.ambientLight = state.environmentColor;
 
-        if (!lightsHandled)
-        {
-            ToggleCityLights(state.shouldLightsUp);
-            lightsHandled = true;
-        }
-        
+        // Iþýklarý ANINDA ayarla (Lerp yok, direkt hedef deðer)
+        UpdateCityLightsLerp(state.shouldLightsUp ? 1f : 0f);
     }
 
     private IEnumerator TransitionRoutine(DayState from, DayState to)
     {
-        lightsHandled = false;
-
         CurrentDayState = to;
-
         float t = 0f;
+
+        // Geçiþin baþýndaki ýþýk durumu (0 veya 1)
+        float startLightVal = from.shouldLightsUp ? 1f : 0f;
+        // Geçiþin sonundaki ýþýk durumu (0 veya 1)
+        float endLightVal = to.shouldLightsUp ? 1f : 0f;
 
         while (t < 1f)
         {
             t += Time.deltaTime / transitionDuration;
-            // Smooth step daha doðal bir geçiþ saðlar (yavaþ baþla, hýzlan, yavaþ bitir)
             float smoothT = Mathf.SmoothStep(0, 1, t);
 
-            // Sun
+            // ... (Sun, Skybox, Fog Lerp'leri ayný) ...
             sun.transform.rotation = Quaternion.Slerp(Quaternion.Euler(from.sunRotation), Quaternion.Euler(to.sunRotation), smoothT);
             sun.intensity = Mathf.Lerp(from.sunIntensity, to.sunIntensity, smoothT);
             sun.color = Color.Lerp(from.sunColor, to.sunColor, smoothT);
 
-            // Skybox (Kopya materyal üzerinden)
             if (instancedSkybox != null)
             {
                 instancedSkybox.SetFloat("_Exposure", Mathf.Lerp(from.skyboxExposure, to.skyboxExposure, smoothT));
@@ -228,43 +283,33 @@ public class DayManager : MonoBehaviour
                 instancedSkybox.SetColor("_Tint", Color.Lerp(from.skyboxColor, to.skyboxColor, smoothT));
             }
 
-            // Fog & Ambient
             RenderSettings.fogColor = Color.Lerp(from.fogColor, to.fogColor, smoothT);
             RenderSettings.fogDensity = Mathf.Lerp(from.fogDensity, to.fogDensity, smoothT);
             RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, smoothT);
 
-            float threshold = to.shouldLightsUp ? 0.3f : 0.7f;
-
-            if (t > threshold && !lightsHandled)
-            {
-                ToggleCityLights(to.shouldLightsUp);
-                lightsHandled = true;
-            }
+            // --- IÞIK LERP ---
+            // Baþlangýç deðerinden bitiþ deðerine smoothT ile git
+            float currentLightVal = Mathf.Lerp(startLightVal, endLightVal, smoothT);
+            UpdateCityLightsLerp(currentLightVal);
 
             yield return null;
         }
 
-        // Loop bitti, deðerleri kesinleþtir:
         ApplyStateInstant(to);
 
-        if (DayInLoop)
-            NextDayState();
+        if (DayInLoop) NextDayState();
     }
 
-    private void ToggleCityLights(bool turnOn)
+    // Oyun kapanýrken materyalleri düzelt (Editör kirlenmesin)
+    private void OnDestroy()
     {
-        // 1. Materyallerin Emission'ý
-        foreach (Material mat in lightMats)
+        foreach (var kvp in defaultEmissions)
         {
-            if (mat == null) continue;
-            if (turnOn) mat.EnableKeyword("_EMISSION");
-            else mat.DisableKeyword("_EMISSION");
-        }
-
-        // 2. Gerçek Iþýk Objeleri
-        foreach (GameObject lightObj in allLights)
-        {
-            if (lightObj != null) lightObj.SetActive(turnOn);
+            if (kvp.Key != null)
+            {
+                kvp.Key.SetColor("_EmissionColor", kvp.Value);
+                kvp.Key.EnableKeyword("_EMISSION");
+            }
         }
     }
 }

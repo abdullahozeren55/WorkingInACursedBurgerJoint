@@ -204,6 +204,26 @@ public class SoundManager : MonoBehaviour
         Destroy(audioSource.gameObject, clipLength);
     }
 
+    public void PlayRandomUISoundFX(AudioClip[] audioClip, Transform spawnTransform, float volume = 1f, float minPitch = 0.85f, float maxPitch = 1.15f)
+    {
+
+        int rand = Random.Range(0, audioClip.Length);
+
+        AudioSource audioSource = Instantiate(soundFXObjectForUI, spawnTransform.position, Quaternion.identity, spawnTransform);
+
+        audioSource.clip = audioClip[rand];
+
+        audioSource.volume = volume;
+
+        audioSource.pitch = Random.Range(minPitch, maxPitch);
+
+        audioSource.Play();
+
+        float clipLength = audioSource.clip.length / audioSource.pitch;
+
+        Destroy(audioSource.gameObject, clipLength);
+    }
+
     public void AddItemToGrill(BurgerIngredientData.IngredientType type)
     {
         if (type == BurgerIngredientData.IngredientType.PATTY)
@@ -265,6 +285,11 @@ public class SoundManager : MonoBehaviour
     public void SetTypewriterVolume(float value)
     {
         audioMixer.SetFloat("TypewriterVolume", Mathf.Log10(value) * 20f);
+    }
+
+    public void SetUIVolume(float value)
+    {
+        audioMixer.SetFloat("UIVolume", Mathf.Log10(value) * 20f);
     }
 
     private void HandleBirdChirping()
