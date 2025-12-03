@@ -51,7 +51,6 @@ public class LightSwitch : MonoBehaviour, IInteractable
     [SerializeField] private int minFlickerCount = 3;
     [SerializeField] private int maxFlickerCount = 12;
 
-    private Color baseEmission;
     private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
 
     // BURASI DEÐÝÞTÝ: Tek bir coroutine yetmez, çünkü 5 ýþýk ayný anda flicker yapabilir.
@@ -79,9 +78,6 @@ public class LightSwitch : MonoBehaviour, IInteractable
         isOn = false;
         offRotation = switchPart.transform.localRotation;
         onRotation = Quaternion.Euler(onSwitchXRotation, offRotation.y, offRotation.z);
-
-        if (lightMatToCopy != null)
-            baseEmission = lightMatToCopy.GetColor(EmissionColorID);
 
         // Materyalleri kopyala
         foreach (LightSettings settings in lightsToEffect)
@@ -143,6 +139,14 @@ public class LightSwitch : MonoBehaviour, IInteractable
         // Þimdilik "StopAllCoroutines" kullanýyorum ama RotateCoroutine'i tekrar baþlatmamak için dikkatli ol.
         // Flicker için StopAllCoroutines yapmak yerine, kapatma bloðunda manuel kontrol yapalým.
 
+        Color currentBaseEmission = Color.white; // Default
+        if (DayManager.Instance != null)
+        {
+            // LightSwitch'in kullandýðý orijinal materyal "lightMatToCopy" idi.
+            // DayManager'da kayýtlý olan da odur.
+            currentBaseEmission = DayManager.Instance.GetOriginalEmissionColor(lightMatToCopy);
+        }
+
         if (isOn)
         {
             // IÞIKLARI AÇIYORUZ
@@ -163,13 +167,13 @@ public class LightSwitch : MonoBehaviour, IInteractable
                 {
                     // FLICKER VARSA: Coroutine baþlat, o bitince BuzzManager'a haber verecek
                     int flickerCount = Random.Range(minFlickerCount, maxFlickerCount);
-                    StartCoroutine(FlickerLightRoutine(lightComp, matInstance, baseEmission, flickerCount));
+                    StartCoroutine(FlickerLightRoutine(lightComp, matInstance, currentBaseEmission, flickerCount));
                 }
                 else
                 {
                     // FLICKER YOKSA: Direkt aç ve BuzzManager'a haber ver
                     lightComp.intensity = baseIntensity;
-                    matInstance.SetColor("_EmissionColor", baseEmission);
+                    matInstance.SetColor("_EmissionColor", currentBaseEmission);
 
                     buzzSoundSource.volume += buzzSoundIncreasePerLight;
                 }

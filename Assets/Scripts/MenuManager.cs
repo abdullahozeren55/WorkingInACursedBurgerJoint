@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +11,9 @@ public class MenuManager : MonoBehaviour
 
     [Header("UI Stuff")]
     public bool CanPause = false;
+    [Space]
+    public Volume globalVolume;
+    [Space]
     public GameObject mainMenu;
     public GameObject pauseMenu;
 
@@ -85,6 +89,36 @@ public class MenuManager : MonoBehaviour
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FindAndAssignCamera();
+
+        // Sahne adýna göre DayManager ayarý
+        if (DayManager.Instance != null)
+        {
+            if (scene.name == "Scene0") // <-- SAHNE ADINI KONTROL ET
+            {
+                DayManager.Instance.ResetForGameplay();
+
+                // Oyuna girince menüleri kapat, oyunu baþlat
+                SetPlayerCanPlay(true);
+                HandleTimeScale(1);
+                HandleCursorState(false);
+                HandleMainMenu(false);
+                HandlePauseMenu(false);
+                SetCanPause(true);
+                UpdateDoFState(false);
+            }
+            else if (scene.name == "MainMenu")
+            {
+                DayManager.Instance.ResetForMainMenu();
+
+                // Ana menüdeyken menüyü aç
+                HandleTimeScale(1);
+                HandleCursorState(true);
+                HandleMainMenu(true);
+                HandlePauseMenu(false);
+                SetCanPause(false);
+                UpdateDoFState(true);
+            }
+        }
     }
 
     void FindAndAssignCamera()
@@ -129,6 +163,24 @@ public class MenuManager : MonoBehaviour
         else
         {
             Debug.LogError("YENÝ SAHNEDE UI_CAMERA BULUNAMADI! ÝSMÝNÝ KONTROL ET.");
+        }
+    }
+
+    private void UpdateDoFState(bool enableDoF)
+    {
+        if (globalVolume == null)
+        {
+            // Eðer volume atanmamýþsa sahnede bulmaya çalýþ (Garanti olsun)
+            globalVolume = FindObjectOfType<Volume>();
+        }
+
+        if (globalVolume != null)
+        {
+            // Profilden DepthOfField özelliðini çekmeye çalýþ
+            if (globalVolume.profile.TryGet(out DepthOfField dof))
+            {
+                dof.active = enableDoF;
+            }
         }
     }
 }

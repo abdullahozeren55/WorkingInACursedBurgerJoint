@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DayManager : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class DayManager : MonoBehaviour
 
     [Header("Main Config")]
     public int DayCount = 0;
+    public int DayPartCount = 0;
     public float transitionDuration = 10f;
 
     [Header("Scene References")]
@@ -109,6 +111,42 @@ public class DayManager : MonoBehaviour
             NextDayState();
     }
 
+    private void OnEnable()
+    {
+        // Sahne yüklenme olayýna abone ol
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        // Abonelikten çýk (Hata vermemesi için þart)
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 1. Skybox Baðlantýsýný Tamir Et
+        if (instancedSkybox != null)
+        {
+            RenderSettings.skybox = instancedSkybox;
+        }
+
+        // 2. Diðer Render Ayarlarýný (Fog, Ambient) Geri Yükle
+        // Çünkü yeni sahne yüklenince Fog ayarlarý da sýfýrlanýr.
+        if (CurrentDayState != null)
+        {
+            ApplyStateInstant(CurrentDayState);
+        }
+
+        // 3. Eski sahnedeki ýþýklarý listeden temizle 
+        // (Zaten Register sistemi yenilerini ekleyecek ama eskiler çöp olmasýn)
+        allLights.RemoveAll(item => item == null);
+
+        // Dictionary temizliði biraz daha manuel gerektirir ama gerekirse:
+        var keysToRemove = defaultLightIntensities.Keys.Where(k => k == null).ToList();
+        foreach (var key in keysToRemove) defaultLightIntensities.Remove(key);
+    }
+
     // --- IÞIK KAYIT SÝSTEMÝ GÜNCELLEME ---
     public void RegisterLight(GameObject lightObj)
     {
@@ -164,6 +202,23 @@ public class DayManager : MonoBehaviour
         currentIndex = 0;
     }
 
+    public void ResetForGameplay()
+    {
+        // 1. Döngüyü kapat (Artýk gerçek zaman akacak)
+        DayInLoop = false;
+
+        // 2. Günü ve Saati Sýfýrla (Veya istediðin baþlangýç saatine al)
+        // Örn: 1. Günün Sabahý (Part 1)
+        InitializeDay(DayCount, DayPartCount);
+    }
+
+    public void ResetForMainMenu()
+    {
+        DayInLoop = true;
+        InitializeDay(0, 0); // Veya rastgele bir saat
+        // NextDayState() zaten InitializeDay içinde DayInLoop true ise çaðrýlýyor.
+    }
+
     public void InitializeDay(int dayIndex, int partNumber = 1)
     {
         DayCount = dayIndex;
@@ -180,6 +235,16 @@ public class DayManager : MonoBehaviour
         ApplyStateInstant(targetState);
 
         if (DayInLoop) NextDayState();
+    }
+
+    public Color GetOriginalEmissionColor(Material mat)
+    {
+        if (mat != null && defaultEmissions.ContainsKey(mat))
+        {
+            return defaultEmissions[mat];
+        }
+        // Eðer listede yoksa, materyalin þu anki rengini döndür (Fallback)
+        return mat != null ? mat.GetColor("_EmissionColor") : Color.black;
     }
 
     // --- YENÝ LERP FONKSÝYONU ---
@@ -261,41 +326,58 @@ public class DayManager : MonoBehaviour
         CurrentDayState = to;
         float t = 0f;
 
-        // Geçiþin baþýndaki ýþýk durumu (0 veya 1)
         float startLightVal = from.shouldLightsUp ? 1f : 0f;
-        // Geçiþin sonundaki ýþýk durumu (0 veya 1)
         float endLightVal = to.shouldLightsUp ? 1f : 0f;
+
+        // --- SKYBOX DÖNÜÞ HÝLESÝ ---
+        // Normalde Lerp sayýsal olarak en kýsa yolu veya sayý doðrusunu takip eder.
+        // Biz hep AYNI YÖNE (Azalarak) dönmesini istiyoruz.
+
+        float startRot = from.skyboxRotate;
+        float endRot = to.skyboxRotate;
+
+        // Eðer Hedef, Baþlangýçtan büyükse (Örn: -40'tan 260'a çýkýyorsa)
+        // Bu "Geri Sarma" demektir. Bunu engellemek için Hedef'ten 360 çýkarýyoruz.
+        // Böylece 260 yerine -100'e gitmiþ gibi oluyor. Görsel olarak aynýdýr ama yönü doðrudur.
+        if (endRot > startRot)
+        {
+            endRot -= 360f;
+        }
 
         while (t < 1f)
         {
             t += Time.deltaTime / transitionDuration;
-            float smoothT = Mathf.SmoothStep(0, 1, t);
+            float lerpT = t;
 
-            // ... (Sun, Skybox, Fog Lerp'leri ayný) ...
-            sun.transform.rotation = Quaternion.Slerp(Quaternion.Euler(from.sunRotation), Quaternion.Euler(to.sunRotation), smoothT);
-            sun.intensity = Mathf.Lerp(from.sunIntensity, to.sunIntensity, smoothT);
-            sun.color = Color.Lerp(from.sunColor, to.sunColor, smoothT);
+            // ... (Sun ayný) ...
+            sun.transform.rotation = Quaternion.Slerp(Quaternion.Euler(from.sunRotation), Quaternion.Euler(to.sunRotation), lerpT);
+            sun.intensity = Mathf.Lerp(from.sunIntensity, to.sunIntensity, lerpT);
+            sun.color = Color.Lerp(from.sunColor, to.sunColor, lerpT);
 
+            // ... (Skybox ARTIK AYARLADIÐIMIZ DEÐERLERÝ KULLANACAK) ...
             if (instancedSkybox != null)
             {
-                instancedSkybox.SetFloat("_Exposure", Mathf.Lerp(from.skyboxExposure, to.skyboxExposure, smoothT));
-                instancedSkybox.SetFloat("_Rotation", Mathf.Lerp(from.skyboxRotate, to.skyboxRotate, smoothT));
-                instancedSkybox.SetColor("_Tint", Color.Lerp(from.skyboxColor, to.skyboxColor, smoothT));
+                instancedSkybox.SetFloat("_Exposure", Mathf.Lerp(from.skyboxExposure, to.skyboxExposure, lerpT));
+
+                // BURASI DEÐÝÞTÝ: from/to yerine startRot/endRot kullanýyoruz
+                instancedSkybox.SetFloat("_Rotation", Mathf.Lerp(startRot, endRot, lerpT));
+
+                instancedSkybox.SetColor("_Tint", Color.Lerp(from.skyboxColor, to.skyboxColor, lerpT));
             }
 
-            RenderSettings.fogColor = Color.Lerp(from.fogColor, to.fogColor, smoothT);
-            RenderSettings.fogDensity = Mathf.Lerp(from.fogDensity, to.fogDensity, smoothT);
-            RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, smoothT);
+            // ... (Fog, Ambient, Lights ayný) ...
+            RenderSettings.fogColor = Color.Lerp(from.fogColor, to.fogColor, lerpT);
+            RenderSettings.fogDensity = Mathf.Lerp(from.fogDensity, to.fogDensity, lerpT);
+            RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, lerpT);
 
-            // --- IÞIK LERP ---
-            // Baþlangýç deðerinden bitiþ deðerine smoothT ile git
-            float currentLightVal = Mathf.Lerp(startLightVal, endLightVal, smoothT);
+            float currentLightVal = Mathf.Lerp(startLightVal, endLightVal, lerpT);
             UpdateCityLightsLerp(currentLightVal);
 
             yield return null;
         }
 
-        ApplyStateInstant(to);
+        ApplyStateInstant(to); // Döngü bitince orijinal temiz deðere (260'a) "Þak" diye oturur.
+        // Görsel olarak -100 ile 260 ayný olduðu için bu geçiþi göz fark etmez.
 
         if (DayInLoop) NextDayState();
     }
