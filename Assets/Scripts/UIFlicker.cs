@@ -11,7 +11,14 @@ public class UIFlicker : MonoBehaviour
     [Header("Zamanlama Ayarlarý (Saniye)")]
     public Vector2 transitionTimeRange = new Vector2(0.05f, 0.2f);
     public Vector2 startDelay = new Vector2(0.2f, 0.6f);
-    public Vector2 stayTimeRange = new Vector2(0.05f, 0.3f);
+
+    // --- DEÐÝÞÝKLÝK BURADA: ÝKÝ AYRI SÜRE ---
+    [Tooltip("Sönük moda geçtiðinde ne kadar öyle kalsýn?")]
+    public Vector2 dimStayTimeRange = new Vector2(0.05f, 0.1f); // Genelde kýsa olur (pýrpýr gibi)
+
+    [Tooltip("Parlak moda geçtiðinde ne kadar öyle kalsýn?")]
+    public Vector2 brightStayTimeRange = new Vector2(0.2f, 2.0f); // Genelde daha uzun olur
+    // ----------------------------------------
 
     [Header("Sound Settings")]
     public AudioClip[] neonClips;
@@ -40,7 +47,6 @@ public class UIFlicker : MonoBehaviour
     {
         if (_materialInstance != null)
         {
-            // Açýlýþta parlak baþla
             _currentAlpha = brightRange.y;
             _materialInstance.SetFloat(_alphaID, _currentAlpha);
             StartCoroutine(SmoothFlickerRoutine());
@@ -54,7 +60,6 @@ public class UIFlicker : MonoBehaviour
 
     private IEnumerator SmoothFlickerRoutine()
     {
-        // DEÐÝÞÝKLÝK 1: Realtime bekleme
         yield return new WaitForSecondsRealtime(Random.Range(startDelay.x, startDelay.y));
 
         bool isGoingToBright = false;
@@ -62,11 +67,16 @@ public class UIFlicker : MonoBehaviour
         while (true)
         {
             float targetAlpha;
+
+            // Hedefi belirliyoruz
             if (isGoingToBright)
                 targetAlpha = Random.Range(brightRange.x, brightRange.y);
             else
                 targetAlpha = Random.Range(dimRange.x, dimRange.y);
 
+            // Durumu tersine çeviriyoruz (Bir sonraki tur için hazýrlýk)
+            // DÝKKAT: Burada 'isGoingToBright'ý deðiþtiriyoruz ama 
+            // aþaðýda bekleme süresini seçerken "Þu an neye dönüþtüm?" diye bakacaðýz.
             isGoingToBright = !isGoingToBright;
 
             float duration = Random.Range(transitionTimeRange.x, transitionTimeRange.y);
@@ -78,9 +88,7 @@ public class UIFlicker : MonoBehaviour
 
             while (elapsed < duration)
             {
-                // DEÐÝÞÝKLÝK 2: Oyun zamaný (deltaTime) yerine Gerçek zaman (unscaledDeltaTime)
                 elapsed += Time.unscaledDeltaTime;
-
                 float t = elapsed / duration;
                 _currentAlpha = Mathf.SmoothStep(startAlpha, targetAlpha, t);
                 _materialInstance.SetFloat(_alphaID, _currentAlpha);
@@ -90,9 +98,24 @@ public class UIFlicker : MonoBehaviour
             _currentAlpha = targetAlpha;
             _materialInstance.SetFloat(_alphaID, _currentAlpha);
 
-            float waitTime = Random.Range(stayTimeRange.x, stayTimeRange.y);
+            // --- DEÐÝÞÝKLÝK BURADA: HANGÝ SÜREYÝ SEÇECEÐÝZ? ---
+            float waitTime;
 
-            // DEÐÝÞÝKLÝK 3: Realtime bekleme
+            // Mantýk: Yukarýda 'isGoingToBright'ý tersine çevirmiþtik (!).
+            // Yani eðer þu an 'isGoingToBright' FALSE ise, demek ki az önce TRUE idi ve Parlak moda geçtik.
+            // Eðer þu an 'isGoingToBright' TRUE ise, demek ki az önce FALSE idi ve Sönük moda geçtik.
+
+            if (!isGoingToBright)
+            {
+                // Þu an PARLAK durumdayýz (Bright Mode) -> Parlak kalma süresini kullan
+                waitTime = Random.Range(brightStayTimeRange.x, brightStayTimeRange.y);
+            }
+            else
+            {
+                // Þu an SÖNÜK durumdayýz (Dim Mode) -> Sönük kalma süresini kullan
+                waitTime = Random.Range(dimStayTimeRange.x, dimStayTimeRange.y);
+            }
+
             yield return new WaitForSecondsRealtime(waitTime);
         }
     }

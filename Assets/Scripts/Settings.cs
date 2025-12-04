@@ -245,12 +245,21 @@ public class Settings : MonoBehaviour
         Resolution resolution = filteredResolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
 
+        // Unity'nin kendine gelmesi için biraz daha uzun bir nefes (3 kare)
+        yield return null;
         yield return null;
         yield return null;
 
         if (MenuManager.Instance != null)
         {
+            // 1. Önce Scalerlarý güncelle (UI Boyutlansýn)
             MenuManager.Instance.RefreshAllCanvases();
+
+            // 2. Canvas'ý zorla güncelle (Layoutlar otursun)
+            Canvas.ForceUpdateCanvases();
+
+            // 3. ÞÝMDÝ Pozisyonlarý düzelt
+            MenuManager.Instance.FixMenuPositions();
         }
     }
 

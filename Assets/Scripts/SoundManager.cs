@@ -134,6 +134,23 @@ public class SoundManager : MonoBehaviour
         Destroy(audioSource.gameObject, duration);
     }
 
+    public void PlayUISoundFX(AudioClip audioClip, float volume = 1f, float minPitch = 0.85f, float maxPitch = 1.15f)
+    {
+        AudioSource audioSource = Instantiate(soundFXObjectForUI, Vector3.zero, Quaternion.identity);
+
+        audioSource.clip = audioClip;
+
+        audioSource.volume = volume;
+
+        audioSource.pitch = Random.Range(minPitch, maxPitch);
+
+        float clipLength = audioSource.clip.length / audioSource.pitch;
+
+        audioSource.Play();
+
+        Destroy(audioSource.gameObject, clipLength);
+    }
+
     public void PlaySoundFXWithRandomDelay(AudioClip audioClip, Transform spawnTransform, float volume = 1f, float minPitch = 0.85f, float maxPitch = 1.15f, float minDelay = 0.05f, float maxDelay = 0.25f)
     {
         AudioSource audioSource = Instantiate(soundFXObject, spawnTransform.position, Quaternion.identity, spawnTransform);
