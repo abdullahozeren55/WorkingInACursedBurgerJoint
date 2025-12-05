@@ -17,18 +17,18 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerDownHa
     public float clickMinPitch = 0.85f;
     public float clickMaxPitch = 1.15f;
 
-    private Button _btn;
+    private Selectable _selectable;
 
     private void Awake()
     {
-        _btn = GetComponent<Button>();
+        _selectable = GetComponent<Selectable>();
     }
 
     // Mouse üzerine geldiðinde çalýþýr
     public void OnPointerEnter(PointerEventData eventData)
     {
         // Eðer buton pasifse (Interactable = false) ses çalmasýn
-        if (_btn != null && !_btn.interactable) return;
+        if (_selectable != null && !_selectable.interactable) return;
 
         if (hoverSound != null && SoundManager.Instance != null)
         {
@@ -39,7 +39,7 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerDownHa
     // Mouse týklandýðýnda (Bastýðýn an) çalýþýr
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (_btn != null && !_btn.interactable) return;
+        if (_selectable != null && !_selectable.interactable) return;
 
         if (clickSound != null && SoundManager.Instance != null)
         {

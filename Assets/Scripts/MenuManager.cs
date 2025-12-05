@@ -20,6 +20,18 @@ public class MenuManager : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject settingsMenu; // YENÝ: Settings menüsü objesi
 
+    [Header("Settings Sub-Panels")]
+    // Ayarlarýn Ana Menüsü (Main Settings Page)
+    public RectTransform settingsMainRect;
+
+    // Alt Menüler (Bunlar ekranýn dýþýnda, yukarýda ve aþaðýda bekleyecek)
+    public RectTransform settingsGeneralRect;
+    public RectTransform settingsAudioRect;
+
+    // Þu an hangi alt menüdeyiz? (Back tuþu için önemli)
+    private enum SettingsState { Main, General, Audio }
+    private SettingsState currentSettingsState = SettingsState.Main;
+
     [Header("Animation References")]
     // Animasyon yapacaðýmýz panellerin RectTransform'larý
     public UIFlicker[] mainMenuFlickers;
@@ -55,6 +67,22 @@ public class MenuManager : MonoBehaviour
 
         myCanvas = GetComponentInChildren<Canvas>();
         if (myCanvas != null) canvasRect = myCanvas.GetComponent<RectTransform>();
+
+        // BAÞLANGIÇ POZÝSYONLARI
+        if (settingsGeneralRect != null && settingsAudioRect != null)
+        {
+            float width = GetCanvasWidth();
+            float height = canvasRect.rect.height; // Yüksekliði al
+
+            // Genel Ayarlar: YUKARIDA beklesin (+Height)
+            settingsGeneralRect.anchoredPosition = new Vector2(0, height);
+
+            // Ses Ayarlarý: AÞAÐIDA beklesin (-Height)
+            settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+
+            // Ana Ayarlar Sayfasý: SettingsMenu'nun içinde ortada
+            settingsMainRect.anchoredPosition = Vector2.zero;
+        }
 
         HandleCursorState(true);
     }
@@ -94,31 +122,147 @@ public class MenuManager : MonoBehaviour
 
     public void FixMenuPositions()
     {
-        // 1. Önce devam eden tüm animasyonlarý ÖLDÜR (Complete false, yani olduðu yerde dursun)
-        mainMenuRect.DOKill(true); // true = Hemen bitir
+        // 1. Her þeyi durdur
+        mainMenuRect.DOKill(true);
         settingsRect.DOKill(true);
+        settingsMainRect.DOKill(true);
+        settingsGeneralRect.DOKill(true);
+        settingsAudioRect.DOKill(true);
         isBusy = false;
 
         // 2. Yeni geniþliði al
         float width = GetCanvasWidth();
+        float height = GetCanvasHeight();
 
         // 3. Pozisyonlarý IÞINLA (Animasyon yok)
         if (isSettingsOpen)
         {
-            // Settings AÇIK: Settings ortada (0), Main solda (-width)
+            // Settings AÇIK: Settings ortada, Main solda dýþarýda
             settingsRect.anchoredPosition = Vector2.zero;
             mainMenuRect.anchoredPosition = new Vector2(-width, 0);
+
+            // 4. Þimdi DÝKEY (Y) Konumlarý düzelt (Alt Menüler)
+            switch (currentSettingsState)
+            {
+                case SettingsState.Main:
+                    // Ana sayfa ortada, diðerleri dýþarýda
+                    settingsMainRect.anchoredPosition = Vector2.zero;
+                    settingsGeneralRect.anchoredPosition = new Vector2(0, height);  // Yukarýda
+                    settingsAudioRect.anchoredPosition = new Vector2(0, -height);   // Aþaðýda
+                    break;
+
+                case SettingsState.General:
+                    // Genel ayarlar ortada, Ana sayfa aþaðý itilmiþ (Çünkü genel yukarýdan indi)
+                    settingsGeneralRect.anchoredPosition = Vector2.zero;
+                    settingsMainRect.anchoredPosition = new Vector2(0, -height);    // Aþaðýda
+                    settingsAudioRect.anchoredPosition = new Vector2(0, -height);   // Aþaðýda (Farketmez)
+                    break;
+
+                case SettingsState.Audio:
+                    // Ses ayarlarý ortada, Ana sayfa yukarý itilmiþ (Çünkü ses aþaðýdan çýktý)
+                    settingsAudioRect.anchoredPosition = Vector2.zero;
+                    settingsMainRect.anchoredPosition = new Vector2(0, height);     // Yukarýda
+                    settingsGeneralRect.anchoredPosition = new Vector2(0, height);  // Yukarýda (Farketmez)
+                    break;
+            }
         }
         else
         {
-            // Main AÇIK: Main ortada (0), Settings saðda (+width)
+            // Main AÇIK: Main ortada, Settings saðda dýþarýda
             mainMenuRect.anchoredPosition = Vector2.zero;
             settingsRect.anchoredPosition = new Vector2(width, 0);
+
+            // Settings kapalýyken içini de "Reset" pozisyonuna getirelim ki
+            // tekrar açýldýðýnda temiz baþlasýn.
+            settingsMainRect.anchoredPosition = Vector2.zero;
+            settingsGeneralRect.anchoredPosition = new Vector2(0, height);
+            settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+            currentSettingsState = SettingsState.Main;
         }
 
-        // 4. Garanti olsun diye Layout'u tekrar yenile
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainMenuRect);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(settingsRect);
+        Canvas.ForceUpdateCanvases();
+    }
+
+    public void OpenGeneralSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.General;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Ana Ayarlar Sayfasý: AÞAÐI kaysýn (-Height) ve çýksýn
+        settingsMainRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Genel Ayarlar: YUKARIDAN gelsin (0)
+        settingsGeneralRect.anchoredPosition = new Vector2(0, height); // Reset
+        settingsGeneralRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void CloseGeneralSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Main;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Genel Ayarlar: YUKARI geri gitsin (+Height)
+        settingsGeneralRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Ana Ayarlar Sayfasý: AÞAÐIDAN geri gelsin (0)
+        settingsMainRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void OpenAudioSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Audio;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Ana Ayarlar Sayfasý: YUKARI kaysýn (+Height)
+        settingsMainRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Ses Ayarlarý: AÞAÐIDAN gelsin (0)
+        settingsAudioRect.anchoredPosition = new Vector2(0, -height); // Reset
+        settingsAudioRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void CloseAudioSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Main;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Ses Ayarlarý: AÞAÐI geri gitsin (-Height)
+        settingsAudioRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Ana Ayarlar Sayfasý: YUKARIDAN geri gelsin (0)
+        settingsMainRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
     }
 
     public void OpenSettings()
@@ -175,11 +319,45 @@ public class MenuManager : MonoBehaviour
             .OnComplete(() => isBusy = false);
     }
 
+    public void HandleBack()
+    {
+        if (isBusy) return;
+
+        // Eðer Ana Menüdeysek -> Çýkýþ Sorusu veya Hiçbir þey
+        if (!isSettingsOpen)
+        {
+            // Belki çýkýþ popup'ý açarsýn
+            return;
+        }
+
+        // Eðer Settings Açýk ama Alt Menüdeyiz
+        switch (currentSettingsState)
+        {
+            case SettingsState.General:
+                CloseGeneralSettings();
+                break;
+            case SettingsState.Audio:
+                CloseAudioSettings();
+                break;
+            case SettingsState.Main:
+                // Alt menüde deðiliz, ana Settings sayfasýndayýz -> Ana Menüye dön
+                CloseSettings();
+                break;
+        }
+    }
+
     // Canvas geniþliðini dinamik al (Çözünürlük deðiþse de çalýþýr)
     private float GetCanvasWidth()
     {
         if (canvasRect != null) return canvasRect.rect.width;
         return 1920f; // Fallback
+    }
+
+    // Canvas yüksekliðini dinamik al (Çözünürlük deðiþse de çalýþýr)
+    private float GetCanvasHeight()
+    {
+        if (canvasRect != null) return canvasRect.rect.height;
+        return 1080f; // Fallback
     }
 
     // ---------------------------------------------

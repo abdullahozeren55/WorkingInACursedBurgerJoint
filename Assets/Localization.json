@@ -1196,6 +1196,16 @@
     "en": "Quit"
   },
   {
+    "key": "UI_MAIN_MENU_GENERAL_SETTINGS",
+    "tr": "Genel Ayarlar",
+    "en": "General Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_SETTINGS",
+    "tr": "Ses Ayarları",
+    "en": "Audio Settings"
+  },
+  {
     "key": "UI_MAIN_MENU_RESOLUTION",
     "tr": "Çözünürlük",
     "en": "Resolution"
