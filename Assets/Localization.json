@@ -1221,6 +1221,16 @@
     "en": "Language"
   },
   {
+    "key": "UI_MAIN_MENU_PIXELATION",
+    "tr": "Pikselleşme",
+    "en": "Pixelation"
+  },
+  {
+    "key": "UI_MAIN_MENU_UI_SCALE",
+    "tr": "Arayüz Boyutu",
+    "en": "Interface Scale"
+  },
+  {
     "key": "UI_MAIN_MENU_QUALITY_0",
     "tr": "Tost Makinesi",
     "en": "Toast Machine"
@@ -1239,6 +1249,31 @@
     "key": "UI_MAIN_MENU_QUALITY_3",
     "tr": "Yüksek",
     "en": "High"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_0",
+    "tr": "Pikselden Nefret Ederim (Yok)",
+    "en": "I Hate Pixels (None)"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_1",
+    "tr": "Siz Koyun Ben Dur Derim (Az)",
+    "en": "Just A Sprinkle (Low)"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_2",
+    "tr": "Piksel Piksel Anadolu (Çok)",
+    "en": "I'm Legally Blind (High)"
+  },
+  {
+    "key": "UI_MAIN_MENU_CONTROL_HINTS",
+    "tr": "Kontrol İpuçları",
+    "en": "Control Hints"
+  },
+  {
+    "key": "UI_MAIN_MENU_INTERACTION_TEXT",
+    "tr": "Etkileşim Metni",
+    "en": "Interaction Text"
   },
   {
     "key": "UI_MAIN_MENU_AUDIO_MASTER",
@@ -1274,6 +1309,21 @@
     "key": "UI_OKAY",
     "tr": "Tamam",
     "en": "Okay"
+  },
+  {
+    "key": "UI_DEFAULT",
+    "tr": "Varsayılan",
+    "en": "Default"
+  },
+  {
+    "key": "UI_ON",
+    "tr": "Açık",
+    "en": "On"
+  },
+  {
+    "key": "UI_OFF",
+    "tr": "Kapalı",
+    "en": "Off"
   }
 ]
 

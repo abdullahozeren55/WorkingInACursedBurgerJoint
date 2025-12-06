@@ -10,6 +10,8 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
     [Header("Ayarlar")]
     public bool onlyIntegerScale = true;
 
+
+    private int currentScaleOffset = 0;
     private CanvasScaler _canvasScaler;
 
     private void Awake()
@@ -37,8 +39,12 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
         }
     }
 
-    public void UpdateScale()
+    public void UpdateScale(int scaleOffset = -1)
     {
+        // Eðer dýþarýdan bir deðer gelirse onu kaydet (Ayarlardan gelmiþtir)
+        // Gelmezse (-1 ise) hafýzadaki deðeri kullan (Start veya Refresh aný)
+        if (scaleOffset != -1) currentScaleOffset = scaleOffset;
+
         if (_canvasScaler == null) return;
         if (Screen.height == 0) return;
 
@@ -47,18 +53,18 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
 
         if (onlyIntegerScale)
         {
-            // --- SADELEÞTÝRÝLMÝÞ MANTIK ---
-            // Sadece ekran yüksekliðini referansa böl ve aþaðý yuvarla.
-            // Örn: 1080 / 360 = 3 (Tam 3x)
-            // Örn: 1440 / 360 = 4 (Tam 4x)
-            // Örn: 768 / 360 = 2.13 -> 2 (Tam 2x)
+            // 1. Maksimum mümkün olan tam sayýyý bul (Örn: 1080p -> 3x)
+            int maxScale = Mathf.FloorToInt(screenHeight / referenceHeight);
+            if (maxScale < 1) maxScale = 1;
 
-            int integerScale = Mathf.FloorToInt(screenHeight / referenceHeight);
+            // 2. Oyuncunun isteðine göre küçült (Offset kadar çýkar)
+            // Örn: Max 3x. Oyuncu "Orta" (Offset 1) seçti -> 3 - 1 = 2x.
+            int targetScale = maxScale - currentScaleOffset;
 
-            // En az 1 olsun, yoksa UI görünmez
-            if (integerScale < 1) integerScale = 1;
+            // 3. Güvenlik: 1'in altýna düþmesin
+            if (targetScale < 1) targetScale = 1;
 
-            scaleFactor = integerScale;
+            scaleFactor = targetScale;
         }
         else
         {

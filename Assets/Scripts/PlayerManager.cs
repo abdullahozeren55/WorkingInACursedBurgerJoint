@@ -213,6 +213,11 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.DecideUIText();
     }
 
+    public void UpdateGameplaySettings()
+    {
+        firstPersonController.RefreshUISettings();
+    }
+
     public void HandlePlayerEnterExitColdRoom(bool isEntering)
     {
 

@@ -502,12 +502,12 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void RefreshAllCanvases()
+    public void RefreshAllCanvases(int offset = -1)
     {
         foreach (var scaler in activeScalers)
         {
             if (scaler != null)
-                scaler.UpdateScale();
+                scaler.UpdateScale(offset);
         }
     }
 }

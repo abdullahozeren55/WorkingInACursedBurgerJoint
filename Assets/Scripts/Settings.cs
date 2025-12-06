@@ -16,6 +16,16 @@ public class Settings : MonoBehaviour
     [Header("Quality Settings")]
     public TMP_Dropdown qualityDropdown;
 
+    [Header("Pixelation Settings")]
+    public TMP_Dropdown pixelationDropdown;
+
+    [Header("UI Scale Settings")]
+    public TMP_Dropdown uiScaleDropdown;
+
+    [Header("Gameplay Settings")]
+    public TMP_Dropdown hintsDropdown;
+    public TMP_Dropdown interactTextDropdown;
+
     [Header("Audio Sliders")]
     public Slider masterSlider;
     public Slider soundFXSlider;
@@ -52,12 +62,183 @@ public class Settings : MonoBehaviour
         "UI_MAIN_MENU_QUALITY_3"
     };
 
+    private readonly List<string> pixelationKeys = new List<string>
+    {
+        "UI_MAIN_MENU_PIXELATION_0", // HD
+        "UI_MAIN_MENU_PIXELATION_1", // Hafif
+        "UI_MAIN_MENU_PIXELATION_2", // Orta
+    };
+
+    private readonly List<string> visibilityKeys = new List<string>
+    {
+        "UI_ON",
+        "UI_OFF"
+    };
+
     void Start()
     {
         DecideResolutions();
         InitializeLanguage();
         InitializeQuality();
         InitializeAudio();
+        InitializePixelation();
+        InitializeGameplaySettings();
+    }
+
+    private void InitializeGameplaySettings()
+    {
+        // --- SEÇENEKLERÝ DOLDUR ---
+        List<string> options = new List<string>();
+        foreach (string key in visibilityKeys)
+        {
+            string localizedName = "MISSING";
+            if (LocalizationManager.Instance != null)
+                localizedName = LocalizationManager.Instance.GetText(key);
+            options.Add(localizedName);
+        }
+
+        // --- HINTS DROPDOWN ---
+        hintsDropdown.ClearOptions();
+        hintsDropdown.AddOptions(options);
+        // Varsayýlan 0 (Visible)
+        hintsDropdown.value = PlayerPrefs.GetInt("ShowHints", 0);
+        hintsDropdown.RefreshShownValue();
+
+        // --- INTERACT TEXT DROPDOWN ---
+        interactTextDropdown.ClearOptions();
+        interactTextDropdown.AddOptions(options);
+        // Varsayýlan 0 (Visible)
+        interactTextDropdown.value = PlayerPrefs.GetInt("ShowInteractText", 0);
+        interactTextDropdown.RefreshShownValue();
+    }
+
+    // Dropdown Eventleri
+    public void SetHints(int index)
+    {
+        // 0: Visible, 1: Hidden
+        PlayerPrefs.SetInt("ShowHints", index);
+        PlayerPrefs.Save();
+
+        // Eðer oyun içindeysek anlýk güncelle
+        if (PlayerManager.Instance != null)
+            PlayerManager.Instance.UpdateGameplaySettings();
+    }
+
+    public void SetInteractText(int index)
+    {
+        PlayerPrefs.SetInt("ShowInteractText", index);
+        PlayerPrefs.Save();
+
+        if (PlayerManager.Instance != null)
+            PlayerManager.Instance.UpdateGameplaySettings();
+    }
+
+    private void InitializeUIScale()
+    {
+        uiScaleDropdown.ClearOptions();
+        List<string> options = new List<string>();
+
+        // Maksimum scale deðerini bul
+        int maxScale = Mathf.FloorToInt(Screen.height / 360f);
+        if (maxScale < 1) maxScale = 1;
+
+        // --- DEÐÝÞÝKLÝK BURADA: "Varsayýlan" Metnini Çek ---
+        string defaultText = "Default"; // Fallback (Yedek)
+        if (LocalizationManager.Instance != null)
+        {
+            defaultText = LocalizationManager.Instance.GetText("UI_DEFAULT");
+        }
+        // ----------------------------------------------------
+
+        for (int i = 0; i < maxScale; i++)
+        {
+            string label = "";
+            int scaleVal = maxScale - i;
+
+            if (i == 0)
+            {
+                // Örn: "(3x) Varsayýlan" veya "(3x) Default"
+                label = $"{scaleVal}x ({defaultText})";
+            }
+            else
+            {
+                label = scaleVal + "x";
+            }
+
+            options.Add(label);
+        }
+
+        uiScaleDropdown.AddOptions(options);
+
+        int savedOffset = PlayerPrefs.GetInt("UIScaleOffset", 0);
+        if (savedOffset >= options.Count) savedOffset = options.Count - 1;
+
+        uiScaleDropdown.value = savedOffset;
+        uiScaleDropdown.RefreshShownValue();
+
+        // Baþlangýçta uygula (RefreshDropdowns'tan gelince tekrar uygulamasý sorun yaratmaz)
+        if (MenuManager.Instance != null)
+        {
+            MenuManager.Instance.RefreshAllCanvases(savedOffset);
+            MenuManager.Instance.FixMenuPositions();
+        }
+    }
+
+    public void OnUIScaleChanged(int index)
+    {
+        PlayerPrefs.SetInt("UIScaleOffset", index);
+        PlayerPrefs.Save();
+
+        // Direkt çaðýrmak yerine Coroutine baþlatýyoruz ki araya "Fix" sýkýþtýralým
+        StartCoroutine(ApplyUIScaleRoutine(index));
+    }
+
+    private IEnumerator ApplyUIScaleRoutine(int offset)
+    {
+        if (MenuManager.Instance != null)
+        {
+            // 1. Önce bütün Canvaslarýn boyunu deðiþtir (Büyüt/Küçült)
+            MenuManager.Instance.RefreshAllCanvases(offset);
+
+            // 2. Unity'ye "Hadi bi hesapla þu yeni boyutlarý" de ve bekle
+            Canvas.ForceUpdateCanvases();
+            yield return null;
+            yield return null; // Garanti olsun diye 2 kare bekle
+
+            // 3. ÞÝMDÝ o kayan panelleri yeni sýnýrlara ýþýnla
+            MenuManager.Instance.FixMenuPositions();
+        }
+    }
+
+    private void InitializePixelation()
+    {
+        pixelationDropdown.ClearOptions();
+        List<string> options = new List<string>();
+
+        foreach (string key in pixelationKeys)
+        {
+            string localizedName = "MISSING";
+            if (LocalizationManager.Instance != null)
+                localizedName = LocalizationManager.Instance.GetText(key);
+            options.Add(localizedName);
+        }
+
+        pixelationDropdown.AddOptions(options);
+
+        int currentLimit = PlayerPrefs.GetInt("TextureMipmapLimit", 0);
+        QualitySettings.globalTextureMipmapLimit = currentLimit;
+
+        pixelationDropdown.value = currentLimit;
+        pixelationDropdown.RefreshShownValue();
+    }
+
+    public void SetPixelation(int limitIndex)
+    {
+        // limitIndex büyüdükçe (0->3) pikselleþme artar (Kalite düþer)
+        // Tam istediðin mantýk bu.
+        QualitySettings.globalTextureMipmapLimit = limitIndex;
+        PlayerPrefs.SetInt("TextureMipmapLimit", limitIndex);
+        PlayerPrefs.Save();
     }
 
     private void UpdateVolumeText(TMP_Text textComp, float value)
@@ -260,6 +441,8 @@ public class Settings : MonoBehaviour
 
             // 3. ÞÝMDÝ Pozisyonlarý düzelt
             MenuManager.Instance.FixMenuPositions();
+
+            InitializeUIScale();
         }
     }
 
@@ -318,7 +501,8 @@ public class Settings : MonoBehaviour
     {
         // Kalite listesini yeni dile göre tekrar oluþtur
         InitializeQuality();
-
-        // Çözünürlük listesinde çeviri yok ama gerekirse onu da buraya eklersin.
+        InitializePixelation();
+        InitializeUIScale();
+        InitializeGameplaySettings();
     }
 }

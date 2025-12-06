@@ -220,6 +220,8 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private GameObject throwUI;
     [SerializeField] private GameObject useTakeInteractParent;
     [SerializeField] private GameObject throwDropParent;
+    private bool showHints = true;
+    private bool showInteractText = true;
 
     [Header("Audio Settings")]
     [SerializeField] private AudioClip throwSound;
@@ -271,6 +273,8 @@ public class FirstPersonController : MonoBehaviour
         }
 
         CameraManager.Instance.InitializeCamera(CameraManager.CameraName.FirstPerson);
+
+        RefreshUISettings();
 
         PhoneManager.Instance.SetMissionText("Merhaba! Ben Volkan Konak!");
     }
@@ -652,6 +656,11 @@ public class FirstPersonController : MonoBehaviour
 
     private void DecideFocusText()
     {
+        if (!showInteractText)
+        {
+            return;
+        }
+
         // 1 — ÝNTERACTABLE
         if (currentInteractable != null)
         {
@@ -717,6 +726,13 @@ public class FirstPersonController : MonoBehaviour
 
     public void DecideUIText()
     {
+        // --- AYAR KONTROLÜ (YENÝ) ---
+        if (!showHints)
+        {
+            SetAllPrompts(false); // Hepsini kapat ve çýk
+            return;
+        }
+
         // --- 1. DURUM ANALÝZÝ ---
         bool isHandBusy = isUsingGrabbedItem;
 
@@ -1560,8 +1576,38 @@ public class FirstPersonController : MonoBehaviour
 
     }
 
+    public void RefreshUISettings()
+    {
+        // PlayerPrefs'ten oku (0 = Visible = true)
+        showHints = PlayerPrefs.GetInt("ShowHints", 0) == 0;
+        showInteractText = PlayerPrefs.GetInt("ShowInteractText", 0) == 0;
+
+        // Anlýk temizlik: Eðer kapattýysak ekrandakileri hemen yok et
+        if (!showHints)
+        {
+            // Ýpuçlarýný kapatan yardýmcý fonksiyonun (dün yazmýþtýk)
+            SetAllPrompts(false); // Veya UpdateInteractionPrompts içinde halledilecek
+        }
+
+        if (!showInteractText)
+        {
+            // Crosshair altýndaki metni temizle
+            if (focusTextAnim != null)
+            {
+                focusTextAnim.StopShowingText();
+                focusTextAnim.StartDisappearingText();
+                focusTextAnim.SkipTypewriter();
+            }
+        }
+    }
+
     public void TryChangingFocusText(IInteractable interactable, string textKey)
     {
+        if (!showInteractText)
+        {
+            return;
+        }
+
         string localizedText = LocalizationManager.Instance.GetText(textKey);
 
         if (currentInteractable != null && currentInteractable == interactable && focusText.text != localizedText)
@@ -1574,6 +1620,11 @@ public class FirstPersonController : MonoBehaviour
 
     public void TryChangingFocusText(IGrabable grabable, string textKey)
     {
+        if (!showInteractText)
+        {
+            return;
+        }
+
         string localizedText = LocalizationManager.Instance.GetText(textKey);
 
         if (currentGrabable != null && !currentGrabable.IsGrabbed && currentGrabable == grabable && focusText.text != localizedText)
