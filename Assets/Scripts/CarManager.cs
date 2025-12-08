@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class CarManager : MonoBehaviour
 {
     public static CarManager Instance;
 
-    [Header("Random Car0 Spawning Settings")]
-    public bool CanSpawn;
+    [Header("Spawn Settings")]
+    public bool CanSpawn = true;
     public float spawnCooldown = 5f;
     public int maxCarCount = 30;
+
+    // Aktif arabalarý takip listesi
     private readonly List<GameObject> activeCars = new List<GameObject>();
 
     [System.Serializable]
@@ -21,59 +22,43 @@ public class CarManager : MonoBehaviour
         public Transform[] endPoint;
     }
 
-    [SerializeField] private Material[] car0Materials;
+    [Header("Optimization Settings")]
+    // ARTIK MATERYAL DEÐÝL, SADECE RENK TUTUYORUZ (Batching bozulmasýn diye)
+    public Color[] carColors;
+
     [SerializeField] private CarDestinations[] carDestinations;
     [SerializeField] private GameObject car0GO;
 
-    [Header("Walking NPC Settings")]
-    [SerializeField] private NavMeshAgent walking1agent;
-    [SerializeField] private Transform destination;
-
-    [Header("Running NPC Settings")]
-    public float invoke = 10f;
-    public DialogueData talkData;
-    [SerializeField] private Animator runAnimator;
-    [SerializeField] private NavMeshAgent runningagent;
-    [SerializeField] private Transform runDestination;
     private void Awake()
     {
-        if (Instance == null)
-        {
-            // If not, set this instance as the singleton
-            Instance = this;
-        }
-        else
-        {
-            // If an instance already exists, destroy this one to enforce the singleton pattern
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
         StartCoroutine(SpawnRandomCar0Repeatedly());
-
-        //walking1agent.SetDestination(destination.position);
-
-        //DialogueManager.Instance.StartSelfDialogue(talkData);
-
-        //Invoke("RunGuy", invoke);
-
     }
 
-    private void RunGuy()
+    public Color GetRandomCarColor()
     {
-        CameraManager.Instance.PlayJumpscareEffects(CameraManager.JumpscareType.Small);
-        runAnimator.SetBool("run", true);
-        runningagent.SetDestination(runDestination.position);
+        if (carColors == null || carColors.Length == 0) return Color.white;
+        return carColors[Random.Range(0, carColors.Length)];
     }
 
-    public Material GetRandomCar0Material() => car0Materials[Random.Range(0, car0Materials.Length)];
-
-    private CarDestinations GetRandomDestination() => carDestinations[Random.Range(0, carDestinations.Length)];
+    private CarDestinations GetRandomDestination()
+    {
+        if (carDestinations == null || carDestinations.Length == 0) return null;
+        return carDestinations[Random.Range(0, carDestinations.Length)];
+    }
 
     public void SpawnRandomCar0()
     {
+        // Temizlik: Yok olmuþ objeleri listeden düþür
+        activeCars.RemoveAll(item => item == null);
+
         if (!CanSpawn || activeCars.Count >= maxCarCount) return;
 
         var chosen = GetRandomDestination();
+        if (chosen == null) return;
+
         GameObject car = Instantiate(car0GO, chosen.spawnPoint.position, chosen.spawnQuaternion);
 
         activeCars.Add(car);
@@ -82,6 +67,7 @@ public class CarManager : MonoBehaviour
         if (carScript != null)
         {
             carScript.DecideDestinations(chosen);
+            // Araba yok olunca listeden silinecek
             carScript.OnCarDestroyed += HandleCarDestroyed;
         }
     }

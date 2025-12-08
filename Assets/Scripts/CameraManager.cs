@@ -89,6 +89,16 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float colorAdjustmentsIncreaseTimeForColdRoom = 1f;
     [SerializeField] private float colorAdjustmentsDecreaseTimeForColdRoom = 0.5f;
 
+    [Header("Car Hit Effect Settings")]
+    [SerializeField] private float carHitDuration = 1f;
+    [SerializeField] private float turnNormalDuration = 1f;
+    [SerializeField] private float carHitShakeAmp = 5f;        // Şiddetli sallantı
+    [SerializeField] private float carHitShakeFreq = 20f;      // Çok hızlı titreme (Darbe hissi)
+    [SerializeField] private float carHitVignetteIntensity = 0.55f; // Ekran kararması/kızarması
+    [SerializeField] private Color carHitVignetteColor = Color.red; // Kan kırmızısı
+    [SerializeField] private float carHitDutchAngle = 20f;     // Kafa ne kadar yana yatacak
+    [SerializeField] private float carHitFOV = 70f;
+
     private float normalFOV;
     private float normalVignetteValue;
     private Color normalVignetteColor;
@@ -314,6 +324,14 @@ public class CameraManager : MonoBehaviour
         seq.Play();
     }
 
+    public void PlayDutchAngle(float targetAngle, float duration, Ease ease = Ease.OutSine, string tweenId = "DutchAngle")
+    {
+        DOTween.Kill(tweenId);
+        DOTween.To(() => firstPersonCam.m_Lens.Dutch, x => firstPersonCam.m_Lens.Dutch = x, targetAngle, duration)
+            .SetEase(ease)
+            .SetId(tweenId);
+    }
+
     public void PlayCurrentCamFOV(float targetFOV, float duration, Ease ease = Ease.InOutBack, float easeValue = 1.7f, string tweenId = "FOVCurrentCam")
     {
         CinemachineVirtualCamera currentCam = GetCamera();
@@ -344,6 +362,27 @@ public class CameraManager : MonoBehaviour
     public void EndFOV(float delay, float duration)
     {
         StartCoroutine(EndFOVCoroutine(delay, duration));
+    }
+
+    public void PlayCarHitEffects()
+    {
+        // 1. Ekran Sallantısı (Gürültülü Shake profili kullanmak daha iyi olur ama eldekiyle idare edelim)
+        // Shake noise profilini wobble yerine shake'e çekelim ki sert olsun
+        //perlin.m_NoiseProfile = shakeNoise;
+        //PlayScreenShake(carHitShakeAmp, carHitShakeFreq, 0.2f, Ease.OutQuad);
+
+        // 2. Kırmızı Vignette (Acı hissi)
+        PlayVignette(carHitVignetteIntensity, 0.1f, carHitVignetteColor, Ease.OutQuad);
+
+        // 3. FOV Kick (Darbe anında görüntü geri gider)
+        PlayFOV(carHitFOV, 0.1f, Ease.OutBack);
+
+        // 4. Dutch Angle (Kafa Yamulması) - Rastgele sağa veya sola
+        float randomTilt = Random.Range(0, 2) == 0 ? carHitDutchAngle : -carHitDutchAngle;
+        PlayDutchAngle(randomTilt, 0.15f, Ease.OutBack);
+
+        // Efektleri sıfırlamak için Coroutine başlat
+        StartCoroutine(ResetCarHitEffects(carHitDuration));
     }
 
     public void PlayColdRoomEffects(bool isEntering)
@@ -420,5 +459,16 @@ public class CameraManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         PlayFOV(normalFOV, duration, Ease.InSine);
+    }
+
+    private IEnumerator ResetCarHitEffects(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Her şeyi normale döndür
+        //PlayScreenShake(0f, 0f,turnNormalDuration, Ease.OutSine);
+        PlayVignette(normalVignetteValue, turnNormalDuration, normalVignetteColor, Ease.InSine);
+        PlayFOV(normalFOV, turnNormalDuration, Ease.InSine);
+        PlayDutchAngle(0f, turnNormalDuration, Ease.OutBack); // Kafayı yavaşça düzelt
     }
 }

@@ -25,6 +25,7 @@ TagManager:
   - FoodPack
   - Stain
   - BurgerIngredientTrigger
+  - Car
   layers:
   - Default
   - TransparentFX
