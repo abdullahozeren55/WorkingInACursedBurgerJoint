@@ -143,7 +143,7 @@ public class Phone : MonoBehaviour, IGrabable
 
         phoneUITween?.Kill();
 
-        phoneUITween = phoneUIRectTransform.DOScale(new Vector3(0.75f, 0.75f, 0.75f), timeToUse / 1.2f)
+        phoneUITween = phoneUIRectTransform.DOScale(new Vector3(0.6f, 0.6f, 0.6f), timeToUse / 1.2f)
         .SetEase(Ease.OutBack)
         .SetUpdate(true);
 

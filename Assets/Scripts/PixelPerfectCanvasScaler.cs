@@ -10,6 +10,9 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
     [Header("Ayarlar")]
     public bool onlyIntegerScale = true;
 
+    [Header("Özel Durumlar")]
+    [Tooltip("Eðer bu iþaretliyse, Ayarlardaki UI Scale seçeneðini takmaz. Hep ekrana sýðan en büyük tam sayýyý alýr. (Örn: Telefon UI için)")]
+    public bool forceMaxIntegerScale = false;
 
     private int currentScaleOffset = 0;
     private CanvasScaler _canvasScaler;
@@ -23,6 +26,8 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
 
     private void Start()
     {
+        // Baþlangýçta MenuManager'dan veya hafýzadan güncel offset'i çekmek isteyebilirsin
+        // Þimdilik varsayýlan çalýþýyor.
         UpdateScale();
 
         if (MenuManager.Instance != null)
@@ -42,7 +47,6 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
     public void UpdateScale(int scaleOffset = -1)
     {
         // Eðer dýþarýdan bir deðer gelirse onu kaydet (Ayarlardan gelmiþtir)
-        // Gelmezse (-1 ise) hafýzadaki deðeri kullan (Start veya Refresh aný)
         if (scaleOffset != -1) currentScaleOffset = scaleOffset;
 
         if (_canvasScaler == null) return;
@@ -57,9 +61,12 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
             int maxScale = Mathf.FloorToInt(screenHeight / referenceHeight);
             if (maxScale < 1) maxScale = 1;
 
-            // 2. Oyuncunun isteðine göre küçült (Offset kadar çýkar)
-            // Örn: Max 3x. Oyuncu "Orta" (Offset 1) seçti -> 3 - 1 = 2x.
-            int targetScale = maxScale - currentScaleOffset;
+            // --- KRÝTÝK DEÐÝÞÝKLÝK BURADA ---
+            // Eðer forceMaxIntegerScale seçiliyse, kullanýcýnýn offset ayarýný (currentScaleOffset) YOK SAYIYORUZ.
+            int effectiveOffset = forceMaxIntegerScale ? 0 : currentScaleOffset;
+
+            // 2. Hedef scale'i belirle
+            int targetScale = maxScale - effectiveOffset;
 
             // 3. Güvenlik: 1'in altýna düþmesin
             if (targetScale < 1) targetScale = 1;
