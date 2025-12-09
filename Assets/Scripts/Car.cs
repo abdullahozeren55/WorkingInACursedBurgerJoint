@@ -42,11 +42,13 @@ public class Car : MonoBehaviour
     public AudioClip waitingLoopSound;
     public AudioClip breakSound;
     public AudioClip honkSound;
+    public AudioClip carHitSound;
     [Space]
     public float engineLoopSoundVolume = 0.6f;
     public float waitingLoopSoundVolume = 0.3f;
     public float breakSoundVolume = 0.7f;
     public float honkSoundVolume = 0.8f;
+    public float carHitSoundVolume = 1f;
     public float honkSoundCooldown = 5f;
     private Coroutine honkingCoroutine;
 
@@ -55,6 +57,7 @@ public class Car : MonoBehaviour
     public float knockbackMinSpeedThreshold = 2f; // Bu hýzýn altýndaysa vurmaz (Kalkýþta korur)
     public float knockbackMultiplier = 5f;
     public float airMultiplier = 1.5f;
+    public float horizontalSpread = 1f;
 
     // --- OPTÝMÝZASYON DEÐÝÞKENLERÝ ---
     private Animator animator;
@@ -369,17 +372,30 @@ public class Car : MonoBehaviour
         {
             if (agent.velocity.magnitude < knockbackMinSpeedThreshold) return;
 
-            Vector3 forceDir = (transform.forward + Vector3.up * airMultiplier).normalized;
+            // --- YENÝ HESAPLAMA ---
+
+            // -1 (Sol) ile 1 (Sað) arasýnda rastgele bir deðer üret
+            float randomSide = Random.Range(-1f, 1f);
+
+            // Yön Vektörü: Ýleri + Yukarý + (Rastgele Sað/Sol)
+            // Hepsini toplayýp normalize ediyoruz ki yön deðiþse de güç (forcePower) sabit kalsýn.
+            Vector3 forceDir = (transform.forward + (Vector3.up * airMultiplier) + (transform.right * randomSide * horizontalSpread)).normalized;
+
+            // ----------------------
+
             float forcePower = originalMaxSpeed * knockbackMultiplier;
 
             if (PlayerManager.Instance != null)
             {
                 PlayerManager.Instance.ApplyKnockback(forceDir, forcePower);
 
-                // --- EKLENEN KISIM: GÖRSEL EFEKT ---
+                // Eðer ses manager varsa
+                if (SoundManager.Instance != null)
+                    SoundManager.Instance.PlaySoundFX(carHitSound, other.transform, carHitSoundVolume);
+
+                // Görsel Efekt
                 if (CameraManager.Instance != null)
-                    CameraManager.Instance.PlayCarHitEffects();
-                // ------------------------------------
+                    CameraManager.Instance.PlayCarHitEffects(randomSide);
             }
         }
     }

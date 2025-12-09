@@ -4723,7 +4723,7 @@ MonoBehaviour:
   castOrigin: {fileID: 6598525896993767274}
   targetReachDistance: 1.5
   stopDistance: 7.5
-  boxHalfExtents: {x: 0.8, y: 1, z: 4}
+  boxHalfExtents: {x: 0.8, y: 1, z: 6}
   obstacleMask:
     serializedVersion: 2
     m_Bits: 448
@@ -4751,15 +4751,18 @@ MonoBehaviour:
   waitingLoopSound: {fileID: 8300000, guid: a8c6be774e549814587852bb5ab165d7, type: 3}
   breakSound: {fileID: 8300000, guid: adaab6420f9ed7f4da716b63286e9d04, type: 3}
   honkSound: {fileID: 8300000, guid: b8c7e48fd2bd6e54187f6782f51de82c, type: 3}
-  engineLoopSoundVolume: 0.6
+  carHitSound: {fileID: 8300000, guid: a1a0afd6efd23814abfacaa89da5e27b, type: 3}
+  engineLoopSoundVolume: 0.4
   waitingLoopSoundVolume: 0.7
   breakSoundVolume: 0.7
   honkSoundVolume: 0.7
+  carHitSoundVolume: 1
   honkSoundCooldown: 5
   CanKnockback: 1
-  knockbackMinSpeedThreshold: 2
-  knockbackMultiplier: 15
-  airMultiplier: 2
+  knockbackMinSpeedThreshold: 5
+  knockbackMultiplier: 10
+  airMultiplier: 0.5
+  horizontalSpread: 1.5
 --- !u!95 &5289974780603241866
 Animator:
   serializedVersion: 5
@@ -4793,7 +4796,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 3765421504831430264, guid: 0c899242f5fbe314eabb41b6ece036fb, type: 2}
   m_audioClip: {fileID: 8300000, guid: 27910f10b15c5514abcfc5f492211855, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.7
+  m_Volume: 0.4
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -4802,7 +4805,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1.5
-  MaxDistance: 3
+  MaxDistance: 5
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -8200,7 +8203,7 @@ Transform:
   m_GameObject: {fileID: 9105649327734026825}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.021, y: 1.48, z: 2.456}
+  m_LocalPosition: {x: -0.021, y: 1.48, z: 4.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
