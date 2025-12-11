@@ -9,15 +9,23 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
     [Header("Görsel Parçalar")]
     public Image iconImage;
     public Image textBackground;
+    private TMP_Text text;
 
     [Header("Renkler (Win95 Style)")]
     [SerializeField] private Color winBlue = new Color(0f, 0f, 0.5f, 1f);
+    [SerializeField] private Color originalTextColor;
+    [SerializeField] private Color selectedTextColor;
     private Color transparent = Color.clear;
     private Color white = Color.white;
 
     [Header("Events")]
     // 2. BU EKLENDÝ: Inspector'da çýkacak olan kutu bu.
     public UnityEvent onDoubleClick;
+
+    private void Awake()
+    {
+        text = GetComponentInChildren<TMP_Text>();
+    }
 
     private void Start()
     {
@@ -66,6 +74,7 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
         // --- GÖRSELLERÝ YAK ---
         if (textBackground) textBackground.color = winBlue;
         if (iconImage) iconImage.color = new Color(0.5f, 0.5f, 1f, 1f);
+        if (text) text.color = selectedTextColor;
     }
 
     public void DeselectVisuals()
@@ -74,6 +83,7 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
         // --- GÖRSELLERÝ SÖNDÜR ---
         if (textBackground) textBackground.color = transparent;
         if (iconImage) iconImage.color = white;
+        if (text) text.color = originalTextColor;
     }
 
     private void OpenApplication()
