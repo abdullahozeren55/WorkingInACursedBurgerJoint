@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -44,13 +45,17 @@ public class GameManager : MonoBehaviour
     public class CursorSettings
     {
         public CursorType type;
-        public Texture2D texture; // Ýmleç resmi
+        public Sprite sprite; // Ýmleç resmi
         public Vector2 hotspot;   // Týklama noktasý (Aþaðýda açýklayacaðým)
     }
 
     [Header("Cursor Settings")]
     public CursorSettings[] cursors;
-    public CursorMode cursorMode = CursorMode.Auto;
+    public Vector2 targetCursorSize = new Vector2(32f, 32f);
+    public RectTransform cursorRect; // CursorImage'in RectTransform'u
+    public Image cursorImage;        // CursorImage'in Image componenti
+    public Canvas cursorCanvas;      // CursorCanvas (FPS modunda kapatmak için)
+    private Vector2 currentHotspot;  // O anki offset
 
     [Header("Burger Lists")]
     public List<BurgerIngredientData.IngredientType> classicBurger = new List<BurgerIngredientData.IngredientType>();
@@ -149,7 +154,15 @@ public class GameManager : MonoBehaviour
 
         SetOrderThrowArea(false);
 
-        
+    }
+
+    private void LateUpdate()
+    {
+        if (Cursor.lockState == CursorLockMode.None)
+        {
+            // Resmi fare pozisyonuna taþý
+            UpdateCursorPosition();
+        }
     }
 
     public void AddSauceToTray(SauceBottle.SauceType type)
@@ -233,26 +246,41 @@ public class GameManager : MonoBehaviour
 
     public void SetCursor(CursorType type)
     {
-        // Array içinde enum tipi eþleþen ayarý bul
         CursorSettings setting = System.Array.Find(cursors, x => x.type == type);
 
         if (setting != null)
         {
-            // Bulduysa uygula
-            // Eðer texture boþ býrakýldýysa (null), Unity sistemin varsayýlan okuna döner.
-            Cursor.SetCursor(setting.texture, setting.hotspot, cursorMode);
+            cursorImage.sprite = setting.sprite;
+
+            // YENÝSÝ (GARANTÝ ÇÖZÜM):
+            // RectTransform'un boyutunu (Width/Height) zorla 32x32 yapýyoruz.
+            cursorRect.sizeDelta = targetCursorSize;
+
+            // Scale'i 1'de tutuyoruz (Canvas Scaler zaten büyütecek)
+            cursorRect.localScale = Vector3.one;
+
+            currentHotspot = setting.hotspot;
         }
         else
         {
-            Debug.LogWarning($"CursorManager: '{type}' tipi için ayar bulunamadý! Inspector'ý kontrol et.");
+            Debug.LogWarning($"CursorManager: '{type}' ayarý bulunamadý!");
         }
     }
 
     // Mouse'u Kilitle/Aç ve Gizle/Göster
     public void SetCursorLock(bool isLocked)
     {
+        // 1. Ýþletim sistemi faresini kilitle/aç
         Cursor.lockState = isLocked ? CursorLockMode.Locked : CursorLockMode.None;
-        Cursor.visible = !isLocked;
+
+        // 2. Bizim sahte imleci Göster/Gizle
+        // Kilitliyken (FPS modu) bizim resmimiz görünmemeli.
+        if (cursorCanvas != null)
+            cursorCanvas.enabled = !isLocked;
+
+        // 3. Garanti olsun diye sistem faresini hep gizli tutuyoruz
+        // çünkü görünürlüðü bizim Canvas saðlýyor.
+        Cursor.visible = false;
     }
 
     public void CheckBurgerType(List<BurgerIngredientData.IngredientType> type, List<SauceBottle.SauceType> sauces, BurgerBox box)
@@ -419,5 +447,37 @@ public class GameManager : MonoBehaviour
         var sortedList2 = list2.OrderBy(x => x).ToList();
 
         return sortedList1.SequenceEqual(sortedList2);
+    }
+
+    private void UpdateCursorPosition()
+    {
+        // 1. Mouse'un ekran pozisyonunu al
+        Vector2 screenMousePos = Input.mousePosition;
+
+        // 2. Bu ekran pozisyonunu, Canvas'ýn yerel koordinatýna çevir.
+        // Bu fonksiyon; Canvas'ýn Overlay mi Camera mý olduðuna, Scale'ine,
+        // Duruþuna, her þeye bakýp doðru noktayý verir.
+        Vector2 localPoint;
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            cursorCanvas.transform as RectTransform, // Referans dikdörtgen (Canvas'ýn kendisi)
+            screenMousePos,                          // Mouse nerede?
+            cursorCanvas.worldCamera,                // Hangi kamera çekiyor?
+            out localPoint                           // Sonucu buraya yaz
+        );
+
+        // 3. Hotspot Ayarý (Pivot Top-Left / 0,1 varsayýmýyla)
+        // Artýk scale ile çarpmýyoruz çünkü localPoint zaten scale edilmiþ Canvas uzayýnda.
+        // Ve cursorRect'in boyutu da sizeDelta ile sabitlendiði için birimler eþleþiyor.
+
+        // X: Saða gittikçe artar -> Hotspot kadar sola çek
+        localPoint.x -= currentHotspot.x;
+
+        // Y: Yukarý gittikçe artar -> Hotspot kadar yukarý it (Pivot üstte olduðu için)
+        // Not: Eðer hotspot beklediðinin tersine kayarsa burayý -= yaparsýn.
+        localPoint.y += currentHotspot.y;
+
+        // 4. Pozisyonu Ata (LocalPosition kullanýyoruz!)
+        cursorRect.localPosition = localPoint;
     }
 }

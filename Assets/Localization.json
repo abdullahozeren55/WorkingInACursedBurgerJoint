@@ -161,6 +161,11 @@
     "en": "Talk To The Shop Owner"
   },
   {
+    "key": "INTERACTABLE_USE_COMPUTER",
+    "tr": "Bilgisayarı Kullan",
+    "en": "Use The Computer"
+  },
+  {
     "key": "GRABABLE_BUN",
     "tr": "Ekmek",
     "en": "Bun"

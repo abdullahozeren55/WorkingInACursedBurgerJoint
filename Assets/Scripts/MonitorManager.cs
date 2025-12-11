@@ -8,6 +8,12 @@ public class MonitorManager : MonoBehaviour
 {
     public static MonitorManager Instance;
 
+    public bool IsFocused;
+
+    public Monitor MonitorSC;
+
+    public Camera monitorWorldCamera;
+
     [Header("Burger Page Settings")]
     public GameObject burgerPage;
     [Space]
@@ -45,6 +51,24 @@ public class MonitorManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        UpdateMonitorWorldVisual();
+    }
+
+    private void Update()
+    {
+        if (IsFocused)
+        {
+            if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                UpdateMonitorWorldVisual();
+                MonitorSC.FinishMonitorUI();
+                IsFocused = false;
+            }
+        }
     }
 
     // Ýkonlar buraya "Ben seçildim abi" diyecek
@@ -105,5 +129,17 @@ public class MonitorManager : MonoBehaviour
     public void HandleDeletedNotePage(bool open)
     {
         deletedNotePage.SetActive(open);
+    }
+
+    private void UpdateMonitorWorldVisual()
+    {
+        // 1. Kamerayý anlýk aç
+        monitorWorldCamera.enabled = true;
+
+        // 2. Tek bir kare render aldýr (Manuel Deklanþör)
+        monitorWorldCamera.Render();
+
+        // 3. Kamerayý geri kapat
+        monitorWorldCamera.enabled = false;
     }
 }
