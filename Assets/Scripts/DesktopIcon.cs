@@ -8,8 +8,11 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
 {
     [Header("Görsel Parçalar")]
     public Image iconImage;
+    public Image iconImageWorld;
     public Image textBackground;
+    public Image textBackgroundWorld;
     private TMP_Text text;
+    public TMP_Text textWorld;
 
     [Header("Renkler (Win95 Style)")]
     [SerializeField] private Color winBlue = new Color(0f, 0f, 0.5f, 1f);
@@ -73,8 +76,13 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
 
         // --- GÖRSELLERÝ YAK ---
         if (textBackground) textBackground.color = winBlue;
-        if (iconImage) iconImage.color = new Color(0.5f, 0.5f, 1f, 1f);
+        if (textBackgroundWorld) textBackgroundWorld.color = winBlue;
+
+        if (iconImage) iconImage.color = winBlue;
+        if (iconImageWorld) iconImageWorld.color = winBlue;
+
         if (text) text.color = selectedTextColor;
+        if (textWorld) textWorld.color = selectedTextColor;
     }
 
     public void DeselectVisuals()
@@ -82,8 +90,13 @@ public class DesktopIcon : MonoBehaviour, IPointerClickHandler
 
         // --- GÖRSELLERÝ SÖNDÜR ---
         if (textBackground) textBackground.color = transparent;
+        if (textBackgroundWorld) textBackgroundWorld.color = transparent;
+
         if (iconImage) iconImage.color = white;
+        if (iconImageWorld) iconImageWorld.color = white;
+
         if (text) text.color = originalTextColor;
+        if (textWorld) textWorld.color = originalTextColor;
     }
 
     private void OpenApplication()

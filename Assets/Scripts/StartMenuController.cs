@@ -6,7 +6,9 @@ public class StartMenuController : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI References")]
     public GameObject startMenuPanel; // Açýlacak olan menü paneli
+    public GameObject startMenuPanelWorld; // Açýlacak olan menü paneli
     public Image buttonImage;         // Butonun kendi görseli
+    public Image buttonImageWorld;         // Butonun kendi görseli
 
     [Header("Sprites")]
     public Sprite normalSprite;       // Normal (Dýþa çýkýk)
@@ -53,9 +55,15 @@ public class StartMenuController : MonoBehaviour, IPointerClickHandler
         if (startMenuPanel != null)
             startMenuPanel.SetActive(isOpen);
 
+        if (startMenuPanelWorld != null)
+            startMenuPanelWorld.SetActive(isOpen);
+
         // 2. Görsel Deðiþtir
         if (buttonImage != null)
             buttonImage.sprite = isOpen ? pressedSprite : normalSprite;
+
+        if (buttonImageWorld != null)
+            buttonImageWorld.sprite = isOpen ? pressedSprite : normalSprite;
 
         // 3. Blocker (Dýþarý týklama engelleyici) Yönetimi
         if (blockerObj != null)

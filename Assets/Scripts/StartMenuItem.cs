@@ -8,7 +8,9 @@ public class StartMenuItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 {
     [Header("Görsel Parçalar")]
     public Image background;          // Arkadaki þerit
+    public Image backgroundWorld;          // Arkadaki þerit
     public TextMeshProUGUI labelText; // Yazý
+    public TextMeshProUGUI labelTextWorld; // Yazý
     public StartMenuController startMenuController;
 
     [Header("Win95 Renkleri")]
@@ -30,7 +32,10 @@ public class StartMenuItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (background != null) background.color = winBlue;
+        if (backgroundWorld != null) backgroundWorld.color = winBlue;
+
         if (labelText != null) labelText.color = white;
+        if (labelTextWorld != null) labelTextWorld.color = white;
     }
 
     // Mouse Gidince (Normal)
@@ -56,7 +61,10 @@ public class StartMenuItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private void ResetVisuals()
     {
         if (background != null) background.color = transparent;
+        if (backgroundWorld != null) backgroundWorld.color = transparent;
+
         if (labelText != null) labelText.color = black;
+        if (labelTextWorld != null) labelTextWorld.color = black;
     }
 
     // Obje kapanýp açýldýðýnda takýlý kalmasýn diye

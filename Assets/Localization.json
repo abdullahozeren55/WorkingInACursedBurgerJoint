@@ -1062,28 +1062,28 @@
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_CLASSIC",
-    "tr": "Alt Ekmek x1\nKöfte x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\nKetçap\nMayonez",
-    "en": "Bottom Bun x1\nPatty x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\nKetchup\nMayo"
+    "tr": "Alt Ekmek x1\nKöfte x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez",
+    "en": "Bottom Bun x1\nPatty x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_CHEESE",
-    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nTurşu Dilimi x1\nÜst Ekmek x1\nKetçap\nHardal",
-    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nPickle Slice x1\nTop Bun x1\nKetchup\nMustard"
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nTurşu Dilimi x1\nÜst Ekmek x1\n\nKetçap\nHardal",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nPickle Slice x1\nTop Bun x1\n\nKetchup\nMustard"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_DOUBLE_CHEESE",
-    "tr": "Alt Ekmek x1\nKöfte x2\nPeynir Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\nKetçap\nHardal",
-    "en": "Bottom Bun x1\nPatty x2\nCheese Slice x2\nPickle Slice x2\nTop Bun x1\nKetchup\nMustard"
+    "tr": "Alt Ekmek x1\nKöfte x2\nPeynir Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\n\nKetçap\nHardal",
+    "en": "Bottom Bun x1\nPatty x2\nCheese Slice x2\nPickle Slice x2\nTop Bun x1\n\nKetchup\nMustard"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_FULLY_LOADED",
-    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\nKetçap\nMayonez\nHardal\nBarbekü Sosu",
-    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\nKetchup\nMayo\nMustard\nBBQ Sauce"
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez\nHardal\nBarbekü Sosu",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo\nMustard\nBBQ Sauce"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_BUDGET",
-    "tr": "Alt Ekmek x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\nKetçap\nMayonez",
-    "en": "Bottom Bun x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\nKetchup\nMayo"
+    "tr": "Alt Ekmek x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez",
+    "en": "Bottom Bun x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_BROKE_AHH",
@@ -1097,28 +1097,28 @@
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_X",
-    "tr": "Alt Ekmek x2\nKöfte x2\nPeynir Dilimi x2\nMarul Dilimi x2\nSoğan Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\nMayonez\nHardal",
-    "en": "Bottom Bun x2\nPatty x2\nCheese Slice x2\nLettuce Slice x2\nOnion Slice x2\nPickle Slice x2\nTop Bun x1\nMayo\nMustard"
+    "tr": "Alt Ekmek x2\nKöfte x2\nPeynir Dilimi x2\nMarul Dilimi x2\nSoğan Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\n\nMayonez\nHardal",
+    "en": "Bottom Bun x2\nPatty x2\nCheese Slice x2\nLettuce Slice x2\nOnion Slice x2\nPickle Slice x2\nTop Bun x1\n\nMayo\nMustard"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_LONG_AHH",
-    "tr": "Alt Ekmek x1\nKöfte x3\nPeynir Dilimi x3\nMarul Dilimi x3\nÜst Ekmek x1\nKetçap\nMayonez\nHardal",
-    "en": "Bottom Bun x1\nPatty x3\nCheese Slice x3\nLettuce Slice x3\nTop Bun x1\nKetchup\nMayo\nMustard"
+    "tr": "Alt Ekmek x1\nKöfte x3\nPeynir Dilimi x3\nMarul Dilimi x3\nÜst Ekmek x1\n\nKetçap\nMayonez\nHardal",
+    "en": "Bottom Bun x1\nPatty x3\nCheese Slice x3\nLettuce Slice x3\nTop Bun x1\n\nKetchup\nMayo\nMustard"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_TOMATO_LOVER",
-    "tr": "Alt Ekmek x1\nKöfte x1\nDomates Dilimi x4\nÜst Ekmek x1\nKetçap",
-    "en": "Bottom Bun x1\nPatty x1\nTomato Slice x4\nTop Bun x1\nKetchup"
+    "tr": "Alt Ekmek x1\nKöfte x1\nDomates Dilimi x4\nÜst Ekmek x1\n\nKetçap",
+    "en": "Bottom Bun x1\nPatty x1\nTomato Slice x4\nTop Bun x1\n\nKetchup"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_BBQ",
-    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nSoğan Dilimi x1\nÜst Ekmek x1\nMayonez\nBarbekü Sosu",
-    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nOnion Slice x1\nTop Bun x1\nMayo\nBBQ Sauce"
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nSoğan Dilimi x1\nÜst Ekmek x1\n\nMayonez\nBarbekü Sosu",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nOnion Slice x1\nTop Bun x1\n\nMayo\nBBQ Sauce"
   },
   {
     "key": "UI_MONITOR_BURGER_INGREDIENTS_BASIC",
-    "tr": "Alt Ekmek x1\nKöfte x1\nÜst Ekmek x1\nKetçap",
-    "en": "Bottom Bun x1\nPatty x1\nTop Bun x1\nKetchup"
+    "tr": "Alt Ekmek x1\nKöfte x1\nÜst Ekmek x1\n\nKetçap",
+    "en": "Bottom Bun x1\nPatty x1\nTop Bun x1\n\nKetchup"
   },
   {
     "key": "UI_MONITOR_BURGER_DESCRIPTION_CLASSIC",
@@ -1179,6 +1179,21 @@
     "key": "UI_MONITOR_BURGER_DESCRIPTION_BASIC",
     "tr": "Durumu \"Merhaba! Ben VırtApp kullanıyorum.\" olanların tek tercihi...",
     "en": "The #1 choice for people whose status is \"Hey there! I am using VirtApp\""
+  },
+  {
+    "key": "UI_TRACK",
+    "tr": "Parça",
+    "en": "Track"
+  },
+  {
+    "key": "UI_MONITOR_TRACK_0",
+    "tr": "Süper Grup - Osuruktan Teyyare",
+    "en": "Super Group - Plane Made Out Of Fart"
+  },
+  {
+    "key": "UI_MONITOR_TRACK_1",
+    "tr": "İlk Dandirik Bislet - Seni Miniminnacık Özledim",
+    "en": "First Cheap Cycle - I Missed You So Little"
   },
   {
     "key": "UI_MAIN_MENU_CONTINUE",
