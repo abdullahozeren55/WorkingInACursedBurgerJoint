@@ -17,7 +17,7 @@ public class MonitorManager : MonoBehaviour
     [System.Serializable]
     public struct SongData
     {
-        public string trackNameKey; // Örn: "Track 01 - Spooky Burger"
+        public string trackName; // Örn: "Track 01 - Spooky Burger"
         public AudioClip clip;   // Müzik dosyasý
     }
 
@@ -56,7 +56,6 @@ public class MonitorManager : MonoBehaviour
     public List<SongData> playlist;
     public bool MusicIsPlaying = false;
     public float musicVolumeMultiplier = 0.2f; //to prevent it from being too loud
-    public string trackPrefixKey;
     private int currentIndex = 0;
     [Space]
     public RetroMarquee marqueeScript;
@@ -323,24 +322,14 @@ public class MonitorManager : MonoBehaviour
         // 1. AudioSource'a klibi ver
         musicSource.clip = song.clip;
 
-        // 2. LOCALIZATION ÝÞLEMÝ BURADA YAPILIYOR
-        // Manager yoksa patlamasýn diye güvenlik kontrolü
-        string localizedPrefix = "Track";
-        string localizedSongName = song.trackNameKey; // Varsayýlan olarak key'i göster (Hata ayýklama için iyi)
+        // 2. ÝSÝM FORMATLAMA (Localization Ýptal)
+        // Format: "01. Þarký Adý"
+        // {index + 1:00} -> Sayýyý iki haneli yapar (1 -> 01, 10 -> 10)
 
-        if (LocalizationManager.Instance != null)
-        {
-            // "Track" kelimesini çevir (Örn: "Parça")
-            localizedPrefix = LocalizationManager.Instance.GetText(trackPrefixKey);
+        // Not: song.trackNameKey deðiþkeninde artýk direkt þarkýnýn adý (Örn: "Midnight Grill") yazmalý.
+        string displayName = $"{index + 1:00}. {song.trackName}";
 
-            // Þarký adýný çevir (Örn: "Gerilim Müziði")
-            localizedSongName = LocalizationManager.Instance.GetText(song.trackNameKey);
-        }
-
-        // 3. Formatý birleþtir: [Parça 01] Gerilim Müziði
-        string displayName = $"[{localizedPrefix} {index + 1:00}] {localizedSongName}";
-
-        // 4. Kayan yazýya gönder
+        // 3. Kayan yazýyý güncelle
         if (marqueeScript != null)
         {
             marqueeScript.RefreshText(displayName);
@@ -351,13 +340,17 @@ public class MonitorManager : MonoBehaviour
             marqueeScriptWorld.RefreshText(displayName);
         }
 
+        // 4. Çalma ve Ýkon iþlemleri
         if (autoPlay || musicSource.isPlaying)
         {
             musicSource.Play();
             MusicIsPlaying = true;
 
-            playPauseImage.sprite = playPauseSprites[1];
-            playPauseImageWorld.sprite = playPauseSprites[1];
+            if (playPauseImage != null && playPauseSprites.Length > 1)
+                playPauseImage.sprite = playPauseSprites[1];
+
+            if (playPauseImageWorld != null && playPauseSprites.Length > 1)
+                playPauseImageWorld.sprite = playPauseSprites[1];
         }
     }
 
