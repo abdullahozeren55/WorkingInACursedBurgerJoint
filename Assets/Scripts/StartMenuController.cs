@@ -43,17 +43,6 @@ public class StartMenuController : MonoBehaviour, IPointerClickHandler
         UpdateVisuals();
     }
 
-    public void OpenMenuVisual()
-    {
-        isOpen = true;
-
-        if (buttonImage != null)
-            buttonImage.sprite = isOpen ? pressedSprite : normalSprite;
-
-        if (buttonImageWorld != null)
-            buttonImageWorld.sprite = isOpen ? pressedSprite : normalSprite;
-    }
-
     private void UpdateVisuals()
     {
         // 1. Panel Aç/Kapa

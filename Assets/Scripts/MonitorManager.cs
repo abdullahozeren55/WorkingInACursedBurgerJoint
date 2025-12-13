@@ -12,6 +12,8 @@ public class MonitorManager : MonoBehaviour
 
     public Monitor MonitorSC;
 
+    public Transform windowParent;
+
     [System.Serializable]
     public struct SongData
     {
@@ -19,10 +21,14 @@ public class MonitorManager : MonoBehaviour
         public AudioClip clip;   // Müzik dosyasý
     }
 
+    public enum PageState
+    {
+        Closed,
+        Opened,
+        Minimized
+    }
+
     [Header("Burger Page Settings")]
-    public GameObject burgerPage;
-    public GameObject burgerPageWorld;
-    [Space]
     public Image burgerImage;
     public Image burgerImageWorld;
     public Sprite[] burgerSprites;
@@ -39,34 +45,11 @@ public class MonitorManager : MonoBehaviour
     public TMP_Text headerTMPWorld;
     public string[] headerKeys;
 
-    [Header("Burger List Page Settings")]
-    public GameObject burgerListPage;
-    public GameObject burgerListPageWorld;
-
-    [Header("How To Page Settings")]
-    public GameObject howToPage;
-    public GameObject howToPageWorld;
-
     [Header("Notepad Page Settings")]
-    public GameObject notePadPage;
-    public GameObject notePadPageWorld;
     public InputMirror notePadInputMirror;
 
-    [Header("Recycle Bin Page Settings")]
-    public GameObject recycleBinPage;
-    public GameObject recycleBinPageWorld;
-
-    [Header("Deleted Note Page Settings")]
-    public GameObject deletedNotePage;
-    public GameObject deletedNotePageWorld;
-
     [Header("Music Player Settings")]
-    public GameObject musicPlayerPage;
-    public GameObject musicPlayerPageWorld;
-    public GameObject musicPlayerButton;
-    public GameObject musicPlayerButtonWorld;
-    public StartMenuController musicPlayerButtonScript;
-    [Space]
+    public PageState musicPlayerPageState;
     public AudioSource musicSource;
     public List<SongData> playlist;
     public bool MusicIsPlaying = false;
@@ -118,6 +101,72 @@ public class MonitorManager : MonoBehaviour
         }
     }
 
+    public void FocusWindow(WindowController targetWindow)
+    {
+        // 1. Hedef pencereyi hiyerarþide EN ALTA (yani en öne) taþý
+        targetWindow.SetLast();
+
+        // 2. Tüm pencereleri gez ve renklerini ayarla
+        foreach (Transform child in windowParent)
+        {
+            // Sadece açýk olan ve WindowController'ý olanlara bak
+            if (!child.gameObject.activeSelf) continue;
+
+            WindowController wc = child.GetComponent<WindowController>();
+            if (wc != null)
+            {
+                // Eðer döngüdeki pencere bizim hedefimizse -> AKTÝF yap
+                // Deðilse -> PASÝF yap
+                bool isTarget = (wc == targetWindow);
+                wc.SetState(isTarget);
+            }
+        }
+    }
+
+    public void OnWindowClosed(WindowController closedWindow)
+    {
+        // Pencere kapandýðýnda, geriye kalanlar arasýnda 
+        // Hiyerarþide en altta (yani en önde) olaný bulup onu aktif yapmalýyýz.
+
+        WindowController nextActive = null;
+        int highestIndex = -1;
+
+        foreach (Transform child in windowParent)
+        {
+            // Kapanan pencereyi ve kapalý objeleri görmezden gel
+            if (child == closedWindow.transform || !child.gameObject.activeSelf) continue;
+
+            WindowController wc = child.GetComponent<WindowController>();
+            if (wc != null)
+            {
+                // Hiyerarþi sýrasýna (SiblingIndex) bak. 
+                // Ýndex ne kadar büyükse o kadar öndedir.
+                if (child.GetSiblingIndex() > highestIndex)
+                {
+                    highestIndex = child.GetSiblingIndex();
+                    nextActive = wc;
+                }
+            }
+        }
+
+        // Eðer arkada açýk baþka bir pencere bulduysak, onu parlat
+        if (nextActive != null)
+        {
+            FocusWindow(nextActive);
+        }
+    }
+
+    // Dýþarýdan pencere açmak istersen bunu kullan
+    public void OpenWindow(GameObject windowObj)
+    {
+        WindowController wc = windowObj.GetComponent<WindowController>();
+        if (wc != null)
+        {
+            wc.TurnOnOff(true);
+            FocusWindow(wc);
+        }
+    }
+
     // Ýkonlar buraya "Ben seçildim abi" diyecek
     public void SelectIcon(DesktopIcon newIcon)
     {
@@ -152,60 +201,13 @@ public class MonitorManager : MonoBehaviour
 
         headerTMP.text = LocalizationManager.Instance.GetText(headerKeys[value]);
         headerTMPWorld.text = headerTMP.text;
-
-        burgerPage.SetActive(true);
-        burgerPageWorld.SetActive(true);
-    }
-
-    public void HandleBurgerPage(bool open)
-    {
-        burgerPage.SetActive(open);
-        burgerPageWorld.SetActive(open);
-    }
-
-    public void HandleBurgerListPage(bool open)
-    {
-        burgerListPage.SetActive(open);
-        burgerListPageWorld.SetActive(open);
-    }
-
-    public void HandleHowToPage(bool open)
-    {
-        howToPage.SetActive(open);
-        howToPageWorld.SetActive(open);
-    }
-
-    public void HandleNotepadPage(bool open)
-    {
-        notePadPage.SetActive(open);
-        notePadPageWorld.SetActive(open);
-    }
-
-    public void HandleRecycleBinPage(bool open)
-    {
-        recycleBinPage.SetActive(open);
-        recycleBinPageWorld.SetActive(open);
-    }
-
-    public void HandleDeletedNotePage(bool open)
-    {
-        deletedNotePage.SetActive(open);
-        deletedNotePageWorld.SetActive(open);
     }
 
     public void HandleMusicPlayerPage(bool open)
     {
-        musicPlayerPage.SetActive(open);
-        musicPlayerPageWorld.SetActive(open);
-
-        musicPlayerButton.SetActive(open);
-        musicPlayerButtonWorld.SetActive(open);
-
         if (open)
         {
-            musicPlayerButtonScript.OpenMenuVisual();
-
-            if (!MusicIsPlaying)
+            if (musicPlayerPageState == PageState.Closed)
                 LoadTrack(currentIndex, false);
         }
         else
@@ -219,6 +221,11 @@ public class MonitorManager : MonoBehaviour
                 playPauseImageWorld.sprite = playPauseImage.sprite;
             }
         }
+    }
+
+    public void SetMusicPlayerPageState(int num) //0 closed, 1 opened, 2 minimized
+    {
+        musicPlayerPageState = (PageState)num;
     }
 
     public void PlayPauseMusic()
@@ -303,6 +310,9 @@ public class MonitorManager : MonoBehaviour
         {
             musicSource.Play();
             MusicIsPlaying = true;
+
+            playPauseImage.sprite = playPauseSprites[1];
+            playPauseImageWorld.sprite = playPauseSprites[1];
         }
     }
 
