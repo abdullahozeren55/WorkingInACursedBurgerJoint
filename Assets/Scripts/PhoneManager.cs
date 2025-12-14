@@ -85,7 +85,7 @@ public class PhoneManager : MonoBehaviour
     {
         if (IsFocused)
         {
-            if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Mouse1))
+            if (InputManager.Instance.PlayerPhone() || InputManager.Instance.PlayerThrow())
             {
                 UpdatePhoneWorldVisual();
                 PhoneSC.FinishPhoneUI();

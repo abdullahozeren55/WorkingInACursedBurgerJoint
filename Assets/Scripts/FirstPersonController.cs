@@ -1,25 +1,17 @@
-using Cinemachine;
 using Febucci.UI.Core;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
-using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
 
 public class FirstPersonController : MonoBehaviour
 {
     public bool CanPlay = true;
     public bool IsUsingItemX = false;
     public bool IsUsingItemY = false;
-    private bool IsSprinting => CanSprint && Input.GetKey(sprintKey);
-    private bool ShouldJump => Input.GetKeyDown(jumpKey) && characterController.isGrounded;
-    private bool ShouldCrouch => Input.GetKey(crouchKey);
+    private bool IsSprinting => CanSprint && InputManager.Instance.PlayerSprint();
+    private bool ShouldJump => InputManager.Instance.PlayerJump() && characterController.isGrounded;
+    private bool ShouldCrouch => InputManager.Instance.PlayerCrouch();
 
     [Header("Functional Options")]
     public bool CanSprint = true;
@@ -33,14 +25,6 @@ public class FirstPersonController : MonoBehaviour
     public bool CanMove = true;
     public bool CanLook = true;
     public bool CanBreathe = true;
-
-    [Header("Controls")]
-    public KeyCode sprintKey = KeyCode.LeftShift;
-    public KeyCode jumpKey = KeyCode.Space;
-    public KeyCode crouchKey = KeyCode.LeftControl;
-    public KeyCode interactKey = KeyCode.Mouse0;
-    public KeyCode throwKey = KeyCode.Mouse1;
-    public KeyCode phoneKey = KeyCode.Tab;
 
     [Header("Movement Parameters")]
     [SerializeField] private float walkSpeed = 3.0f;
@@ -329,7 +313,7 @@ public class FirstPersonController : MonoBehaviour
             if (CanFootstep)
                 HandleFootsteps();
 
-            if (Input.GetKeyDown(phoneKey))
+            if (InputManager.Instance.PlayerPhone())
             {
                 lastPhoneKeyPressedTime = Time.time;
 
@@ -403,8 +387,14 @@ public class FirstPersonController : MonoBehaviour
         float targetWeight = CanLook ? 1f : 0f;
         controlWeight = Mathf.Lerp(controlWeight, targetWeight, Time.deltaTime * 10f);
 
-        float mouseX = Input.GetAxis("Mouse X") * controlWeight;
-        float mouseY = Input.GetAxis("Mouse Y") * controlWeight;
+        Vector2 lookInput = InputManager.Instance.GetLookInput();
+
+        // DÝKKAT: Yeni sistem pixel delta döndürür, hassasiyeti dengelemek için 
+        // ufak bir çarpan gerekebilir veya lookSpeed deðerlerini arttýrman gerekebilir.
+        // Genelde yeni sistemde bu deðerler daha büyük gelir. 
+        // Þimdilik 0.1f gibi bir çarpanla deneyelim, gerekirse kaldýrýrsýn.
+        float mouseX = lookInput.x * 0.1f * controlWeight;
+        float mouseY = lookInput.y * 0.1f * controlWeight;
 
         // --- Kamera Hareketi ---
         horizSpeed = lookSpeedX;
@@ -463,8 +453,9 @@ public class FirstPersonController : MonoBehaviour
     {
         float speed = isCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : walkSpeed;
 
-        float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
+        Vector2 moveInput = InputManager.Instance.GetMovementInput();
+        float vertical = moveInput.y;
+        float horizontal = moveInput.x;
 
         currentInput = new Vector2(speed * vertical, speed * horizontal);
 
@@ -872,7 +863,7 @@ public class FirstPersonController : MonoBehaviour
         if (currentGrabable == null || !currentGrabable.IsGrabbed || !currentGrabable.IsUseable)
         {
             // EL BOS normal interact (tap)
-            if (Input.GetKeyDown(interactKey))
+            if (InputManager.Instance.PlayerInteract())
             {
                 TryToInteract();
             }
@@ -880,7 +871,7 @@ public class FirstPersonController : MonoBehaviour
         else if (throwChargeTimer < 0.1f)
         {
 
-            if (Input.GetKey(interactKey))
+            if (InputManager.Instance.PlayerInteractHold())
             {
                 interactChargeTimer += Time.deltaTime;
 
@@ -894,7 +885,7 @@ public class FirstPersonController : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyUp(interactKey))
+            if (InputManager.Instance.PlayerInteractRelease())
             {
                 if (!isUsingGrabbedItem && !InteractKeyIsDone)
                 {
@@ -916,7 +907,7 @@ public class FirstPersonController : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyUp(interactKey))
+            if (InputManager.Instance.PlayerInteractRelease())
             {
                 TryToInteract();
             }
@@ -1089,7 +1080,7 @@ public class FirstPersonController : MonoBehaviour
         {
             if (phoneGrabable.IsGrabbed)
             {
-                if (Input.GetKeyDown(phoneKey) || Input.GetKeyDown(throwKey))
+                if (InputManager.Instance.PlayerPhone() || InputManager.Instance.PlayerThrow())
                 {
                     phoneGrabable.IsUseable = false;
 
@@ -1115,7 +1106,7 @@ public class FirstPersonController : MonoBehaviour
             }
             else
             {
-                if (Input.GetKeyDown(throwKey)) // right click starts
+                if (InputManager.Instance.PlayerThrow()) // right click starts
                 {
                     ResetHandAnim();
 
@@ -1134,7 +1125,7 @@ public class FirstPersonController : MonoBehaviour
                     singleHandThrowCoroutine = StartCoroutine(SingleHandThrow());
 
                 }
-                if (Input.GetKeyUp(throwKey))
+                if (InputManager.Instance.PlayerThrowRelease())
                 {
 
                     CameraManager.Instance.PlayThrowEffects(false);
@@ -1194,7 +1185,7 @@ public class FirstPersonController : MonoBehaviour
             }
             
         }
-        else if (Input.GetKeyDown(interactKey) && currentGrabable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
+        else if (InputManager.Instance.PlayerInteract() && currentGrabable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
         {
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable && !phoneGrabable.IsGrabbed)
             {

@@ -105,7 +105,7 @@ public class MenuManager : MonoBehaviour
 
     private void Update()
     {
-        if (CanPause && Input.GetKeyDown(KeyCode.Escape))
+        if (CanPause && InputManager.Instance.PlayerPause())
         {
             // Settings açýksa önce onu kapatýp Main'e mi dönsün yoksa direkt oyuna mý?
             // Basitlik için: Pause menüsü mantýðý aynen kalsýn.

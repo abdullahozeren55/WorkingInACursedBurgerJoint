@@ -138,8 +138,10 @@ public class ChoiceManager : MonoBehaviour
     {
         if (IsInChoice && !isInAnim)
         {
-            isAPressed = Input.GetKey(KeyCode.A);
-            isDPressed = Input.GetKey(KeyCode.D);
+            Vector2 input = InputManager.Instance.GetMovementInput();
+
+            isAPressed = input.x < -0.5f; // Sola basılıyor mu? (A veya Stick Sol)
+            isDPressed = input.x > 0.5f;  // Sağa basılıyor mu? (D veya Stick Sağ)
 
             HandleKeyboardImages();
 

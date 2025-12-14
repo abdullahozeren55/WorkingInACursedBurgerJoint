@@ -86,8 +86,6 @@ public class DialogueManager : MonoBehaviour
 
     private AudioSource typewriterAudioSource;
 
-    private KeyCode skipKey = KeyCode.Mouse0;
-
     private ICustomer currentCustomer;
     private IInteractable currentInteractable;
 
@@ -125,7 +123,7 @@ public class DialogueManager : MonoBehaviour
         if (IsInDialogue)
         {
 
-            if (Input.GetKeyDown(skipKey))
+            if (InputManager.Instance.PlayerInteract())
             {
                 PlayerManager.Instance.SetInteractKeyIsDone(true);
 
