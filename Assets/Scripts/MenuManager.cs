@@ -27,9 +27,10 @@ public class MenuManager : MonoBehaviour
     // Alt Menüler (Bunlar ekranýn dýþýnda, yukarýda ve aþaðýda bekleyecek)
     public RectTransform settingsGeneralRect;
     public RectTransform settingsAudioRect;
+    public RectTransform settingsControlsRect;
 
     // Þu an hangi alt menüdeyiz? (Back tuþu için önemli)
-    private enum SettingsState { Main, General, Audio }
+    private enum SettingsState { Main, General, Audio, Controls }
     private SettingsState currentSettingsState = SettingsState.Main;
 
     [Header("Animation References")]
@@ -72,13 +73,16 @@ public class MenuManager : MonoBehaviour
         if (settingsGeneralRect != null && settingsAudioRect != null)
         {
             float width = GetCanvasWidth();
-            float height = canvasRect.rect.height; // Yüksekliði al
+            float height = GetCanvasHeight();
 
             // Genel Ayarlar: YUKARIDA beklesin (+Height)
             settingsGeneralRect.anchoredPosition = new Vector2(0, height);
 
             // Ses Ayarlarý: AÞAÐIDA beklesin (-Height)
             settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+
+            // Kontrol Ayarlarý: SAÐDA beklesin (+Width)
+            settingsControlsRect.anchoredPosition = new Vector2(width, 0);
 
             // Ana Ayarlar Sayfasý: SettingsMenu'nun içinde ortada
             settingsMainRect.anchoredPosition = Vector2.zero;
@@ -129,6 +133,7 @@ public class MenuManager : MonoBehaviour
         settingsMainRect.DOKill(true);
         settingsGeneralRect.DOKill(true);
         settingsAudioRect.DOKill(true);
+        settingsControlsRect.DOKill(true);
         isBusy = false;
 
         // 2. Yeni geniþliði al
@@ -150,6 +155,7 @@ public class MenuManager : MonoBehaviour
                     settingsMainRect.anchoredPosition = Vector2.zero;
                     settingsGeneralRect.anchoredPosition = new Vector2(0, height);  // Yukarýda
                     settingsAudioRect.anchoredPosition = new Vector2(0, -height);   // Aþaðýda
+                    settingsControlsRect.anchoredPosition = new Vector2(width, 0); // Saðda
                     break;
 
                 case SettingsState.General:
@@ -164,6 +170,16 @@ public class MenuManager : MonoBehaviour
                     settingsAudioRect.anchoredPosition = Vector2.zero;
                     settingsMainRect.anchoredPosition = new Vector2(0, height);     // Yukarýda
                     settingsGeneralRect.anchoredPosition = new Vector2(0, height);  // Yukarýda (Farketmez)
+                    break;
+
+                case SettingsState.Controls:
+                    // Kontroller ortada, Ana sayfa SOLA itilmiþ
+                    settingsControlsRect.anchoredPosition = Vector2.zero;
+                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
+
+                    // Diðerleri yerinde kalsýn
+                    settingsGeneralRect.anchoredPosition = new Vector2(0, height);
+                    settingsAudioRect.anchoredPosition = new Vector2(0, -height);
                     break;
             }
         }
@@ -266,6 +282,47 @@ public class MenuManager : MonoBehaviour
             .OnComplete(() => isBusy = false);
     }
 
+    public void OpenControlsSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Controls;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float width = GetCanvasWidth();
+
+        // 1. Ana Ayarlar: SOLA kaysýn (-Width)
+        settingsMainRect.DOAnchorPosX(-width, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Kontrol Ayarlarý: SAÐDAN gelsin (0)
+        settingsControlsRect.anchoredPosition = new Vector2(width, 0); // Reset
+        settingsControlsRect.DOAnchorPosX(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void CloseControlsSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Main;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float width = GetCanvasWidth();
+
+        // 1. Kontrol Ayarlarý: SAÐA geri gitsin (+Width)
+        settingsControlsRect.DOAnchorPosX(width, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Ana Ayarlar: SOLDAN geri gelsin (0)
+        settingsMainRect.DOAnchorPosX(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
     public void OpenSettings()
     {
         if (isBusy) return;
@@ -339,6 +396,9 @@ public class MenuManager : MonoBehaviour
                 break;
             case SettingsState.Audio:
                 CloseAudioSettings();
+                break;
+            case SettingsState.Controls:
+                CloseControlsSettings();
                 break;
             case SettingsState.Main:
                 // Alt menüde deðiliz, ana Settings sayfasýndayýz -> Ana Menüye dön

@@ -1424,6 +1424,56 @@
     "key": "UI_THROW",
     "tr": "Fırlat",
     "en": "Throw"
+  },
+  {
+    "key": "UI_HOLD",
+    "tr": "Basılı Tut",
+    "en": "Hold"
+  },
+  {
+    "key": "UI_TOGGLE",
+    "tr": "Bas-Çek",
+    "en": "Toggle"
+  },
+  {
+    "key": "UI_MAIN_MENU_CONTROL_SETTINGS",
+    "tr": "Kontrol Ayarları",
+    "en": "Control Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_MOUSE_SENSITIVITY",
+    "tr": "Fare Hassasiyeti",
+    "en": "Mouse Sensitivity"
+  },
+  {
+    "key": "UI_MAIN_MENU_GAMEPAD_SENSITIVITY",
+    "tr": "Oyun Kolu Hassasiyeti",
+    "en": "Gamepad Sensitivity"
+  },
+  {
+    "key": "UI_MAIN_MENU_INVERT_Y",
+    "tr": "Y Eksenini Ters Çevir",
+    "en": "Invert Y"
+  },
+  {
+    "key": "UI_MAIN_MENU_SPRINT_MODE",
+    "tr": "Koşma Modu",
+    "en": "Sprint Mode"
+  },
+  {
+    "key": "UI_MAIN_MENU_CROUCH_MODE",
+    "tr": "Çömelme Modu",
+    "en": "Crouch Mode"
+  },
+  {
+    "key": "UI_MAIN_MENU_KEYBOARD_AND_MOUSE_BINDINGS",
+    "tr": "Klavye & Fare Atamaları",
+    "en": "Keyboard & Mouse Bindings"
+  },
+  {
+    "key": "UI_MAIN_MENU_GAMEPAD_BINDINGS",
+    "tr": "Oyun Kolu Atamaları",
+    "en": "Gamepad Bindings"
   }
 ]
 

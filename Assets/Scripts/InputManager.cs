@@ -7,6 +7,24 @@ public class InputManager : MonoBehaviour
     // Singleton (Her yerden eriþmek için)
     public static InputManager Instance;
 
+    [Header("Base Settings")]
+    // Mouse Delta genelde çok büyük gelir (pixel pixel), o yüzden onu dizginlemek lazým.
+    private const float BASE_MOUSE_MULTIPLIER = 0.05f;
+
+    // Gamepad 0-1 arasý gelir, onu hýzlandýrmak lazým.
+    private const float BASE_GAMEPAD_MULTIPLIER = 120.0f;
+
+    [Header("Control Settings")]
+    public float mouseSensitivity = 1.0f;
+    public float gamepadSensitivity = 1.0f; // Slider 1.0 iken normal hýz olsun
+    public bool invertY = false;
+    public bool sprintIsToggle = false;
+    public bool crouchIsToggle = false;
+
+    // Toggle mantýðý için state takibi
+    private bool _isSprintingToggled = false;
+    private bool _isCrouchingToggled = false;
+
     // Unity'nin oluþturduðu o C# sýnýfý
     private GameControls _gameControls;
 
@@ -28,6 +46,32 @@ public class InputManager : MonoBehaviour
 
         // Kontrol sýnýfýný baþlat
         _gameControls = new GameControls();
+
+        // Varsayýlan deðerler
+        mouseSensitivity = PlayerPrefs.GetFloat("MouseSens", 1.0f);
+        gamepadSensitivity = PlayerPrefs.GetFloat("GamepadSens", 1.0f);
+        invertY = PlayerPrefs.GetInt("InvertY", 0) == 1;
+        sprintIsToggle = PlayerPrefs.GetInt("SprintMode", 0) == 1; // 0: Hold, 1: Toggle
+        crouchIsToggle = PlayerPrefs.GetInt("CrouchMode", 0) == 1;
+
+    }
+
+    private void Update()
+    {
+        // Toggle durumlarýný BURADA deðiþtiriyoruz.
+        // Update her karede 1 kere çalýþýr. Böylece "Double Call" sorunu biter.
+
+        // SPRINT TOGGLE MANTIÐI
+        if (sprintIsToggle && _gameControls.Player.Sprint.triggered)
+        {
+            _isSprintingToggled = !_isSprintingToggled;
+        }
+
+        // CROUCH TOGGLE MANTIÐI
+        if (crouchIsToggle && _gameControls.Player.Crouch.triggered)
+        {
+            _isCrouchingToggled = !_isCrouchingToggled;
+        }
     }
 
     private void OnEnable()
@@ -47,13 +91,54 @@ public class InputManager : MonoBehaviour
     // Hareket (WASD) - Bize Vector2 (x,y) verir
     public Vector2 GetMovementInput()
     {
-        return _gameControls.Player.Movement.ReadValue<Vector2>();
+        Vector2 rawInput = _gameControls.Player.Movement.ReadValue<Vector2>();
+
+        // Vektörün büyüklüðünü 1 ile sýnýrla.
+        // Böylece (1, 1) gelirse onu (0.707, 0.707) yapar. Hýz sabit kalýr.
+        // Ama analog stick'i az itince (0.5) ona dokunmaz.
+
+        return Vector2.ClampMagnitude(rawInput, 1f);
     }
 
     // Bakýþ (Mouse) - Bize Vector2 (x,y) verir
     public Vector2 GetLookInput()
     {
-        return _gameControls.Player.Look.ReadValue<Vector2>();
+        Vector2 rawInput = _gameControls.Player.Look.ReadValue<Vector2>();
+
+        // 1. Cihazý Algýla
+        var device = _gameControls.Player.Look.activeControl?.device;
+        bool isMouse = device is Mouse;
+
+        // 2. Hassasiyet Çarpaný
+        float uiSensValue = isMouse ? mouseSensitivity : gamepadSensitivity;
+
+        // Slider 0 iken 0.1, 100 iken 3.0
+        float userMultiplier = Mathf.Lerp(0.1f, 3.0f, uiSensValue / 100f);
+
+        float finalSens = 0f;
+
+        if (isMouse)
+        {
+            // Mouse Delta zaten "Ne kadar yol aldým" bilgisidir. 
+            // Frame rate artsa da toplam yol deðiþmez. Time.deltaTime GEREKMEZ.
+            finalSens = BASE_MOUSE_MULTIPLIER * userMultiplier;
+        }
+        else
+        {
+            // Gamepad bir "Durum"dur (State). 
+            // 144 FPS'de 144 kere "1 birim dön" derse uçarsýn.
+            // O yüzden "Bu kare ne kadar sürdüyse o kadar dön" demeliyiz.
+
+            // BURAYA Time.deltaTime EKLÝYORUZ:
+            finalSens = BASE_GAMEPAD_MULTIPLIER * userMultiplier * Time.deltaTime;
+        }
+
+        rawInput *= finalSens;
+
+        // 4. Invert Y
+        if (invertY) rawInput.y *= -1;
+
+        return rawInput;
     }
 
     // Zýplama - Basýldýðý AN (ThisFrame) true döner
@@ -65,14 +150,27 @@ public class InputManager : MonoBehaviour
     // Koþma - Basýlý tutulduðu sürece true döner
     public bool PlayerSprint()
     {
-        // Phase.Performed, tuþa basýlý tutuluyor demektir
-        return _gameControls.Player.Sprint.phase == InputActionPhase.Performed;
+        if (sprintIsToggle)
+        {
+            return _isSprintingToggled; // Sadece deðeri döndür
+        }
+        else
+        {
+            return _gameControls.Player.Sprint.phase == InputActionPhase.Performed;
+        }
     }
 
     // Eðilme - Basýlý tutulduðu sürece
     public bool PlayerCrouch()
     {
-        return _gameControls.Player.Crouch.phase == InputActionPhase.Performed;
+        if (crouchIsToggle)
+        {
+            return _isCrouchingToggled; // Sadece deðeri döndür
+        }
+        else
+        {
+            return _gameControls.Player.Crouch.phase == InputActionPhase.Performed;
+        }
     }
 
     // Etkileþim (Sol Týk) - Basýldýðý AN
@@ -117,5 +215,19 @@ public class InputManager : MonoBehaviour
     public bool PlayerPause()
     {
         return _gameControls.Player.Pause.triggered;
+    }
+
+    public void SetMouseSensitivity(float val) => mouseSensitivity = val;
+    public void SetGamepadSensitivity(float val) => gamepadSensitivity = val;
+    public void SetInvertY(bool val) => invertY = val;
+    public void SetSprintMode(bool isToggle)
+    {
+        sprintIsToggle = isToggle;
+        _isSprintingToggled = false; // Mod deðiþince state'i sýfýrla
+    }
+    public void SetCrouchMode(bool isToggle)
+    {
+        crouchIsToggle = isToggle;
+        _isCrouchingToggled = false;
     }
 }

@@ -26,6 +26,17 @@ public class Settings : MonoBehaviour
     public TMP_Dropdown hintsDropdown;
     public TMP_Dropdown interactTextDropdown;
 
+    [Header("Controls Settings")]
+    public Slider mouseSensSlider;
+    public TMP_Text mouseSensText;
+    [Space]
+    public Slider gamepadSensSlider;
+    public TMP_Text gamepadSensText;
+    [Space]
+    public TMP_Dropdown invertYDropdown;
+    public TMP_Dropdown sprintModeDropdown;
+    public TMP_Dropdown crouchModeDropdown;
+
     [Header("Audio Sliders")]
     public Slider masterSlider;
     public Slider soundFXSlider;
@@ -69,10 +80,16 @@ public class Settings : MonoBehaviour
         "UI_MAIN_MENU_PIXELATION_2", // Orta
     };
 
-    private readonly List<string> visibilityKeys = new List<string>
+    private readonly List<string> onOffKeys = new List<string>
     {
         "UI_ON",
         "UI_OFF"
+    };
+
+    private readonly List<string> holdToggleKeys = new List<string>
+    {
+        "UI_HOLD",
+        "UI_TOGGLE" 
     };
 
     void Start()
@@ -83,13 +100,99 @@ public class Settings : MonoBehaviour
         InitializeAudio();
         InitializePixelation();
         InitializeGameplaySettings();
+        InitializeControls();
+    }
+
+    private void InitializeControls()
+    {
+        // 1. Mouse Sens (0-100 arasý tamsayý olarak çekiyoruz)
+        // Varsayýlan 50 olsun (Ortalama hýz)
+        float mSens = PlayerPrefs.GetFloat("MouseSens", 50f);
+        mouseSensSlider.value = mSens;
+        UpdateSensText(mouseSensText, mSens);
+
+        // 2. Gamepad Sens (0-100 arasý)
+        float gSens = PlayerPrefs.GetFloat("GamepadSens", 50f);
+        gamepadSensSlider.value = gSens;
+        UpdateSensText(gamepadSensText, gSens);
+
+        // 3. Dropdown Ýçeriklerini Doldur (Localization)
+        PopulateDropdown(invertYDropdown, onOffKeys);
+        PopulateDropdown(sprintModeDropdown, holdToggleKeys);
+        PopulateDropdown(crouchModeDropdown, holdToggleKeys);
+
+        // 4. Kayýtlý Deðerleri Ata
+        invertYDropdown.value = PlayerPrefs.GetInt("InvertY", 0); // 0: Off, 1: On
+        invertYDropdown.RefreshShownValue();
+
+        sprintModeDropdown.value = PlayerPrefs.GetInt("SprintMode", 0); // 0: Hold, 1: Toggle
+        sprintModeDropdown.RefreshShownValue();
+
+        crouchModeDropdown.value = PlayerPrefs.GetInt("CrouchMode", 0);
+        crouchModeDropdown.RefreshShownValue();
+    }
+
+    // Dropdown Doldurma Yardýmcýsý (Kod tekrarýný önlemek için)
+    private void PopulateDropdown(TMP_Dropdown dropdown, List<string> keys)
+    {
+        dropdown.ClearOptions();
+        List<string> options = new List<string>();
+        foreach (string key in keys)
+        {
+            string text = "MISSING";
+            if (LocalizationManager.Instance != null)
+                text = LocalizationManager.Instance.GetText(key);
+            options.Add(text);
+        }
+        dropdown.AddOptions(options);
+    }
+
+    // UI Text Güncelleme
+    private void UpdateSensText(TMP_Text textComp, float val)
+    {
+        // Direkt 0-100 deðerini yazdýrýyoruz
+        if (textComp != null) textComp.text = val.ToString("F0");
+    }
+
+    // --- EVENT CALLBACKS (Inspector'dan Baðlanacaklar) ---
+
+    public void OnMouseSensChanged(float val)
+    {
+        PlayerPrefs.SetFloat("MouseSens", val);
+        UpdateSensText(mouseSensText, val);
+        if (InputManager.Instance != null) InputManager.Instance.SetMouseSensitivity(val);
+    }
+
+    public void OnGamepadSensChanged(float val)
+    {
+        PlayerPrefs.SetFloat("GamepadSens", val);
+        UpdateSensText(gamepadSensText, val);
+        if (InputManager.Instance != null) InputManager.Instance.SetGamepadSensitivity(val);
+    }
+
+    public void OnInvertYChanged(int index)
+    {
+        PlayerPrefs.SetInt("InvertY", index);
+        if (InputManager.Instance != null) InputManager.Instance.SetInvertY(index == 0);
+    }
+
+    public void OnSprintModeChanged(int index)
+    {
+        PlayerPrefs.SetInt("SprintMode", index);
+        if (InputManager.Instance != null) InputManager.Instance.SetSprintMode(index == 1);
+    }
+
+    public void OnCrouchModeChanged(int index)
+    {
+        PlayerPrefs.SetInt("CrouchMode", index);
+        if (InputManager.Instance != null) InputManager.Instance.SetCrouchMode(index == 1);
     }
 
     private void InitializeGameplaySettings()
     {
         // --- SEÇENEKLERÝ DOLDUR ---
         List<string> options = new List<string>();
-        foreach (string key in visibilityKeys)
+        foreach (string key in onOffKeys)
         {
             string localizedName = "MISSING";
             if (LocalizationManager.Instance != null)
@@ -507,5 +610,6 @@ public class Settings : MonoBehaviour
         InitializePixelation();
         InitializeUIScale();
         InitializeGameplaySettings();
+        InitializeControls();
     }
 }

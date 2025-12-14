@@ -27,12 +27,15 @@ public class FirstPersonController : MonoBehaviour
     public bool CanBreathe = true;
 
     [Header("Movement Parameters")]
+    [SerializeField] private float movementSmoothTime = 0.1f;
     [SerializeField] private float walkSpeed = 3.0f;
     [SerializeField] private float sprintSpeed = 6.0f;
     [SerializeField] private float crouchSpeed = 1.5f;
     [SerializeField] private float slopeSpeed = 8.0f;
     [SerializeField] private float pushForce = 1f;
     [HideInInspector] public bool isBeingPushedByACustomer = false;
+    private Vector2 currentDir = Vector2.zero;
+    private Vector2 currentDirVelocity = Vector2.zero;
 
     [Header("Breathe Parameters")]
     [SerializeField] private Transform breathingParticlePoint;
@@ -50,7 +53,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField, Range(1, 10)] private float lookSpeedY = 2.0f;
     [SerializeField, Range(1, 100)] private float upperLookLimit = 80.0f;
     [SerializeField, Range(1, 100)] private float lowerLookLimit = 45.0f;
-    private float controlWeight = 1f;
     private float horizSpeed;
     private float vertSpeed;
 
@@ -384,8 +386,6 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMouseAndHandControl()
     {
-        float targetWeight = CanLook ? 1f : 0f;
-        controlWeight = Mathf.Lerp(controlWeight, targetWeight, Time.deltaTime * 10f);
 
         Vector2 lookInput = InputManager.Instance.GetLookInput();
 
@@ -393,8 +393,8 @@ public class FirstPersonController : MonoBehaviour
         // ufak bir çarpan gerekebilir veya lookSpeed deðerlerini arttýrman gerekebilir.
         // Genelde yeni sistemde bu deðerler daha büyük gelir. 
         // Þimdilik 0.1f gibi bir çarpanla deneyelim, gerekirse kaldýrýrsýn.
-        float mouseX = lookInput.x * 0.1f * controlWeight;
-        float mouseY = lookInput.y * 0.1f * controlWeight;
+        float mouseX = lookInput.x;
+        float mouseY = lookInput.y;
 
         // --- Kamera Hareketi ---
         horizSpeed = lookSpeedX;
@@ -451,22 +451,40 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMovementInput()
     {
-        float speed = isCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : walkSpeed;
+        float targetSpeed = isCrouching ? crouchSpeed : IsSprinting ? sprintSpeed : walkSpeed;
 
-        Vector2 moveInput = InputManager.Instance.GetMovementInput();
-        float vertical = moveInput.y;
-        float horizontal = moveInput.x;
+        // 1. Ham veriyi InputManager'dan çek (Örn: 0 veya 1 gelir)
+        Vector2 targetInput = InputManager.Instance.GetMovementInput();
 
-        currentInput = new Vector2(speed * vertical, speed * horizontal);
+        // 2. Çapraz koþma hilesini (Pythagoras) önlemek için normalize et (Ýsteðe baðlý ama önerilir)
+        // Analog kol kullanýrken (0.5 gibi deðerler) bozulmasýn diye ClampMagnitude kullanýyoruz.
+        targetInput = Vector2.ClampMagnitude(targetInput, 1f);
 
+        // 3. SMOOTH DAMP (Sihirli Kýsým)
+        // Mevcut input deðerini, hedef input deðerine, belirlediðimiz sürede (smoothTime) kaydýr.
+        // Bu bize o eski "Hýzlanma" hissini verir.
+        currentDir = Vector2.SmoothDamp(currentDir, targetInput, ref currentDirVelocity, movementSmoothTime);
+
+        // 4. Hýzý uygula (Artýk smoothed "currentDir" kullanýyoruz)
+        // Not: currentDir 0'dan 1'e yavaþ yavaþ çýkacaðý için hýz da yavaþ yavaþ artacak.
+        float vertical = currentDir.y;
+        float horizontal = currentDir.x;
+
+        // Y yönünü (yerçekimini) korumak için yedeðe al
         float moveDirectionY = moveDirection.y;
-        moveDirection = (transform.TransformDirection(Vector3.forward) * currentInput.x) +
-                        (transform.TransformDirection(Vector3.right) * currentInput.y);
+
+        // Hesaplama
+        moveDirection = (transform.TransformDirection(Vector3.forward) * vertical * targetSpeed) +
+                        (transform.TransformDirection(Vector3.right) * horizontal * targetSpeed);
+
+        // Y yönünü geri koy
         moveDirection.y = moveDirectionY;
 
-        // Calculate movement magnitude (ignores Y)
+        // --- Animasyon Hýzý ---
+        // Animasyon için zaten SmoothDamp yapýlmýþ veriyi kullandýðýmýz için 
+        // buradaki dampTime'ý düþürebilirsin veya böyle kalabilir.
         float horizontalSpeed = new Vector3(characterController.velocity.x, 0, characterController.velocity.z).magnitude;
-        anim.SetFloat("speed", horizontalSpeed, 0.15f, Time.deltaTime);
+        anim.SetFloat("speed", horizontalSpeed, 0.1f, Time.deltaTime);
     }
 
     private void HandleJump()
@@ -1864,18 +1882,20 @@ public class FirstPersonController : MonoBehaviour
         // Hangi objeye baktýðýmýzý bulalým
         string keyToUse = "";
 
-        if (currentInteractable != null)
+        if (CanInteract && currentInteractable != null)
         {
             keyToUse = currentInteractable.FocusTextKey;
         }
-        else if (currentGrabable != null && !currentGrabable.IsGrabbed)
+        else if (CanGrab && currentGrabable != null && !currentGrabable.IsGrabbed)
         {
             keyToUse = currentGrabable.FocusTextKey;
         }
-        else if (otherGrabable != null)
+        else if (CanGrab && otherGrabable != null)
         {
             keyToUse = otherGrabable.FocusTextKey;
         }
+        else
+            return;
 
         // Eðer geçerli bir key bulduysak ve metin görünüyorsa
         if (!string.IsNullOrEmpty(keyToUse) && showInteractText)
