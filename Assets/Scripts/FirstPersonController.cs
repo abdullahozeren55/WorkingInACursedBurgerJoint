@@ -90,10 +90,9 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private AudioClip[] stoneLandClips = default;
     [SerializeField] private AudioClip[] tileLandClips = default;
     [SerializeField] private AudioClip[] gravelLandClips = default;
-    [SerializeField] private GameObject landGroundCheckPoint;
-    [SerializeField] private float noLandSoundCoyoteTime = 0.1f;
+    [SerializeField] private float landVelocityThreshold = -5f;
     private AudioClip lastPlayedLand;
-    private bool justJumped = false;
+    private bool wasGrounded;
 
     [Header("Crouch Parameters")]
     [SerializeField] private float crouchingHeight = 0.5f;
@@ -156,6 +155,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float baseStepSpeed = 0.5f;
     [SerializeField] private float crouchStepMultiplier = 1.5f;
     [SerializeField] private float sprintStepMultiplier = 0.6f;
+    [SerializeField] private Vector3 footstepCheckSize = new Vector3(0.5f, 0.1f, 0.5f);
     [SerializeField] private AudioSource footstepAudioSource = default;
     [SerializeField] private AudioClip[] woodClips = default;
     [SerializeField] private AudioClip[] metalClips = default;
@@ -289,20 +289,9 @@ public class FirstPersonController : MonoBehaviour
 
             if (CanJump)
                 HandleJump();
-            else if (!characterController.isGrounded)
-            {
-                moveDirection.y -= gravity * Time.deltaTime;
-                characterController.Move(moveDirection * Time.deltaTime);
-            }
 
-            if (!characterController.isGrounded)
-                HandleLand();
-            else
-            {
-                anim.SetBool("isGrounded", true);
-                lastGroundedTime = Time.time;
-            }
-                
+            HandleGravityAndLanding();
+
 
             if (CanCrouch)
                 HandleCrouch();
@@ -360,10 +349,7 @@ public class FirstPersonController : MonoBehaviour
         {
             if (!characterController.isGrounded)
             {
-                moveDirection.y -= gravity * Time.deltaTime;
-                characterController.Move(moveDirection * Time.deltaTime);
-
-                HandleLand();
+                HandleGravityAndLanding();
             }
 
             if (currentInteractable != null)
@@ -504,25 +490,54 @@ public class FirstPersonController : MonoBehaviour
 
             moveDirection.y = jumpForce;
 
-            justJumped = true;
         }
             
     }
 
-    private void HandleLand()
+    private void HandleGravityAndLanding()
     {
-        Physics.Raycast(landGroundCheckPoint.transform.position, Vector3.down, out RaycastHit hit, 1f, groundTypeLayers);
 
-        if (hit.collider != null && moveDirection.y <= -0.2f)
+        // --- LANDING MANTIÐI (YERE ÝNÝÞ) ---
+        // Eðer geçen kare havadaysak (wasGrounded == false) VE þimdi yerdeysek (isCurrentlyGrounded == true)
+        // Demek ki tam bu karede yere bastýk!
+        if (!wasGrounded && characterController.isGrounded)
         {
+            // Yere inince yapýlacaklar:
+            anim.SetBool("isGrounded", true);
 
-            if ((!jumpLandAudioSource.isPlaying && !isBeingPushedByACustomer && Time.time > lastGroundedTime + noLandSoundCoyoteTime) || justJumped)
+            // Düþme hýzý kontrolü (Merdiven inerken zýrt pýrt ses çýkmasýn diye)
+            // moveDirection.y negatifse düþüyoruzdur.
+            // -0.5f gibi bir eþik deðeri, yürürkenki minik zýplamalarý filtreler.
+            if (moveDirection.y < landVelocityThreshold)
             {
-                CheckSurfaceAndPlaySound(10f, true, false);
+                // O çok sevdiðimiz yeni yüzey fonksiyonunu çaðýrýyoruz
+                // Mesafe: 2f (Ayak altý), Jump/Land: True, Jumping: False (yani Landing)
+                CheckSurfaceAndPlaySound(2f, true, false);
             }
-
-            justJumped = false;
+            else
+            {
+                CheckSurfaceAndPlaySound(2f, false, false);
+            }
+            
+            moveDirection.y = -2f; // Karakteri yere yapýþtýrmak için minik bir negatif kuvvet (Standarttýr)
         }
+        // --- FALLING MANTIÐI (HAVADA OLMA) ---
+        else if (!characterController.isGrounded)
+        {
+            // Havadaysak yerçekimini uygula
+            moveDirection.y -= gravity * Time.deltaTime;
+
+            // Animasyonu güncelle (Eðer grounded false ise düþüyor animasyonu devreye girer)
+            if (wasGrounded) // Yerden yeni kesildiysek
+            {
+                anim.SetBool("isGrounded", false);
+                lastGroundedTime = Time.time; // Coyote time için
+            }
+        }
+
+        // --- DURUMU KAYDET ---
+        // Bu karenin durumu, bir sonraki karenin "geçmiþi" olacak.
+        wasGrounded = characterController.isGrounded;
     }
 
     private void HandleCrouch()
@@ -1398,13 +1413,20 @@ public class FirstPersonController : MonoBehaviour
 
     private void CheckSurfaceAndPlaySound(float rayDistance, bool isJumpOrLand, bool isJumping)
     {
-        // 1. Raycast at (LayerMask'e dikkat, zemini gören layer olmalý)
-        if (Physics.Raycast(groundTypeCheckRayPoint.transform.position, Vector3.down, out RaycastHit hit, rayDistance, groundTypeLayers))
+        // BoxCast Parametreleri:
+        // 1. Merkez: RayPoint
+        // 2. Boyut (Yarým): footstepCheckSize / 2 (Unity yarým boyut ister)
+        // 3. Yön: Aþaðý
+        // 4. Hit Info: Çarpýþma bilgisi
+        // 5. Rotasyon: Karakterin dönüþüne göre kutu da dönsün
+        // 6. Mesafe: rayDistance
+        // 7. LayerMask: groundTypeLayers
+
+        if (Physics.BoxCast(groundTypeCheckRayPoint.transform.position, footstepCheckSize / 2, Vector3.down, out RaycastHit hit, groundTypeCheckRayPoint.transform.rotation, rayDistance, groundTypeLayers))
         {
-            // 2. Çarptýðýmýz objede "Kimlik Kartý" (SurfaceIdentity) var mý?
+            // --- BURASI AYNEN KALIYOR ---
             if (hit.collider.TryGetComponent<SurfaceIdentity>(out var surface))
             {
-                // Varsa türüne göre ilgili ses dizisini (Array) seç
                 switch (surface.type)
                 {
                     case SurfaceType.Wood:
@@ -1429,9 +1451,6 @@ public class FirstPersonController : MonoBehaviour
             }
             else
             {
-                // Script yoksa VARSAYILAN sesi çal (Genelde Stone veya Wood olur)
-                // Burayý boþ býrakýrsan script olmayan yerde ses çýkmaz.
-                // Bence Stone varsayýlan olsun:
                 SelectAndPlayClips(stoneClips, stoneJumpClips, stoneLandClips, isJumpOrLand, isJumping);
             }
         }
@@ -1455,9 +1474,6 @@ public class FirstPersonController : MonoBehaviour
 
     private void ApplyFinalMovements()
     {
-        if (!characterController.isGrounded)
-            moveDirection.y -= gravity * Time.deltaTime;
-
         if (willSlideOnSlopes && IsSliding)
             moveDirection += new Vector3(hitPointNormal.x, -hitPointNormal.y, hitPointNormal.z) * slopeSpeed;
 
@@ -1879,5 +1895,34 @@ public class FirstPersonController : MonoBehaviour
             focusTextAnim.SkipTypewriter();
             SetFocusTextComplete(true);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (groundTypeCheckRayPoint == null) return;
+
+        // Gizmos rengi: Kýrmýzý (ve biraz þeffaf)
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+
+        // BoxCast'in taradýðý alaný göstermek biraz tricky'dir çünkü hareketli bir iþlemdir.
+        // Ama biz en azýndan "Zemine deðdiði anki" kutuyu çizelim.
+        // Varsayýlan rayDistance 1.9f civarýydý sanýrým, onu baz alarak çiziyorum.
+
+        // Gizmos'un dönüþünü objeye uydur
+        Matrix4x4 rotationMatrix = Matrix4x4.TRS(groundTypeCheckRayPoint.transform.position, groundTypeCheckRayPoint.transform.rotation, Vector3.one);
+        Gizmos.matrix = rotationMatrix;
+
+        // Aþaðýya doðru bir çizgi çek (Merkezi gör diye)
+        Gizmos.DrawRay(Vector3.zero, Vector3.down * 1.9f);
+
+        // Tam ayak basma mesafesinde (mesela 0.1f aþaðýda deðil de, taramanýn bittiði yerde) kutuyu çiz
+        // BoxCast süpürme (sweep) iþlemidir. Baþlangýçtaki kutuyu çizelim:
+        Gizmos.DrawWireCube(Vector3.zero, footstepCheckSize);
+
+        // Bir de taramanýn ucundaki kutuyu çizelim (Maksimum eriþim)
+        // CheckSurfaceAndPlaySound içinde gönderdiðin mesafe deðiþken (1.9f veya 10f) olduðu için
+        // burada sabit bir deðerle (örn: 1.0f) görselleþtiriyorum, sen editörde anla diye.
+        Vector3 endPosition = Vector3.down * 1.0f;
+        Gizmos.DrawWireCube(endPosition, footstepCheckSize);
     }
 }
