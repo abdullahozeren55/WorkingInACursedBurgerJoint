@@ -7,9 +7,11 @@ using UnityEngine;
 public class BurgerBoxData : ScriptableObject
 {
     public bool isUseable = false;
+    public bool isThrowable = true;
     public PlayerManager.HandGrabTypes[] handGrabTypes; //0 for open, 1 for close
     [Space]
     public float timeToPutOnTray = 0.3f;
+    public float throwMultiplier = 1f;
     [Space]
     public Vector3[] grabPositionOffset; //0 for open, 1 for close
     public Vector3[] grabRotationOffset; //0 for open, 1 for close

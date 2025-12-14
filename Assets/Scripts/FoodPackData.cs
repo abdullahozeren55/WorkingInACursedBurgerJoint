@@ -10,7 +10,9 @@ public class FoodPackData : ScriptableObject
     public GameObject destroyParticleExplode;
     [Space]
     public bool isUseable = false;
+    public bool isThrowable = true;
     public PlayerManager.HandGrabTypes handGrabType;
+    public float throwMultiplier = 1f;
     [Space]
     public float minForce = 0.2f;
     public float maxForce = 0.4f;

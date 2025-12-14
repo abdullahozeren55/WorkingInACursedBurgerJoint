@@ -12,6 +12,11 @@ public class BurgerBox : MonoBehaviour, IGrabable
     private bool isGrabbed;
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabTypes[boxSituation]; set => data.handGrabTypes[boxSituation] = value; }
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;

@@ -13,6 +13,14 @@ public class Phone : MonoBehaviour, IGrabable
     public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
     [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
 
+    public bool IsThrowable { get => isThrowable; set => isThrowable = value; }
+    [SerializeField] private bool isThrowable = false;
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => throwMultiplier; set => throwMultiplier = value; }
+    [SerializeField] private float throwMultiplier = 1f;
+
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
 
@@ -184,5 +192,10 @@ public class Phone : MonoBehaviour, IGrabable
 
     public void OutlineChangeCheck()
     {
+    }
+
+    public void ChangeLayer(int layer)
+    {
+
     }
 }

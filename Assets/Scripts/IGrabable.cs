@@ -14,12 +14,18 @@ public interface IGrabable
     public void OnUseHold();
     public void OnUseRelease();
     public void OutlineChangeCheck();
+    public void ChangeLayer(int layer);
 
     public PlayerManager.HandGrabTypes HandGrabType { get; set; }
 
     public Vector3 GrabPositionOffset { get; set; }
     public Vector3 GrabRotationOffset { get; set; }
 
+    public Transform LeftHandPoint { get; set; }
+
+    public float ThrowMultiplier { get; set; }
+
+    public bool IsThrowable { get; set; }
     public bool IsGrabbed {  get; set; }
     public bool IsUseable { get; set; }
     public bool OutlineShouldBeRed { get; set; }

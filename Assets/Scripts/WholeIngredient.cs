@@ -11,6 +11,11 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     private bool isGrabbed;
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
@@ -36,6 +41,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private bool isJustThrowed;
     private bool isJustDropped;
@@ -52,6 +58,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGrabbed = false;
 
@@ -63,7 +70,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         col.enabled = false;
 
@@ -83,12 +90,12 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     public void OnFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
     }
 
     public void OnDrop(Vector3 direction, float force)
@@ -125,11 +132,11 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -154,7 +161,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     {
         if (CanGetSliced)
         {
-            gameObject.layer = ungrabableLayer;
+            ChangeLayer(ungrabableLayer);
 
             for (int i = 0; i < data.objectAmount; i++)
             {
@@ -262,7 +269,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
             {
                 CalculateCollisionRotation(collision);
 
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustThrowed = false;
             }
@@ -270,7 +277,7 @@ public class WholeIngredient : MonoBehaviour, IGrabable
             {
                 CalculateCollisionRotation(collision);
 
-                gameObject.layer = grabableLayer;           
+                ChangeLayer(grabableLayer);           
 
                 isJustDropped = false;
             }
@@ -289,5 +296,10 @@ public class WholeIngredient : MonoBehaviour, IGrabable
     public void OnUseRelease()
     {
         throw new System.NotImplementedException();
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 }

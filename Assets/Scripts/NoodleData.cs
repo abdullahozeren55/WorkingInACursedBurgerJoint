@@ -7,7 +7,9 @@ public class NoodleData : ScriptableObject
 {
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
+    public bool isThrowable = true;
     public float timeToPutOnHologram = 0.3f;
+    public float throwMultiplier = 1f;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

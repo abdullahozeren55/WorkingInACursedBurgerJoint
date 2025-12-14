@@ -10,6 +10,8 @@ public class DrinkData : ScriptableObject
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public bool isUseable = false;
+    public bool isThrowable = true;
+    public float throwMultiplier = 1f;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

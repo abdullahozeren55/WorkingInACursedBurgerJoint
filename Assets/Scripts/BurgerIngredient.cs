@@ -11,6 +11,11 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
@@ -35,6 +40,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
     private int onTrayLayer;
 
     private bool isJustThrowed;
@@ -61,6 +67,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
         onTrayLayer = LayerMask.NameToLayer("OnTray");
 
         IsGrabbed = false;
@@ -89,13 +96,13 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     {
         isGettingPutOnTray = true;
         PlayerManager.Instance.ResetPlayerGrab(this);
-        gameObject.layer = onTrayLayer;
+        ChangeLayer(onTrayLayer);
     }
 
     public void SetOnGrabableLayer()
     {
         isGettingPutOnTray = false;
-        gameObject.layer = grabableLayer;
+        ChangeLayer(grabableLayer);
     }
 
     public void PutOnTray(Vector3 trayPos, Quaternion trayRot, Transform parentTray)
@@ -104,7 +111,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         
         SetOnTrayLayer();
 
-        gameObject.layer = onTrayLayer;
+        ChangeLayer(onTrayLayer);
 
         rb.velocity = Vector3.zero;
         rb.isKinematic = true;
@@ -137,7 +144,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         if (isAddedToBurger)
         {
@@ -188,12 +195,12 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     public void OnFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
     }
 
     public void OnDrop(Vector3 direction, float force)
@@ -234,11 +241,11 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -448,7 +455,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 if (canStick && ((1 << collision.gameObject.layer) & data.stickableLayers) != 0)
                     StickToSurface(collision);
 
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustThrowed = false;
             }
@@ -456,7 +463,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             {
                 CalculateCollisionRotation(collision);
 
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustDropped = false;
             }
@@ -467,6 +474,11 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         }
 
         
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 
     public void OnUseHold()

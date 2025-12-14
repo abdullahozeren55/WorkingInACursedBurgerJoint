@@ -20,9 +20,11 @@ public class BurgerIngredientData : ScriptableObject
 
     public bool isUseable = false;
     public bool isSauce = false;
+    public bool isThrowable = true;
     public int sauceDropAmount = 5;
     public float targetDropScale = 0.8f;
     public float randomMultiplier = 1.3f;
+    public float throwMultiplier = 1f;
     [Space]
     public IngredientType ingredientType;
     public SauceBottle.SauceType sauceType;

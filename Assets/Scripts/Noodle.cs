@@ -12,6 +12,13 @@ public class Noodle : MonoBehaviour, IGrabable
     public NoodleManager.NoodleStatus NoodleStatus;
     public Cookable.CookAmount CookAmount; //RAW USED FOR RAW, REGULAR USED FOR COOKED, BURNT USED FOR FINISHED
 
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => leftHandPoint; set => leftHandPoint = value; }
+    [SerializeField] private Transform leftHandPoint;
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
+
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
@@ -47,6 +54,7 @@ public class Noodle : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private Vector3 hologramPos;
     private Quaternion hologramRotation;
@@ -72,6 +80,7 @@ public class Noodle : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         CanGetFocused = true;
 
@@ -95,7 +104,7 @@ public class Noodle : MonoBehaviour, IGrabable
         else if (NoodleStatus == NoodleManager.NoodleStatus.LidClosed)
             NoodleStatus = NoodleManager.NoodleStatus.WaitingToBeReady;
 
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(ungrabableLayer);
 
         IsGrabbed = false;
 
@@ -107,7 +116,7 @@ public class Noodle : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         SetColliders(false);
 
@@ -132,7 +141,7 @@ public class Noodle : MonoBehaviour, IGrabable
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
 
     }
@@ -140,7 +149,7 @@ public class Noodle : MonoBehaviour, IGrabable
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
         }
 
     }
@@ -183,11 +192,11 @@ public class Noodle : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -242,13 +251,13 @@ public class Noodle : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustThrowed = false;
             }
             else if (isJustDropped)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustDropped = false;
             }
@@ -440,5 +449,10 @@ public class Noodle : MonoBehaviour, IGrabable
 
         openLidCoroutine = null;
 
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 }

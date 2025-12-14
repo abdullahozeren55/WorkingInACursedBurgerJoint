@@ -17,6 +17,11 @@ public class Trash : MonoBehaviour, IGrabable
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public TrashData data;
 
@@ -31,6 +36,7 @@ public class Trash : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private bool isJustThrowed;
     private bool isJustDropped;
@@ -46,6 +52,7 @@ public class Trash : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGrabbed = false;
 
@@ -57,7 +64,7 @@ public class Trash : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         col.enabled = false;
 
@@ -78,12 +85,12 @@ public class Trash : MonoBehaviour, IGrabable
     public void OnFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
     }
 
     public void OnDrop(Vector3 direction, float force)
@@ -120,11 +127,11 @@ public class Trash : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -178,12 +185,12 @@ public class Trash : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
                 isJustThrowed = false;
             }
             else if (isJustDropped)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
                 isJustDropped = false;
             }
 
@@ -202,5 +209,10 @@ public class Trash : MonoBehaviour, IGrabable
     public void OnUseRelease()
     {
 
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 }

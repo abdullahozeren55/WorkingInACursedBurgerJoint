@@ -23,6 +23,8 @@ public class WholeIngredientData : ScriptableObject
     [Space]
     public string focusTextKey;
     public bool isUseable = false;
+    public bool isThrowable = true;
+    public float throwMultiplier = 1f;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public float minForce = 0.2f;

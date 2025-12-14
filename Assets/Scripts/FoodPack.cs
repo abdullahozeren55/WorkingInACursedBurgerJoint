@@ -10,6 +10,11 @@ public class FoodPack : MonoBehaviour, IGrabable
     private bool isGrabbed;
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
@@ -20,7 +25,8 @@ public class FoodPack : MonoBehaviour, IGrabable
 
     public FoodPackData data;
 
-    public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; }
+    public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; } 
+
     [Space]
 
     [SerializeField] private Rigidbody[] allRB;
@@ -35,6 +41,7 @@ public class FoodPack : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private bool isJustThrowed;
     private bool isJustDropped;
@@ -51,6 +58,7 @@ public class FoodPack : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGrabbed = false;
 
@@ -60,7 +68,7 @@ public class FoodPack : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        ChangeLayer(ungrabableLayer);
+        ChangeLayer(grabbedLayer);
 
         col.enabled = false;
 
@@ -132,7 +140,7 @@ public class FoodPack : MonoBehaviour, IGrabable
 
     public void Open(bool shouldExplode)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(ungrabableLayer);
         meshRenderer.enabled = false;
         col.enabled = false;
 
@@ -167,7 +175,7 @@ public class FoodPack : MonoBehaviour, IGrabable
         Destroy(gameObject);
     }
 
-    private void ChangeLayer(int layer)
+    public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
 

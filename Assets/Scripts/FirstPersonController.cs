@@ -166,7 +166,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private LayerMask groundTypeLayers;
     [SerializeField] private GameObject groundTypeCheckRayPoint;
     private float footstepTimer = 0f;
-    private Material currentGroundMaterial;
     private AudioClip lastPlayedFootstep;
 
     private float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : IsSprinting ? baseStepSpeed * sprintStepMultiplier : baseStepSpeed;
@@ -501,23 +500,7 @@ public class FirstPersonController : MonoBehaviour
             anim.SetBool("isGrounded", false);
             anim.SetTrigger("jump");
 
-            FindCurrentGroundMaterial(1.9f);
-
-            if (currentGroundMaterial != null)
-            {
-                if (currentGroundMaterial.name.Contains("Wood"))
-                    PlayJumpLand(woodJumpClips, true);
-                else if (currentGroundMaterial.name.Contains("Metal"))
-                    PlayJumpLand(metalJumpClips, true);
-                else if (currentGroundMaterial.name.Contains("Grass"))
-                    PlayJumpLand(grassJumpClips, true);
-                else if (currentGroundMaterial.name.Contains("Stone"))
-                    PlayJumpLand(stoneJumpClips, true);
-                else if (currentGroundMaterial.name.Contains("Tile"))
-                    PlayJumpLand(tileJumpClips, true);
-                else if (currentGroundMaterial.name.Contains("Gravel"))
-                    PlayJumpLand(gravelJumpClips, true);
-            }
+            CheckSurfaceAndPlaySound(1.9f, true, true);
 
             moveDirection.y = jumpForce;
 
@@ -535,23 +518,7 @@ public class FirstPersonController : MonoBehaviour
 
             if ((!jumpLandAudioSource.isPlaying && !isBeingPushedByACustomer && Time.time > lastGroundedTime + noLandSoundCoyoteTime) || justJumped)
             {
-                FindCurrentGroundMaterial(10f);
-
-                if (currentGroundMaterial != null)
-                {
-                    if (currentGroundMaterial.name.Contains("Wood"))
-                        PlayJumpLand(woodLandClips, false);
-                    else if (currentGroundMaterial.name.Contains("Metal"))
-                        PlayJumpLand(metalLandClips, false);
-                    else if (currentGroundMaterial.name.Contains("Grass"))
-                        PlayJumpLand(grassLandClips, false);
-                    else if (currentGroundMaterial.name.Contains("Stone"))
-                        PlayJumpLand(stoneLandClips, false);
-                    else if (currentGroundMaterial.name.Contains("Tile"))
-                        PlayJumpLand(tileLandClips, false);
-                    else if (currentGroundMaterial.name.Contains("Gravel"))
-                        PlayJumpLand(gravelLandClips, false);
-                }
+                CheckSurfaceAndPlaySound(10f, true, false);
             }
 
             justJumped = false;
@@ -1423,25 +1390,66 @@ public class FirstPersonController : MonoBehaviour
 
         if (footstepTimer <= 0f)
         {
-            FindCurrentGroundMaterial(1.9f);
+            CheckSurfaceAndPlaySound(1.9f, false, false);
 
-            if(currentGroundMaterial != null)
+            footstepTimer = GetCurrentOffset;   
+        }
+    }
+
+    private void CheckSurfaceAndPlaySound(float rayDistance, bool isJumpOrLand, bool isJumping)
+    {
+        // 1. Raycast at (LayerMask'e dikkat, zemini gören layer olmalý)
+        if (Physics.Raycast(groundTypeCheckRayPoint.transform.position, Vector3.down, out RaycastHit hit, rayDistance, groundTypeLayers))
+        {
+            // 2. Çarptýðýmýz objede "Kimlik Kartý" (SurfaceIdentity) var mý?
+            if (hit.collider.TryGetComponent<SurfaceIdentity>(out var surface))
             {
-                if (currentGroundMaterial.name.Contains("Wood"))
-                    PlayFootstep(woodClips);
-                else if (currentGroundMaterial.name.Contains("Metal"))
-                    PlayFootstep(metalClips);
-                else if (currentGroundMaterial.name.Contains("Grass"))
-                    PlayFootstep(grassClips);
-                else if (currentGroundMaterial.name.Contains("Stone"))
-                    PlayFootstep(stoneClips);
-                else if (currentGroundMaterial.name.Contains("Tile"))
-                    PlayFootstep(tileClips);
-                else if (currentGroundMaterial.name.Contains("Gravel"))
-                    PlayFootstep(gravelClips);
+                // Varsa türüne göre ilgili ses dizisini (Array) seç
+                switch (surface.type)
+                {
+                    case SurfaceType.Wood:
+                        SelectAndPlayClips(woodClips, woodJumpClips, woodLandClips, isJumpOrLand, isJumping);
+                        break;
+                    case SurfaceType.Metal:
+                        SelectAndPlayClips(metalClips, metalJumpClips, metalLandClips, isJumpOrLand, isJumping);
+                        break;
+                    case SurfaceType.Grass:
+                        SelectAndPlayClips(grassClips, grassJumpClips, grassLandClips, isJumpOrLand, isJumping);
+                        break;
+                    case SurfaceType.Stone:
+                        SelectAndPlayClips(stoneClips, stoneJumpClips, stoneLandClips, isJumpOrLand, isJumping);
+                        break;
+                    case SurfaceType.Tile:
+                        SelectAndPlayClips(tileClips, tileJumpClips, tileLandClips, isJumpOrLand, isJumping);
+                        break;
+                    case SurfaceType.Gravel:
+                        SelectAndPlayClips(gravelClips, gravelJumpClips, gravelLandClips, isJumpOrLand, isJumping);
+                        break;
+                }
+            }
+            else
+            {
+                // Script yoksa VARSAYILAN sesi çal (Genelde Stone veya Wood olur)
+                // Burayý boþ býrakýrsan script olmayan yerde ses çýkmaz.
+                // Bence Stone varsayýlan olsun:
+                SelectAndPlayClips(stoneClips, stoneJumpClips, stoneLandClips, isJumpOrLand, isJumping);
+            }
+        }
+    }
 
-                footstepTimer = GetCurrentOffset;
-            }      
+    // Yardýmcý Fonksiyon: Hangi array'i kullanacaðýna karar verir ve oynatýr
+    private void SelectAndPlayClips(AudioClip[] walk, AudioClip[] jump, AudioClip[] land, bool isJumpOrLand, bool isJumping)
+    {
+        if (isJumpOrLand)
+        {
+            // Zýplama veya Düþme sesi
+            AudioClip[] targetClips = isJumping ? jump : land;
+            PlayJumpLand(targetClips, isJumping);
+        }
+        else
+        {
+            // Adým sesi
+            PlayFootstep(walk);
         }
     }
 
@@ -1462,40 +1470,6 @@ public class FirstPersonController : MonoBehaviour
     }
 
     private void ChangeCrosshairColor(Color color) => crosshair.color = color;
-
-    private int GetSubMeshIndex(Mesh mesh, int triangleIndex)
-    {
-        if (!mesh.isReadable) return 0;
-
-        var triangleCounter = 0;
-        for (var subMeshIndex = 0; subMeshIndex < mesh.subMeshCount; subMeshIndex++)
-        {
-            var indexCount = mesh.GetSubMesh(subMeshIndex).indexCount;
-            triangleCounter += indexCount / 3;
-            if (triangleIndex < triangleCounter) return subMeshIndex;
-        }
-
-        return 0;
-    }
-
-    private void FindCurrentGroundMaterial(float rayDistance)
-    {
-        Physics.Raycast(groundTypeCheckRayPoint.transform.position, Vector3.down, out RaycastHit hit, rayDistance, groundTypeLayers);
-
-        if (hit.collider)
-        {
-            hit.collider.TryGetComponent<MeshRenderer>(out var renderer);
-
-            if (renderer != null)
-            {
-                var materials = renderer.materials;
-                var index = hit.triangleIndex;
-                var mesh = hit.transform.GetComponent<MeshFilter>().mesh;
-                var subMeshIndex = GetSubMeshIndex(mesh, index);
-                currentGroundMaterial = materials[subMeshIndex];
-            }
-        }
-    }
 
     private void PlayFootstep(AudioClip[] audioClips)
     {

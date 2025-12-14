@@ -11,6 +11,14 @@ public class SaucePack : MonoBehaviour, IGrabable
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
 
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => leftHandPoint; set => leftHandPoint = value; }
+    [SerializeField] private Transform leftHandPoint;
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
+
+
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
@@ -36,6 +44,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private Vector3 hologramPos;
     private Quaternion hologramRotation;
@@ -54,6 +63,7 @@ public class SaucePack : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGrabbed = false;
         IsGettingPutOnHologram = false;
@@ -71,7 +81,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
         NoodleManager.Instance.SetHologramSaucePack(false);
 
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(ungrabableLayer);
 
         IsGrabbed = false;
 
@@ -83,7 +93,7 @@ public class SaucePack : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         col.enabled = false;
 
@@ -109,7 +119,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
 
     }
@@ -117,7 +127,7 @@ public class SaucePack : MonoBehaviour, IGrabable
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
         {
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
         }
 
     }
@@ -160,11 +170,11 @@ public class SaucePack : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -219,13 +229,13 @@ public class SaucePack : MonoBehaviour, IGrabable
             {
                 if (isJustThrowed)
                 {
-                    gameObject.layer = grabableLayer;
+                    ChangeLayer(grabableLayer);
 
                     isJustThrowed = false;
                 }
                 else if (isJustDropped)
                 {
-                    gameObject.layer = grabableLayer;
+                    ChangeLayer(grabableLayer);
 
                     isJustDropped = false;
                 }
@@ -277,5 +287,10 @@ public class SaucePack : MonoBehaviour, IGrabable
     public void OnUseRelease()
     {
         throw new System.NotImplementedException();
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 }

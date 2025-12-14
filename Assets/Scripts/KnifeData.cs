@@ -7,6 +7,8 @@ using UnityEngine;
 public class KnifeData : ScriptableObject
 {
     public bool isUseable = true;
+    public bool isThrowable = true;
+    public float throwMultiplier = 1f;
     public PlayerManager.HandGrabTypes handGrabType;
     [Space]
     public LayerMask stabableLayers;

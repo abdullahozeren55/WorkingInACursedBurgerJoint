@@ -13,6 +13,14 @@ public class Kettle : MonoBehaviour, IGrabable
     public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
     [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
 
+    public bool IsThrowable { get => isThrowable; set => isThrowable = value; }
+    [SerializeField] private bool isThrowable = true;
+
+    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public float ThrowMultiplier { get => throwMultiplier; set => throwMultiplier = value; }
+    [SerializeField] private float throwMultiplier = 1f;
+
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
@@ -66,6 +74,7 @@ public class Kettle : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private Vector3 hologramPos;
     private Quaternion hologramRotation;
@@ -85,6 +94,7 @@ public class Kettle : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGettingPutOnHologram = false;
         CanGetFocused = true;
@@ -103,7 +113,7 @@ public class Kettle : MonoBehaviour, IGrabable
 
         NoodleManager.Instance.SetHologramKettle(false);
 
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(ungrabableLayer);
 
         IsGrabbed = false;
 
@@ -115,7 +125,7 @@ public class Kettle : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         col.enabled = false;
 
@@ -136,12 +146,12 @@ public class Kettle : MonoBehaviour, IGrabable
     public void OnFocus()
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
         if (!IsGettingPutOnHologram && !isJustDropped && !isJustThrowed && CanGetFocused)
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
     }
 
     public void OnDrop(Vector3 direction, float force)
@@ -182,11 +192,11 @@ public class Kettle : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -201,13 +211,13 @@ public class Kettle : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustThrowed = false;
             }
             else if (isJustDropped)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustDropped = false;
             }
@@ -282,7 +292,7 @@ public class Kettle : MonoBehaviour, IGrabable
         transform.position = hologramPos;
         transform.rotation = hologramRotation;
 
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(ungrabableLayer);
 
         CanGetFocused = false;
         IsGettingPutOnHologram = false;
@@ -329,5 +339,10 @@ public class Kettle : MonoBehaviour, IGrabable
 
         waterPourCoroutine = null;
 
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 }

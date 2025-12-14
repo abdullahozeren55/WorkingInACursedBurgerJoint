@@ -14,6 +14,12 @@ public class Mop : MonoBehaviour, IGrabable
     private bool outlineShouldBeRed;
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
+    public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
+
+    public Transform LeftHandPoint { get => leftHandPoint; set => leftHandPoint = value; }
+    [SerializeField] private Transform leftHandPoint;
+
+    public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
 
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
 
@@ -29,6 +35,7 @@ public class Mop : MonoBehaviour, IGrabable
     private int grabableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
+    private int grabbedLayer;
 
     private bool isJustThrowed;
     private bool isJustDropped;
@@ -46,6 +53,7 @@ public class Mop : MonoBehaviour, IGrabable
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
+        grabbedLayer = LayerMask.NameToLayer("Grabbed");
 
         IsGrabbed = false;
 
@@ -81,12 +89,12 @@ public class Mop : MonoBehaviour, IGrabable
     public void OnFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
     }
 
     public void OnGrab(Transform grabPoint)
     {
-        gameObject.layer = ungrabableLayer;
+        ChangeLayer(grabbedLayer);
 
         triggerCol.enabled = false;
         col.enabled = false;
@@ -110,7 +118,7 @@ public class Mop : MonoBehaviour, IGrabable
     public void OnLoseFocus()
     {
         if (!isJustDropped && !isJustThrowed)
-            gameObject.layer = grabableLayer;
+            ChangeLayer(grabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
@@ -155,11 +163,11 @@ public class Mop : MonoBehaviour, IGrabable
     {
         if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
         {
-            gameObject.layer = interactableOutlinedRedLayer;
+            ChangeLayer(interactableOutlinedRedLayer);
         }
         else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
         {
-            gameObject.layer = grabableOutlinedLayer;
+            ChangeLayer(grabableOutlinedLayer);
         }
     }
 
@@ -215,13 +223,13 @@ public class Mop : MonoBehaviour, IGrabable
             {
                 Invoke("TurnOffTriggerCol", 0.1f);
 
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustThrowed = false;
             }
             else if (isJustDropped)
             {
-                gameObject.layer = grabableLayer;
+                ChangeLayer(grabableLayer);
 
                 isJustDropped = false;
             }
@@ -264,6 +272,11 @@ public class Mop : MonoBehaviour, IGrabable
         }
 
         useCoroutine = StartCoroutine(Use(false));
+    }
+
+    public void ChangeLayer(int layer)
+    {
+        gameObject.layer = layer;
     }
 
     private IEnumerator Use(bool shouldUse)
