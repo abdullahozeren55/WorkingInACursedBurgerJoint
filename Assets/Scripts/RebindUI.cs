@@ -1,8 +1,9 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 using UnityEngine.UI;
-using System.Collections; // Coroutine için gerekli
+using System.Collections;
+using System.Collections.Generic; // List iÃ§in
 
 public class RebindUI : MonoBehaviour
 {
@@ -10,25 +11,42 @@ public class RebindUI : MonoBehaviour
     [SerializeField] private InputActionReference inputActionReference;
 
     [Header("Ayarlar")]
-    [SerializeField] private bool excludeGamepad = false; // True ise: Klavye + Mouse kabul eder, Gamepad'i dışlar.
+    [SerializeField] private bool excludeGamepad = false;
     [SerializeField] private int selectedBindingIndex = 0;
 
-    [Header("UI Bileşenleri")]
-    [SerializeField] private TMP_Text actionNameText;
-    [SerializeField] private TMP_Text bindingText;
-    [SerializeField] private GameObject helperText;
-    [SerializeField] private GameObject keyText;
-    [SerializeField] private Button myButton;
+    [Header("Klavye GÃ¶rseli (Buton 1)")]
+    [SerializeField] private GameObject keyboardButtonObj; // Klavye butonu (Parent)
+    [SerializeField] private TMP_Text keyboardButtonText;  // Ä°Ã§indeki yazÄ±
+    [SerializeField] private Button keyboardButtonComp;    // TÄ±klanma Ã¶zelliÄŸi iÃ§in
+
+    [Header("Mouse GÃ¶rseli (Buton 2)")]
+    [SerializeField] private GameObject mouseButtonObj;    // Mouse butonu (Parent)
+    [SerializeField] private Image mouseButtonImage;       // Ä°Ã§indeki ikon resmi
+    [SerializeField] private Button mouseButtonComp;       // TÄ±klanma Ã¶zelliÄŸi iÃ§in
+
+    [Header("Mouse Sprite TanÄ±mlarÄ±")]
+    [Tooltip("Unity'den gelen tuÅŸ ismi (Ã¶rn: leftButton) ile Sprite eÅŸleÅŸmesi")]
+    [SerializeField] private List<MouseIconMap> mouseIcons;
+
+    [Header("Helper (YanÄ±p SÃ¶nen YazÄ±)")]
+    [SerializeField] private GameObject helperTextObj;     // "Bir tuÅŸa basÄ±n..." objesi
+    [SerializeField] private TMP_Text helperTextComp;      // Alpha ayarÄ± iÃ§in Text bileÅŸeni
 
     private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
     private InputAction _targetAction;
-
     private static bool isAnyRebindingInProgress = false;
+    private Coroutine _pulseCoroutine; // YanÄ±p sÃ¶nme animasyonu iÃ§in
+
+    [System.Serializable]
+    public struct MouseIconMap
+    {
+        public string controlName; // Ã¶rn: "leftButton", "rightButton", "middleButton"
+        public Sprite icon;
+    }
 
     private void Start()
     {
-        if (myButton == null) myButton = GetComponent<Button>();
-
+        // 1. Hedef Aksiyonu Bul
         string actionId = inputActionReference.action.id.ToString();
 
         if (InputManager.Instance != null)
@@ -40,6 +58,9 @@ public class RebindUI : MonoBehaviour
             _targetAction = inputActionReference.action;
         }
 
+        helperTextObj.SetActive(false);
+
+        // 2. BaÅŸlangÄ±Ã§ta doÄŸru butonu gÃ¶ster
         UpdateUI();
     }
 
@@ -48,7 +69,7 @@ public class RebindUI : MonoBehaviour
         if (LocalizationManager.Instance != null)
             LocalizationManager.Instance.OnLanguageChanged += UpdateUI;
 
-        UpdateUI(); // Açılır açılmaz güncelle
+        UpdateUI();
     }
 
     private void OnDisable()
@@ -59,7 +80,8 @@ public class RebindUI : MonoBehaviour
             LocalizationManager.Instance.OnLanguageChanged -= UpdateUI;
     }
 
-    // Butona basınca artık Coroutine başlatıyoruz (Bekleme için)
+    // --- REBIND BAÅLATMA ---
+    // Bu fonksiyonu hem Klavye Butonuna hem Mouse Butonuna onClick olarak vereceksin.
     public void StartRebinding()
     {
         StartCoroutine(StartRebindingRoutine());
@@ -71,63 +93,79 @@ public class RebindUI : MonoBehaviour
         if (_targetAction == null) { Debug.LogError("HATA: Hedef Aksiyon Yok!"); yield break; }
 
         isAnyRebindingInProgress = true;
-        if (myButton != null) myButton.interactable = false;
 
-        // --- KRİTİK NOKTA 1: GECİKME ---
-        // Kullanıcı butona tıkladı, parmağını çekmesi için 0.2sn veriyoruz.
-        // Böylece "Sol Tık" anında algılanıp menü kapanmıyor.
+        // 1. TÄ±klamayÄ± engelle
+        if (keyboardButtonComp) keyboardButtonComp.interactable = false;
+        if (mouseButtonComp) mouseButtonComp.interactable = false;
+
         yield return new WaitForSecondsRealtime(0.1f);
 
+        // 2. Aksiyonu durdur
         _targetAction.Disable();
 
-        keyText.SetActive(false);
-        helperText.SetActive(true);
+        // 3. GÃ–RSEL DÃœZENLEME (Senin istediÄŸin yapÄ±)
+        keyboardButtonObj.SetActive(false); // ButonlarÄ± gizle
+        mouseButtonObj.SetActive(false);
+        helperTextObj.SetActive(true);      // Helper'Ä± aÃ§
 
-        // Operasyonu Hazırla
+        // 4. Animasyonu BaÅŸlat (Ping Pong)
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+        _pulseCoroutine = StartCoroutine(PulseHelperText());
+
+        // 5. Operasyonu BaÅŸlat
         var rebindOperation = _targetAction.PerformInteractiveRebinding(selectedBindingIndex);
-
-        // --- KRİTİK NOKTA 2: FİLTRELEME MANTIĞI ---
 
         if (excludeGamepad)
         {
-            // SENARYO: KLAVYE & MOUSE MENÜSÜ
-            // Gamepad'i yasakla
+            // Klavye + Mouse Modu
             rebindOperation.WithControlsExcluding("<Gamepad>");
-
-            // Mouse'un kendisini değil, HAREKETİNİ yasakla (Delta ve Position)
-            // Böylece tıklamalar serbest, ama fareyi kaydırmak tuş ataması yapmaz.
             rebindOperation.WithControlsExcluding("<Mouse>/position");
             rebindOperation.WithControlsExcluding("<Mouse>/delta");
         }
         else
         {
-            // SENARYO: GAMEPAD MENÜSÜ
-            // Sadece Gamepad'i kabul et
+            // Gamepad Modu
             rebindOperation.WithControlsHavingToMatchPath("<Gamepad>");
         }
 
-        // Ortak Ayarlar
-        rebindOperation.WithControlsExcluding("<Pointer>/position"); // Dokunmatik ekran vs için garanti olsun
+        rebindOperation.WithControlsExcluding("<Pointer>/position");
         rebindOperation.WithCancelingThrough("<Keyboard>/escape");
         rebindOperation.OnComplete(operation => RebindCompleted());
         rebindOperation.OnCancel(operation => RebindCompleted());
 
-        // Başlat
         _rebindingOperation = rebindOperation.Start();
+    }
+
+    // --- YANIP SÃ–NME ANÄ°MASYONU ---
+    private IEnumerator PulseHelperText()
+    {
+        if (helperTextComp == null) yield break;
+
+        float alpha = 1f;
+        while (true)
+        {
+            // Realtime kullandÄ±k ki Pause menÃ¼sÃ¼nde de yanÄ±p sÃ¶nsÃ¼n
+            float time = Time.unscaledTime * 3f; // HÄ±z Ã§arpanÄ±
+            alpha = Mathf.PingPong(time, 1f); // 0 ile 1 arasÄ± gider gelir
+
+            // Text'in rengini gÃ¼ncelle (sadece Alpha deÄŸiÅŸir)
+            Color c = helperTextComp.color;
+            c.a = 0.2f + (alpha * 0.8f); // Tam kaybolmasÄ±n, min 0.2 olsun
+            helperTextComp.color = c;
+
+            yield return null;
+        }
     }
 
     private void RebindCompleted()
     {
         StopRebindingLogic();
-
-        if (InputManager.Instance != null)
-        {
-            InputManager.Instance.SaveBindingOverrides();
-        }
+        if (InputManager.Instance != null) InputManager.Instance.SaveBindingOverrides();
     }
 
     private void StopRebindingLogic()
     {
+        // Operasyonu temizle
         if (_rebindingOperation != null)
         {
             _rebindingOperation.Dispose();
@@ -136,117 +174,199 @@ public class RebindUI : MonoBehaviour
 
         if (_targetAction != null) _targetAction.Enable();
 
-        if (helperText != null) helperText.SetActive(false);
-        if (keyText != null) keyText.SetActive(true);
+        // Animasyonu durdur
+        if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
 
-        // --- DEĞİŞİKLİK BURADA: Butonu hemen açma! ---
-        // myButton.interactable = true; // ESKİSİ BUNU SİL
+        // Helper'Ä± kapat
+        if (helperTextObj != null) helperTextObj.SetActive(false);
 
-        // YENİSİ: Butonu açmak için biraz bekle
-        StartCoroutine(EnableButtonAfterDelay());
-
+        // Kilitleri kaldÄ±r ama hemen aÃ§ma (Gecikmeli)
         isAnyRebindingInProgress = false;
 
+        // UI'Ä± gÃ¼ncelle (Bu fonksiyon butonlarÄ± tekrar aÃ§acak)
         UpdateUI();
+
+        // ButonlarÄ± tÄ±klanabilir yap (Gecikmeli)
+        StartCoroutine(EnableButtonsAfterDelay());
     }
 
-    private IEnumerator EnableButtonAfterDelay()
+    private IEnumerator EnableButtonsAfterDelay()
     {
-        // 0.2 saniye bekle ki "Sol Tık" olayı sönümlensin
         yield return new WaitForSecondsRealtime(0.1f);
-
-        if (myButton != null)
-            myButton.interactable = true;
+        if (keyboardButtonComp) keyboardButtonComp.interactable = true;
+        if (mouseButtonComp) mouseButtonComp.interactable = true;
     }
 
+    // --- KRÄ°TÄ°K BÃ–LÃœM: UI GÃœNCELLEME ---
     public void UpdateUI()
     {
-        if (_targetAction != null)
+        if (_targetAction == null) return;
+
+        // 1. Ham path'i al (Ã¶rn: "<Keyboard>/space" veya "<Mouse>/leftButton")
+        // Not: effectivePath kullanmak daha garantidir
+        string bindingPath = _targetAction.bindings[selectedBindingIndex].effectivePath;
+
+        // EÄŸer override varsa onu, yoksa default'u alÄ±r
+        // Ancak biz Unity'nin o an neyi seÃ§ili tuttuÄŸunu binding mask'ten de anlayabiliriz
+        // Daha gÃ¼venli yÃ¶ntem: GetBindingDisplayString kullanÄ±p cihazÄ± tahmin etmek
+        // Ama senin durumunda Path kontrolÃ¼ en temizi.
+
+        // EÄŸer binding override yapÄ±lmÄ±ÅŸsa path deÄŸiÅŸmiÅŸ olabilir.
+        // Garanti olsun diye binding'in override path'ine bakalÄ±m.
+        if (!string.IsNullOrEmpty(_targetAction.bindings[selectedBindingIndex].overridePath))
         {
-            // 1. Ham veriyi al
-            string rawName = _targetAction.GetBindingDisplayString(selectedBindingIndex, InputBinding.DisplayStringOptions.DontUseShortDisplayNames);
+            bindingPath = _targetAction.bindings[selectedBindingIndex].overridePath;
+        }
 
-            // 2. Çeviriye sok
-            string prettyName = GetPrettyName(rawName);
+        // 2. AyrÄ±mÄ± Yap: Klavye mi, Mouse mu?
+        bool isMouse = bindingPath.Contains("<Mouse>");
 
-            // 3. Ekrana yaz (Invariant kullanarak)
-            if (bindingText != null)
-            {
-                bindingText.text = prettyName.ToUpperInvariant();
-            }
+        if (isMouse)
+        {
+            // --- MOUSE MODU ---
+            keyboardButtonObj.SetActive(false);
+            mouseButtonObj.SetActive(true);
+
+            // Ä°konu ayarla
+            // Path genelde "<Mouse>/leftButton" ÅŸeklindedir.
+            // Sadece "leftButton" kÄ±smÄ±nÄ± alalÄ±m.
+            string controlName = bindingPath.Replace("<Mouse>/", "").Trim();
+
+            Sprite icon = GetMouseSprite(controlName);
+            if (mouseButtonImage != null) mouseButtonImage.sprite = icon;
+        }
+        else
+        {
+            // --- KLAVYE MODU ---
+            mouseButtonObj.SetActive(false);
+            keyboardButtonObj.SetActive(true);
+
+            // YazÄ±yÄ± ayarla
+            string displayString = _targetAction.GetBindingDisplayString(selectedBindingIndex, InputBinding.DisplayStringOptions.DontUseShortDisplayNames);
+            string prettyName = GetKeyboardKeyText(displayString);
+
+            if (keyboardButtonText != null) keyboardButtonText.text = prettyName;
         }
     }
 
-    private string GetPrettyName(string originalName)
+    // Mouse ismine gÃ¶re Sprite getiren fonksiyon
+    private Sprite GetMouseSprite(string controlName)
+    {
+        // Inspector'daki listeden ara
+        foreach (var item in mouseIcons)
+        {
+            if (item.controlName == controlName)
+                return item.icon;
+        }
+
+        // Bulamazsa ilkini veya null dÃ¶ndÃ¼r
+        Debug.LogWarning($"Mouse ikonu bulunamadÄ±: {controlName}");
+        return null;
+    }
+
+    // ... (Senin GetKeyboardKeyText fonksiyonun AYNEN BURAYA GELECEK) ...
+    // Kopyala yapÄ±ÅŸtÄ±r yaparken Ã¶nceki mesajÄ±ndaki GetKeyboardKeyText'i buraya koymayÄ± unutma.
+    private string GetKeyboardKeyText(string originalName)
     {
         if (string.IsNullOrEmpty(originalName)) return "NONE";
 
-        // Mevcut dil kodunu al (Senin LocalizationManager'dan)
-        // Eğer Manager'da "CurrentLanguage" diye public değişken yoksa PlayerPrefs'ten de bakabiliriz.
-        // Ama en temizi Manager'a sormaktır. 
-        // Varsayalım ki LocalizationManager.Instance.CurrentLanguageKey bize "tr" veya "en" veriyor.
+        // Unity'den gelen ismi temizle
+        string cleanName = originalName.Replace("Keyboard/", "").Trim();
 
+        // --- 1. "Ä°" ve "I" AYRIMI (KESÄ°N Ã‡Ã–ZÃœM) ---
+        string lowerRaw = cleanName.ToLowerInvariant();
+
+        if (lowerRaw == "i") return "Ä°"; // KÃ¼Ã§Ã¼k i (noktalÄ±) -> BÃ¼yÃ¼k Ä°
+        if (lowerRaw == "Ä±") return "I"; // KÃ¼Ã§Ã¼k Ä± (noktasÄ±z) -> BÃ¼yÃ¼k I
+
+        // ArtÄ±k diÄŸerleri iÃ§in bÃ¼yÃ¼tebiliriz
+        string upperKey = cleanName.ToUpperInvariant();
+
+        // --- Dil KontrolÃ¼ ---
         string lang = "en";
         if (LocalizationManager.Instance != null)
-            lang = LocalizationManager.Instance.GetCurrentLanguageCode(); // Veya senin değişkenin adı neyse
+            lang = LocalizationManager.Instance.GetCurrentLanguageCode();
         else
             lang = PlayerPrefs.GetString("Language", "en");
 
         bool isTR = lang == "tr";
 
-        // Unity bazen "Left Button" bazen "LMB" döndürebilir ayarlara göre.
-        // Gelen stringi temizleyelim
-        string cleanName = originalName.Trim();
+        // --- 2. ADIM: Ã–ZEL TUÅLAR ---
 
-        // --- TÜRKÇE ÇEVİRİLER ---
-        if (isTR)
+        switch (upperKey)
         {
-            switch (cleanName)
-            {
-                case "Space": return "BOŞLUK";
-                case "Enter": return "GİRİŞ";
-                case "Left Shift": return "SOL SHIFT";
-                case "Right Shift": return "SAĞ SHIFT";
-                case "Left Ctrl": return "SOL CTRL";
-                case "Right Ctrl": return "SAĞ CTRL";
-                case "Left Alt": return "SOL ALT";
-                case "Right Alt": return "SAĞ ALT";
-                case "Left Button": return "SOL TIK";
-                case "Right Button": return "SAĞ TIK";
-                case "Middle Button": return "ORTA TIK";
-                case "Escape": return "ESC";
-                case "Tab": return "TAB";
-                case "Caps Lock": return "CAPS LOCK";
-                case "Backspace": return "SİLME";
-                // Ok Tuşları
-                case "Up Arrow": return "YUKARI OK";
-                case "Down Arrow": return "AŞAĞI OK";
-                case "Left Arrow": return "SOL OK";
-                case "Right Arrow": return "SAĞ OK";
-                // Numpad
-                case "Numpad Enter": return "NUM GİRİŞ";
-                // Eksik varsa buraya eklersin...
-                case "Forward": return "İLERİ";
-                case "Back": return "GERİ";
-                default:
-                    // Eğer listede yoksa (örn: "W", "A", "5") olduğu gibi döndür ama TR karakter sorunu olmasın
-                    return cleanName;
-            }
+            // Temel TuÅŸlar
+            case "SPACE": return isTR ? "BOÅLUK" : "SPACE";
+            case "ENTER": case "RETURN": return isTR ? "GÄ°RÄ°Å" : "ENTER";
+
+            case "TAB": return "TAB";
+            case "ESCAPE": case "ESC": return "ESC";
+            case "CAPS LOCK": case "CAPSLOCK": return "CAPS";
+            case "BACKSPACE": return isTR ? "SÄ°L" : "BACK";
+
+            // --- MODIFIER TUÅLAR ---
+            case "LEFT SHIFT":
+            case "LSHIFT":
+            case "SHIFT":
+                return isTR ? "SOL SHIFT" : "L.SHIFT";
+            case "RIGHT SHIFT":
+            case "RSHIFT":
+                return isTR ? "SAÄ SHIFT" : "R.SHIFT";
+
+            case "LEFT CTRL":
+            case "LCTRL":
+            case "CTRL":
+            case "CONTROL":
+            case "LEFT CONTROL":
+                return isTR ? "SOL CTRL" : "L.CTRL";
+            case "RIGHT CTRL":
+            case "RCTRL":
+            case "RIGHT CONTROL":
+                return isTR ? "SAÄ CTRL" : "R.CTRL";
+
+            case "LEFT ALT":
+            case "LALT":
+            case "ALT":
+                return isTR ? "SOL ALT" : "L.ALT";
+            case "RIGHT ALT":
+            case "RALT":
+            case "ALT GR":
+                return isTR ? "SAÄ ALT" : "R.ALT";
+
+            // YÃ¶n TuÅŸlarÄ± 
+            case "UP ARROW": case "UP": return "â†‘";
+            case "DOWN ARROW": case "DOWN": return "â†“";
+            case "LEFT ARROW": case "LEFT": return "â†";
+            case "RIGHT ARROW": case "RIGHT": return "â†’";
+
+            // Mouse (Fallback olarak yazÄ± kalsÄ±n ama normalde Sprite gÃ¶rÃ¼necek)
+            case "LEFT BUTTON": case "LMB": return isTR ? "SOL TIK" : "L.CLICK";
+            case "RIGHT BUTTON": case "RMB": return isTR ? "SAÄ TIK" : "R.CLICK";
+            case "MIDDLE BUTTON": case "MMB": return isTR ? "ORTA TIK" : "M.CLICK";
+            case "FORWARD": return isTR ? "Ä°LERÄ°" : "FWD";
+            case "BACK": return isTR ? "GERÄ°" : "BACK";
         }
-        // --- İNGİLİZCE CİLALAMA (Opsiyonel) ---
-        else
+
+        // --- 3. ADIM: NUMPAD FÄ°LTRESÄ° ---
+        if (upperKey.StartsWith("NUM"))
         {
-            switch (cleanName)
+            string suffix = upperKey.Replace("NUMPAD", "").Replace("NUM", "").Trim();
+            if (suffix == "ENTER") return isTR ? "NUM GÄ°RÄ°Å" : "NUM ENTER";
+
+            if (int.TryParse(suffix, out int number))
             {
-                case "Left Button": return "LEFT CLICK";
-                case "Right Button": return "RIGHT CLICK";
-                case "Middle Button": return "MIDDLE CLICK";
-                case "Up Arrow": return "UP";
-                case "Down Arrow": return "DOWN";
-                case "Left Arrow": return "LEFT";
-                case "Right Arrow": return "RIGHT";
-                default: return cleanName;
+                return "NUM " + number;
             }
+            return "?";
         }
+
+        // --- 4. ADIM: TEK KARAKTER KONTROLÃœ ---
+        if (upperKey.Length == 1)
+        {
+            string allAllowed = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789Ã‡ÄÄ°Ã–ÅÃœI";
+            if (allAllowed.Contains(upperKey)) return upperKey;
+        }
+
+        return "?";
     }
 }
