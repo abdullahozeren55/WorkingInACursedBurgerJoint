@@ -47,6 +47,8 @@ public class InputManager : MonoBehaviour
         // Kontrol sýnýfýný baþlat
         _gameControls = new GameControls();
 
+        LoadBindingOverrides();
+
         // Varsayýlan deðerler
         mouseSensitivity = PlayerPrefs.GetFloat("MouseSens", 1.0f);
         gamepadSensitivity = PlayerPrefs.GetFloat("GamepadSens", 1.0f);
@@ -84,6 +86,34 @@ public class InputManager : MonoBehaviour
     {
         // Oyundan çýkýnca veya script kapanýnca dinlemeyi býrak
         _gameControls.Disable();
+    }
+
+    private void LoadBindingOverrides()
+    {
+        // PlayerPrefs'te kayýtlý bir ayar var mý?
+        if (PlayerPrefs.HasKey("Rebinds"))
+        {
+            string rebinds = PlayerPrefs.GetString("Rebinds");
+            // Beyne (GameControls) bu ayarlarý enjekte et
+            _gameControls.LoadBindingOverridesFromJson(rebinds);
+        }
+    }
+
+    // 2. Ayarlarý Kaydet (Tuþ deðiþince)
+    public void SaveBindingOverrides()
+    {
+        // Beyindeki tüm deðiþiklikleri JSON (metin) formatýna çevir
+        string rebinds = _gameControls.SaveBindingOverridesAsJson();
+        PlayerPrefs.SetString("Rebinds", rebinds);
+        PlayerPrefs.Save();
+    }
+
+    // 3. Sýfýrla (Reset Butonu için)
+    public void ResetAllBindings()
+    {
+        _gameControls.RemoveAllBindingOverrides();
+        PlayerPrefs.DeleteKey("Rebinds");
+        // Ýstersen burada UI'ý yenilemek için bir event tetikleyebilirsin
     }
 
     // --- OYUNCU ÝÇÝN TERCÜMELER ---
@@ -229,5 +259,11 @@ public class InputManager : MonoBehaviour
     {
         crouchIsToggle = isToggle;
         _isCrouchingToggled = false;
+    }
+
+    public InputAction GetAction(string actionId)
+    {
+        // Guid parse etmeye gerek yok, FindAction string olarak ID de kabul eder
+        return _gameControls.FindAction(actionId);
     }
 }
