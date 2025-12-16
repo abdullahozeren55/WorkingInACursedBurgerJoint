@@ -23,16 +23,25 @@ public class MenuManager : MonoBehaviour
     [Header("Settings Sub-Panels")]
     // Ayarlarýn Ana Menüsü (Main Settings Page)
     public RectTransform settingsMainRect;
-
-    // Alt Menüler (Bunlar ekranýn dýþýnda, yukarýda ve aþaðýda bekleyecek)
     public RectTransform settingsGeneralRect;
     public RectTransform settingsAudioRect;
     public RectTransform settingsControlsRect;
+    public RectTransform settingsControlsKeyboardRect; // Klavye/Mouse Sayfasý
+    public RectTransform settingsControlsGamepadRect;  // Gamepad Sayfasý
 
     public GameObject rebindBlocker;
 
     // Þu an hangi alt menüdeyiz? (Back tuþu için önemli)
-    private enum SettingsState { Main, General, Audio, Controls }
+    private enum SettingsState
+    {
+        Main,
+        General,
+        Audio,
+        Controls,
+        Controls_Keyboard, // Yeni
+        Controls_Gamepad   // Yeni
+    }
+
     private SettingsState currentSettingsState = SettingsState.Main;
 
     [Header("Animation References")]
@@ -71,24 +80,28 @@ public class MenuManager : MonoBehaviour
         myCanvas = GetComponentInChildren<Canvas>();
         if (myCanvas != null) canvasRect = myCanvas.GetComponent<RectTransform>();
 
-        // BAÞLANGIÇ POZÝSYONLARI
-        if (settingsGeneralRect != null && settingsAudioRect != null)
-        {
-            float width = GetCanvasWidth();
-            float height = GetCanvasHeight();
+        float width = GetCanvasWidth();
+        float height = GetCanvasHeight();
 
-            // Genel Ayarlar: YUKARIDA beklesin (+Height)
-            settingsGeneralRect.anchoredPosition = new Vector2(0, height);
+        // Genel Ayarlar: YUKARIDA beklesin (+Height)
+        settingsGeneralRect.anchoredPosition = new Vector2(0, height);
 
-            // Ses Ayarlarý: AÞAÐIDA beklesin (-Height)
-            settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+        // Ses Ayarlarý: AÞAÐIDA beklesin (-Height)
+        settingsAudioRect.anchoredPosition = new Vector2(0, -height);
 
-            // Kontrol Ayarlarý: SAÐDA beklesin (+Width)
-            settingsControlsRect.anchoredPosition = new Vector2(width, 0);
+        // Kontrol Ayarlarý: SAÐDA beklesin (+Width)
+        settingsControlsRect.anchoredPosition = new Vector2(width, 0);
 
-            // Ana Ayarlar Sayfasý: SettingsMenu'nun içinde ortada
-            settingsMainRect.anchoredPosition = Vector2.zero;
-        }
+        // Klavye (Yukarýdan gelecek General gibi)
+        if (settingsControlsKeyboardRect != null)
+            settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
+
+        // Gamepad (Aþaðýdan gelecek Audio gibi)
+        if (settingsControlsGamepadRect != null)
+            settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
+
+        // Ana Ayarlar Sayfasý: SettingsMenu'nun içinde ortada
+        settingsMainRect.anchoredPosition = Vector2.zero;
     }
 
     private void Start()
@@ -136,6 +149,8 @@ public class MenuManager : MonoBehaviour
         settingsGeneralRect.DOKill(true);
         settingsAudioRect.DOKill(true);
         settingsControlsRect.DOKill(true);
+        settingsControlsKeyboardRect.DOKill(true);
+        settingsControlsGamepadRect.DOKill(true);
         isBusy = false;
 
         // 2. Yeni geniþliði al
@@ -175,13 +190,41 @@ public class MenuManager : MonoBehaviour
                     break;
 
                 case SettingsState.Controls:
-                    // Kontroller ortada, Ana sayfa SOLA itilmiþ
+                    // Kontroller ortada
                     settingsControlsRect.anchoredPosition = Vector2.zero;
-                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
 
-                    // Diðerleri yerinde kalsýn
+                    // Alt sayfalar yerlerine (dýþarýya) dönsün
+                    settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
+                    settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
+
+                    // Diðerleri
+                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
                     settingsGeneralRect.anchoredPosition = new Vector2(0, height);
                     settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+                    break;
+
+                // --- YENÝ DURUM: KLAVYE SAYFASI AÇIKSA ---
+                case SettingsState.Controls_Keyboard:
+                    // Klavye ortada
+                    settingsControlsKeyboardRect.anchoredPosition = Vector2.zero;
+
+                    // Kontroller AÞAÐI itilmiþ (Klavye yukarýdan indiði için)
+                    settingsControlsRect.anchoredPosition = new Vector2(0, -height);
+
+                    // Ana sayfa hala solda
+                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
+                    break;
+
+                // --- YENÝ DURUM: GAMEPAD SAYFASI AÇIKSA ---
+                case SettingsState.Controls_Gamepad:
+                    // Gamepad ortada
+                    settingsControlsGamepadRect.anchoredPosition = Vector2.zero;
+
+                    // Kontroller YUKARI itilmiþ (Gamepad aþaðýdan çýktýðý için)
+                    settingsControlsRect.anchoredPosition = new Vector2(0, height);
+
+                    // Ana sayfa hala solda
+                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
                     break;
             }
         }
@@ -196,10 +239,96 @@ public class MenuManager : MonoBehaviour
             settingsMainRect.anchoredPosition = Vector2.zero;
             settingsGeneralRect.anchoredPosition = new Vector2(0, height);
             settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+            settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
+            settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
             currentSettingsState = SettingsState.Main;
         }
 
         Canvas.ForceUpdateCanvases();
+    }
+
+    // --- KLAVYE / MOUSE SAYFASI (YUKARIDAN ÝNER) ---
+    public void OpenControlsKeyboard()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Controls_Keyboard;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Controls Sayfasý: AÞAÐI kaysýn (-Height)
+        settingsControlsRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Klavye Sayfasý: YUKARIDAN gelsin (0)
+        settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height); // Reset
+        settingsControlsKeyboardRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void CloseControlsKeyboard()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Controls; // Geri Controls'a dönüyoruz
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Klavye Sayfasý: YUKARI geri gitsin (+Height)
+        settingsControlsKeyboardRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Controls Sayfasý: AÞAÐIDAN geri gelsin (0)
+        settingsControlsRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    // --- GAMEPAD SAYFASI (AÞAÐIDAN ÇIKAR) ---
+    public void OpenControlsGamepad()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Controls_Gamepad;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Controls Sayfasý: YUKARI kaysýn (+Height)
+        settingsControlsRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Gamepad Sayfasý: AÞAÐIDAN gelsin (0)
+        settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height); // Reset
+        settingsControlsGamepadRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
+    }
+
+    public void CloseControlsGamepad()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        currentSettingsState = SettingsState.Controls; // Geri Controls'a dönüyoruz
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float height = canvasRect.rect.height;
+
+        // 1. Gamepad Sayfasý: AÞAÐI geri gitsin (-Height)
+        settingsControlsGamepadRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true);
+
+        // 2. Controls Sayfasý: YUKARIDAN geri gelsin (0)
+        settingsControlsRect.DOAnchorPosY(0, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() => isBusy = false);
     }
 
     public void OpenGeneralSettings()
@@ -383,14 +512,11 @@ public class MenuManager : MonoBehaviour
     {
         if (isBusy) return;
 
-        // Eðer Ana Menüdeysek -> Çýkýþ Sorusu veya Hiçbir þey
         if (!isSettingsOpen)
         {
-            // Belki çýkýþ popup'ý açarsýn
             return;
         }
 
-        // Eðer Settings Açýk ama Alt Menüdeyiz
         switch (currentSettingsState)
         {
             case SettingsState.General:
@@ -402,8 +528,16 @@ public class MenuManager : MonoBehaviour
             case SettingsState.Controls:
                 CloseControlsSettings();
                 break;
+
+            // --- YENÝ EKLENEN CASELER ---
+            case SettingsState.Controls_Keyboard:
+                CloseControlsKeyboard();
+                break;
+            case SettingsState.Controls_Gamepad:
+                CloseControlsGamepad();
+                break;
+
             case SettingsState.Main:
-                // Alt menüde deðiliz, ana Settings sayfasýndayýz -> Ana Menüye dön
                 CloseSettings();
                 break;
         }
