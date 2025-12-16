@@ -1,36 +1,38 @@
-using UnityEngine;
-// YENÝ INPUT SÝSTEMÝNÝ KULLANMAK ÝÇÝN BU GEREKLÝ:
+ï»¿using UnityEngine;
+// YENÄ° INPUT SÄ°STEMÄ°NÄ° KULLANMAK Ä°Ã‡Ä°N BU GEREKLÄ°:
 using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
-    // Singleton (Her yerden eriþmek için)
+    // Singleton (Her yerden eriÅŸmek iÃ§in)
     public static InputManager Instance;
 
     [Header("Base Settings")]
-    // Mouse Delta genelde çok büyük gelir (pixel pixel), o yüzden onu dizginlemek lazým.
+    // Mouse Delta genelde Ã§ok bÃ¼yÃ¼k gelir (pixel pixel), o yÃ¼zden onu dizginlemek lazÄ±m.
     private const float BASE_MOUSE_MULTIPLIER = 0.05f;
 
-    // Gamepad 0-1 arasý gelir, onu hýzlandýrmak lazým.
-    private const float BASE_GAMEPAD_MULTIPLIER = 40.0f;
+    private const float STICK_DEADZONE = 0.15f; // %15 Ã¶lÃ¼ bÃ¶lge (Drift Ã¶nler)
+    private const float RESPONSE_CURVE = 2.0f;
+    // Gamepad 0-1 arasÄ± gelir, onu hÄ±zlandÄ±rmak lazÄ±m.
+    private const float BASE_GAMEPAD_MULTIPLIER = 50.0f;
 
     [Header("Control Settings")]
     public float mouseSensitivity = 1.0f;
-    public float gamepadSensitivity = 1.0f; // Slider 1.0 iken normal hýz olsun
+    public float gamepadSensitivity = 1.0f; // Slider 1.0 iken normal hÄ±z olsun
     public bool invertY = false;
     public bool sprintIsToggle = false;
     public bool crouchIsToggle = false;
 
     [Header("Gamepad Settings")]
-    public bool swapSticks = false; // Settings.cs'den bunu true/false yapacaðýz
+    public bool swapSticks = false; // Settings.cs'den bunu true/false yapacaÄŸÄ±z
 
     public void SetSwapSticks(bool isSwapped) => swapSticks = isSwapped;
 
-    // Toggle mantýðý için state takibi
+    // Toggle mantÄ±ÄŸÄ± iÃ§in state takibi
     private bool _isSprintingToggled = false;
     private bool _isCrouchingToggled = false;
 
-    // Unity'nin oluþturduðu o C# sýnýfý
+    // Unity'nin oluÅŸturduÄŸu o C# sÄ±nÄ±fÄ±
     private GameControls _gameControls;
 
     public event System.Action OnBindingsReset;
@@ -51,12 +53,12 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Kontrol sýnýfýný baþlat
+        // Kontrol sÄ±nÄ±fÄ±nÄ± baÅŸlat
         _gameControls = new GameControls();
 
         LoadBindingOverrides();
 
-        // Varsayýlan deðerler
+        // VarsayÄ±lan deÄŸerler
         mouseSensitivity = PlayerPrefs.GetFloat("MouseSens", 1.0f);
         gamepadSensitivity = PlayerPrefs.GetFloat("GamepadSens", 1.0f);
         invertY = PlayerPrefs.GetInt("InvertY", 0) == 1;
@@ -67,16 +69,16 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-        // Toggle durumlarýný BURADA deðiþtiriyoruz.
-        // Update her karede 1 kere çalýþýr. Böylece "Double Call" sorunu biter.
+        // Toggle durumlarÄ±nÄ± BURADA deÄŸiÅŸtiriyoruz.
+        // Update her karede 1 kere Ã§alÄ±ÅŸÄ±r. BÃ¶ylece "Double Call" sorunu biter.
 
-        // SPRINT TOGGLE MANTIÐI
+        // SPRINT TOGGLE MANTIÄžI
         if (sprintIsToggle && _gameControls.Player.Sprint.triggered)
         {
             _isSprintingToggled = !_isSprintingToggled;
         }
 
-        // CROUCH TOGGLE MANTIÐI
+        // CROUCH TOGGLE MANTIÄžI
         if (crouchIsToggle && _gameControls.Player.Crouch.triggered)
         {
             _isCrouchingToggled = !_isCrouchingToggled;
@@ -85,141 +87,150 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // Oyuna girince kontrolleri dinlemeye baþla
+        // Oyuna girince kontrolleri dinlemeye baÅŸla
         _gameControls.Enable();
     }
 
     private void OnDisable()
     {
-        // Oyundan çýkýnca veya script kapanýnca dinlemeyi býrak
+        // Oyundan Ã§Ä±kÄ±nca veya script kapanÄ±nca dinlemeyi bÄ±rak
         _gameControls.Disable();
     }
 
     private void LoadBindingOverrides()
     {
-        // PlayerPrefs'te kayýtlý bir ayar var mý?
+        // PlayerPrefs'te kayÄ±tlÄ± bir ayar var mÄ±?
         if (PlayerPrefs.HasKey("Rebinds"))
         {
             string rebinds = PlayerPrefs.GetString("Rebinds");
-            // Beyne (GameControls) bu ayarlarý enjekte et
+            // Beyne (GameControls) bu ayarlarÄ± enjekte et
             _gameControls.LoadBindingOverridesFromJson(rebinds);
         }
     }
 
-    // 2. Ayarlarý Kaydet (Tuþ deðiþince)
+    // 2. AyarlarÄ± Kaydet (TuÅŸ deÄŸiÅŸince)
     public void SaveBindingOverrides()
     {
-        // Beyindeki tüm deðiþiklikleri JSON (metin) formatýna çevir
+        // Beyindeki tÃ¼m deÄŸiÅŸiklikleri JSON (metin) formatÄ±na Ã§evir
         string rebinds = _gameControls.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString("Rebinds", rebinds);
         PlayerPrefs.Save();
     }
 
-    // 3. Sýfýrla (Reset Butonu için)
+    // 3. SÄ±fÄ±rla (Reset Butonu iÃ§in)
     public void ResetAllBindings()
     {
         _gameControls.RemoveAllBindingOverrides();
         PlayerPrefs.DeleteKey("Rebinds");
-        // Ýstersen burada UI'ý yenilemek için bir event tetikleyebilirsin
+        // Ä°stersen burada UI'Ä± yenilemek iÃ§in bir event tetikleyebilirsin
     }
 
-    // --- OYUNCU ÝÇÝN TERCÜMELER ---
+    // --- OYUNCU Ä°Ã‡Ä°N TERCÃœMELER ---
 
     // Hareket (WASD) - Bize Vector2 (x,y) verir
     // Hareket (WASD) - Bize Vector2 (x,y) verir
     public Vector2 GetMovementInput()
     {
-        // 1. Ham verileri oku (WASD veya Sol Stick)
+        // 1. VarsayÄ±lan (Sol Stick / WASD) verisini oku
         Vector2 defaultMove = _gameControls.Player.Movement.ReadValue<Vector2>();
 
-        // 2. SWAP KONTROLÜ
+        // 2. SWAP KONTROLÃœ
         if (swapSticks)
         {
-            // Swap açýksa: Hareket için SAÐ STICK (Look Action) kullanýlacak.
-            // O yüzden "Look" aksiyonunun cihazýna bakýyoruz.
+            // Swap aÃ§Ä±ksa: Hareket iÃ§in SAÄž STICK (Look Action) kullanÄ±lacak.
             var lookDevice = _gameControls.Player.Look.activeControl?.device;
 
-            // Eðer Sað Stick oynatýlýyorsa (ve bu bir Gamepad ise)
+            // EÄŸer SaÄŸ Stick oynatÄ±lÄ±yorsa (ve bu bir Gamepad ise)
             if (lookDevice is Gamepad)
             {
-                // Sað Stick verisini al, hareket verisi olarak döndür
                 Vector2 rightStickVal = _gameControls.Player.Look.ReadValue<Vector2>();
+                // YÃ¼rÃ¼mede kavis (karesini alma) olmaz, doÄŸrusal olmalÄ±. Clamp yeterli.
                 return Vector2.ClampMagnitude(rightStickVal, 1f);
             }
         }
 
-        // Swap kapalýysa veya klavye kullanýlýyorsa normal Movement verisi
+        // Swap kapalÄ±ysa veya klavye kullanÄ±lÄ±yorsa normal Movement verisi
         return Vector2.ClampMagnitude(defaultMove, 1f);
     }
 
-    // Bakýþ (Mouse) - Bize Vector2 (x,y) verir
-    // Bakýþ (Mouse) - Bize Vector2 (x,y) verir
+    // --- 2. LOOK (BakÄ±ÅŸ) - Kavisli ve Hassas OlmalÄ± ---
     public Vector2 GetLookInput()
     {
         Vector2 rawInput = Vector2.zero;
 
-        // 1. Önce Look aksiyonunun kaynaðýna bakalým (Mouse mu?)
+        // 1. Cihaz Tespiti
         var lookDevice = _gameControls.Player.Look.activeControl?.device;
         bool isMouse = lookDevice is Mouse;
 
-        // 2. Eðer Mouse ise Swap dinlemez, direkt Mouse verisini al
+        // 2. HAM VERÄ°YÄ° SEÃ‡
         if (isMouse)
         {
             rawInput = _gameControls.Player.Look.ReadValue<Vector2>();
         }
         else
         {
-            // Cihaz Mouse deðil (Gamepad veya Boþta)
-
+            // Gamepad (Swap KontrolÃ¼)
             if (swapSticks)
-            {
-                // SWAP AÇIK: Bakýþ için SOL STICK (Movement) verisini kullanacaðýz.
                 rawInput = _gameControls.Player.Movement.ReadValue<Vector2>();
-
-                // Eðer sol stick oynatýlýyorsa bu kesin gamepad'dir (Klavye olsa yukarýda isMouse false olmazdý genelde ama garanti olsun)
-                // isMouse zaten false, gamepadSensitivity kullanýlacak.
-            }
             else
-            {
-                // SWAP KAPALI: Bakýþ için normal SAÐ STICK (Look) verisi.
                 rawInput = _gameControls.Player.Look.ReadValue<Vector2>();
-            }
         }
 
-        // 3. Hassasiyet Hesaplamalarý (Senin orijinal kodun)
-        float uiSensValue = isMouse ? mouseSensitivity : gamepadSensitivity;
-        float userMultiplier = Mathf.Lerp(0.1f, 3.0f, uiSensValue / 100f);
-        float finalSens = 0f;
-
+        // 3. MATEMATÄ°K
         if (isMouse)
         {
-            finalSens = BASE_MOUSE_MULTIPLIER * userMultiplier;
+            float userMultiplier = Mathf.Lerp(0.1f, 3.0f, mouseSensitivity / 100f);
+            return rawInput * BASE_MOUSE_MULTIPLIER * userMultiplier;
         }
         else
         {
-            // Gamepad (Normal veya Swapped fark etmez, Time.deltaTime ile çarp)
-            finalSens = BASE_GAMEPAD_MULTIPLIER * userMultiplier * Time.deltaTime;
+            // --- GAMEPAD AKILLI DEADZONE ---
+
+            float rawMagnitude = rawInput.magnitude;
+
+            // A. Deadzone AltÄ±ndaysa Kes
+            if (rawMagnitude < STICK_DEADZONE)
+                return Vector2.zero;
+
+            // B. YENÄ°DEN Ã–LÃ‡EKLEME (Rescaling) - Ä°ÅžTE KÄ°LÄ°T NOKTA BURASI ðŸ”‘
+            // Gelen veri 0.15 ile 1.0 arasÄ±nda.
+            // Biz bunu 0.0 ile 1.0 arasÄ±na matematiksel olarak Ã§ekiyoruz.
+            // BÃ¶ylece 0.16 geldiÄŸinde "kÃ¼t" diye deÄŸil, "yumuÅŸacÄ±k" baÅŸlar.
+
+            float effectiveInput = (rawMagnitude - STICK_DEADZONE) / (1f - STICK_DEADZONE);
+
+            // C. Kavis Uygula (Hassasiyet iÃ§in)
+            // effectiveInput artÄ±k 0'dan baÅŸladÄ±ÄŸÄ± iÃ§in karesini alÄ±nca Ã§ok hassas davranÄ±r.
+            float curvedMagnitude = Mathf.Pow(effectiveInput, RESPONSE_CURVE);
+
+            // D. YÃ¶nÃ¼ Geri Ver
+            Vector2 inputDirection = rawInput.normalized;
+
+            // E. SonuÃ§
+            float userSens = Mathf.Lerp(0.5f, 3.5f, gamepadSensitivity / 100f);
+            Vector2 finalInput = inputDirection * curvedMagnitude * BASE_GAMEPAD_MULTIPLIER * userSens * Time.deltaTime;
+
+            // F. Dikey YavaÅŸlatma
+            finalInput.y *= 0.7f;
+
+            if (invertY) finalInput.y *= -1;
+
+            return finalInput;
         }
-
-        rawInput *= finalSens;
-
-        if (invertY) rawInput.y *= -1;
-
-        return rawInput;
     }
 
-    // Zýplama - Basýldýðý AN (ThisFrame) true döner
+    // ZÄ±plama - BasÄ±ldÄ±ÄŸÄ± AN (ThisFrame) true dÃ¶ner
     public bool PlayerJump()
     {
         return _gameControls.Player.Jump.triggered;
     }
 
-    // Koþma - Basýlý tutulduðu sürece true döner
+    // KoÅŸma - BasÄ±lÄ± tutulduÄŸu sÃ¼rece true dÃ¶ner
     public bool PlayerSprint()
     {
         if (sprintIsToggle)
         {
-            return _isSprintingToggled; // Sadece deðeri döndür
+            return _isSprintingToggled; // Sadece deÄŸeri dÃ¶ndÃ¼r
         }
         else
         {
@@ -227,12 +238,12 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    // Eðilme - Basýlý tutulduðu sürece
+    // EÄŸilme - BasÄ±lÄ± tutulduÄŸu sÃ¼rece
     public bool PlayerCrouch()
     {
         if (crouchIsToggle)
         {
-            return _isCrouchingToggled; // Sadece deðeri döndür
+            return _isCrouchingToggled; // Sadece deÄŸeri dÃ¶ndÃ¼r
         }
         else
         {
@@ -240,13 +251,13 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    // Etkileþim (Sol Týk) - Basýldýðý AN
+    // EtkileÅŸim (Sol TÄ±k) - BasÄ±ldÄ±ÄŸÄ± AN
     public bool PlayerInteract()
     {
         return _gameControls.Player.Interact.triggered;
     }
 
-    // Basýlý Tutma Durumu (Interaction Charge için lazým olabilir)
+    // BasÄ±lÄ± Tutma Durumu (Interaction Charge iÃ§in lazÄ±m olabilir)
     public bool PlayerInteractHold()
     {
         return _gameControls.Player.Interact.phase == InputActionPhase.Performed;
@@ -257,7 +268,7 @@ public class InputManager : MonoBehaviour
         return _gameControls.Player.Interact.WasReleasedThisFrame();
     }
 
-    // Fýrlatma (Sað Týk)
+    // FÄ±rlatma (SaÄŸ TÄ±k)
     public bool PlayerThrow()
     {
         return _gameControls.Player.Throw.triggered;
@@ -290,7 +301,7 @@ public class InputManager : MonoBehaviour
     public void SetSprintMode(bool isToggle)
     {
         sprintIsToggle = isToggle;
-        _isSprintingToggled = false; // Mod deðiþince state'i sýfýrla
+        _isSprintingToggled = false; // Mod deÄŸiÅŸince state'i sÄ±fÄ±rla
     }
     public void SetCrouchMode(bool isToggle)
     {
@@ -306,23 +317,23 @@ public class InputManager : MonoBehaviour
 
     public void ResetBindingsForDevice(bool isGamepad)
     {
-        // 1. Tüm aksiyonlarý gez (Jump, Move, Look vs.)
+        // 1. TÃ¼m aksiyonlarÄ± gez (Jump, Move, Look vs.)
         foreach (InputAction action in _gameControls)
         {
-            // 2. Aksiyonun tüm bindinglerini gez (Klavye, Gamepad varyasyonlarý)
+            // 2. Aksiyonun tÃ¼m bindinglerini gez (Klavye, Gamepad varyasyonlarÄ±)
             for (int i = 0; i < action.bindings.Count; i++)
             {
                 InputBinding binding = action.bindings[i];
 
-                // Binding'in yolu (örn: "<Keyboard>/space" veya "<Gamepad>/buttonSouth")
-                // Override edilmiþse overridePath, edilmemiþse path gelir.
-                // Biz orijinal path'e bakarak hangi gruba ait olduðunu anlarýz.
+                // Binding'in yolu (Ã¶rn: "<Keyboard>/space" veya "<Gamepad>/buttonSouth")
+                // Override edilmiÅŸse overridePath, edilmemiÅŸse path gelir.
+                // Biz orijinal path'e bakarak hangi gruba ait olduÄŸunu anlarÄ±z.
                 string path = binding.path;
 
                 bool isGamepadBinding = path.Contains("<Gamepad>");
                 bool isMouseKeyboardBinding = path.Contains("<Keyboard>") || path.Contains("<Mouse>");
 
-                // 3. Eþleþme kontrolü
+                // 3. EÅŸleÅŸme kontrolÃ¼
                 if (isGamepad && isGamepadBinding)
                 {
                     action.RemoveBindingOverride(i);
@@ -337,7 +348,7 @@ public class InputManager : MonoBehaviour
         // 4. Temizlenen hali kaydet
         SaveBindingOverrides();
 
-        // 5. Herkese haber ver! (RebindUI güncellensin)
+        // 5. Herkese haber ver! (RebindUI gÃ¼ncellensin)
         OnBindingsReset?.Invoke();
     }
 }
