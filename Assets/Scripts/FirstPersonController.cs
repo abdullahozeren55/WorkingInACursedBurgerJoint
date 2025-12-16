@@ -26,6 +26,10 @@ public class FirstPersonController : MonoBehaviour
     public bool CanLook = true;
     public bool CanBreathe = true;
 
+    [Header("Gamepad Interaction Assist")]
+    [SerializeField] private float assistRadius = 0.15f; // Iþýnýn kalýnlýðý (Burger köftesi tutturmak için ideal)
+    [SerializeField] private float magnetStrength = 0.4f; // Objeye bakarken hýz %40'a düþsün
+
     [Header("Movement Parameters")]
     [SerializeField] private float movementSmoothTime = 0.1f;
     [SerializeField] private float walkSpeed = 3.0f;
@@ -819,7 +823,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleInteractionCheck()
     {
-        if (Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, interactionLayers))
+        if (PerformInteractionCast(out RaycastHit hit, interactionDistance, interactionLayers))
         {
             if (hit.collider)
             {
@@ -827,6 +831,9 @@ public class FirstPersonController : MonoBehaviour
                     hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlined") ||
                     hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlinedRed"))
                 {
+
+                    // Bir interactable bulduk! Kamerayý yavaþlat.
+                    InputManager.Instance.aimAssistSlowdown = magnetStrength;
 
                     if (currentInteractable == null)
                     {
@@ -854,25 +861,43 @@ public class FirstPersonController : MonoBehaviour
                         }
                     }
                 }
-                else if (currentInteractable != null)
+                else
+                {
+                    // Interactable deðilse hýzý normale döndür
+                    InputManager.Instance.aimAssistSlowdown = 1f;
+
+                    if (currentInteractable != null)
+                    {
+                        currentInteractable.OnLoseFocus();
+                        currentInteractable = null;
+                        DecideOutlineAndCrosshair();
+                    }
+                }
+            }
+            else
+            {
+                // Collider yoksa hýzý normale döndür
+                InputManager.Instance.aimAssistSlowdown = 1f;
+
+                if (currentInteractable != null)
                 {
                     currentInteractable.OnLoseFocus();
                     currentInteractable = null;
                     DecideOutlineAndCrosshair();
                 }
             }
-            else if (currentInteractable != null)
+        }
+        else
+        {
+            // Hiçbir þeye çarpmadýk, hýzý normale döndür
+            InputManager.Instance.aimAssistSlowdown = 1f;
+
+            if (currentInteractable != null)
             {
                 currentInteractable.OnLoseFocus();
                 currentInteractable = null;
                 DecideOutlineAndCrosshair();
             }
-        }
-        else if (currentInteractable != null)
-        {
-            currentInteractable.OnLoseFocus();
-            currentInteractable = null;
-            DecideOutlineAndCrosshair();
         }
     }
 
@@ -934,7 +959,7 @@ public class FirstPersonController : MonoBehaviour
 
     private void TryToInteract()
     {
-        if (currentInteractable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, interactionLayers) && !currentInteractable.OutlineShouldBeRed)
+        if (currentInteractable != null && PerformInteractionCast(out RaycastHit hit, interactionDistance, interactionLayers) && !currentInteractable.OutlineShouldBeRed)
         {
             if (hit.collider.gameObject.GetComponent<IInteractable>() == currentInteractable)
             {
@@ -979,12 +1004,16 @@ public class FirstPersonController : MonoBehaviour
     private void HandleGrabCheck()
     {
 
-        if (Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
+        if (PerformInteractionCast(out RaycastHit hit, interactionDistance, grabableLayers))
         {
             if (hit.collider)
             {
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Grabable") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlined") || hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlinedRed"))
                 {
+                    // --- MAGNETISM ---
+                    // Eþya bulduk, yavaþlat
+                    InputManager.Instance.aimAssistSlowdown = magnetStrength;
+
                     if (currentGrabable == null)
                     {
                         if (otherGrabable != null)
@@ -1041,6 +1070,8 @@ public class FirstPersonController : MonoBehaviour
                 }
                 else
                 {
+                    InputManager.Instance.aimAssistSlowdown = 1f; // Yavaþlatmayý kapat
+
                     if (currentGrabable != null && !currentGrabable.IsGrabbed)
                     {
                         currentGrabable.OnLoseFocus();
@@ -1059,6 +1090,8 @@ public class FirstPersonController : MonoBehaviour
             }
             else
             {
+                InputManager.Instance.aimAssistSlowdown = 1f; // Yavaþlatmayý kapat
+
                 if (currentGrabable != null && !currentGrabable.IsGrabbed)
                 {
                     currentGrabable.OnLoseFocus();
@@ -1076,6 +1109,8 @@ public class FirstPersonController : MonoBehaviour
         }
         else
         {
+            InputManager.Instance.aimAssistSlowdown = 1f; // Yavaþlatmayý kapat
+
             if (currentGrabable != null && !currentGrabable.IsGrabbed)
             {
                 currentGrabable.OnLoseFocus();
@@ -1203,7 +1238,7 @@ public class FirstPersonController : MonoBehaviour
             }
             
         }
-        else if (InputManager.Instance.PlayerInteract() && currentGrabable != null && Physics.Raycast(mainCamera.ViewportPointToRay(interactionRayPoint), out RaycastHit hit, interactionDistance, grabableLayers))
+        else if (InputManager.Instance.PlayerInteract() && currentGrabable != null && PerformInteractionCast(out RaycastHit hit, interactionDistance, grabableLayers))
         {
             if (hit.collider.gameObject.GetComponent<IGrabable>() == currentGrabable && !phoneGrabable.IsGrabbed)
             {
@@ -1865,6 +1900,100 @@ public class FirstPersonController : MonoBehaviour
         characterController.center = targetCenter; 
     }
 
+    // Raycast yerine bunu kullanacaðýz. Hem lazer hem kalýn boru atar.
+    // SphereCastAll kullanarak duvar takýlmasýný önler.
+    private bool PerformInteractionCast(out RaycastHit hitInfo, float distance, LayerMask mask)
+    {
+        hitInfo = new RaycastHit();
+        Ray ray = mainCamera.ViewportPointToRay(interactionRayPoint);
+
+        // -------------------------------------------------------------
+        // 1. AÞAMA: LAZER KONTROLÜ (Direct Hit)
+        // -------------------------------------------------------------
+        // Buradaki deðiþiklik kritik: Raycast bir þeye çarparsa hemen kabul etmiyoruz.
+        // Çarptýðý þeyin "Ýþimize Yarayan" bir layer olup olmadýðýna bakýyoruz.
+
+        if (Physics.Raycast(ray, out RaycastHit directHit, distance, mask))
+        {
+            if (IsTargetLayer(directHit.collider.gameObject.layer))
+            {
+                // Tam merkezde bir EÞYA var. En iyisi budur. Al ve çýk.
+                hitInfo = directHit;
+                return true;
+            }
+            // Eðer duvara çarptýysa buraya girmez, aþaðýya (SphereCast'e) devam eder.
+        }
+
+        // -------------------------------------------------------------
+        // 2. AÞAMA: SPHERE CAST (Aim Assist / Kalýn Iþýn)
+        // -------------------------------------------------------------
+        // Merkezde eþya yok (ya boþluk ya da duvar var).
+        // Þimdi etrafý tarayalým.
+
+        RaycastHit[] hits = Physics.SphereCastAll(ray, assistRadius, distance, mask);
+
+        if (hits.Length == 0) return false;
+
+        float closestDistance = distance;
+        bool foundValidTarget = false;
+        RaycastHit bestHit = new RaycastHit();
+
+        foreach (RaycastHit hit in hits)
+        {
+            // Kendimize çarpmayalým
+            if (hit.transform == transform) continue;
+
+            // Sadece Interactable/Grabable olanlarý filtrele
+            // (Duvarlar buraya takýlýr ve elenir)
+            if (!IsTargetLayer(hit.collider.gameObject.layer)) continue;
+
+            // En yakýný bulma mantýðý
+            if (hit.distance < closestDistance)
+            {
+                // -------------------------------------------------------------
+                // 3. AÞAMA: GÖRÜÞ ÇÝZGÝSÝ (Occlusion Check)
+                // -------------------------------------------------------------
+                // Eþyayý bulduk ama arada duvar var mý?
+                // Kameradan eþyaya ýþýn atýyoruz.
+
+                Vector3 directionToTarget = (hit.point - mainCamera.transform.position).normalized;
+
+                // Bu ýþýn 'mask' yani interactionLayers kullanmalý ki duvarlarý görsün.
+                if (Physics.Raycast(mainCamera.transform.position, directionToTarget, out RaycastHit occlusionHit, distance, mask))
+                {
+                    // Eðer ýþýn direkt eþyaya (veya çocuðuna) çarparsa -> Görüyoruz demektir.
+                    if (occlusionHit.collider.gameObject == hit.collider.gameObject ||
+                        occlusionHit.collider.transform.IsChildOf(hit.transform) ||
+                        hit.transform.IsChildOf(occlusionHit.transform))
+                    {
+                        bestHit = hit;
+                        closestDistance = hit.distance;
+                        foundValidTarget = true;
+                    }
+                    // Eðer ýþýn önce duvara çarparsa -> Buraya girmez, eþya duvar arkasýndadýr.
+                }
+            }
+        }
+
+        if (foundValidTarget)
+        {
+            hitInfo = bestHit;
+            return true;
+        }
+
+        return false;
+    }
+
+    // Kod tekrarýný önlemek için yardýmcý minik fonksiyon
+    private bool IsTargetLayer(int layer)
+    {
+        return layer == LayerMask.NameToLayer("Interactable") ||
+               layer == LayerMask.NameToLayer("InteractableOutlined") ||
+               layer == LayerMask.NameToLayer("InteractableOutlinedRed") ||
+               layer == LayerMask.NameToLayer("Grabable") ||
+               layer == LayerMask.NameToLayer("GrabableOutlined");
+    }
+
     private void OnEnable()
     {
         if (LocalizationManager.Instance != null)
@@ -1910,30 +2039,42 @@ public class FirstPersonController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (groundTypeCheckRayPoint == null) return;
+        // 1. Ayak Kontrolü (Eski kodun)
+        if (groundTypeCheckRayPoint != null)
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Matrix4x4 rotationMatrix = Matrix4x4.TRS(groundTypeCheckRayPoint.transform.position, groundTypeCheckRayPoint.transform.rotation, Vector3.one);
+            Gizmos.matrix = rotationMatrix;
+            Gizmos.DrawWireCube(Vector3.down * 1.0f, footstepCheckSize); // Temsili
+        }
 
-        // Gizmos rengi: Kýrmýzý (ve biraz þeffaf)
-        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        // 2. ETKÝLEÞÝM RÖNTGENÝ (YENÝ - SphereCast'i Gösterir)
+        if (mainCamera != null)
+        {
+            Gizmos.matrix = Matrix4x4.identity; // Matrisi sýfýrla
 
-        // BoxCast'in taradýðý alaný göstermek biraz tricky'dir çünkü hareketli bir iþlemdir.
-        // Ama biz en azýndan "Zemine deðdiði anki" kutuyu çizelim.
-        // Varsayýlan rayDistance 1.9f civarýydý sanýrým, onu baz alarak çiziyorum.
+            // SphereCast'in aynýsýný burada simüle ediyoruz
+            Ray ray = mainCamera.ViewportPointToRay(interactionRayPoint);
 
-        // Gizmos'un dönüþünü objeye uydur
-        Matrix4x4 rotationMatrix = Matrix4x4.TRS(groundTypeCheckRayPoint.transform.position, groundTypeCheckRayPoint.transform.rotation, Vector3.one);
-        Gizmos.matrix = rotationMatrix;
+            // A. Normal Lazer (Beyaz Çizgi)
+            Gizmos.color = Color.white;
+            Gizmos.DrawLine(ray.origin, ray.origin + ray.direction * interactionDistance);
 
-        // Aþaðýya doðru bir çizgi çek (Merkezi gör diye)
-        Gizmos.DrawRay(Vector3.zero, Vector3.down * 1.9f);
+            // B. Kalýn SphereCast (Sarý Boru)
+            // Eðer bir þeye çarpýyorsa Kýrmýzý, çarpmýyorsa Sarý olsun.
+            bool hitSomething = Physics.SphereCast(ray, assistRadius, out RaycastHit hit, interactionDistance, interactionLayers | grabableLayers);
 
-        // Tam ayak basma mesafesinde (mesela 0.1f aþaðýda deðil de, taramanýn bittiði yerde) kutuyu çiz
-        // BoxCast süpürme (sweep) iþlemidir. Baþlangýçtaki kutuyu çizelim:
-        Gizmos.DrawWireCube(Vector3.zero, footstepCheckSize);
+            Gizmos.color = hitSomething ? Color.red : Color.yellow;
 
-        // Bir de taramanýn ucundaki kutuyu çizelim (Maksimum eriþim)
-        // CheckSurfaceAndPlaySound içinde gönderdiðin mesafe deðiþken (1.9f veya 10f) olduðu için
-        // burada sabit bir deðerle (örn: 1.0f) görselleþtiriyorum, sen editörde anla diye.
-        Vector3 endPosition = Vector3.down * 1.0f;
-        Gizmos.DrawWireCube(endPosition, footstepCheckSize);
+            // SphereCast'in gittiði yol kadar çiz
+            float dist = hitSomething ? hit.distance : interactionDistance;
+
+            // Baþlangýç küresi
+            Gizmos.DrawWireSphere(ray.origin, assistRadius);
+            // Bitiþ küresi (Vurduðu yer)
+            Gizmos.DrawWireSphere(ray.origin + ray.direction * dist, assistRadius);
+            // Aradaki çizgi
+            Gizmos.DrawLine(ray.origin, ray.origin + ray.direction * dist);
+        }
     }
 }

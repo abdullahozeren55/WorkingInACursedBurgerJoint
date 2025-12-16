@@ -29,6 +29,7 @@ public class InputManager : MonoBehaviour
     [Header("Gamepad Feel Settings")]
     [Range(0.01f, 0.5f)]
     public float lookSmoothTime = 0.1f; // Gecikme süresi (Düşük = Keskin, Yüksek = Ağır)
+    [HideInInspector] public float aimAssistSlowdown = 1.0f;
 
     // SmoothDamp fonksiyonu için referans değişkeni (Hafıza)
     private Vector2 _currentLookVelocity;
@@ -230,7 +231,7 @@ public class InputManager : MonoBehaviour
             _currentLookValue = Vector2.SmoothDamp(_currentLookValue, targetValue, ref _currentLookVelocity, lookSmoothTime);
 
             // Sonuç olarak yumuşatılmış değeri Time.deltaTime ile çarpıp döndür
-            return _currentLookValue * Time.deltaTime;
+            return _currentLookValue * aimAssistSlowdown * Time.deltaTime;
         }
     }
 
