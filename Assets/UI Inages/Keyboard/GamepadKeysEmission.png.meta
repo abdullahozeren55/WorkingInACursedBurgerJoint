@@ -162,7 +162,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GamepadKeysEmission_0
+      name: ps_dpad_left
       rect:
         serializedVersion: 2
         x: 0
@@ -170,7 +170,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -183,7 +183,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_1
+      name: ps_dpad_down
       rect:
         serializedVersion: 2
         x: 16
@@ -191,7 +191,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,7 +204,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_2
+      name: ps_dpad_right
       rect:
         serializedVersion: 2
         x: 32
@@ -212,7 +212,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -225,7 +225,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_3
+      name: ps_dpad_up
       rect:
         serializedVersion: 2
         x: 48
@@ -233,7 +233,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -246,7 +246,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_4
+      name: ps_l1
       rect:
         serializedVersion: 2
         x: 64
@@ -254,7 +254,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -267,7 +267,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_5
+      name: ps_r1
       rect:
         serializedVersion: 2
         x: 80
@@ -275,7 +275,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -288,7 +288,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_6
+      name: xb_dpad_left
       rect:
         serializedVersion: 2
         x: 0
@@ -296,7 +296,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -309,7 +309,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_7
+      name: xb_dpad_down
       rect:
         serializedVersion: 2
         x: 16
@@ -317,7 +317,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -330,7 +330,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_8
+      name: xb_dpad_right
       rect:
         serializedVersion: 2
         x: 32
@@ -338,7 +338,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -351,7 +351,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_9
+      name: xb_dpad_up
       rect:
         serializedVersion: 2
         x: 48
@@ -359,7 +359,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -372,7 +372,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_10
+      name: ps_l2
       rect:
         serializedVersion: 2
         x: 64
@@ -380,7 +380,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -393,7 +393,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_11
+      name: ps_r2
       rect:
         serializedVersion: 2
         x: 80
@@ -401,7 +401,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -414,7 +414,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_12
+      name: ps_square
       rect:
         serializedVersion: 2
         x: 0
@@ -422,7 +422,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -435,7 +435,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_13
+      name: ps_cross
       rect:
         serializedVersion: 2
         x: 16
@@ -443,7 +443,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -456,7 +456,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_14
+      name: ps_triangle
       rect:
         serializedVersion: 2
         x: 32
@@ -464,7 +464,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -477,7 +477,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_15
+      name: ps_circle
       rect:
         serializedVersion: 2
         x: 48
@@ -485,7 +485,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -498,7 +498,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_16
+      name: xb_lt
       rect:
         serializedVersion: 2
         x: 64
@@ -506,7 +506,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -519,7 +519,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_17
+      name: xb_rt
       rect:
         serializedVersion: 2
         x: 80
@@ -527,7 +527,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -540,7 +540,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_18
+      name: xb_x
       rect:
         serializedVersion: 2
         x: 0
@@ -548,7 +548,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -561,7 +561,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_19
+      name: xb_a
       rect:
         serializedVersion: 2
         x: 16
@@ -569,7 +569,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -582,7 +582,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_20
+      name: xb_y
       rect:
         serializedVersion: 2
         x: 32
@@ -590,7 +590,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -603,7 +603,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_21
+      name: xb_b
       rect:
         serializedVersion: 2
         x: 48
@@ -611,7 +611,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -624,7 +624,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_22
+      name: xb_lb
       rect:
         serializedVersion: 2
         x: 64
@@ -632,7 +632,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -645,7 +645,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_23
+      name: xb_rb
       rect:
         serializedVersion: 2
         x: 80
@@ -653,7 +653,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -666,7 +666,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_24
+      name: ps_stick_l
       rect:
         serializedVersion: 2
         x: 0
@@ -674,7 +674,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -687,7 +687,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_25
+      name: ps_stick_r
       rect:
         serializedVersion: 2
         x: 16
@@ -695,7 +695,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -708,7 +708,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_26
+      name: ps_l3
       rect:
         serializedVersion: 2
         x: 32
@@ -716,7 +716,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -729,7 +729,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_27
+      name: ps_r3
       rect:
         serializedVersion: 2
         x: 48
@@ -737,7 +737,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -750,7 +750,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_28
+      name: xb_ls
       rect:
         serializedVersion: 2
         x: 64
@@ -758,7 +758,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -771,7 +771,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_29
+      name: xb_rs
       rect:
         serializedVersion: 2
         x: 80
@@ -779,7 +779,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -792,7 +792,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_30
+      name: xb_stick_l
       rect:
         serializedVersion: 2
         x: 0
@@ -800,7 +800,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -813,7 +813,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_31
+      name: xb_stick_r
       rect:
         serializedVersion: 2
         x: 16
@@ -821,7 +821,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -834,7 +834,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_32
+      name: xb_start
       rect:
         serializedVersion: 2
         x: 32
@@ -842,7 +842,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -855,7 +855,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_33
+      name: xb_select
       rect:
         serializedVersion: 2
         x: 48
@@ -863,7 +863,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -876,7 +876,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_34
+      name: ps_start
       rect:
         serializedVersion: 2
         x: 64
@@ -884,7 +884,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -897,7 +897,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GamepadKeysEmission_35
+      name: ps_select
       rect:
         serializedVersion: 2
         x: 80
@@ -905,7 +905,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -928,42 +928,42 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      GamepadKeysEmission_0: 824631026
-      GamepadKeysEmission_1: 2132436363
-      GamepadKeysEmission_10: -1152634324
-      GamepadKeysEmission_11: 1393952827
-      GamepadKeysEmission_12: -651351287
-      GamepadKeysEmission_13: -245752323
-      GamepadKeysEmission_14: 1969350946
-      GamepadKeysEmission_15: -1449195415
-      GamepadKeysEmission_16: 344883836
-      GamepadKeysEmission_17: -1198618898
-      GamepadKeysEmission_18: -706831311
-      GamepadKeysEmission_19: -396196441
-      GamepadKeysEmission_2: -744385566
-      GamepadKeysEmission_20: -1684462637
-      GamepadKeysEmission_21: -1220925508
-      GamepadKeysEmission_22: -67850585
-      GamepadKeysEmission_23: 819858101
-      GamepadKeysEmission_24: -399963567
-      GamepadKeysEmission_25: -1200507333
-      GamepadKeysEmission_26: 552678953
-      GamepadKeysEmission_27: -834507584
-      GamepadKeysEmission_28: 483385202
-      GamepadKeysEmission_29: -1210185020
-      GamepadKeysEmission_3: 511233133
-      GamepadKeysEmission_30: -1659970556
-      GamepadKeysEmission_31: -1591695405
-      GamepadKeysEmission_32: -1361877255
-      GamepadKeysEmission_33: 307394355
-      GamepadKeysEmission_34: 1750021822
-      GamepadKeysEmission_35: 541481638
-      GamepadKeysEmission_4: 1377612118
-      GamepadKeysEmission_5: -62747036
-      GamepadKeysEmission_6: -1705362693
-      GamepadKeysEmission_7: -801094408
-      GamepadKeysEmission_8: -1560306258
-      GamepadKeysEmission_9: -1116439667
+      ps_circle: -1449195415
+      ps_cross: -245752323
+      ps_dpad_down: 2132436363
+      ps_dpad_left: 824631026
+      ps_dpad_right: -744385566
+      ps_dpad_up: 511233133
+      ps_l1: 1377612118
+      ps_l2: -1152634324
+      ps_l3: 552678953
+      ps_r1: -62747036
+      ps_r2: 1393952827
+      ps_r3: -834507584
+      ps_select: 541481638
+      ps_square: -651351287
+      ps_start: 1750021822
+      ps_stick_l: -399963567
+      ps_stick_r: -1200507333
+      ps_triangle: 1969350946
+      xb_a: -396196441
+      xb_b: -1220925508
+      xb_dpad_down: -801094408
+      xb_dpad_left: -1705362693
+      xb_dpad_right: -1560306258
+      xb_dpad_up: -1116439667
+      xb_lb: -67850585
+      xb_ls: 483385202
+      xb_lt: 344883836
+      xb_rb: 819858101
+      xb_rs: -1210185020
+      xb_rt: -1198618898
+      xb_select: 307394355
+      xb_start: -1361877255
+      xb_stick_l: -1659970556
+      xb_stick_r: -1591695405
+      xb_x: -706831311
+      xb_y: -1684462637
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

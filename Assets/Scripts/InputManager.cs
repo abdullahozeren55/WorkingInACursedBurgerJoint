@@ -50,6 +50,7 @@ public class InputManager : MonoBehaviour
 
     private GameControls _gameControls;
     public event System.Action OnBindingsReset;
+    public event System.Action<bool> OnInputDeviceChanged; // bool: isMouse
 
     private void Awake()
     {
@@ -294,11 +295,19 @@ public class InputManager : MonoBehaviour
 
     private void CheckActiveDevice()
     {
-        if (Mouse.current != null && Mouse.current.delta.ReadValue().sqrMagnitude > 1.0f)
-            _lastInputWasMouse = true;
-        else if (Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
-            _lastInputWasMouse = true;
+        bool wasMouse = _lastInputWasMouse; // Önceki durumu hafızaya al
 
+        // 1. Mouse Hareketini Kontrol Et
+        if (Mouse.current != null && Mouse.current.delta.ReadValue().sqrMagnitude > 1.0f)
+        {
+            _lastInputWasMouse = true;
+        }
+        else if (Mouse.current != null && (Mouse.current.leftButton.wasPressedThisFrame || Mouse.current.rightButton.wasPressedThisFrame))
+        {
+            _lastInputWasMouse = true;
+        }
+
+        // 2. Gamepad Hareketini Kontrol Et
         if (Gamepad.current != null)
         {
             Vector2 rightStick = Gamepad.current.rightStick.ReadValue();
@@ -311,6 +320,18 @@ public class InputManager : MonoBehaviour
                      Gamepad.current.buttonWest.wasPressedThisFrame ||
                      Gamepad.current.buttonNorth.wasPressedThisFrame)
                 _lastInputWasMouse = false;
+
+            // YENİ: D-Pad veya Omuz tuşlarına basınca da Gamepad'e geçsin
+            else if (Gamepad.current.dpad.ReadValue().magnitude > 0.1f ||
+                     Gamepad.current.leftShoulder.wasPressedThisFrame ||
+                     Gamepad.current.rightShoulder.wasPressedThisFrame)
+                _lastInputWasMouse = false;
+        }
+
+        // 3. EĞER DURUM DEĞİŞTİYSE HERKESE HABER VER! 📢
+        if (wasMouse != _lastInputWasMouse)
+        {
+            OnInputDeviceChanged?.Invoke(_lastInputWasMouse);
         }
     }
 }
