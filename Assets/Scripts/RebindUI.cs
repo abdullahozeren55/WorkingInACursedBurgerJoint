@@ -121,8 +121,9 @@ public class RebindUI : MonoBehaviour
 
         isAnyRebindingInProgress = true;
 
-        // Blocker'ı aç (Tıklamaları kessin)
-        MenuManager.Instance.SetRebindBlocker(true);
+        // Gamepad binding yapıyorsak (!excludeGamepad), Gamepad hintini göster
+        bool isGamepadMode = !excludeGamepad;
+        MenuManager.Instance.SetRebindBlocker(true, isGamepadMode);
 
         // 1. UI Butonlarının etkileşimini kapat (Görsel olarak disable olmadan önce)
         if (keyboardButtonComp) keyboardButtonComp.interactable = false;
@@ -154,6 +155,7 @@ public class RebindUI : MonoBehaviour
             rebindOperation.WithControlsExcluding("<Mouse>/position");
             rebindOperation.WithControlsExcluding("<Mouse>/delta");
             rebindOperation.WithControlsExcluding("<Mouse>/scroll"); // Tekerleği de engellemiştik
+            rebindOperation.WithCancelingThrough("<Keyboard>/escape");
         }
         else
         {
@@ -161,10 +163,10 @@ public class RebindUI : MonoBehaviour
             rebindOperation.WithControlsHavingToMatchPath("<Gamepad>");
             rebindOperation.WithControlsExcluding("<Gamepad>/leftStick");
             rebindOperation.WithControlsExcluding("<Gamepad>/rightStick");
+            rebindOperation.WithCancelingThrough("<Gamepad>/start");
         }
 
         rebindOperation.WithControlsExcluding("<Pointer>/position");
-        rebindOperation.WithCancelingThrough("<Keyboard>/escape");
         rebindOperation.OnComplete(operation => RebindCompleted());
         rebindOperation.OnCancel(operation => RebindCompleted());
 

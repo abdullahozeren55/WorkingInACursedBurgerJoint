@@ -25,6 +25,10 @@ public class MenuManager : MonoBehaviour
     public GameObject settingsMenu;
     public GameObject rebindBlocker;
 
+    [Header("Rebind Ýpuçlarý")]
+    public GameObject rebindHintKeyboard; // Ýçinde "ESC - Ýptal" yazan obje
+    public GameObject rebindHintGamepad;  // Ýçinde "Gamepad Ýkonu - Ýptal" yazan obje
+
     [Header("Settings Sub-Panels")]
     public RectTransform settingsMainRect;
     public RectTransform settingsGeneralRect;
@@ -256,6 +260,9 @@ public class MenuManager : MonoBehaviour
 
     public void HandleBack()
     {
+        // Eðer tuþ atama ekraný (Blocker) açýksa geri dönmeyi engelle
+        if (rebindBlocker != null && rebindBlocker.activeSelf) return;
+
         if (isSettingsOpen)
         {
             switch (currentSettingsState)
@@ -605,5 +612,15 @@ public class MenuManager : MonoBehaviour
                 scaler.UpdateScale(offset != -1 ? offset : GlobalScaleOffset);
         }
     }
-    public void SetRebindBlocker(bool on) { rebindBlocker.SetActive(on); }
+    public void SetRebindBlocker(bool on, bool isGamepadMode = false)
+    {
+        rebindBlocker.SetActive(on);
+
+        // Eðer blocker açýlýyorsa, doðru ipucunu göster
+        if (on)
+        {
+            if (rebindHintKeyboard) rebindHintKeyboard.SetActive(!isGamepadMode);
+            if (rebindHintGamepad) rebindHintGamepad.SetActive(isGamepadMode);
+        }
+    }
 }
