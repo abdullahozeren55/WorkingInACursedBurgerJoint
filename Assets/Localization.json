@@ -1589,6 +1589,16 @@
     "key": "UI_AIM_ASSIST",
     "tr": "Nişan Yardımı",
     "en": "Aim Assist"
+  },
+  {
+    "key": "UI_MAIN_MENU_RESUME",
+    "tr": "Oyuna Dön",
+    "en": "Resume"
+  },
+  {
+    "key": "UI_MAIN_MENU",
+    "tr": "Ana Menü",
+    "en": "Main Menu"
   }
 ]
 

@@ -26,14 +26,19 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
 
     private void Start()
     {
-        // Baþlangýçta MenuManager'dan veya hafýzadan güncel offset'i çekmek isteyebilirsin
-        // Þimdilik varsayýlan çalýþýyor.
-        UpdateScale();
-
-        if (MenuManager.Instance != null)
+        // --- BU KISIM EKLENDÝ ---
+        // Doðar doðmaz MenuManager'dan global ayarý çek!
+        if (MenuManager.Instance != null && !forceMaxIntegerScale)
         {
+            // MenuManager'daki "globalScaleOffset" deðiþkenini alýyoruz
+            currentScaleOffset = MenuManager.Instance.GlobalScaleOffset;
+
+            // Kendimizi listeye ekletiyoruz
             MenuManager.Instance.RegisterScaler(this);
         }
+
+        // Güncel offset ile scale iþlemini yap
+        UpdateScale();
     }
 
     private void OnDestroy()
@@ -46,8 +51,11 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
 
     public void UpdateScale(int scaleOffset = -1)
     {
-        // Eðer dýþarýdan bir deðer gelirse onu kaydet (Ayarlardan gelmiþtir)
-        if (scaleOffset != -1) currentScaleOffset = scaleOffset;
+        // Eðer dýþarýdan bir deðer gelirse (Settings'den anlýk deðiþim) onu kullan ve kaydet
+        if (scaleOffset != -1)
+        {
+            currentScaleOffset = scaleOffset;
+        }
 
         if (_canvasScaler == null) return;
         if (Screen.height == 0) return;
@@ -57,12 +65,11 @@ public class PixelPerfectCanvasScaler : MonoBehaviour
 
         if (onlyIntegerScale)
         {
-            // 1. Maksimum mümkün olan tam sayýyý bul (Örn: 1080p -> 3x)
+            // 1. Maksimum mümkün olan tam sayýyý bul
             int maxScale = Mathf.FloorToInt(screenHeight / referenceHeight);
             if (maxScale < 1) maxScale = 1;
 
-            // --- KRÝTÝK DEÐÝÞÝKLÝK BURADA ---
-            // Eðer forceMaxIntegerScale seçiliyse, kullanýcýnýn offset ayarýný (currentScaleOffset) YOK SAYIYORUZ.
+            // Eðer forceMaxIntegerScale seçiliyse, kullanýcýnýn offset ayarýný YOK SAY
             int effectiveOffset = forceMaxIntegerScale ? 0 : currentScaleOffset;
 
             // 2. Hedef scale'i belirle

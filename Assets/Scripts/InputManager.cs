@@ -249,6 +249,13 @@ public class InputManager : MonoBehaviour
 
     public InputAction GetAction(string actionId) => _gameControls.FindAction(actionId);
 
+    public bool UICancelTriggered()
+    {
+        // UI map'inin açık olduğundan emin olmalıyız
+        // gameControls.UI.Cancel.triggered bize true/false döner
+        return _gameControls.UI.Cancel.triggered;
+    }
+
     public void ResetBindingsForDevice(bool isGamepad)
     {
         foreach (InputAction action in _gameControls)

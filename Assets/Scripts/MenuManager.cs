@@ -1,4 +1,4 @@
-using DG.Tweening; // DOTween kütüphanesi þart
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,71 +11,60 @@ public class MenuManager : MonoBehaviour
 {
     public static MenuManager Instance;
 
-    [Header("UI Stuff")]
+    [HideInInspector]
+    public int GlobalScaleOffset = 0;
+
+    [Header("State")]
     public bool CanPause = false;
-    [Space]
+    private bool isGamePaused = false;
+
+    [Header("UI References")]
     public Volume globalVolume;
-    [Space]
-    public GameObject mainMenu; // GameObject olarak kalabilir (SetActive için)
+    public GameObject mainMenu;
     public GameObject pauseMenu;
-    public GameObject settingsMenu; // YENÝ: Settings menüsü objesi
+    public GameObject settingsMenu;
+    public GameObject rebindBlocker;
 
     [Header("Settings Sub-Panels")]
-    // Ayarlarýn Ana Menüsü (Main Settings Page)
     public RectTransform settingsMainRect;
     public RectTransform settingsGeneralRect;
     public RectTransform settingsAudioRect;
     public RectTransform settingsControlsRect;
-    public RectTransform settingsControlsKeyboardRect; // Klavye/Mouse Sayfasý
-    public RectTransform settingsControlsGamepadRect;  // Gamepad Sayfasý
+    public RectTransform settingsControlsKeyboardRect;
+    public RectTransform settingsControlsGamepadRect;
 
-    public GameObject rebindBlocker;
-
-    // Þu an hangi alt menüdeyiz? (Back tuþu için önemli)
     private enum SettingsState
     {
-        Main,
-        General,
-        Audio,
-        Controls,
-        Controls_Keyboard, // Yeni
-        Controls_Gamepad   // Yeni
+        Main, General, Audio, Controls, Controls_Keyboard, Controls_Gamepad
     }
-
     private SettingsState currentSettingsState = SettingsState.Main;
 
     [Header("Animation References")]
-    // Animasyon yapacaðýmýz panellerin RectTransform'larý
-    public UIFlicker[] mainMenuFlickers;
     public RectTransform mainMenuRect;
     public RectTransform settingsRect;
+    public RectTransform pauseMenuRect; // Pause Menüsü Animasyonu için
 
     [Header("Animation Settings")]
     public float slideDuration = 0.5f;
-    public Ease slideEase = Ease.OutBack; // Juicy efekt için
-    [Space]
+    public Ease slideEase = Ease.OutBack;
+
+    [Header("Audio")]
     public AudioClip swingSound;
     public float swingVolume = 1f;
     public float swingMinPitch = 0.8f;
     public float swingMaxPitch = 1.2f;
 
     private Canvas myCanvas;
-    private RectTransform canvasRect; // Canvas'ýn boyutunu almak için
+    private RectTransform canvasRect;
     private List<PixelPerfectCanvasScaler> activeScalers = new List<PixelPerfectCanvasScaler>();
-    private bool isBusy = false; // Animasyon sýrasýnda týklamayý engellemek için
+
+    private bool isBusy = false;
     private bool isSettingsOpen = false;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
+        else { Destroy(gameObject); }
 
         myCanvas = GetComponentInChildren<Canvas>();
         if (myCanvas != null) canvasRect = myCanvas.GetComponent<RectTransform>();
@@ -83,25 +72,15 @@ public class MenuManager : MonoBehaviour
         float width = GetCanvasWidth();
         float height = GetCanvasHeight();
 
-        // Genel Ayarlar: YUKARIDA beklesin (+Height)
+        // Panelleri ýþýnla
         settingsGeneralRect.anchoredPosition = new Vector2(0, height);
-
-        // Ses Ayarlarý: AÞAÐIDA beklesin (-Height)
         settingsAudioRect.anchoredPosition = new Vector2(0, -height);
-
-        // Kontrol Ayarlarý: SAÐDA beklesin (+Width)
         settingsControlsRect.anchoredPosition = new Vector2(width, 0);
-
-        // Klavye (Yukarýdan gelecek General gibi)
-        if (settingsControlsKeyboardRect != null)
-            settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
-
-        // Gamepad (Aþaðýdan gelecek Audio gibi)
-        if (settingsControlsGamepadRect != null)
-            settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
-
-        // Ana Ayarlar Sayfasý: SettingsMenu'nun içinde ortada
+        if (settingsControlsKeyboardRect) settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
+        if (settingsControlsGamepadRect) settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
         settingsMainRect.anchoredPosition = Vector2.zero;
+
+        GlobalScaleOffset = PlayerPrefs.GetInt("UIScaleOffset", 0);
     }
 
     private void Start()
@@ -111,243 +90,258 @@ public class MenuManager : MonoBehaviour
             float width = GetCanvasWidth();
 
             mainMenu.SetActive(true);
-            settingsMenu.SetActive(true); // Settings ana parent açýk kalsýn
+            settingsMenu.SetActive(true);
+            pauseMenu.SetActive(false);
 
-            // --- DEÐÝÞÝKLÝK BURADA ---
-            // 1. Ana Menü Açýk, Settings Kapalý (Ekran Dýþý)
             mainMenuRect.gameObject.SetActive(true);
             mainMenuRect.anchoredPosition = Vector2.zero;
 
-            // Settings paneli aslýnda kapalý deðil, ekran dýþýnda bekliyor.
-            // Ama içindeki alt menüler kapalý olmalý.
             settingsRect.anchoredPosition = new Vector2(width, 0);
-
-            // 2. Settings Alt Menülerini Kapat (Sadece Main açýk kalsýn)
-            if (settingsMainRect) settingsMainRect.gameObject.SetActive(true); // Settings Main açýk
-            settingsMainRect.anchoredPosition = Vector2.zero;
-
-            if (settingsGeneralRect) settingsGeneralRect.gameObject.SetActive(false);
-            if (settingsAudioRect) settingsAudioRect.gameObject.SetActive(false);
-            if (settingsControlsRect) settingsControlsRect.gameObject.SetActive(false);
-            if (settingsControlsKeyboardRect) settingsControlsKeyboardRect.gameObject.SetActive(false);
-            if (settingsControlsGamepadRect) settingsControlsGamepadRect.gameObject.SetActive(false);
+            ResetSettingsState();
         }
 
+        isGamePaused = false;
         InputManager.Instance.SwitchToUIMode();
     }
 
     private void Update()
     {
-        if (CanPause && InputManager.Instance.PlayerPause())
+        // 1. OYUN AKARKEN PAUSE
+        if (CanPause && !isGamePaused && !isSettingsOpen)
         {
-            // Settings açýksa önce onu kapatýp Main'e mi dönsün yoksa direkt oyuna mý?
-            // Basitlik için: Pause menüsü mantýðý aynen kalsýn.
-            HandlePauseMenu(!pauseMenu.activeSelf);
-            HandleTimeScale(pauseMenu.activeSelf ? 0f : 1f);
-
-            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
-            GameManager.Instance.SetCursorLock(!pauseMenu.activeSelf);
-
-            SetPlayerCanPlay(!pauseMenu.activeSelf);
-
-            if (pauseMenu.activeSelf)
+            if (InputManager.Instance.PlayerPause())
             {
-                InputManager.Instance.SwitchToUIMode();
+                TogglePause();
             }
-            else
+        }
+        // 2. MENÜDEYKEN GERÝ GELME
+        else if (isGamePaused || isSettingsOpen)
+        {
+            if (InputManager.Instance.UICancelTriggered())
             {
-                InputManager.Instance.SwitchToGameplayMode();
+                HandleBack();
+            }
+            else if (isGamePaused && !isSettingsOpen && InputManager.Instance.PlayerPause())
+            {
+                TogglePause();
             }
         }
     }
 
-    // --- YENÝ EKLENEN ANÝMASYON FONKSÝYONLARI ---
-
-    public void FixMenuPositions()
+    public void TogglePause()
     {
-        // 1. Önce animasyonlarý durdur
-        mainMenuRect.DOKill(true);
-        settingsRect.DOKill(true);
-        settingsMainRect.DOKill(true);
-        if (settingsGeneralRect) settingsGeneralRect.DOKill(true);
-        if (settingsAudioRect) settingsAudioRect.DOKill(true);
-        if (settingsControlsRect) settingsControlsRect.DOKill(true);
-        if (settingsControlsKeyboardRect) settingsControlsKeyboardRect.DOKill(true);
-        if (settingsControlsGamepadRect) settingsControlsGamepadRect.DOKill(true);
+        if (pauseMenuRect) pauseMenuRect.DOKill(true);
 
-        isBusy = false;
-        float width = GetCanvasWidth();
-        float height = GetCanvasHeight();
+        isGamePaused = !isGamePaused;
 
-        // 2. TÜMÜNÜ KAPAT (Temiz sayfa)
-        // Ana menü ve Settings parent hariç, altlarý kapatýyoruz.
-        // Konumlarý sonra ayarlayacaðýz.
-
-        // *Dikkat:* Ana Parentler Settings açýk/kapalý durumuna göre açýlacak.
-
-        if (isSettingsOpen)
+        if (isGamePaused)
         {
-            // --- SETTINGS AÇIK ---
-            mainMenuRect.gameObject.SetActive(false); // Ana menü kapalý
-            settingsRect.gameObject.SetActive(true);  // Settings Parent açýk
-
-            settingsRect.anchoredPosition = Vector2.zero;
-            mainMenuRect.anchoredPosition = new Vector2(-width, 0);
-
-            // Alt Menüleri Kapat (Sadece aktif olaný birazdan açacaðýz)
-            settingsMainRect.gameObject.SetActive(false);
-            if (settingsGeneralRect) settingsGeneralRect.gameObject.SetActive(false);
-            if (settingsAudioRect) settingsAudioRect.gameObject.SetActive(false);
-            if (settingsControlsRect) settingsControlsRect.gameObject.SetActive(false);
-            if (settingsControlsKeyboardRect) settingsControlsKeyboardRect.gameObject.SetActive(false);
-            if (settingsControlsGamepadRect) settingsControlsGamepadRect.gameObject.SetActive(false);
-
-            // Sadece Aktif Olan State'i AÇ ve Konumla
-            switch (currentSettingsState)
+            pauseMenu.SetActive(true);
+            if (pauseMenuRect)
             {
-                case SettingsState.Main:
-                    settingsMainRect.gameObject.SetActive(true);
-                    settingsMainRect.anchoredPosition = Vector2.zero;
-
-                    // Diðerlerinin konumunu "bekleme" yerine al (kapalý olsalar bile)
-                    if (settingsGeneralRect) settingsGeneralRect.anchoredPosition = new Vector2(0, height);
-                    if (settingsControlsRect) settingsControlsRect.anchoredPosition = new Vector2(width, 0);
-                    break;
-
-                case SettingsState.General:
-                    if (settingsGeneralRect)
-                    {
-                        settingsGeneralRect.gameObject.SetActive(true);
-                        settingsGeneralRect.anchoredPosition = Vector2.zero;
-                    }
-                    settingsMainRect.anchoredPosition = new Vector2(0, -height);
-                    break;
-
-                // ... (Diðer case'ler benzer mantýkla) ...
-
-                case SettingsState.Controls:
-                    if (settingsControlsRect)
-                    {
-                        settingsControlsRect.gameObject.SetActive(true);
-                        settingsControlsRect.anchoredPosition = Vector2.zero;
-                    }
-                    settingsMainRect.anchoredPosition = new Vector2(-width, 0);
-                    break;
-
-                case SettingsState.Controls_Keyboard:
-                    if (settingsControlsKeyboardRect)
-                    {
-                        settingsControlsKeyboardRect.gameObject.SetActive(true);
-                        settingsControlsKeyboardRect.anchoredPosition = Vector2.zero;
-                    }
-                    if (settingsControlsRect) settingsControlsRect.anchoredPosition = new Vector2(0, -height);
-                    break;
+                float height = GetCanvasHeight();
+                pauseMenuRect.anchoredPosition = new Vector2(0, height);
+                pauseMenuRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true);
             }
         }
         else
         {
-            // --- ANA MENÜ AÇIK ---
-            mainMenuRect.gameObject.SetActive(true);
-            settingsRect.gameObject.SetActive(false); // Settings komple kapalý
+            if (isSettingsOpen)
+            {
+                settingsRect.DOKill(true);
+                settingsRect.gameObject.SetActive(false);
+                isSettingsOpen = false;
+                ResetSettingsState();
+            }
 
-            mainMenuRect.anchoredPosition = Vector2.zero;
-            settingsRect.anchoredPosition = new Vector2(width, 0);
-
-            // Settings içini de resetle
-            ResetSettingsState();
+            if (pauseMenuRect)
+            {
+                float height = GetCanvasHeight();
+                pauseMenuRect.DOAnchorPosY(height, slideDuration)
+                    .SetEase(slideEase).SetUpdate(true)
+                    .OnComplete(() => pauseMenu.SetActive(false));
+            }
+            else
+            {
+                pauseMenu.SetActive(false);
+            }
         }
 
-        Canvas.ForceUpdateCanvases();
+        HandleTimeScale(isGamePaused ? 0f : 1f);
+        GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+        GameManager.Instance.SetCursorLock(!isGamePaused);
+        SetPlayerCanPlay(!isGamePaused);
+
+        if (isGamePaused) InputManager.Instance.SwitchToUIMode();
+        else InputManager.Instance.SwitchToGameplayMode();
     }
 
-    // --- KLAVYE / MOUSE SAYFASI (YUKARIDAN ÝNER) ---
+    public void OpenSettings()
+    {
+        if (isBusy) return;
+        isBusy = true;
+        isSettingsOpen = true;
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float width = GetCanvasWidth();
+
+        settingsRect.DOKill(true);
+        settingsRect.gameObject.SetActive(true);
+        settingsRect.anchoredPosition = new Vector2(width, 0);
+
+        if (isGamePaused)
+        {
+            if (pauseMenuRect)
+            {
+                pauseMenuRect.DOKill(true);
+                pauseMenuRect.DOAnchorPosX(-width, slideDuration).SetEase(slideEase).SetUpdate(true);
+            }
+
+            settingsRect.DOAnchorPosX(0, slideDuration)
+                .SetEase(slideEase).SetUpdate(true)
+                .OnComplete(() => isBusy = false);
+        }
+        else
+        {
+            mainMenuRect.DOKill(true);
+            mainMenuRect.DOAnchorPosX(-width, slideDuration)
+                .SetEase(slideEase).SetUpdate(true)
+                .OnComplete(() => mainMenuRect.gameObject.SetActive(false));
+
+            settingsRect.DOAnchorPosX(0, slideDuration)
+                .SetEase(slideEase).SetUpdate(true)
+                .OnComplete(() => isBusy = false);
+        }
+    }
+
+    public void CloseSettings()
+    {
+        isBusy = true;
+        isSettingsOpen = false;
+
+        settingsRect.DOKill(true);
+
+        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+
+        float width = GetCanvasWidth();
+
+        settingsRect.DOAnchorPosX(width, slideDuration)
+            .SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() =>
+            {
+                settingsRect.gameObject.SetActive(false);
+                ResetSettingsState();
+                isBusy = false;
+            });
+
+        if (isGamePaused)
+        {
+            if (pauseMenuRect)
+            {
+                pauseMenuRect.DOKill(true);
+                pauseMenu.SetActive(true);
+                pauseMenuRect.anchoredPosition = new Vector2(-width, 0);
+                pauseMenuRect.DOAnchorPosX(0, slideDuration).SetEase(slideEase).SetUpdate(true);
+            }
+        }
+        else
+        {
+            mainMenuRect.DOKill(true);
+            mainMenuRect.gameObject.SetActive(true);
+            mainMenuRect.anchoredPosition = new Vector2(-width, 0);
+            mainMenuRect.DOAnchorPosX(0, slideDuration).SetEase(slideEase).SetUpdate(true);
+        }
+    }
+
+    public void HandleBack()
+    {
+        if (isSettingsOpen)
+        {
+            switch (currentSettingsState)
+            {
+                case SettingsState.General: CloseGeneralSettings(); break;
+                case SettingsState.Audio: CloseAudioSettings(); break;
+                case SettingsState.Controls: CloseControlsSettings(); break;
+                case SettingsState.Controls_Keyboard: CloseControlsKeyboard(); break;
+                case SettingsState.Controls_Gamepad: CloseControlsGamepad(); break;
+                case SettingsState.Main: CloseSettings(); break;
+            }
+        }
+        else if (isGamePaused)
+        {
+            TogglePause();
+        }
+    }
+
+    // --- ALT MENÜLER ---
+
     public void OpenControlsKeyboard()
     {
         if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Controls_Keyboard;
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-        float height = canvasRect.rect.height;
+        float height = GetCanvasHeight();
 
-        // GÝDEN: Controls
-        settingsControlsRect.DOAnchorPosY(-height, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false)); // Kapat
+        settingsControlsRect.DOKill(true);
+        settingsControlsRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false));
 
-        // GELEN: Keyboard
-        settingsControlsKeyboardRect.gameObject.SetActive(true); // Aç
+        settingsControlsKeyboardRect.DOKill(true);
+        settingsControlsKeyboardRect.gameObject.SetActive(true);
         settingsControlsKeyboardRect.anchoredPosition = new Vector2(0, height);
-
-        settingsControlsKeyboardRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsControlsKeyboardRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
-    // --- CLOSE KEYBOARD ---
     public void CloseControlsKeyboard()
     {
-        if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Controls;
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-        float height = canvasRect.rect.height;
+        float height = GetCanvasHeight();
 
-        // GÝDEN: Keyboard
-        settingsControlsKeyboardRect.DOAnchorPosY(height, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsControlsKeyboardRect.gameObject.SetActive(false)); // Kapat
+        settingsControlsKeyboardRect.DOKill(true);
+        settingsControlsKeyboardRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() => settingsControlsKeyboardRect.gameObject.SetActive(false));
 
-        // GELEN: Controls
-        settingsControlsRect.gameObject.SetActive(true); // Aç
-        settingsControlsRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsControlsRect.DOKill(true);
+        settingsControlsRect.gameObject.SetActive(true);
+        settingsControlsRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
-    // --- GAMEPAD SAYFASI (AÞAÐIDAN ÇIKAR) ---
     public void OpenControlsGamepad()
     {
         if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Controls_Gamepad;
-
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+        float height = GetCanvasHeight();
 
-        float height = canvasRect.rect.height;
-
-        // 1. Controls Sayfasý: YUKARI kaysýn (+Height)
+        settingsControlsRect.DOKill(true);
         settingsControlsRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false)); // Kapat
+            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false));
 
-        // 2. Gamepad Sayfasý: AÞAÐIDAN gelsin (0)
-        settingsControlsGamepadRect.gameObject.SetActive(true); // Aç
-        settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height); // Reset
-        settingsControlsGamepadRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsControlsGamepadRect.DOKill(true);
+        settingsControlsGamepadRect.gameObject.SetActive(true);
+        settingsControlsGamepadRect.anchoredPosition = new Vector2(0, -height);
+        settingsControlsGamepadRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void CloseControlsGamepad()
     {
-        if (isBusy) return;
         isBusy = true;
-        currentSettingsState = SettingsState.Controls; // Geri Controls'a dönüyoruz
-
+        currentSettingsState = SettingsState.Controls;
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+        float height = GetCanvasHeight();
 
-        float height = canvasRect.rect.height;
-
-        // 1. Gamepad Sayfasý: AÞAÐI geri gitsin (-Height)
+        settingsControlsGamepadRect.DOKill(true);
         settingsControlsGamepadRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsControlsGamepadRect.gameObject.SetActive(false)); // Kapat
+            .OnComplete(() => settingsControlsGamepadRect.gameObject.SetActive(false));
 
-        // 2. Controls Sayfasý: YUKARIDAN geri gelsin (0)
-        settingsControlsRect.gameObject.SetActive(true); // Aç
-        settingsControlsRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsControlsRect.DOKill(true);
+        settingsControlsRect.gameObject.SetActive(true);
+        settingsControlsRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void OpenGeneralSettings()
@@ -355,48 +349,32 @@ public class MenuManager : MonoBehaviour
         if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.General;
-
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-        float height = canvasRect.rect.height;
+        float height = GetCanvasHeight();
 
-        // --- GÝDEN: Main Settings Page ---
-        settingsMainRect.DOAnchorPosY(-height, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => settingsMainRect.gameObject.SetActive(false)); // KAPAT
+        settingsMainRect.DOKill(true);
+        settingsMainRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => settingsMainRect.gameObject.SetActive(false));
 
-        // --- GELEN: General Settings ---
-        settingsGeneralRect.gameObject.SetActive(true); // AÇ
-        settingsGeneralRect.anchoredPosition = new Vector2(0, height); // Reset pos
-
-        settingsGeneralRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsGeneralRect.DOKill(true);
+        settingsGeneralRect.gameObject.SetActive(true);
+        settingsGeneralRect.anchoredPosition = new Vector2(0, height);
+        settingsGeneralRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void CloseGeneralSettings()
     {
-        if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Main;
-
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-        float height = canvasRect.rect.height;
+        float height = GetCanvasHeight();
 
-        // --- GÝDEN: General Settings ---
-        settingsGeneralRect.DOAnchorPosY(height, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => settingsGeneralRect.gameObject.SetActive(false)); // KAPAT
+        settingsGeneralRect.DOKill(true);
+        settingsGeneralRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() => settingsGeneralRect.gameObject.SetActive(false));
 
-        // --- GELEN: Main Settings Page ---
-        settingsMainRect.gameObject.SetActive(true); // AÇ
-
-        settingsMainRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsMainRect.DOKill(true);
+        settingsMainRect.gameObject.SetActive(true);
+        settingsMainRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void OpenAudioSettings()
@@ -404,45 +382,33 @@ public class MenuManager : MonoBehaviour
         if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Audio;
-
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+        float height = GetCanvasHeight();
 
-        float height = canvasRect.rect.height;
-
-        // 1. Ana Ayarlar Sayfasý: YUKARI kaysýn (+Height)
+        settingsMainRect.DOKill(true);
         settingsMainRect.DOAnchorPosY(height, slideDuration).SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsMainRect.gameObject.SetActive(false)); // KAPAT
+            .OnComplete(() => settingsMainRect.gameObject.SetActive(false));
 
-        // 2. Ses Ayarlarý: AÞAÐIDAN gelsin (0)
-        settingsAudioRect.gameObject.SetActive(true); // AÇ
-        settingsAudioRect.anchoredPosition = new Vector2(0, -height); // Reset
-        settingsAudioRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsAudioRect.DOKill(true);
+        settingsAudioRect.gameObject.SetActive(true);
+        settingsAudioRect.anchoredPosition = new Vector2(0, -height);
+        settingsAudioRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void CloseAudioSettings()
     {
-        if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Main;
-
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
+        float height = GetCanvasHeight();
 
-        float height = canvasRect.rect.height;
-
-        // 1. Ses Ayarlarý: AÞAÐI geri gitsin (-Height)
+        settingsAudioRect.DOKill(true);
         settingsAudioRect.DOAnchorPosY(-height, slideDuration).SetEase(slideEase).SetUpdate(true)
             .OnComplete(() => settingsAudioRect.gameObject.SetActive(false));
 
-        // 2. Ana Ayarlar Sayfasý: YUKARIDAN geri gelsin (0)
-        settingsMainRect.gameObject.SetActive(true); // AÇ
-
-        settingsMainRect.DOAnchorPosY(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsMainRect.DOKill(true);
+        settingsMainRect.gameObject.SetActive(true);
+        settingsMainRect.DOAnchorPosY(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
     public void OpenControlsSettings()
@@ -453,187 +419,63 @@ public class MenuManager : MonoBehaviour
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
         float width = GetCanvasWidth();
 
-        // GÝDEN: Main
-        settingsMainRect.DOAnchorPosX(-width, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsMainRect.gameObject.SetActive(false)); // Kapat
+        settingsMainRect.DOKill(true);
+        settingsMainRect.DOAnchorPosX(-width, slideDuration).SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() => settingsMainRect.gameObject.SetActive(false));
 
-        // GELEN: Controls
-        settingsControlsRect.gameObject.SetActive(true); // Aç
+        settingsControlsRect.DOKill(true);
+        settingsControlsRect.gameObject.SetActive(true);
         settingsControlsRect.anchoredPosition = new Vector2(width, 0);
-
-        settingsControlsRect.DOAnchorPosX(0, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsControlsRect.DOAnchorPosX(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
-    // --- CLOSE CONTROLS ---
     public void CloseControlsSettings()
     {
-        if (isBusy) return;
         isBusy = true;
         currentSettingsState = SettingsState.Main;
         SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
         float width = GetCanvasWidth();
 
-        // GÝDEN: Controls
-        settingsControlsRect.DOAnchorPosX(width, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false)); // Kapat
+        settingsControlsRect.DOKill(true);
+        settingsControlsRect.DOAnchorPosX(width, slideDuration).SetEase(slideEase).SetUpdate(true)
+            .OnComplete(() => settingsControlsRect.gameObject.SetActive(false));
 
-        // GELEN: Main
-        settingsMainRect.gameObject.SetActive(true); // Aç
-        settingsMainRect.DOAnchorPosX(0, slideDuration)
-            .SetEase(slideEase).SetUpdate(true)
-            .OnComplete(() => isBusy = false);
+        settingsMainRect.DOKill(true);
+        settingsMainRect.gameObject.SetActive(true);
+        settingsMainRect.DOAnchorPosX(0, slideDuration).SetEase(slideEase).SetUpdate(true).OnComplete(() => isBusy = false);
     }
 
-    public void OpenSettings()
-    {
-        if (isBusy) return;
-        isBusy = true;
-        isSettingsOpen = true;
-
-        foreach (var flicker in mainMenuFlickers)
-            if (flicker != null) flicker.enabled = false;
-
-        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-
-        float width = GetCanvasWidth();
-
-        // --- GÝDEN: Main Menu ---
-        mainMenuRect.DOAnchorPosX(-width, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                // Ýþ bitti, kapat gitsin
-                mainMenuRect.gameObject.SetActive(false);
-            });
-
-        // --- GELEN: Settings ---
-        settingsRect.gameObject.SetActive(true); // Önce aç
-        settingsRect.anchoredPosition = new Vector2(width, 0); // Yerini garantile
-
-        settingsRect.DOAnchorPosX(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
-    }
-
-    public void CloseSettings()
-    {
-        if (isBusy) return;
-        isBusy = true;
-        isSettingsOpen = false;
-
-        foreach (var flicker in mainMenuFlickers)
-            if (flicker != null) flicker.enabled = true;
-
-        SoundManager.Instance.PlayUISoundFX(swingSound, swingVolume, swingMinPitch, swingMaxPitch);
-
-        float width = GetCanvasWidth();
-
-        // --- GÝDEN: Settings ---
-        settingsRect.DOAnchorPosX(width, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                // Sadece Settings ana panelini kapatmak yetmez,
-                // performans için tüm alt panellerin state'ini koruyarak parent'ý kapatabiliriz.
-                settingsRect.gameObject.SetActive(false);
-
-                // Bir sonraki açýlýþ için "Settings Main" hariç hepsini kapatýp resetleyelim
-                // Böylece Settings'i açýnca kaldýðý yerden deðil, baþtan baþlar.
-                ResetSettingsState();
-            });
-
-        // --- GELEN: Main Menu ---
-        mainMenuRect.gameObject.SetActive(true); // Önce aç
-        mainMenuRect.anchoredPosition = new Vector2(-width, 0);
-
-        mainMenuRect.DOAnchorPosX(0, slideDuration)
-            .SetEase(slideEase)
-            .SetUpdate(true)
-            .OnComplete(() => isBusy = false);
-    }
-
-    // Settings kapatýlýnca alt menüleri temizleyen yardýmcý fonksiyon
     private void ResetSettingsState()
     {
         settingsMainRect.gameObject.SetActive(true);
         settingsMainRect.anchoredPosition = Vector2.zero;
 
-        settingsGeneralRect.gameObject.SetActive(false);
-        settingsAudioRect.gameObject.SetActive(false);
-        settingsControlsRect.gameObject.SetActive(false);
-        settingsControlsKeyboardRect.gameObject.SetActive(false);
-        settingsControlsGamepadRect.gameObject.SetActive(false);
+        if (settingsGeneralRect) settingsGeneralRect.gameObject.SetActive(false);
+        if (settingsAudioRect) settingsAudioRect.gameObject.SetActive(false);
+        if (settingsControlsRect) settingsControlsRect.gameObject.SetActive(false);
+        if (settingsControlsKeyboardRect) settingsControlsKeyboardRect.gameObject.SetActive(false);
+        if (settingsControlsGamepadRect) settingsControlsGamepadRect.gameObject.SetActive(false);
 
         currentSettingsState = SettingsState.Main;
     }
 
-    public void HandleBack()
+    public void FixMenuPositions()
     {
-        if (isBusy) return;
-
-        if (!isSettingsOpen)
-        {
-            return;
-        }
-
-        switch (currentSettingsState)
-        {
-            case SettingsState.General:
-                CloseGeneralSettings();
-                break;
-            case SettingsState.Audio:
-                CloseAudioSettings();
-                break;
-            case SettingsState.Controls:
-                CloseControlsSettings();
-                break;
-
-            // --- YENÝ EKLENEN CASELER ---
-            case SettingsState.Controls_Keyboard:
-                CloseControlsKeyboard();
-                break;
-            case SettingsState.Controls_Gamepad:
-                CloseControlsGamepad();
-                break;
-
-            case SettingsState.Main:
-                CloseSettings();
-                break;
-        }
+        mainMenuRect.DOKill(true);
+        settingsRect.DOKill(true);
+        if (pauseMenuRect) pauseMenuRect.DOKill(true);
+        isBusy = false;
     }
-
-    // Canvas geniþliðini dinamik al (Çözünürlük deðiþse de çalýþýr)
-    private float GetCanvasWidth()
-    {
-        if (canvasRect != null) return canvasRect.rect.width;
-        return 1920f; // Fallback
-    }
-
-    // Canvas yüksekliðini dinamik al (Çözünürlük deðiþse de çalýþýr)
-    private float GetCanvasHeight()
-    {
-        if (canvasRect != null) return canvasRect.rect.height;
-        return 1080f; // Fallback
-    }
-
-    // ---------------------------------------------
 
     public void HandleMainMenu(bool shouldTurnOn)
     {
         mainMenu.SetActive(shouldTurnOn);
-        // Ana menü açýldýðýnda pozisyonlarý resetle (Oyun içinden dönünce kaymýþ olmasýn)
         if (shouldTurnOn && mainMenuRect != null && settingsRect != null)
         {
             mainMenuRect.anchoredPosition = Vector2.zero;
             settingsRect.anchoredPosition = new Vector2(GetCanvasWidth(), 0);
-            settingsMenu.SetActive(true); // Settings de arkada hazýr beklesin
+            settingsMenu.SetActive(true);
+            isGamePaused = false;
         }
     }
 
@@ -642,26 +484,14 @@ public class MenuManager : MonoBehaviour
     public void SetCanPause(bool pause) => CanPause = pause;
     public void SetPlayerCanPlay(bool can) => PlayerManager.Instance.SetPlayerBasicMovements(can);
 
-    public void LoadScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
+    public void LoadScene(string sceneName) { SceneManager.LoadScene(sceneName); }
+    public void QuitGame() { Application.Quit(); }
 
-    public void QuitGame()
-    {
-        Debug.Log("QUIT");
-        Application.Quit();
-    }
+    private float GetCanvasWidth() { if (canvasRect != null) return canvasRect.rect.width; return 1920f; }
+    private float GetCanvasHeight() { if (canvasRect != null) return canvasRect.rect.height; return 1080f; }
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
+    private void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
+    private void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -671,53 +501,66 @@ public class MenuManager : MonoBehaviour
         {
             if (scene.name == "Scene0")
             {
+                // --- RESTORED: DayManager Logic ---
                 DayManager.Instance.ResetForGameplay();
 
+                isGamePaused = false;
+                isSettingsOpen = false;
+                isBusy = false;
+
+                HandleMainMenu(false);
+                if (pauseMenu) pauseMenu.SetActive(false);
+
+                CanPause = true;
                 InputManager.Instance.SwitchToGameplayMode();
 
-                SetPlayerCanPlay(true);
                 HandleTimeScale(1);
                 GameManager.Instance.SetCursor(GameManager.CursorType.Default);
                 GameManager.Instance.SetCursorLock(true);
-                HandleMainMenu(false);
-                HandlePauseMenu(false);
-                SetCanPause(true);
+                SetPlayerCanPlay(true);
+
                 UpdateDoFState(false);
                 if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
             }
             else if (scene.name == "MainMenu")
             {
+                // --- RESTORED: DayManager Logic ---
                 DayManager.Instance.ResetForMainMenu();
 
+                isGamePaused = false;
+                isSettingsOpen = false;
+                isBusy = false;
+
+                HandleMainMenu(true);
+                if (pauseMenu) pauseMenu.SetActive(false);
+                CanPause = false;
                 InputManager.Instance.SwitchToUIMode();
 
                 HandleTimeScale(1);
                 GameManager.Instance.SetCursor(GameManager.CursorType.Default);
                 GameManager.Instance.SetCursorLock(false);
-                HandleMainMenu(true);
-                HandlePauseMenu(false);
-                SetCanPause(false);
+
                 UpdateDoFState(true);
                 if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
             }
         }
     }
 
+    // --- YARDIMCI METODLAR ---
+
     void FindAndAssignCamera()
     {
         GameObject camObj = GameObject.Find("UI_Camera");
-
         if (camObj != null)
         {
             Camera uiCam = camObj.GetComponent<Camera>();
-            Camera mainCam = Camera.main;
-
             if (myCanvas != null)
             {
                 myCanvas.worldCamera = uiCam;
                 myCanvas.planeDistance = 5;
             }
 
+            Camera mainCam = Camera.main;
             if (mainCam != null)
             {
                 var cameraData = mainCam.GetUniversalAdditionalCameraData();
@@ -726,7 +569,6 @@ public class MenuManager : MonoBehaviour
                 {
                     if (c == uiCam) isAlreadyInStack = true;
                 }
-
                 if (!isAlreadyInStack)
                 {
                     cameraData.cameraStack.Add(uiCam);
@@ -738,7 +580,6 @@ public class MenuManager : MonoBehaviour
     private void UpdateDoFState(bool enableDoF)
     {
         if (globalVolume == null) globalVolume = FindObjectOfType<Volume>();
-
         if (globalVolume != null)
         {
             if (globalVolume.profile.TryGet(out DepthOfField dof))
@@ -748,34 +589,21 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void RegisterScaler(PixelPerfectCanvasScaler scaler)
-    {
-        if (!activeScalers.Contains(scaler))
-        {
-            activeScalers.Add(scaler);
-            scaler.UpdateScale();
-        }
-    }
-
-    public void UnregisterScaler(PixelPerfectCanvasScaler scaler)
-    {
-        if (activeScalers.Contains(scaler))
-        {
-            activeScalers.Remove(scaler);
-        }
-    }
-
+    public void RegisterScaler(PixelPerfectCanvasScaler scaler) { if (!activeScalers.Contains(scaler)) { activeScalers.Add(scaler); scaler.UpdateScale(); } }
+    public void UnregisterScaler(PixelPerfectCanvasScaler scaler) { if (activeScalers.Contains(scaler)) activeScalers.Remove(scaler); }
     public void RefreshAllCanvases(int offset = -1)
     {
+        // Eðer yeni bir deðer geldiyse hafýzaya al
+        if (offset != -1)
+        {
+            GlobalScaleOffset = offset;
+        }
+
         foreach (var scaler in activeScalers)
         {
             if (scaler != null)
-                scaler.UpdateScale(offset);
+                scaler.UpdateScale(offset != -1 ? offset : GlobalScaleOffset);
         }
     }
-
-    public void SetRebindBlocker(bool on)
-    {
-        rebindBlocker.SetActive(on);
-    }
+    public void SetRebindBlocker(bool on) { rebindBlocker.SetActive(on); }
 }
