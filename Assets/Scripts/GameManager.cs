@@ -57,6 +57,9 @@ public class GameManager : MonoBehaviour
     public Canvas cursorCanvas;      // CursorCanvas (FPS modunda kapatmak için)
     private Vector2 currentHotspot;  // O anki offset
     private Vector2 _virtualMousePosition;
+    private CursorType _currentCursorType = CursorType.Default; // Şu anki imleç
+    private CursorType _savedCursorType = CursorType.Default;   // Hafızadaki imleç
+    private bool _savedCursorLocked = true;                     // Hafızadaki kilit durumu
 
     [Header("Burger Lists")]
     public List<BurgerIngredientData.IngredientType> classicBurger = new List<BurgerIngredientData.IngredientType>();
@@ -247,6 +250,8 @@ public class GameManager : MonoBehaviour
 
     public void SetCursor(CursorType type)
     {
+        _currentCursorType = type;
+
         CursorSettings setting = System.Array.Find(cursors, x => x.type == type);
 
         if (setting != null)
@@ -448,6 +453,19 @@ public class GameManager : MonoBehaviour
         var sortedList2 = list2.OrderBy(x => x).ToList();
 
         return sortedList1.SequenceEqual(sortedList2);
+    }
+
+    public void SaveCursorState()
+    {
+        _savedCursorType = _currentCursorType;
+        // Cursor.lockState Locked ise true, değilse false
+        _savedCursorLocked = (Cursor.lockState == CursorLockMode.Locked);
+    }
+
+    public void RestoreCursorState()
+    {
+        SetCursor(_savedCursorType);
+        SetCursorLock(_savedCursorLocked);
     }
 
     private void UpdateCursorPosition()

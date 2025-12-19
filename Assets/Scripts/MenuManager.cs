@@ -106,6 +106,14 @@ public class MenuManager : MonoBehaviour
 
         isGamePaused = false;
         InputManager.Instance.SwitchToUIMode();
+
+        // --- ÝÞTE EKSÝK OLAN PARÇA ---
+        // Oyun ilk açýldýðýnda kimse cursor'ý açmýyordu. Elle açýyoruz.
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+            GameManager.Instance.SetCursorLock(false); // Kilit Açýk = Görünür Cursor
+        }
     }
 
     private void Update()
@@ -140,6 +148,11 @@ public class MenuManager : MonoBehaviour
 
         if (isGamePaused)
         {
+            GameManager.Instance.SaveCursorState();
+
+            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+            GameManager.Instance.SetCursorLock(false);
+
             pauseMenu.SetActive(true);
             if (pauseMenuRect)
             {
@@ -150,6 +163,8 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
+            GameManager.Instance.RestoreCursorState();
+
             if (isSettingsOpen)
             {
                 settingsRect.DOKill(true);
@@ -173,8 +188,6 @@ public class MenuManager : MonoBehaviour
 
         UpdateDoFState(isGamePaused);
         HandleTimeScale(isGamePaused ? 0f : 1f);
-        GameManager.Instance.SetCursor(GameManager.CursorType.Default);
-        GameManager.Instance.SetCursorLock(!isGamePaused);
         SetPlayerCanPlay(!isGamePaused);
 
         if (isGamePaused) InputManager.Instance.SwitchToUIMode();
