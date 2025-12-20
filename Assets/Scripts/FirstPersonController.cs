@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
+[DefaultExecutionOrder(10000)]
 public class FirstPersonController : MonoBehaviour
 {
     public bool CanPlay = true;
@@ -275,6 +276,11 @@ public class FirstPersonController : MonoBehaviour
             if (InputManager.Instance != null)
                 InputManager.Instance.aimAssistSlowdown = 1f;
 
+            if (CanLook)
+            {
+                HandleMouseAndHandControl();
+            }
+
             if (CanMove)
                 HandleMovementInput();
             else
@@ -367,10 +373,6 @@ public class FirstPersonController : MonoBehaviour
     {   
         if (CanPlay)
         {
-            if (CanLook)
-            {
-                HandleMouseAndHandControl();
-            }
 
             HandleHandTargetPositions();
         }
