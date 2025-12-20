@@ -1,4 +1,5 @@
-﻿using Cinemachine;
+﻿using AtmosphericHeightFog;
+using Cinemachine;
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
@@ -399,6 +400,7 @@ public class CameraManager : MonoBehaviour
         float durationColorAdjustments = isEntering ? colorAdjustmentsIncreaseTimeForColdRoom : colorAdjustmentsDecreaseTimeForColdRoom;
         Ease ease = isEntering ? Ease.OutSine : Ease.InSine;
 
+        // Diğer efektler aynen kalıyor...
         PlayVignette(isEntering ? vignetteIntensityForColdRoom : normalVignetteValue, durationVig, isEntering ? coldRoomVignetteColor : normalVignetteColor, ease);
         PlayerColorAdjustments(isEntering ? colorAdjustmentsPostExposureForColdRoom : normalColorAdjustmentsPostExposureValue, durationColorAdjustments, isEntering ? coldRoomColorAdjustmentsColor : normalColorAdjustmentsColor, ease);
     }
