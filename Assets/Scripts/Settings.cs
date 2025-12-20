@@ -27,6 +27,11 @@ public class Settings : MonoBehaviour
     public TMP_Dropdown hintsDropdown;
     public TMP_Dropdown interactTextDropdown;
 
+    [Header("Video Settings")]
+    public TMP_Dropdown vSyncDropdown;
+    public TMP_Dropdown fpsDropdown;
+    public CanvasGroup fpsDropdownGroup;
+
     [Header("Controls Settings")]
     public Slider mouseSensSlider;
     public TMP_Text mouseSensText;
@@ -73,12 +78,15 @@ public class Settings : MonoBehaviour
     // Option 1: "English" yazdýysan buradaki 1. eleman "en" olmalý.
     private readonly List<string> languageCodes = new List<string> { "en", "tr" };
 
+    private readonly int[] fpsValues = { 30, 60, 75, 120, 144, 165, 240, 300, 360, -1 };
+
     private readonly List<string> qualityKeys = new List<string>
     {
         "UI_TOAST_MACHINE",
         "UI_LOW",
         "UI_MEDIUM",
-        "UI_HIGH"
+        "UI_HIGH",
+        "UI_ULTRA"
     };
 
     private readonly List<string> pixelationKeys = new List<string>
@@ -131,6 +139,7 @@ public class Settings : MonoBehaviour
         DecideResolutions();
         InitializeLanguage();
         InitializeQuality();
+        InitializeVideoSettings();
         InitializeAudio();
         InitializePixelation();
         InitializeGameplaySettings();
@@ -298,6 +307,131 @@ public class Settings : MonoBehaviour
         // Varsayýlan 0 (Visible)
         interactTextDropdown.value = PlayerPrefs.GetInt("ShowInteractText", 0);
         interactTextDropdown.RefreshShownValue();
+    }
+
+    // ==================================================================================
+    // VIDEO AYARLARI (VSYNC & FPS)
+    // ==================================================================================
+    private void InitializeVideoSettings()
+    {
+        // --- ÝLK AÇILIÞ KONTROLÜ (Bunu en baþa ekle) ---
+        // Eðer oyuncunun daha önce kaydedilmiþ bir VSync ayarý yoksa (Oyun ilk kez açýlýyorsa)
+        if (!PlayerPrefs.HasKey("VSync"))
+        {
+            // Varsayýlanlarý biz zorla atayalým:
+
+            // 1. VSync'i KAPAT (0)
+            QualitySettings.vSyncCount = 0;
+            PlayerPrefs.SetInt("VSync", 0);
+
+            PlayerPrefs.Save(); // Garanti olsun
+        }
+
+        if (!PlayerPrefs.HasKey("TargetFPS"))
+        {
+            // 2. FPS'i MAX YAP
+            Application.targetFrameRate = 360;
+            PlayerPrefs.SetInt("TargetFPS", 360); // Kayýt da oluþturalým
+
+            PlayerPrefs.Save(); // Garanti olsun
+        }
+
+        // 1. VSync Dropdown Doldur (0=Off, 1=On)
+        PopulateDropdown(vSyncDropdown, offOnKeys);
+
+        // Mevcut VSync durumunu çek (Unity'de 0,1,2 olabilir, biz 0-1 kullanacaðýz)
+        int currentVSync = QualitySettings.vSyncCount > 0 ? 1 : 0;
+        vSyncDropdown.value = currentVSync;
+        vSyncDropdown.RefreshShownValue();
+
+        // 2. FPS Dropdown Doldur
+        InitializeFPSDropdown();
+
+        // Mevcut FPS'i bul ve seç (-1 ise Sýnýrsýz seçilir)
+        int currentFPS = Application.targetFrameRate;
+        int fpsIndex = GetFPSIndex(currentFPS);
+        fpsDropdown.value = fpsIndex;
+        fpsDropdown.RefreshShownValue();
+
+        // 3. Baþlangýç Durumu: VSync açýksa FPS kutusunu kilitle
+        UpdateFPSDropdownInteractivity(currentVSync == 1);
+    }
+
+    private void InitializeFPSDropdown()
+    {
+        fpsDropdown.ClearOptions();
+        List<string> options = new List<string>();
+
+        // "Unlimited" kelimesini dil sisteminden çek
+        string unlimitedText = "Unlimited";
+        if (LocalizationManager.Instance != null)
+            unlimitedText = LocalizationManager.Instance.GetText("UI_UNLIMITED");
+
+        foreach (int fps in fpsValues)
+        {
+            if (fps == -1)
+                options.Add(unlimitedText); // -1 görünce "Sýnýrsýz" yaz
+            else
+                options.Add(fps.ToString());
+        }
+        fpsDropdown.AddOptions(options);
+    }
+
+    // FPS deðerine göre dropdown indexini bulan yardýmcý fonksiyon
+    private int GetFPSIndex(int targetFPS)
+    {
+        for (int i = 0; i < fpsValues.Length; i++)
+        {
+            if (fpsValues[i] == targetFPS) return i;
+        }
+        return fpsValues.Length - 1; // Listede yoksa "Sýnýrsýz" varsay
+    }
+
+    // --- UI EVENTLERÝ (Dropdownlara Baðlanacak) ---
+
+    public void SetVSync(int index)
+    {
+        // Index 0: Off, 1: On
+        QualitySettings.vSyncCount = index;
+
+        bool isVSyncOn = (index == 1);
+        UpdateFPSDropdownInteractivity(isVSyncOn); // UI Kilidi aç/kapa
+
+        if (isVSyncOn)
+        {
+            // VSync açýldýysa limiti kaldýr (Monitör Hz'i neyse o olsun)
+            Application.targetFrameRate = -1;
+        }
+        else
+        {
+            // VSync kapandýysa, FPS kutusunda ne seçiliyse onu uygula
+            SetMaxFPS(fpsDropdown.value);
+        }
+
+        PlayerPrefs.SetInt("VSync", index);
+        PlayerPrefs.Save();
+    }
+
+    public void SetMaxFPS(int index)
+    {
+        // Eðer VSync açýksa FPS deðiþtirmeye çalýþma, Unity zaten takmaz
+        if (QualitySettings.vSyncCount > 0) return;
+
+        int targetFPS = fpsValues[index];
+        Application.targetFrameRate = targetFPS;
+
+        PlayerPrefs.SetInt("TargetFPS", targetFPS);
+        PlayerPrefs.Save();
+    }
+
+    // Dropdown'ý pasif/aktif yapma ve þeffaflaþtýrma
+    private void UpdateFPSDropdownInteractivity(bool isVSyncOn)
+    {
+        if (fpsDropdown != null)
+        {
+            fpsDropdown.interactable = !isVSyncOn; // VSync açýksa týklanamaz
+            fpsDropdownGroup.alpha = isVSyncOn ? 0.5f : 1f; // Yarým þeffaf veya tam
+        }
     }
 
     // Dropdown Eventleri
@@ -657,6 +791,14 @@ public class Settings : MonoBehaviour
             languageDropdown.value = index;
             languageDropdown.RefreshShownValue();
         }
+
+        // 3. KRÝTÝK HAMLE: LocalizationManager'a bu dili ZORLA uygula!
+        // (Bunu yapmazsak Manager sistem dilini kullanýp Türkçe açabilir)
+        if (LocalizationManager.Instance != null)
+        {
+            // Eðer Manager zaten o dildeyse bile tekrar set etmekte zarar yok, garanti olsun.
+            LocalizationManager.Instance.ChangeLanguage(currentLang);
+        }
     }
 
     // Dropdown OnValueChanged olayýna baðlanacak fonksiyon
@@ -692,6 +834,7 @@ public class Settings : MonoBehaviour
     {
         // Kalite listesini yeni dile göre tekrar oluþtur
         InitializeQuality();
+        InitializeVideoSettings();
         InitializePixelation();
         InitializeUIScale();
         InitializeGameplaySettings();
@@ -842,6 +985,24 @@ public class Settings : MonoBehaviour
             qualityDropdown.value = 2;
             qualityDropdown.RefreshShownValue();
             SetQuality(2);
+        }
+
+        // YENÝ: VSync (Varsayýlan: Off / 0)
+        if (vSyncDropdown != null)
+        {
+            vSyncDropdown.value = 0;
+            vSyncDropdown.RefreshShownValue();
+            SetVSync(0);
+        }
+
+        // YENÝ: FPS (Varsayýlan: Sýnýrsýz / -1)
+        if (fpsDropdown != null)
+        {
+            // Sýnýrsýz listenin son elemaný
+            int lastIndex = fpsValues.Length - 2;
+            fpsDropdown.value = lastIndex;
+            fpsDropdown.RefreshShownValue();
+            SetMaxFPS(lastIndex);
         }
 
         // 3. Arayüz Boyutu (Varsayýlan: 0 - Offset Yok)

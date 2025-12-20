@@ -1266,6 +1266,11 @@
     "en": "High"
   },
   {
+    "key": "UI_ULTRA",
+    "tr": "Ultra",
+    "en": "Ultra"
+  },
+  {
     "key": "UI_MAIN_MENU_PIXELATION_0",
     "tr": "Pikselden Nefret Ederim (Yok)",
     "en": "I Hate Pixels (None)"
@@ -1599,6 +1604,21 @@
     "key": "UI_MAIN_MENU",
     "tr": "Ana Menü",
     "en": "Main Menu"
+  },
+  {
+    "key": "UI_UNLIMITED",
+    "tr": "Sınırsız",
+    "en": "Unlimited"
+  },
+  {
+    "key": "UI_FPS_LIMIT",
+    "tr": "FPS Sınırı",
+    "en": "FPS Limit"
+  },
+  {
+    "key": "UI_VSYNC",
+    "tr": "VSync",
+    "en": "VSync"
   }
 ]
 
