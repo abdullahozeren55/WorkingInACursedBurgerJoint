@@ -1264,77 +1264,66 @@ public class FirstPersonController : MonoBehaviour
 
     private void SetHandAnimBoolsOff()
     {
-        /*anim.SetBool("regularGrab", false);
-        anim.SetBool("bottleGrab", false);
-        anim.SetBool("trashGrab", false);
-        anim.SetBool("knifeGrab", false);
-        anim.SetBool("thinBurgerIngredientGrab", false);
-        anim.SetBool("regularBurgerIngredientGrab", false);
-        anim.SetBool("thickBurgerIngredientGrab", false);
-        anim.SetBool("noodleGrab", false);
-        anim.SetBool("kettleGrab", false);
-        anim.SetBool("wholeIngredientGrab", false);
-        anim.SetBool("bigWholeIngredientGrab", false);
-        anim.SetBool("wholeBunGrab", false);*/
+        anim.SetInteger("grabInt", 0);
         anim.SetBool("chargingThrow", false);
     }
     private void DecideGrabAnimBool()
     {
-        /*if (currentGrabable != null && currentGrabable.IsGrabbed)
+        if (currentGrabable != null && currentGrabable.IsGrabbed)
         {
             anim.SetTrigger("endThrowInstantly");
 
             switch (currentGrabable.HandGrabType)
             {
                 case PlayerManager.HandGrabTypes.RegularGrab:
-                    anim.SetBool("regularGrab", true);
+                    anim.SetInteger("grabInt", 1);
                     break;
 
                 case PlayerManager.HandGrabTypes.BottleGrab:
-                    anim.SetBool("bottleGrab", true);
+                    anim.SetInteger("grabInt", 2);
                     break;
 
                 case PlayerManager.HandGrabTypes.TrashGrab:
-                    anim.SetBool("trashGrab", true);
+                    anim.SetInteger("grabInt", 3);
                     break;
 
                 case PlayerManager.HandGrabTypes.KnifeGrab:
-                    anim.SetBool("knifeGrab", true);
+                    anim.SetInteger("grabInt", 4);
                     break;
 
                 case PlayerManager.HandGrabTypes.ThinBurgerIngredientGrab:
-                    anim.SetBool("thinBurgerIngredientGrab", true);
+                    anim.SetInteger("grabInt", 5);
                     break;
 
                 case PlayerManager.HandGrabTypes.RegularBurgerIngredientGrab:
-                    anim.SetBool("regularBurgerIngredientGrab", true);
+                    anim.SetInteger("grabInt", 6);
                     break;
 
                 case PlayerManager.HandGrabTypes.ThickBurgerIngredientGrab:
-                    anim.SetBool("thickBurgerIngredientGrab", true);
+                    anim.SetInteger("grabInt", 7);
                     break;
 
                 case PlayerManager.HandGrabTypes.NoodleGrab:
-                    anim.SetBool("noodleGrab", true);
+                    anim.SetInteger("grabInt", 8);
                     break;
 
                 case PlayerManager.HandGrabTypes.KettleGrab:
-                    anim.SetBool("kettleGrab", true);
+                    anim.SetInteger("grabInt", 9);
                     break;
 
                 case PlayerManager.HandGrabTypes.WholeIngredientGrab:
-                    anim.SetBool("wholeIngredientGrab", true);
+                    anim.SetInteger("grabInt", 10);
                     break;
 
                 case PlayerManager.HandGrabTypes.BigWholeIngredientGrab:
-                    anim.SetBool("bigWholeIngredientGrab", true);
+                    anim.SetInteger("grabInt", 11);
                     break;
 
                 case PlayerManager.HandGrabTypes.WholeBunGrab:
-                    anim.SetBool("wholeBunGrab", true);
+                    anim.SetInteger("grabInt", 12);
                     break;
             }
-        }*/
+        }
     }
 
     public void ResetGrabAndInteract()

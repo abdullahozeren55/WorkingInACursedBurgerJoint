@@ -18,8 +18,8 @@ MonoBehaviour:
   handGrabType: 2
   grabPositionOffset: {x: 1, y: 2, z: 3}
   grabRotationOffset: {x: 60, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.0007917558, y: 0.00088680966, z: 0.0011843013}
-  grabLocalRotationOffset: {x: 359.34763, y: 88.870094, z: 330.00433}
+  grabLocalPositionOffset: {x: 0.026455529, y: 0.03608188, z: 0.1822714}
+  grabLocalRotationOffset: {x: 332.01227, y: 328.53467, z: 357.72464}
   focusTextKey: GRABABLE_TRASH
   audioClips:
   - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}

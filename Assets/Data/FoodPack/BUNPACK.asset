@@ -15,7 +15,9 @@ MonoBehaviour:
   destroyParticle: {fileID: 3451705259810622206, guid: 264ff8cd6a9bb234d9efe4b98b9b0a94, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: bb8bf2e2ff31bb848a249683a3a1fbf8, type: 3}
   isUseable: 0
+  isThrowable: 1
   handGrabType: 9
+  throwMultiplier: 1
   minForce: 0.1
   maxForce: 0.2
   minForceExplode: 0.2
@@ -23,8 +25,8 @@ MonoBehaviour:
   haveWholeIngredient: 1
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.0010250397, y: 0.00027026192, z: 0.00049356977}
-  grabLocalRotationOffset: {x: 74.62547, y: 8.055894, z: 90.28455}
+  grabLocalPositionOffset: {x: 0.07812761, y: -0.015180768, z: 0.08251702}
+  grabLocalRotationOffset: {x: 74.634674, y: 8.024529, z: 90.254585}
   focusTextKey: GRABABLE_BUN_PACK
   audioClips:
   - {fileID: 8300000, guid: 7f53f894e4f5514479c44c13474d1b4c, type: 3}
