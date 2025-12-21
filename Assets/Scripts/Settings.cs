@@ -314,47 +314,47 @@ public class Settings : MonoBehaviour
     // ==================================================================================
     private void InitializeVideoSettings()
     {
-        // --- ÝLK AÇILIÞ KONTROLÜ (Bunu en baþa ekle) ---
-        // Eðer oyuncunun daha önce kaydedilmiþ bir VSync ayarý yoksa (Oyun ilk kez açýlýyorsa)
+        // --- ÝLK AÇILIÞ KONTROLÜ ---
         if (!PlayerPrefs.HasKey("VSync"))
         {
-            // Varsayýlanlarý biz zorla atayalým:
+            // DÝKKAT: Unity'de vSyncCount = 1 demek AÇIK demektir.
+            // Varsayýlan olarak AÇIK olsun istiyorsan 1 yapmalýsýn.
+            QualitySettings.vSyncCount = 1;
+            PlayerPrefs.SetInt("VSync", 0); // Dropdown'da 0. index (UI_ON) olsun diye 0 kaydediyoruz.
 
-            // 1. VSync'i KAPAT (0)
-            QualitySettings.vSyncCount = 0;
-            PlayerPrefs.SetInt("VSync", 0);
-
-            PlayerPrefs.Save(); // Garanti olsun
+            PlayerPrefs.Save();
         }
 
         if (!PlayerPrefs.HasKey("TargetFPS"))
         {
-            // 2. FPS'i MAX YAP
-            Application.targetFrameRate = 360;
-            PlayerPrefs.SetInt("TargetFPS", 360); // Kayýt da oluþturalým
-
-            PlayerPrefs.Save(); // Garanti olsun
+            Application.targetFrameRate = -1;
+            PlayerPrefs.SetInt("TargetFPS", -1);
+            PlayerPrefs.Save();
         }
 
-        // 1. VSync Dropdown Doldur (0=Off, 1=On)
-        PopulateDropdown(vSyncDropdown, offOnKeys);
+        // 1. VSync Dropdown Doldur (0=On, 1=Off)
+        PopulateDropdown(vSyncDropdown, onOffKeys);
 
-        // Mevcut VSync durumunu çek (Unity'de 0,1,2 olabilir, biz 0-1 kullanacaðýz)
-        int currentVSync = QualitySettings.vSyncCount > 0 ? 1 : 0;
-        vSyncDropdown.value = currentVSync;
+        // Kayýtlý deðeri çek. (0 ise ON, 1 ise OFF)
+        // Eðer kayýt yoksa yukarýda kaydettiðimiz 0 (ON) gelir.
+        int savedVSyncIndex = PlayerPrefs.GetInt("VSync", 0);
+
+        // Unity ayarýný da buna göre yap (Index 0 ise Count 1, Index 1 ise Count 0)
+        QualitySettings.vSyncCount = (savedVSyncIndex == 0) ? 1 : 0;
+
+        vSyncDropdown.value = savedVSyncIndex;
         vSyncDropdown.RefreshShownValue();
 
         // 2. FPS Dropdown Doldur
         InitializeFPSDropdown();
 
-        // Mevcut FPS'i bul ve seç (-1 ise Sýnýrsýz seçilir)
         int currentFPS = Application.targetFrameRate;
         int fpsIndex = GetFPSIndex(currentFPS);
         fpsDropdown.value = fpsIndex;
         fpsDropdown.RefreshShownValue();
 
-        // 3. Baþlangýç Durumu: VSync açýksa FPS kutusunu kilitle
-        UpdateFPSDropdownInteractivity(currentVSync == 1);
+        // 3. UI Kilidi: Eðer Dropdown 0 (AÇIK) ise FPS kutusu kilitlensin.
+        UpdateFPSDropdownInteractivity(savedVSyncIndex == 0);
     }
 
     private void InitializeFPSDropdown()
@@ -391,20 +391,23 @@ public class Settings : MonoBehaviour
 
     public void SetVSync(int index)
     {
-        // Index 0: Off, 1: On
-        QualitySettings.vSyncCount = index;
+        // Dropdown Listemiz: { "ON" (0), "OFF" (1) }
+        // Unity vSyncCount:  1 = ON, 0 = OFF
 
-        bool isVSyncOn = (index == 1);
-        UpdateFPSDropdownInteractivity(isVSyncOn); // UI Kilidi aç/kapa
+        // Eðer index 0 (ON) seçildiyse, Unity'ye 1 gönder.
+        // Eðer index 1 (OFF) seçildiyse, Unity'ye 0 gönder.
+        QualitySettings.vSyncCount = (index == 0) ? 1 : 0;
+
+        bool isVSyncOn = (index == 0);
+        UpdateFPSDropdownInteractivity(isVSyncOn);
 
         if (isVSyncOn)
         {
-            // VSync açýldýysa limiti kaldýr (Monitör Hz'i neyse o olsun)
-            Application.targetFrameRate = -1;
+            Application.targetFrameRate = -1; // VSync açýksa FPS serbest (monitöre baðlý)
         }
         else
         {
-            // VSync kapandýysa, FPS kutusunda ne seçiliyse onu uygula
+            // VSync kapandýysa FPS sýnýrýný geri getir
             SetMaxFPS(fpsDropdown.value);
         }
 
@@ -987,19 +990,21 @@ public class Settings : MonoBehaviour
             SetQuality(2);
         }
 
-        // YENÝ: VSync (Varsayýlan: Off / 0)
+        // YENÝ: VSync (Varsayýlan: ON / Dropdown Index 0)
         if (vSyncDropdown != null)
         {
-            vSyncDropdown.value = 0;
+            vSyncDropdown.value = 0; // 0 = "UI_ON"
             vSyncDropdown.RefreshShownValue();
+
+            // SetVSync(0) çaðýrýnca yukarýdaki yeni mantýkla Unity ayarýný 1 yapacak.
             SetVSync(0);
         }
 
-        // YENÝ: FPS (Varsayýlan: Sýnýrsýz / -1)
+        // YENÝ: FPS (Varsayýlan: Unlimited)
         if (fpsDropdown != null)
         {
             // Sýnýrsýz listenin son elemaný
-            int lastIndex = fpsValues.Length - 2;
+            int lastIndex = fpsValues.Length - 1;
             fpsDropdown.value = lastIndex;
             fpsDropdown.RefreshShownValue();
             SetMaxFPS(lastIndex);

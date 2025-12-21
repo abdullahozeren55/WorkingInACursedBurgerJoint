@@ -381,6 +381,11 @@
     "en": "BBQ Sauce"
   },
   {
+    "key": "GRABABLE_TRASH",
+    "tr": "Çöp",
+    "en": "Trash"
+  },
+  {
     "key": "BURGER_BOX",
     "tr": "Burger Kutusu",
     "en": "Burger Box"

@@ -25,9 +25,7 @@ public class Trash : MonoBehaviour, IGrabable
 
     public TrashData data;
 
-    public string FocusTextKey { get => focusTextKey; set => focusTextKey = value; }
-    [SerializeField] private string focusTextKey;
-    [Space]
+    public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; }
 
     private Rigidbody rb;
     private Collider col;

@@ -16,6 +16,7 @@ public class TrashData : ScriptableObject
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
     [Space]
+    public string focusTextKey;
     public AudioClip[] audioClips;
     [Space]
     public float grabSoundVolume = 1f;

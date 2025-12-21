@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: TRASH4
   m_EditorClassIdentifier: 
   isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
   handGrabType: 2
-  grabPositionOffset: {x: 0.4, y: 0.7, z: 2}
+  grabPositionOffset: {x: 1, y: 2, z: 3}
   grabRotationOffset: {x: 60, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.00021117488, y: 0.0007586022, z: 0.00022624835}
   grabLocalRotationOffset: {x: 359.0228, y: 5.3367095, z: 215.03581}
+  focusTextKey: GRABABLE_TRASH
   audioClips:
   - {fileID: 8300000, guid: 6ba247c05ab01244d97d4f693e4f832e, type: 3}
   - {fileID: 8300000, guid: b5c223266c9892747aafc530c31bb790, type: 3}
