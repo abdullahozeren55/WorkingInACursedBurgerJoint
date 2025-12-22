@@ -1174,7 +1174,7 @@ AnimatorState:
   m_Motion: {fileID: 7400000, guid: 8b5e34f8c918d2b4bb56928534fe8eed, type: 2}
   m_Tag: 
   m_SpeedParameter: 
-  m_MirrorParameter: 
+  m_MirrorParameter: mirrorJumpLand
   m_CycleOffsetParameter: 
   m_TimeParameter: 
 --- !u!206 &2204565021365206956
@@ -1462,7 +1462,7 @@ AnimatorStateMachine:
     m_Position: {x: 290, y: -30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7896033935795933410}
-    m_Position: {x: 880, y: -30, z: 0}
+    m_Position: {x: 970, y: 0, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2475120759178476266}
     m_Position: {x: 413.9826, y: 215.851, z: 0}
@@ -1655,7 +1655,7 @@ AnimatorState:
   m_Motion: {fileID: 7400000, guid: d21e681272fe817449e651d3ff95c650, type: 2}
   m_Tag: 
   m_SpeedParameter: 
-  m_MirrorParameter: 
+  m_MirrorParameter: mirrorJumpLand
   m_CycleOffsetParameter: 
   m_TimeParameter: 
 --- !u!1101 &7921537672639234470

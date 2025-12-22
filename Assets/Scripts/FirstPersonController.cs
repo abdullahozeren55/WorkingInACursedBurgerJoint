@@ -498,7 +498,6 @@ public class FirstPersonController : MonoBehaviour
     {
         if (ShouldJump)
         {
-
             anim.SetBool("isGrounded", false);
             anim.SetTrigger("jump");
 
