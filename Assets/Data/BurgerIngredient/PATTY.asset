@@ -13,11 +13,18 @@ MonoBehaviour:
   m_Name: PATTY
   m_EditorClassIdentifier: 
   isUseable: 0
+  isSauce: 0
+  isThrowable: 1
+  sauceDropAmount: 5
+  targetDropScale: 0.8
+  randomMultiplier: 1.3
+  throwMultiplier: 1
   ingredientType: 1
+  sauceType: 0
   handGrabType: 5
   yHeight: 0.009
   timeToPutOnTray: 0.2
-  localScaleWhenGrabbed: {x: 0.068, y: 0.066, z: 0.067}
+  localScaleWhenGrabbed: {x: 6.8, y: 6.6, z: 6.7}
   stickableLayers:
     serializedVersion: 2
     m_Bits: 3713

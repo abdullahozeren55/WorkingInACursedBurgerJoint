@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: MAYO
   m_EditorClassIdentifier: 
   isUseable: 1
+  isThrowable: 1
+  throwMultiplier: 1
   handGrabType: 1
   grabPositionOffset: {x: 0.7, y: 1, z: 3}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
-  grabLocalRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  grabLocalPositionOffset: {x: 0.0012753477, y: -0.024081646, z: 0.06398927}
+  grabLocalRotationOffset: {x: 82.59776, y: 254.86421, z: 341.04123}
   usePositionOffset: {x: 0.7, y: 2, z: 3}
   useRotationOffset: {x: 180, y: -120, z: -150}
-  useLocalPositionOffset: {x: -0.0000453092, y: 0.00025515014, z: 0.00018518488}
-  useLocalRotationOffset: {x: 82.59723, y: 254.8648, z: 341.04047}
+  useLocalPositionOffset: {x: 0.0013, y: -0.0234, z: 0.0623}
+  useLocalRotationOffset: {x: 82.59771, y: 254.85889, z: 341.03546}
   timeToUse: 0.3
   usingFOV: 70
   audioClips:

@@ -14,15 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isUseable: 0
   isSauce: 1
+  isThrowable: 1
   sauceDropAmount: 5
   targetDropScale: 0.8
   randomMultiplier: 1.3
+  throwMultiplier: 1
   ingredientType: 3
   sauceType: 2
   handGrabType: 0
   yHeight: 0.004
   timeToPutOnTray: 0.2
-  localScaleWhenGrabbed: {x: 0.22, y: 0.22, z: 0.04}
+  localScaleWhenGrabbed: {x: 22, y: 22, z: 4}
   stickableLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -13,11 +13,18 @@ MonoBehaviour:
   m_Name: CHEESE
   m_EditorClassIdentifier: 
   isUseable: 0
+  isSauce: 0
+  isThrowable: 1
+  sauceDropAmount: 5
+  targetDropScale: 0.8
+  randomMultiplier: 1.3
+  throwMultiplier: 1
   ingredientType: 2
+  sauceType: 0
   handGrabType: 4
   yHeight: 0.0024
   timeToPutOnTray: 0.2
-  localScaleWhenGrabbed: {x: 0.066, y: 0.067, z: 0.066}
+  localScaleWhenGrabbed: {x: 6.6, y: 6.7, z: 6.6}
   stickableLayers:
     serializedVersion: 2
     m_Bits: 3713
