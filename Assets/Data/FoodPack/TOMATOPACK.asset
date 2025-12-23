@@ -15,13 +15,15 @@ MonoBehaviour:
   destroyParticle: {fileID: 3451705259810622206, guid: 264ff8cd6a9bb234d9efe4b98b9b0a94, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: bb8bf2e2ff31bb848a249683a3a1fbf8, type: 3}
   isUseable: 0
+  isThrowable: 1
   handGrabType: 10
+  throwMultiplier: 1
   minForce: 0.1
   maxForce: 0.2
   minForceExplode: 0.2
   maxForceExplode: 0.4
   haveWholeIngredient: 1
-  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.00013179066, y: -0.00011555188, z: 0.00038333554}
   grabLocalRotationOffset: {x: 84.01358, y: 271.8142, z: 355.00342}

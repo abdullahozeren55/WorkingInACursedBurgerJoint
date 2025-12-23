@@ -23,7 +23,7 @@ MonoBehaviour:
   minForceExplode: 0.3
   maxForceExplode: 0.6
   haveWholeIngredient: 0
-  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.006904026, y: -0.030838992, z: 0.14807142}
   grabLocalRotationOffset: {x: 76.83871, y: 349.47595, z: 330.62042}

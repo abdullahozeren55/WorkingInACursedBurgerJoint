@@ -216,6 +216,9 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private float throwMinPitch = 0.85f;
     [SerializeField] private float throwMaxPitch = 1.15f;
 
+    private float rightHandArmLength;
+    private float leftHandArmLength;
+
     private Coroutine singleHandThrowCoroutine;
 
     private Camera mainCamera;
@@ -261,6 +264,8 @@ public class FirstPersonController : MonoBehaviour
         CameraManager.Instance.InitializeCamera(CameraManager.CameraName.FirstPerson);
 
         RefreshUISettings();
+
+        CalculateArmLengths();
 
         PhoneManager.Instance.SetMissionText("Merhaba! Ben Volkan Konak!");
     }
@@ -448,15 +453,74 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleHandTargetPositions()
     {
-        // TransformPoint: Local offset'i (currentPositionOffset...) alýp, 
-        // MainCamera'nýn o anki dünya pozisyonuna ve rotasyonuna göre world pozisyonuna çevirir.
-        leftHandTarget.position = mainCamera.transform.TransformPoint(currentPositionOffsetForLeftHand);
+        // --- AYARLAR ---
+        // Kolu tam kilitlenmeden hemen önce durdur ki titreme payý kalsýn.
+        // Koþarken kafa sallanmasý bu %5'lik pay içinde erir, glitch yapmaz.
+        float safeLengthFactor = 0.95f;
 
-        // Rotasyon için senin yöntemin gayet okunaklý, aynen kalabilir.
+        // Yukarý bakarken (rotationX negatifken) eli ne kadar geri çekeceðimiz.
+        // -30 dereceden sonra devreye girer.
+        float lookUpPullBackAmount = 0.3f;
+
+        // --- SOL EL ---
+        Transform leftShoulder = twoBoneIKConstraintLeftHand.data.root;
+        Vector3 idealLeftPos = mainCamera.transform.TransformPoint(currentPositionOffsetForLeftHand);
+
+        // AÇI TELAFÝSÝ (Pitch Compensation)
+        // Eðer yukarý bakýyorsak (rotationX < -20), target'ý kameraya/gövdeye yaklaþtýr.
+        if (rotationX < -20f)
+        {
+            // -20 ile -80 (upperLookLimit) arasýný 0 ile 1 arasýna orantýla
+            float t = Mathf.InverseLerp(-20f, -upperLookLimit, rotationX);
+            // Yumuþakça geri çek (Kameranýn arkasýna deðil, aþaðý-geriye doðru)
+            idealLeftPos -= mainCamera.transform.forward * (t * lookUpPullBackAmount);
+            idealLeftPos -= mainCamera.transform.up * (t * lookUpPullBackAmount * 0.5f);
+        }
+
+        // UZUNLUK SINIRLAMASI (Clamping)
+        if (leftShoulder != null)
+        {
+            Vector3 directionToTarget = idealLeftPos - leftShoulder.position;
+            float currentDist = directionToTarget.magnitude;
+            float maxAllowedDist = leftHandArmLength * safeLengthFactor;
+
+            if (currentDist > maxAllowedDist)
+            {
+                // Sýnýrý aþtýysa, güvenli sýnýra sabitle
+                idealLeftPos = leftShoulder.position + (directionToTarget.normalized * maxAllowedDist);
+            }
+        }
+
+        leftHandTarget.position = idealLeftPos;
         leftHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForLeftHand);
 
-        // Sað el için aynýsý
-        rightHandTarget.position = mainCamera.transform.TransformPoint(currentPositionOffsetForRightHand);
+
+        // --- SAÐ EL (Ayný Mantýk) ---
+        Transform rightShoulder = twoBoneIKConstraintRightHand.data.root;
+        Vector3 idealRightPos = mainCamera.transform.TransformPoint(currentPositionOffsetForRightHand);
+
+        // AÇI TELAFÝSÝ (Sað el için)
+        if (rotationX < -20f)
+        {
+            float t = Mathf.InverseLerp(-20f, -upperLookLimit, rotationX);
+            idealRightPos -= mainCamera.transform.forward * (t * lookUpPullBackAmount);
+            idealRightPos -= mainCamera.transform.up * (t * lookUpPullBackAmount * 0.5f);
+        }
+
+        // UZUNLUK SINIRLAMASI (Sað el için)
+        if (rightShoulder != null)
+        {
+            Vector3 directionToTarget = idealRightPos - rightShoulder.position;
+            float currentDist = directionToTarget.magnitude;
+            float maxAllowedDist = rightHandArmLength * safeLengthFactor;
+
+            if (currentDist > maxAllowedDist)
+            {
+                idealRightPos = rightShoulder.position + (directionToTarget.normalized * maxAllowedDist);
+            }
+        }
+
+        rightHandTarget.position = idealRightPos;
         rightHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForRightHand);
     }
 
@@ -2037,6 +2101,26 @@ public class FirstPersonController : MonoBehaviour
             focusTextAnim.ShowText(newText);
             focusTextAnim.SkipTypewriter();
             SetFocusTextComplete(true);
+        }
+    }
+
+    void CalculateArmLengths()
+    {
+        // Sað Kol
+        if (twoBoneIKConstraintRightHand != null && twoBoneIKConstraintRightHand.data.root != null)
+        {
+            float upper = Vector3.Distance(twoBoneIKConstraintRightHand.data.root.position, twoBoneIKConstraintRightHand.data.mid.position);
+            float lower = Vector3.Distance(twoBoneIKConstraintRightHand.data.mid.position, twoBoneIKConstraintRightHand.data.tip.position);
+            // %99.9 ile çarpmak, tam dümdüz olup kilitlenmesini engeller (Soft Limit)
+            rightHandArmLength = (upper + lower) * 0.99f;
+        }
+
+        // Sol Kol
+        if (twoBoneIKConstraintLeftHand != null && twoBoneIKConstraintLeftHand.data.root != null)
+        {
+            float upper = Vector3.Distance(twoBoneIKConstraintLeftHand.data.root.position, twoBoneIKConstraintLeftHand.data.mid.position);
+            float lower = Vector3.Distance(twoBoneIKConstraintLeftHand.data.mid.position, twoBoneIKConstraintLeftHand.data.tip.position);
+            leftHandArmLength = (upper + lower) * 0.99f;
         }
     }
 
