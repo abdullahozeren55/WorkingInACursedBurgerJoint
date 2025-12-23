@@ -69,7 +69,6 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private AudioClip[] stoneJumpClips = default;
     [SerializeField] private AudioClip[] tileJumpClips = default;
     [SerializeField] private AudioClip[] gravelJumpClips = default;
-    private float lastGroundedTime;
     private AudioClip lastPlayedJump;
 
     [Header("Landing Parameters")]
@@ -162,6 +161,7 @@ public class FirstPersonController : MonoBehaviour
     [Header("Interaction Hand Parameters")]
     [SerializeField] private TwoBoneIKConstraint twoBoneIKConstraintLeftHand;
     [SerializeField] private Transform leftHandTarget;
+    [SerializeField] private Transform leftHandHint;
     [SerializeField] private Vector3 positionOffsetForLeftHandInteraction;
     [SerializeField] private Vector3 rotationOffsetForLeftHandInteraction;
     private Vector3 currentPositionOffsetForLeftHand;
@@ -170,6 +170,7 @@ public class FirstPersonController : MonoBehaviour
     [Space]
     [SerializeField] private TwoBoneIKConstraint twoBoneIKConstraintRightHand;
     [SerializeField] private Transform rightHandTarget;
+    [SerializeField] private Transform rightHandHint;
     [SerializeField] private Vector3 positionOffsetForRightHandInteraction;
     [SerializeField] private Vector3 rotationOffsetForRightHandInteraction;
     private Vector3 currentPositionOffsetForRightHand;
@@ -449,11 +450,23 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleHandTargetPositions()
     {
-
+        // --- EL HEDEFLERÝ (Senin mevcut kodun) ---
         leftHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForLeftHand);
         leftHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForLeftHand);
+
         rightHandTarget.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(currentPositionOffsetForRightHand);
         rightHandTarget.rotation = mainCamera.transform.rotation * Quaternion.Euler(currentRotationOffsetForRightHand);
+
+        // --- HINT (DÝRSEK) HEDEFLERÝ (YENÝ KISIM) ---
+
+        // Sað dirsek: Kameranýn saðýnda (0.5), aþaðýsýnda (-1.0) ve biraz gerisinde (-0.5) olsun.
+        // Bu deðerlerle oynaman gerekebilir ama genelde "Aþaðý ve Geri" formülü dirseði kurtarýr.
+        Vector3 rightHintOffset = new Vector3(0.5f, -1.0f, -0.5f);
+        rightHandHint.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(rightHintOffset);
+
+        // Sol dirsek: Kameranýn solunda (-0.5), aþaðýsýnda (-1.0) ve biraz gerisinde (-0.5).
+        Vector3 leftHintOffset = new Vector3(-0.5f, -1.0f, -0.5f);
+        leftHandHint.position = mainCamera.transform.position + mainCamera.transform.TransformDirection(leftHintOffset);
     }
 
     private void HandleMovementInput()
@@ -546,7 +559,6 @@ public class FirstPersonController : MonoBehaviour
             if (wasGrounded) // Yerden yeni kesildiysek
             {
                 anim.SetBool("isGrounded", false);
-                lastGroundedTime = Time.time; // Coyote time için
             }
         }
 

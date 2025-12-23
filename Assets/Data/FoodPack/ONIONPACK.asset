@@ -15,16 +15,18 @@ MonoBehaviour:
   destroyParticle: {fileID: 3451705259810622206, guid: 264ff8cd6a9bb234d9efe4b98b9b0a94, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: bb8bf2e2ff31bb848a249683a3a1fbf8, type: 3}
   isUseable: 0
+  isThrowable: 1
   handGrabType: 10
+  throwMultiplier: 1
   minForce: 0.1
   maxForce: 0.2
   minForceExplode: 0.2
   maxForceExplode: 0.4
   haveWholeIngredient: 1
-  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabPositionOffset: {x: 1, y: 1, z: 3}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.00015583044, y: -0.00013078304, z: 0.0003149108}
-  grabLocalRotationOffset: {x: 84.02929, y: 271.9369, z: 355.09735}
+  grabLocalPositionOffset: {x: 0.003276677, y: -0.051000644, z: 0.07202339}
+  grabLocalRotationOffset: {x: 84.02538, y: 271.93414, z: 355.09863}
   focusTextKey: GRABABLE_ONION_PACK
   audioClips:
   - {fileID: 8300000, guid: 7f53f894e4f5514479c44c13474d1b4c, type: 3}

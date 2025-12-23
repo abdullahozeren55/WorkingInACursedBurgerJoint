@@ -15,7 +15,9 @@ MonoBehaviour:
   destroyParticle: {fileID: 3451705259810622206, guid: ed756263223c23f44aa7cd82b5bd894f, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: dc72b4ec84c3c5647a5e99960b99f317, type: 3}
   isUseable: 0
+  isThrowable: 1
   handGrabType: 6
+  throwMultiplier: 1
   minForce: 0.2
   maxForce: 0.4
   minForceExplode: 0.4
@@ -23,8 +25,8 @@ MonoBehaviour:
   haveWholeIngredient: 0
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.00023881147, y: 0.0005831328, z: 0.00035483707}
-  grabLocalRotationOffset: {x: 58.563217, y: 353.1857, z: 77.50567}
+  grabLocalPositionOffset: {x: 0.0065061054, y: 0.011148862, z: 0.09830757}
+  grabLocalRotationOffset: {x: 58.56466, y: 353.18, z: 88.584274}
   focusTextKey: GRABABLE_CHEESE_PACK
   audioClips:
   - {fileID: 8300000, guid: 7f53f894e4f5514479c44c13474d1b4c, type: 3}

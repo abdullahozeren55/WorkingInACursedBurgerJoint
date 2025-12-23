@@ -25,8 +25,8 @@ MonoBehaviour:
   haveWholeIngredient: 0
   grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.05268075, y: 0.028245062, z: 0.113261215}
-  grabLocalRotationOffset: {x: 67.39359, y: 352.91678, z: 83.98619}
+  grabLocalPositionOffset: {x: 0.039561503, y: 0.029662788, z: 0.1146922}
+  grabLocalRotationOffset: {x: 67.3969, y: 352.92184, z: 83.993706}
   focusTextKey: GRABABLE_PATTY_PACK
   audioClips:
   - {fileID: 8300000, guid: 7f53f894e4f5514479c44c13474d1b4c, type: 3}
