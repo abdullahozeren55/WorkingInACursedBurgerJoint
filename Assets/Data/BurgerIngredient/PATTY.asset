@@ -28,10 +28,10 @@ MonoBehaviour:
   stickableLayers:
     serializedVersion: 2
     m_Bits: 3713
-  grabPositionOffset: {x: 0.4, y: 0.3, z: 2}
-  grabRotationOffset: {x: -30, y: -80, z: -80}
-  grabLocalPositionOffset: {x: 0.000029034101, y: 0.00093181024, z: 0.00039220246}
-  grabLocalRotationOffset: {x: 49.996616, y: 180.00002, z: 170.60837}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
+  grabRotationOffset: {x: -20, y: -70, z: -70}
+  grabLocalPositionOffset: {x: 0.0065689296, y: 0.045827504, z: 0.08935926}
+  grabLocalRotationOffset: {x: 49.992653, y: 180.0015, z: 170.60963}
   focusTextKeys:
   - GRABABLE_PATTY_RAW
   - GRABABLE_PATTY_COOKED

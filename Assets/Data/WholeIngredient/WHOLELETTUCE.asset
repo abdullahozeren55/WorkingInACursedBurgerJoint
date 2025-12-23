@@ -18,15 +18,17 @@ MonoBehaviour:
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}
   focusTextKey: GRABABLE_LETTUCE
   isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
   handGrabType: 10
   minForce: 0.2
   maxForce: 0.4
   minForceExplode: 0.4
   maxForceExplode: 0.8
   objectAmount: 6
-  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -30, y: -120, z: -50}
-  grabLocalPositionOffset: {x: -0.000088348635, y: -0.00016926331, z: 0.000365111}
+  grabLocalPositionOffset: {x: -0.009414326, y: -0.0673737, z: 0.079496965}
   grabLocalRotationOffset: {x: 275.98242, y: 178.71942, z: 106.38778}
   dropParticles: {fileID: 8670732574423207768, guid: 01cd4ad62ff60b445b8d40a45c59c9da, type: 3}
   throwParticles: {fileID: 8670732574423207768, guid: 8c47000c96a6b7c41a9e08136acb4e23, type: 3}

@@ -18,16 +18,18 @@ MonoBehaviour:
   instantiateRotationOffset: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
   focusTextKey: GRABABLE_PICKLE
   isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
   handGrabType: 6
   minForce: 0.2
   maxForce: 0.4
   minForceExplode: 0.4
   maxForceExplode: 0.8
   objectAmount: 5
-  grabPositionOffset: {x: 0.4, y: 0.5, z: 2}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -10, y: -70, z: -60}
-  grabLocalPositionOffset: {x: 0.000050595856, y: 0.00030563094, z: 0.000044809047}
-  grabLocalRotationOffset: {x: 76.10081, y: 7.361648, z: 259.42706}
+  grabLocalPositionOffset: {x: -0.0054585114, y: -0.001467894, z: 0.050167006}
+  grabLocalRotationOffset: {x: 76.10455, y: 7.348044, z: 259.41977}
   dropParticles: {fileID: 8670732574423207768, guid: b0be6b0a04eb0494dbd66eb1e72dd400, type: 3}
   throwParticles: {fileID: 8670732574423207768, guid: 42c70d1d69326614f8999fabb2864d74, type: 3}
   audioClips:

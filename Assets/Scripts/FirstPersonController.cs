@@ -456,7 +456,7 @@ public class FirstPersonController : MonoBehaviour
         // --- AYARLAR ---
         // Kolu tam kilitlenmeden hemen önce durdur ki titreme payý kalsýn.
         // Koþarken kafa sallanmasý bu %5'lik pay içinde erir, glitch yapmaz.
-        float safeLengthFactor = 0.95f;
+        float safeLengthFactor = 0.9f;
 
         // Yukarý bakarken (rotationX negatifken) eli ne kadar geri çekeceðimiz.
         // -30 dereceden sonra devreye girer.
