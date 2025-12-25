@@ -8,6 +8,7 @@ public class FoodPackData : ScriptableObject
 {
     public GameObject destroyParticle;
     public GameObject destroyParticleExplode;
+    public Sprite icon;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;

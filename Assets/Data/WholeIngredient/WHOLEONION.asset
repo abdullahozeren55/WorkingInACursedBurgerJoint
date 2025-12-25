@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: WHOLEONION
   m_EditorClassIdentifier: 
   Type: 3
+  icon: {fileID: 21300000, guid: 761433383b891c94badbffd493c09adf, type: 3}
   destroyParticle: {fileID: 3451705259810622206, guid: 6fa55c3561c008b4dbf18488feafb5df, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: 15efb02f1d16d504e9adc579e228dfbe, type: 3}
   instantiateRotationOffset: {x: 0, y: 0, z: 0, w: 0}

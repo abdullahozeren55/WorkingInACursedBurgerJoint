@@ -10,6 +10,7 @@ public class SauceBottleData : ScriptableObject
     public bool isThrowable = true;
     public float throwMultiplier = 1f;
     public PlayerManager.HandGrabTypes handGrabType;
+    public Sprite icon;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

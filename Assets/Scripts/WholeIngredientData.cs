@@ -16,6 +16,7 @@ public class WholeIngredientData : ScriptableObject
     }
 
     public WholeIngredientType Type;
+    public Sprite icon;
     [Space]
     public GameObject destroyParticle;
     public GameObject destroyParticleExplode;

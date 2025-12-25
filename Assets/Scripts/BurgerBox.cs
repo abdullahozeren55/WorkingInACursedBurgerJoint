@@ -11,6 +11,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public Sprite Icon { get => data.icon[boxSituation]; set => data.icon[boxSituation] = value; }
+
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabTypes[boxSituation]; set => data.handGrabTypes[boxSituation] = value; }
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
 

@@ -30,4 +30,5 @@ public interface IGrabable
     public bool IsUseable { get; set; }
     public bool OutlineShouldBeRed { get; set; }
     public string FocusTextKey { get; set; }
+    public Sprite Icon { get; set; }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class NoodleData : ScriptableObject
 {
     public PlayerManager.HandGrabTypes handGrabType;
+    public Sprite icon;
     [Space]
     public bool isThrowable = true;
     public float timeToPutOnHologram = 0.3f;

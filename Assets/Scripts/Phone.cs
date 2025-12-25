@@ -10,6 +10,9 @@ public class Phone : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public Sprite Icon { get => icon; set => icon = value; }
+    [SerializeField] private Sprite icon;
+
     public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
     [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
 

@@ -216,6 +216,11 @@ public class InputManager : MonoBehaviour
     public bool PlayerThrowRelease() => _gameControls.Player.Throw.WasReleasedThisFrame();
     public bool PlayerPhone() => _gameControls.Player.Phone.triggered;
 
+    public bool PlayerSlot1() => _gameControls.Player.Slot1.triggered;
+    public bool PlayerSlot2() => _gameControls.Player.Slot2.triggered;
+    public bool PlayerSlot3() => _gameControls.Player.Slot3.triggered;
+    public bool PlayerSlot4() => _gameControls.Player.Slot4.triggered;
+
     public bool PlayerPause()
     {
         return _gameControls.Player.Pause.triggered || _gameControls.UI.Pause.triggered;

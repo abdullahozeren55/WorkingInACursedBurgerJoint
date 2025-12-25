@@ -9,6 +9,8 @@ public class Noodle : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public Sprite Icon { get => data.icon; set => data.icon = value; }
+
     public NoodleManager.NoodleStatus NoodleStatus;
     public Cookable.CookAmount CookAmount; //RAW USED FOR RAW, REGULAR USED FOR COOKED, BURNT USED FOR FINISHED
 

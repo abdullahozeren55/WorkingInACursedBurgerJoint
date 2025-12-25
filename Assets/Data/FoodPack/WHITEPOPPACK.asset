@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyParticle: {fileID: 3451705259810622206, guid: 22300dc3a9a7e9345965868ca2e64c69, type: 3}
   destroyParticleExplode: {fileID: 3451705259810622206, guid: 6b31a49ec4ed12f4ab5f99dd8012f9cd, type: 3}
+  icon: {fileID: 21300000, guid: 4b20784ff221c7840a1c0a8c24b9a212, type: 3}
   isUseable: 0
   isThrowable: 1
   handGrabType: 10

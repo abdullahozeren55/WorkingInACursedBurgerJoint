@@ -9,6 +9,8 @@ public class SauceBottle : MonoBehaviour, IGrabable
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
+    public Sprite Icon { get => data.icon; set => data.icon = value; }
+
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
 

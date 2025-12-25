@@ -8,6 +8,7 @@ public class DrinkData : ScriptableObject
     public string focusTextKey;
     public GameManager.DrinkTypes drinkType;
     public PlayerManager.HandGrabTypes handGrabType;
+    public Sprite icon;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;
