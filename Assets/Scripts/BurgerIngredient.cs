@@ -56,6 +56,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private float lastSoundTime = 0f;
     private bool isStuckAndCantPlayAudioUntilPickedAgain;
 
+    [HideInInspector] public Quaternion storedRotationForTray;
+
     private Quaternion collisionRotation;
 
     private void Awake()
@@ -120,13 +122,22 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
         transform.parent = parentTray;
 
-        var moveTween = transform.DOMove(trayPos, data.timeToPutOnTray).SetEase(Ease.OutQuad);
+        // 1. Bize gelen Dünya Pozisyonunu (trayPos), yeni babamýzýn (parentTray) Yerel Pozisyonuna çeviriyoruz.
+        // Çünkü tepsi o sýrada hareket ediyor veya scale deðiþtiriyor olabilir.
+        Vector3 targetLocalPos = parentTray.InverseTransformPoint(trayPos);
+
+        // 2. DOMove yerine DOLocalMove kullanýyoruz.
+        // Böylece tepsi Squash animasyonuyla ezilse bile malzeme ona yapýþýk kalýr,
+        // dünya koordinatlarýyla kavga etmez.
+        var moveTween = transform.DOLocalMove(targetLocalPos, data.timeToPutOnTray).SetEase(Ease.OutQuad);
+
+        // -------------------------
+
         var rotateTween = transform.DORotateQuaternion(trayRot, data.timeToPutOnTray).SetEase(Ease.OutCubic);
 
         Sequence seq = DOTween.Sequence();
         seq.Join(moveTween);
         seq.Join(rotateTween);
-
         seq.OnComplete(() => {
 
             isAddedToBurger = true;
@@ -137,11 +148,43 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             if (data.isSauce)
                 meshCol.convex = false;
 
-            SetOnGrabableLayer();
+            // Eskiden direkt SetOnGrabableLayer() diyorduk.
+            // Þimdi kontrol ediyoruz: Hala en tepede miyiz?
+
+            if (tray != null && tray.allBurgerIngredients.Count > 0 &&
+                tray.allBurgerIngredients[tray.allBurgerIngredients.Count - 1] == this)
+            {
+                // Evet, listenin sonuncusu benim. Beni tutabilirsin.
+                SetOnGrabableLayer();
+            }
+            else
+            {
+                // Hayýr, üzerime bir þey gelmiþ. Ben artýk tabaným.
+                SetOnTrayLayer();
+            }
+            // -------
 
             SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
 
         });
+    }
+
+    public void OnHolster()
+    {
+        // 1. Eðer bu malzeme tepsiyle iliþkilendirilmiþse (hologram vs.) temizle
+        if (tray != null)
+        {
+            tray.TurnOffAllHolograms();
+
+            // Eðer tepsinin "þu anki malzemesi" bendimsem, artýk yokum de.
+            if (tray.currentIngredient == this)
+            {
+                tray.currentIngredient = null;
+            }
+        }
+
+        // 2. Outline vs. temizliði (Gerekirse)
+        // OnLoseFocus(); // Ýstersen focus'u da burada kaybettirebilirsin ama þart deðil.
     }
 
     public void OnGrab(Transform grabPoint)
@@ -209,7 +252,21 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     {
         col.enabled = true;
 
-        tray.TurnOffAllHolograms();
+        if (tray != null)
+        {
+            // Fýrlatmadan hemen önce, o anki tepsi hologram açýsýný kopyalýyoruz.
+            // Böylece havada el deðiþtirsen bile bu açý deðiþmez.
+            storedRotationForTray = tray.currentRotationToPutBurgerIngredient;
+
+            tray.TurnOffAllHolograms();
+
+            if (tray.currentIngredient == this)
+                tray.currentIngredient = null;
+            // --------------------------------
+
+            tray.TurnOffAllHolograms();
+            if (tray.currentIngredient == this) tray.currentIngredient = null;
+        }
 
         IsGrabbed = false;
 
@@ -220,13 +277,29 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
     {
         col.enabled = true;
 
-        tray.TurnOffAllHolograms();
+        if (tray != null)
+        {
+            // Fýrlatmadan hemen önce, o anki tepsi hologram açýsýný kopyalýyoruz.
+            // Böylece havada el deðiþtirsen bile bu açý deðiþmez.
+            storedRotationForTray = tray.currentRotationToPutBurgerIngredient;
+
+            tray.TurnOffAllHolograms();
+
+            if (tray.currentIngredient == this)
+                tray.currentIngredient = null;
+            // --------------------------------
+
+            tray.TurnOffAllHolograms();
+            if (tray.currentIngredient == this) tray.currentIngredient = null;
+        }
 
         IsGrabbed = false;
 
@@ -237,6 +310,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

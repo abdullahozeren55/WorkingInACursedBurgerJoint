@@ -70,6 +70,10 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         CanGetSliced = true;
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnGrab(Transform grabPoint)
     {
         ChangeLayer(grabbedLayer);
@@ -113,6 +117,8 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
@@ -128,6 +134,8 @@ public class WholeIngredient : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

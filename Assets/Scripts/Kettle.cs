@@ -126,6 +126,10 @@ public class Kettle : MonoBehaviour, IGrabable
         StartCoroutine(PutOnHologram());
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnGrab(Transform grabPoint)
     {
         ChangeLayer(grabbedLayer);
@@ -172,6 +176,8 @@ public class Kettle : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
@@ -189,6 +195,8 @@ public class Kettle : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

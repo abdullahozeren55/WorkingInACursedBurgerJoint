@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using static UnityEditor.Progress;
 
 [DefaultExecutionOrder(10000)]
 public class FirstPersonController : MonoBehaviour
@@ -1615,6 +1616,9 @@ public class FirstPersonController : MonoBehaviour
         if (currentSlotIndex != -1 && inventoryItems[currentSlotIndex] != null)
         {
             IGrabable oldItem = inventoryItems[currentSlotIndex];
+
+            oldItem.OnHolster();
+
             ((MonoBehaviour)oldItem).gameObject.SetActive(false);
         }
 
@@ -1749,6 +1753,9 @@ public class FirstPersonController : MonoBehaviour
         if (currentSlotIndex != -1 && inventoryItems[currentSlotIndex] != null)
         {
             IGrabable oldItem = inventoryItems[currentSlotIndex];
+
+            oldItem.OnHolster();
+
             ((MonoBehaviour)oldItem).gameObject.SetActive(false);
         }
 
@@ -1784,6 +1791,9 @@ public class FirstPersonController : MonoBehaviour
         if (inventoryItems[currentSlotIndex] != null)
         {
             IGrabable item = inventoryItems[currentSlotIndex];
+
+            item.OnHolster();
+
             ((MonoBehaviour)item).gameObject.SetActive(false);
         }
 

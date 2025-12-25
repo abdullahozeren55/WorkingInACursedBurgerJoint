@@ -11,6 +11,7 @@ public interface IGrabable
     public void OnFocus();
     public void OnLoseFocus();
     public void OnDrop(Vector3 direction, float force);
+    public void OnHolster();
     public void OnUseHold();
     public void OnUseRelease();
     public void OutlineChangeCheck();

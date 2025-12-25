@@ -90,12 +90,18 @@ public class Knife : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnFocus()
     {
         if (!isJustDropped && !isJustThrowed)
             ChangeLayer(grabableOutlinedLayer);
+    }
+
+    public void OnHolster()
+    {
     }
 
     public void OnGrab(Transform grabPoint)
@@ -166,6 +172,8 @@ public class Knife : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

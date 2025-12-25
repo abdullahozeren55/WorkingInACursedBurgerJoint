@@ -79,6 +79,10 @@ public class Phone : MonoBehaviour, IGrabable
         IsGrabbed = false;
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnGrab(Transform grabPoint)
     {
         IsGrabbed = true;

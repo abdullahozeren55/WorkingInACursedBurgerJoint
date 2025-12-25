@@ -63,6 +63,10 @@ public class Drink : MonoBehaviour, IGrabable
         CanBeReceived = true;
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnGrab(Transform grabPoint)
     {
         ChangeLayer(grabbedLayer);
@@ -108,6 +112,8 @@ public class Drink : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
@@ -123,6 +129,8 @@ public class Drink : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void ChangeLayer(int layer)

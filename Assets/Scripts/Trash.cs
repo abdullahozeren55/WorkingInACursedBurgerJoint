@@ -62,6 +62,10 @@ public class Trash : MonoBehaviour, IGrabable
         transform.rotation = Random.rotation;
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnGrab(Transform grabPoint)
     {
         ChangeLayer(grabbedLayer);
@@ -106,6 +110,8 @@ public class Trash : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnThrow(Vector3 direction, float force)
@@ -121,6 +127,8 @@ public class Trash : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

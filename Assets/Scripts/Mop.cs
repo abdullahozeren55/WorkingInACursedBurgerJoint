@@ -64,6 +64,10 @@ public class Mop : MonoBehaviour, IGrabable
         isJustDropped = false;
     }
 
+    public void OnHolster()
+    {
+    }
+
     public void OnDrop(Vector3 direction, float force)
     {
         col.enabled = true;
@@ -87,6 +91,8 @@ public class Mop : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustDropped = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OnFocus()
@@ -160,6 +166,8 @@ public class Mop : MonoBehaviour, IGrabable
         rb.AddForce(direction * force, ForceMode.Impulse);
 
         isJustThrowed = true;
+
+        ChangeLayer(ungrabableLayer);
     }
 
     public void OutlineChangeCheck()

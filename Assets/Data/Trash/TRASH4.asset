@@ -16,6 +16,7 @@ MonoBehaviour:
   isThrowable: 1
   throwMultiplier: 1
   handGrabType: 2
+  icon: {fileID: 21300000, guid: 5b1c3d60abf220a488edb8a644f5d33f, type: 3}
   grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: 60, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.020436747, y: 0.032110807, z: 0.052692633}

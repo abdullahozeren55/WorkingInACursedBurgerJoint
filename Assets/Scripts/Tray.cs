@@ -32,10 +32,10 @@ public class Tray : MonoBehaviour
     public float sauceOnTrayMaxPitch = 1.2f;
 
     private Vector3 currentLocationToPutBurgerIngredient;
-    private Quaternion currentRotationToPutBurgerIngredient;
+    [HideInInspector] public Quaternion currentRotationToPutBurgerIngredient;
     private Vector3 hologramLocation;
 
-    private List<BurgerIngredient> allBurgerIngredients = new List<BurgerIngredient>();
+    [HideInInspector] public List<BurgerIngredient> allBurgerIngredients = new List<BurgerIngredient>();
     private List<SauceBottle.SauceType> allSauces = new List<SauceBottle.SauceType>();
     private List<GameObject> allGO = new List<GameObject>();
 
@@ -118,6 +118,11 @@ public class Tray : MonoBehaviour
             SoundManager.Instance.PlaySoundFX(sauceOnTraySound, go.transform, sauceOnTrayVolume, sauceOnTrayMinPitch, sauceOnTrayMaxPitch);
 
             TurnOffAllHolograms();
+
+            // Aslýnda AddSauce sonrasý hologramý kapalý tutmak daha mantýklý olabilir
+            // çünkü sos sýkarken hologramýn içinden geçmesi garip durabilir.
+            // Ama "Elimdeki malzeme hala geçerli mi?" diye baktýrmak istersen:
+            RefreshHologram();
         }
             
     }
@@ -131,6 +136,9 @@ public class Tray : MonoBehaviour
 
         if (allBurgerIngredients.Count > 0)
             allBurgerIngredients[allBurgerIngredients.Count - 1].SetOnGrabableLayer();
+
+        // Yükseklik düþtü, hologramý güncelle
+        RefreshHologram();
     }
 
     public void ResetTray()
@@ -164,6 +172,8 @@ public class Tray : MonoBehaviour
 
     public void TurnOnSauceHologram(SauceBottle.SauceType type)
     {
+        TurnOffAllHolograms();
+
         if (allBurgerIngredients.Count != 0 && !allSauces.Contains(type) && !burgerIsDone)
         {
             hologramLocation = currentLocationToPutBurgerIngredient;
@@ -193,6 +203,8 @@ public class Tray : MonoBehaviour
 
     public void TurnOnHologram(BurgerIngredientData.IngredientType type)
     {
+        TurnOffAllHolograms();
+
         hologramLocation = currentLocationToPutBurgerIngredient;
         hologramLocation.y += currentIngredient.data.yHeight;
 
@@ -299,6 +311,30 @@ public class Tray : MonoBehaviour
         sauce.SetActive(false);
     }
 
+    // Tepside durum deðiþince (yeni malzeme gelince) hologramý güncellemek için
+    public void RefreshHologram()
+    {
+        // 1. Elimde bir þey yoksa hologramý kapat
+        if (currentIngredient == null)
+        {
+            TurnOffAllHolograms();
+            return;
+        }
+
+        // 2. Önce bütün hologramlarý bir temizle (Pozisyon kaymasý olmasýn diye)
+        TurnOffAllHolograms();
+
+        // 3. Elimdeki Sos mu Normal Malzeme mi?
+        if (currentIngredient.data.isSauce)
+        {
+            TurnOnSauceHologram(currentIngredient.data.sauceType);
+        }
+        else
+        {
+            TurnOnHologram(currentIngredient.data.ingredientType);
+        }
+    }
+
     private void ResetPosition()
     {
         currentLocationToPutBurgerIngredient = transform.position;
@@ -356,59 +392,166 @@ public class Tray : MonoBehaviour
             sauceCollider.enabled = false;
 
             burgerIsDone = false;
+
+        // Yükseklik düþtü, hologramý güncelle
+        RefreshHologram();
     }
 
     private void Squash()
     {
+        // currentIngredient baðýmlýlýðýný tamamen kaldýrdýk.
+        // Artýk sabit bir "ezilme" deðeri kullanýyoruz. 
+        // X ve Y hafif geniþlerken (1.1), Z hafifçe basýlýyor (0.9).
+
         ingredientsParent
-    .DOScale(new Vector3(1.1f, 1.1f, 1f - 2f * currentIngredient.data.yHeight), 0.2f) // biraz daha uzun süre
-    .SetEase(Ease.OutQuad)                        // daha yumuþak çöküþ
-    .OnComplete(() =>
-    {
-        ingredientsParent.DOScale(Vector3.one, 0.3f) // kalkýþý daha uzun yap
-            .SetEase(Ease.OutElastic, 1f + 2f * currentIngredient.data.yHeight);          // lastikli, overshootlu
-    });
+            .DOScale(new Vector3(1.1f, 1.1f, 0.9f), 0.2f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                // Geri eski haline (1,1,1) dönerken standart elastiklik kullanýyoruz.
+                ingredientsParent.DOScale(Vector3.one, 0.3f)
+                    .SetEase(Ease.OutElastic);
+            });
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer != onTrayLayer && (other.CompareTag("BurgerIngredient") || other.CompareTag("BurgerBox")))
-        {
-            if (currentIngredient != null && other.gameObject.GetInstanceID() == currentIngredient.gameObject.GetInstanceID() && currentIngredient.canAddToTray)
-            {
+        // 1. Layer Kontrolü
+        if (other.gameObject.layer == onTrayLayer) return;
 
-                if (currentIngredient.data.ingredientType == BurgerIngredientData.IngredientType.TOPBUN)
+        // 2. Etiket Kontrolü
+        if (other.CompareTag("BurgerIngredient"))
+        {
+            // Çarpan objenin scriptini al
+            BurgerIngredient ingredient = other.GetComponent<BurgerIngredient>();
+
+            // Eðer script yoksa veya tepsiye eklenmeye uygun deðilse (canAddToTray)
+            // NOT: canAddToTray'i aþaðýda tekrar hesaplayacaðýz çünkü fýrlatýnca bozulmuþ olabilir.
+            if (ingredient == null) return;
+
+            // --- YENÝ KONTROL ---
+            // Hologram sistemi "currentIngredient" üzerinden "canAddToTray"i set ediyordu.
+            // Ama fýrlatýlan obje artýk "current" deðil.
+            // O yüzden buraya manuel bir "Uygunluk Kontrolü" (Validation) eklememiz lazým.
+
+            if (allBurgerIngredients.Contains(ingredient)) return;
+
+            bool isCompatible = CheckIfIngredientIsCompatible(ingredient);
+
+            if (isCompatible)
+            {
+                // Burger Bitti mi?
+                if (ingredient.data.ingredientType == BurgerIngredientData.IngredientType.TOPBUN)
                     burgerIsDone = true;
 
+                // Sos Collider'ý aç
                 if (!sauceCollider.enabled)
                     sauceCollider.enabled = true;
 
+                // Önceki malzemeyi sabitle
                 if (allBurgerIngredients.Count > 0)
                     allBurgerIngredients[allBurgerIngredients.Count - 1].SetOnTrayLayer();
 
-                if (currentIngredient.data.isSauce)
-                    allSauces.Add(currentIngredient.data.sauceType);
-                
-                allBurgerIngredients.Add(currentIngredient);
-                allGO.Add(currentIngredient.gameObject);
+                // Yeni malzeme geldi! Hemen eski animasyonu durdur ve tepsiyi düzelt.
+                // Böylece yeni gelen malzeme "yamuk/ezik" bir transform'a parent olmaz.
+                ingredientsParent.DOKill();
+                ingredientsParent.localScale = Vector3.one;
 
-                UpdateCurrentLocationToPutBurgerIngredient(currentIngredient.data.yHeight);
+                // Listelere ekle
+                if (ingredient.data.isSauce)
+                    allSauces.Add(ingredient.data.sauceType);
 
-                currentIngredient.PutOnTray(currentLocationToPutBurgerIngredient, currentRotationToPutBurgerIngredient, ingredientsParent);
+                allBurgerIngredients.Add(ingredient);
+                allGO.Add(ingredient.gameObject);
 
-                Invoke("Squash", currentIngredient.data.timeToPutOnTray / 1.2f);
+                // Yüksekliði güncelle
+                UpdateCurrentLocationToPutBurgerIngredient(ingredient.data.yHeight);
 
-                UpdateCurrentLocationToPutBurgerIngredient(currentIngredient.data.yHeight);
+                Quaternion targetRotation;
 
+                if (ingredient.data.isSauce)
+                {
+                    // Soslar için özel açý (Hologram kodundaki gibi 90 derece)
+                    targetRotation = Quaternion.Euler(90f, Random.Range(0f, 360f), 0f);
+                }
+                else
+                {
+                    // Normal malzemeler için standart açý (0 derece)
+                    targetRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                }
+
+                // Fiziksel yerleþtirme
+                ingredient.PutOnTray(currentLocationToPutBurgerIngredient, ingredient.storedRotationForTray, ingredientsParent);
+
+                // Efektler
+                Invoke("Squash", ingredient.data.timeToPutOnTray / 1.2f);
+
+                // Sonraki malzeme için yüksekliði ayarla
+                UpdateCurrentLocationToPutBurgerIngredient(ingredient.data.yHeight);
+
+                // Malzeme eklendi, yükseklik arttý.
+                // Þimdi elindeki eþya için hologramý yeni duruma göre tekrar yak!
+                RefreshHologram();
             }
-            else if (currentBox != null && other.gameObject.GetInstanceID() == currentBox.gameObject.GetInstanceID() && currentBox.canAddToTray)
+        }
+        else if (other.CompareTag("BurgerBox"))
+        {
+            // Kutu mantýðý genelde sadece elimizdeyken çalýþýr (fýrlatýlan kutu tepsiye girmez genelde)
+            // Ama yine de "currentBox" kontrolünü kaldýrýp direkt componente bakabilirsin.
+            BurgerBox boxComponent = other.GetComponent<BurgerBox>();
+
+            if (boxComponent != null && boxComponent == currentBox && boxComponent.canAddToTray)
             {
                 if (allBurgerIngredients.Count > 0)
                     allBurgerIngredients[allBurgerIngredients.Count - 1].SetOnTrayLayer();
 
                 currentBox.PutOnTray(burgerBoxTransform.position);
             }
-            
+        }
+    }
+
+    // Bu fonksiyon, hologramýn yaptýðý iþi manuel yapar.
+    // Tepsiye çarpan malzeme, þu anki sýraya uygun mu?
+    private bool CheckIfIngredientIsCompatible(BurgerIngredient ingredient)
+    {
+        // 1. Eðer burger hiç baþlamadýysa (Boþ tepsi)
+        if (allBurgerIngredients.Count == 0)
+        {
+            // Sadece BOTTOM BUN (Alt Ekmek) kabul et ve piþmiþ olmalý
+            return ingredient.data.ingredientType == BurgerIngredientData.IngredientType.BOTTOMBUN &&
+                   ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+        }
+
+        // 2. Burger bitmiþse (burgerIsDone) -> Hiçbir þey kabul etme
+        if (burgerIsDone) return false;
+
+        // 3. Sýradaki malzemeler
+        // Buradaki kurallar TurnOnHologram fonksiyonundaki kurallarla AYNI olmalý.
+        BurgerIngredientData.IngredientType type = ingredient.data.ingredientType;
+
+        switch (type)
+        {
+            case BurgerIngredientData.IngredientType.PICKLE:
+            case BurgerIngredientData.IngredientType.LETTUCE:
+            case BurgerIngredientData.IngredientType.ONION:
+            case BurgerIngredientData.IngredientType.TOMATO:
+            case BurgerIngredientData.IngredientType.CHEESE:
+                return true; // Bunlar her zaman eklenebilir
+
+            case BurgerIngredientData.IngredientType.PATTY:
+                // Köfte sadece piþmiþse
+                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+
+            case BurgerIngredientData.IngredientType.BOTTOMBUN:
+                // Ýkinci bir alt ekmek? (Big Mac tarzý). Þimdilik izin verelim ama piþmiþ olmalý.
+                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+
+            case BurgerIngredientData.IngredientType.TOPBUN:
+                // Üst ekmek sadece piþmiþse ve burgeri bitirir.
+                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+
+            default:
+                return false;
         }
     }
 }
