@@ -44,9 +44,17 @@ public class BurgerBox : MonoBehaviour, IGrabable
     public List<BurgerIngredientData.IngredientType> allBurgerIngredientTypes = new List<BurgerIngredientData.IngredientType>();
     public List<SauceBottle.SauceType> allSauces = new List<SauceBottle.SauceType>();
 
-    private Animator anim;
+    public GameObject topPart;
+
+    [Header("Closing Animation Settings")]
+    [SerializeField] private float lidCloseDuration = 0.2f; // Kapak kapanma süresi
+
+    [Header("Closed Collider Settings")]
+    [SerializeField] private Vector3 closedColliderCenter; // Kapalýykenki Center
+    [SerializeField] private Vector3 closedColliderSize;   // Kapalýykenki Size
+
     private Rigidbody rb;
-    private Collider col;
+    private BoxCollider col;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -59,17 +67,14 @@ public class BurgerBox : MonoBehaviour, IGrabable
     [HideInInspector] public bool isJustDropped;
     [HideInInspector] public bool CanBeReceived;
 
-    private GameObject[] childObjects;
-
     [HideInInspector] public GameManager.BurgerTypes burgerType;
 
     private float lastSoundTime = 0f;
 
     private void Awake()
     {
-        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-        col = GetComponent<Collider>();
+        col = GetComponent<BoxCollider>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -87,14 +92,10 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         canAddToTray = false;
 
-        // Get all MeshRenderer components in children (including inactive)
-        MeshRenderer[] renderers = GetComponentsInChildren<MeshRenderer>(true);
-
-        // Filter to only get GameObjects that are not this one
-        childObjects = renderers
-            .Select(r => r.gameObject)
-            .Where(go => go != this.gameObject)
-            .ToArray();
+        if (topPart != null)
+        {
+            topPart.transform.localRotation = Quaternion.Euler(180f, 0f, 0f);
+        }
     }
 
     public void PutOnTray(Vector3 trayPos)
@@ -112,12 +113,57 @@ public class BurgerBox : MonoBehaviour, IGrabable
         Sequence seq = DOTween.Sequence();
         seq.Append(transform.DOMove(trayPos, data.timeToPutOnTray).SetEase(Ease.OutQuad));
         seq.Join(transform.DORotateQuaternion(Quaternion.Euler(data.trayRotation), data.timeToPutOnTray).SetEase(Ease.OutCubic));
+
         seq.OnComplete(() =>
         {
             SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.closeSoundVolume, data.closeSoundMinPitch, data.closeSoundMaxPitch);
-            anim.Play("TopHolderClose");
-        });
 
+            tray.PrepareForSquash();
+
+            // --- COLLIDER BAÞLANGIÇ DEÐERLERÝNÝ KAYDET ---
+            // Animasyon baþlamadan önceki son halini (Açýk halini) alýyoruz.
+            Vector3 startColSize = Vector3.one;
+            Vector3 startColCenter = Vector3.zero;
+
+            if (col != null)
+            {
+                startColSize = col.size;
+                startColCenter = col.center;
+            }
+            // ---------------------------------------------
+
+            // Burger ne zaman ezilmeye baþlasýn? (0.5 = Yolun yarýsý/90 Derece)
+            float squashStartT = 0.5f;
+
+            // --- MASTER TWEEN ---
+            DOVirtual.Float(0f, 1f, lidCloseDuration, (t) =>
+            {
+                // A) KAPAK ROTASYONU (Her zaman döner)
+                // 180'den 0'a iner. t > 1 olunca negatife düþer (Juice).
+                float currentAngle = Mathf.LerpUnclamped(180f, 0f, t);
+                topPart.transform.localRotation = Quaternion.Euler(currentAngle, 0f, 0f);
+
+                // B) BURGER SQUASH (Sadece temas sonrasý)
+                float burgerProgress = 0f;
+                if (t >= squashStartT)
+                {
+                    // 0.5 ile 1.0 arasýný -> 0.0 ile 1.0 arasýna çevir (Remap)
+                    burgerProgress = (t - squashStartT) / (1f - squashStartT);
+                }
+                tray.UpdateSquash(burgerProgress);
+
+                // C) COLLIDER GÜNCELLEME (Her zaman deðiþir)
+                // Kutu kapanýrken collider da sürekli küçülmeli ki fiziksel olarak otursun.
+                // OutBack sayesinde kapanýnca hafifçe daha da küçülüp (sýkýþýp) geri yerine oturur.
+                if (col != null)
+                {
+                    col.size = Vector3.LerpUnclamped(startColSize, closedColliderSize, t);
+                    col.center = Vector3.LerpUnclamped(startColCenter, closedColliderCenter, t);
+                }
+
+            }).SetEase(Ease.OutQuad)
+              .OnComplete(FinishPutOnTray);
+        });
     }
 
     public void OnHolster()
@@ -213,7 +259,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         }
     }
 
-    private void FinishPutOnTray() //Gets called in animator
+    private void FinishPutOnTray() //Gets called in oncomplete seq
     {
         tray.ResetTray();
 
@@ -226,11 +272,6 @@ public class BurgerBox : MonoBehaviour, IGrabable
         ChangeLayer(grabableLayer);
     }
 
-    private void TrySquashingBurger() //Gets called in animator
-    {
-        tray.TrySquashingBurger();
-    }
-
     public void SetBurgerType(GameManager.BurgerTypes type)
     {
         burgerNo = (int) type + 1;
@@ -241,10 +282,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public void ChangeLayer(int layer)
     {
-        foreach (GameObject child in childObjects)
-            child.layer = layer; 
-
         gameObject.layer = layer;
+        topPart.layer = layer;
     }
 
     private void OnDisable()

@@ -148,21 +148,20 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             if (data.isSauce)
                 meshCol.convex = false;
 
-            // Eskiden direkt SetOnGrabableLayer() diyorduk.
-            // Þimdi kontrol ediyoruz: Hala en tepede miyiz?
+            bool isLastItem = tray != null && tray.allBurgerIngredients.Count > 0 &&
+                          tray.allBurgerIngredients[tray.allBurgerIngredients.Count - 1] == this;
 
-            if (tray != null && tray.allBurgerIngredients.Count > 0 &&
-                tray.allBurgerIngredients[tray.allBurgerIngredients.Count - 1] == this)
+            // Eðer sonuncuyum AMA kutulama baþladýysa -> Grabable OLAMAM.
+            if (isLastItem && !tray.isBoxingProcessStarted)
             {
-                // Evet, listenin sonuncusu benim. Beni tutabilirsin.
                 SetOnGrabableLayer();
             }
             else
             {
-                // Hayýr, üzerime bir þey gelmiþ. Ben artýk tabaným.
+                // Ya sonuncu deðilim, ya da kutulama baþladý -> Kilitlen.
                 SetOnTrayLayer();
             }
-            // -------
+            // -----------------------
 
             SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
 
@@ -239,12 +238,12 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     }
     public void OnFocus()
     {
-        if (!isJustDropped && !isJustThrowed)
+        if (!isJustDropped && !isJustThrowed && !isGettingPutOnTray)
             ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
-        if (!isJustDropped && !isJustThrowed)
+        if (!isJustDropped && !isJustThrowed && !isGettingPutOnTray)
             ChangeLayer(grabableLayer);
     }
 

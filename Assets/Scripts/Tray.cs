@@ -49,6 +49,10 @@ public class Tray : MonoBehaviour
 
     [HideInInspector] public BurgerIngredient currentIngredient;
     [HideInInspector] public BurgerBox currentBox;
+    [HideInInspector] public bool isBoxingProcessStarted = false;
+
+    private Vector3 initialSquashScale;
+    private Vector3 targetSquashScale;
 
     private int onTrayLayer;
     private int grabableLayer;
@@ -143,6 +147,8 @@ public class Tray : MonoBehaviour
 
     public void ResetTray()
     {
+        isBoxingProcessStarted = false; // YENÝ: Resetlenince false olsun
+
         foreach (GameObject go in allGO)
         {
             Destroy(go);
@@ -361,23 +367,37 @@ public class Tray : MonoBehaviour
         UpdateCurrentLocationToPutBurgerIngredient(startPointYHeight);
     }
 
-    public void TrySquashingBurger()
+    public void PrepareForSquash()
     {
-        // Eðer yükseklik min limitten küçükse squash yok
+        // Baþlangýç scale'ini kaydet (Genelde 1,1,1)
+        initialSquashScale = ingredientsParent.localScale;
+
+        // --- HEDEF SCALE HESAPLAMA ---
+        // Eðer yükseklik limitin altýndaysa ezilme olmasýn (Target = Initial)
         if (currentLocationToPutBurgerIngredient.y <= boxClosingSquashMinLimit)
+        {
+            targetSquashScale = initialSquashScale;
             return;
+        }
 
-        // Ne kadar squash yapýlacaðýný hesapla
-        float excessHeight = (currentLocationToPutBurgerIngredient.y - boxClosingSquashMinLimit) * 3f;
+        // Ne kadar ezileceðini hesapla
+        float excessHeight = (currentLocationToPutBurgerIngredient.y - boxClosingSquashMinLimit) * 4.5f;
+        float squashFactor = Mathf.Clamp01(excessHeight);
 
-        // Ýstediðin oranda Z scale küçült
-        float squashFactor = Mathf.Clamp01(excessHeight); // istersen çarpan ekleyebilirsin
-        float targetZ = Mathf.Max(0f, 1f - squashFactor); // Z scale küçülür ama negatif olmaz
+        // Sadece Z ekseninde hedefi belirle (Min 0.6f'ye kadar inebilir)
+        float targetZ = Mathf.Max(0.6f, 1f - squashFactor);
 
-        // Tween ile squash (sadece Z ekseni)
-        ingredientsParent
-            .DOScale(new Vector3(ingredientsParent.localScale.x, ingredientsParent.localScale.y, targetZ), 0.16f)
-            .SetEase(Ease.Linear); // lineer, geri yaylanma yok
+        // X ve Y sabit kalacak (Yanlardan taþma ÝPTAL), sadece Z hedefi deðiþiyor
+        targetSquashScale = new Vector3(initialSquashScale.x, initialSquashScale.y, targetZ);
+    }
+
+    // Bu fonksiyonu BurgerBox her karede (Update) çaðýracak
+    // t: 0 (Açýk) ile 1 (Kapalý) arasý deðer (Ease.OutBack ile 1'i geçebilir)
+    public void UpdateSquash(float t)
+    {
+        // Unclamped kullanýyoruz ki OutBack overshoot yaptýðýnda (t > 1 olduðunda)
+        // Burger hedeften daha fazla ezilsin, sonra geri gelsin.
+        ingredientsParent.localScale = Vector3.LerpUnclamped(initialSquashScale, targetSquashScale, t);
     }
 
     public void RemoveIngredient()
@@ -496,15 +516,39 @@ public class Tray : MonoBehaviour
         }
         else if (other.CompareTag("BurgerBox"))
         {
-            // Kutu mantýðý genelde sadece elimizdeyken çalýþýr (fýrlatýlan kutu tepsiye girmez genelde)
-            // Ama yine de "currentBox" kontrolünü kaldýrýp direkt componente bakabilirsin.
             BurgerBox boxComponent = other.GetComponent<BurgerBox>();
 
+            // TEMEL KONTROLLER: Kutu bizim kutumuz mu? Yetkisi var mý?
             if (boxComponent != null && boxComponent == currentBox && boxComponent.canAddToTray)
             {
-                if (allBurgerIngredients.Count > 0)
-                    allBurgerIngredients[allBurgerIngredients.Count - 1].SetOnTrayLayer();
+                // --- KRÝTÝK FÝX 1: GÜMRÜK KONTROLÜ (Validation) ---
+                // Tam kapýdan girerken soruyoruz: "Burger HALA bitmiþ durumda mý?"
+                // Eðer sen kutu havadayken ekmeði aldýysan, burgerIsDone false olmuþtur.
+                // O zaman kutuyu içeri alma, geri seksin gitsin.
+                if (!burgerIsDone) return;
 
+                // Ayrýca güvenlik olsun, malzeme sayýsý sýfýrsa da girme.
+                if (allBurgerIngredients.Count == 0) return;
+
+                // --- KRÝTÝK FÝX 2: KÝLÝTLEME (Lockdown) ---
+                // Tamam gümrükten geçtin. Artýk "Paketleme Baþladý".
+                // Buradan sonra kimse malzeme çalamaz.
+                isBoxingProcessStarted = true;
+
+                // En üstteki malzemeyi anýnda kilitle (Grabable olmaktan çýkar)
+                if (allBurgerIngredients.Count > 0)
+                {
+                    BurgerIngredient lastIngredient = allBurgerIngredients[allBurgerIngredients.Count - 1];
+
+                    // Layer'ý deðiþtir ki Raycast tutmasýn
+                    lastIngredient.SetOnTrayLayer();
+
+                    // Görsel temizlik
+                    TurnOffAllHolograms();
+                    lastIngredient.OnLoseFocus();
+                }
+
+                // Ýþlemi baþlat
                 currentBox.PutOnTray(burgerBoxTransform.position);
             }
         }
