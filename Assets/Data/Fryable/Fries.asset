@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 064a45c67f7539c41ad9e152101925d3, type: 3}
+  m_Name: Fries
+  m_EditorClassIdentifier: 
+  type: 0
+  icon: {fileID: 21300000, guid: 7cebde269c78ea84489f5ea6db2351b1, type: 3}
+  focusTextKeys:
+  - GRABABLE_PATTY_RAW
+  - GRABABLE_PATTY_COOKED
+  - GRABABLE_PATTY_BURNT
+  handGrabType: 6
+  stackHeight: 0.1
+  isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
+  grabRotationOffset: {x: -270, y: -90, z: -70}
+  grabLocalPositionOffset: {x: 0.0061, y: 0.0498, z: 0.0568}
+  grabLocalRotationOffset: {x: 6.3910346, y: 53.18132, z: 341.5596}
+  timeToCook: 10
+  timeToBurn: 20
+  rawMat: {fileID: 2100000, guid: dd3ee146c1ad9b6488d11361f43621cb, type: 2}
+  cookedMat: {fileID: 2100000, guid: a4c1d077f2e8fd54498f908edf018d90, type: 2}
+  burntMat: {fileID: 2100000, guid: 6eaef4b160b69cb4aaccf9e847c5d4c3, type: 2}
