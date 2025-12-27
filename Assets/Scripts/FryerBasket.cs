@@ -21,8 +21,12 @@ public class FryerBasket : MonoBehaviour, IInteractable
     [SerializeField] private bool outlineShouldBeRed;
     // ---------------------------------
 
-    [Header("Simulation State")]
-    public bool IsHeavy = false; // Ýleride içine malzeme girince true olacak
+    public bool IsHeavy => heldItems.Count > 0;
+
+    [Header("Container Settings")] 
+    [SerializeField] private Transform foodContainer; // Malzemelerin child olacaðý boþ obje (Sepet Tabaný)
+    [SerializeField] private int capacity = 3; // Maksimum kaç yýðýn alýr?
+    [SerializeField] private BoxCollider catchCollider; // Trigger olan collider
 
     [Header("Position References (Normal)")]
     [SerializeField] private Transform cookingPoint; // Yaðdaki hali (Sabit)
@@ -36,10 +40,9 @@ public class FryerBasket : MonoBehaviour, IInteractable
     [Header("Movement Settings")]
     [SerializeField] private float moveDuration = 0.5f;
     [SerializeField] private Ease moveEase = Ease.InOutSine;
-
-    [Header("Interrupt Settings")]
     [Range(0f, 1f)]
     [SerializeField] private float directReturnThreshold = 0.35f; // %35'in altýndaysa direkt dön
+    
 
     [Header("Fryer Integration")]
     [SerializeField] private Fryer connectedFryer; // Yað efektini tetiklemek için
@@ -52,6 +55,9 @@ public class FryerBasket : MonoBehaviour, IInteractable
     private bool isFrying; // true: yaðda, false: askýda
     private bool isPhysicallyInOil = false;
 
+    private List<Fryable> heldItems = new List<Fryable>(); // Sepetin midesi
+    private float currentStackHeight = 0f; // Yýðýn yüksekliði
+
     private Sequence currentSeq; // Ana hareket (A -> B)
     private Sequence settleSeq;  // Yerleþme/Yüzme hareketi (Bitiþteki loop)
 
@@ -59,6 +65,8 @@ public class FryerBasket : MonoBehaviour, IInteractable
     private int interactableLayer;
     private int interactableOutlinedLayer;
     private int interactableOutlinedRedLayer;
+    private int grabableLayer;
+    private int onTrayLayer; // Tray layer'ý ile ayný olabilir, karýþýklýk olmasýn diye ismini böyle tuttum
 
     private void Awake()
     {
@@ -66,30 +74,135 @@ public class FryerBasket : MonoBehaviour, IInteractable
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
+        grabableLayer = LayerMask.NameToLayer("Grabable");
+        onTrayLayer = LayerMask.NameToLayer("OnTray"); // "OnTray" layer'ýný kullanýyoruz
 
         isFrying = false;
         basketStateNum = 0;
 
-        // Baþlangýç pozisyonunu ayarla
-        UpdateTransformToState(false);
+        // Baþlangýç pozisyonu
+        if (hangingPoint != null)
+        {
+            transform.position = hangingPoint.position;
+            transform.rotation = hangingPoint.rotation;
+        }
     }
 
-    private void UpdateTransformToState(bool frying)
+    private void Update()
     {
-        Transform targetHanging = IsHeavy ? hangingHeavyPoint : hangingPoint;
-        Transform target = frying ? cookingPoint : targetHanging;
+        // --- PÝÞÝRME DÖNGÜSÜ ---
+        // Sepet yaðdaysa ve içinde malzeme varsa piþir
+        if (isFrying && heldItems.Count > 0)
+        {
+            foreach (var item in heldItems)
+            {
+                // Her karede piþirme fonksiyonunu çaðýr
+                item.Cook(Time.deltaTime);
+            }
+        }
+    }
 
-        transform.position = target.position;
-        transform.rotation = target.rotation;
+    // --- TRIGGER LOGIC (YAKALAMA) ---
+    private void OnTriggerEnter(Collider other)
+    {
+        // 1. Sepet Yaðda mý? (Yaðdayken içine malzeme düþemez, yaða düþer)
+        if (isFrying) return;
+
+        // 2. Yer var mý?
+        if (heldItems.Count >= capacity) return;
+
+        // 3. Gelen þey Fryable mý?
+        Fryable incomingItem = other.GetComponent<Fryable>();
+        if (incomingItem == null) return;
+
+        // 4. Zaten sepette mi? (Çift trigger korumasý)
+        if (heldItems.Contains(incomingItem)) return;
+
+        // 5. Halihazýrda grab edilmiþ mi? (Elimizdekini zorla almasýn, fýrlatýlýnca alsýn)
+        // Not: IGrabable interface'inden kontrol edebiliriz
+        if (incomingItem.IsGrabbed) return;
+
+        // -- KABUL EDÝLDÝ --
+        AddItem(incomingItem);
+    }
+
+    private void AddItem(Fryable item)
+    {
+        // Önceki malzemeyi kilitle (Artýk alýnamaz)
+        if (heldItems.Count > 0)
+        {
+            Fryable topItem = heldItems[heldItems.Count - 1];
+            topItem.ChangeLayer(onTrayLayer); // Grabable -> OnTray
+            topItem.currentBasket = null; // En üstteki olmadýðý için sepet referansýný silebiliriz veya tutabiliriz, null yapmak garanti.
+        }
+
+        // --- STACKING MATEMATÝÐÝ ---
+        float targetY = 0f;
+
+        if (heldItems.Count == 0)
+        {
+            // Ýlk eleman: Zeminden kendi yarýsý kadar yukarý
+            targetY = item.data.stackHeight / 2f;
+            currentStackHeight = item.data.stackHeight;
+        }
+        else
+        {
+            // Sonraki elemanlar: Mevcut yükseklik + kendi yarýsý
+            targetY = currentStackHeight + (item.data.stackHeight / 2f);
+            currentStackHeight += item.data.stackHeight;
+        }
+
+        // Listeye ekle
+        heldItems.Add(item);
+        item.currentBasket = this; // Sepeti taný
+
+        // Pozisyonu ayarla (FoodContainer'ýn yerel koordinatýnda)
+        Vector3 localTargetPos = new Vector3(0, targetY, 0);
+        // Hafif rastgele rotasyon (Doðallýk için)
+        Quaternion localTargetRot = Quaternion.Euler(0, Random.Range(-15f, 15f), 0);
+
+        // Item'a "Yerleþ" emri ver (Container'ýn dünyadaki pozisyonunu hesaplayýp gönderiyoruz)
+        item.PutOnBasket(foodContainer.TransformPoint(localTargetPos), foodContainer.rotation * localTargetRot, foodContainer);
+
+        // Item layer'ý PutOnBasket içinde deðiþiyor, animasyon bitince Grabable olacak mý?
+        // Hayýr, animasyon bitince biz aþaðýda yönetiyoruz.
+    }
+
+    // Fryable.cs tarafýndan çaðrýlýr (OnGrab olduðunda)
+    public void RemoveItem(Fryable item)
+    {
+        if (!heldItems.Contains(item)) return;
+
+        int index = heldItems.IndexOf(item);
+
+        // Listeden çýkar
+        heldItems.RemoveAt(index);
+        item.currentBasket = null;
+
+        // Yüksekliði güncelle (Basitçe baþtan hesaplamak en temizi, aradan çekilme durumlarý için)
+        RecalculateStackHeight();
+
+        // Eðer sepet boþalmadýysa, YENÝ EN ÜSTTEKÝ elemaný Grabable yap
+        if (heldItems.Count > 0)
+        {
+            Fryable newTopItem = heldItems[heldItems.Count - 1];
+            newTopItem.ChangeLayer(grabableLayer);
+            newTopItem.currentBasket = this; // Artýk muhattabý biziz
+        }
+    }
+
+    private void RecalculateStackHeight()
+    {
+        currentStackHeight = 0f;
+        foreach (var item in heldItems)
+        {
+            currentStackHeight += item.data.stackHeight;
+        }
     }
 
     public void OnInteract()
     {
         if (!CanInteract) return;
-
-        // ESKÝSÝ: if (DOTween.IsTweening(transform)) return; <-- Bunu sildik.
-
-        // YENÝSÝ:
         // Eðer hali hazýrda bir hareket varsa, onu anýnda öldür.
         // Complete parametresini false yapýyoruz ki eski animasyonun
         // "OnComplete" eventleri (ses çalma, fryer tetikleme vs.) çalýþmasýn.
@@ -244,26 +357,7 @@ public class FryerBasket : MonoBehaviour, IInteractable
 
     public void ChangeLayer(int layer)
     {
-        ChangeLayerRecursive(gameObject, layer);
-    }
-
-    // Bu da iþi yapan yardýmcý fonksiyon (Private olabilir)
-    private void ChangeLayerRecursive(GameObject obj, int newLayer)
-    {
-        if (null == obj) return;
-
-        // 1. Þu anki objeyi deðiþtir
-        obj.layer = newLayer;
-
-        // 2. Çocuklarý gez
-        foreach (Transform child in obj.transform)
-        {
-            if (null == child) continue;
-
-            // DÝKKAT: Burada sadece layer atamak yerine, fonksiyonu tekrar çaðýrýyoruz.
-            // Böylece child da kendi içine (torunlara) bakýyor.
-            ChangeLayerRecursive(child.gameObject, newLayer);
-        }
+        gameObject.layer = layer;
     }
 
     public void HandleFinishDialogue() { }

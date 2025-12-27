@@ -27,9 +27,6 @@ public class Fryable : MonoBehaviour, IGrabable
 
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
-
-    // Interface gereði ama kullanýlmýyor (Sol el)
-    public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public string FocusTextKey { get => data.focusTextKeys[(int)state]; set => data.focusTextKeys[(int)state] = value; }
 
     // --- Logic Variables ---
@@ -47,13 +44,10 @@ public class Fryable : MonoBehaviour, IGrabable
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
     private int grabbedLayer;
-    private int onBasketLayer; // "OnTray" ile ayný olabilir veya ayrý bir layer açabilirsin
+    private int onTrayLayer; // "OnTray" ile ayný olabilir veya ayrý bir layer açabilirsin
 
     // Baðlý olduðu sepet (Varsa)
     [HideInInspector] public FryerBasket currentBasket;
-
-    // Sound cooldown
-    private float lastSoundTime = 0f;
 
     private void Awake()
     {
@@ -67,7 +61,7 @@ public class Fryable : MonoBehaviour, IGrabable
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         grabbedLayer = LayerMask.NameToLayer("Grabbed");
-        onBasketLayer = LayerMask.NameToLayer("OnTray"); // Þimdilik OnTray kullanýyoruz, karýþýklýk olmasýn
+        onTrayLayer = LayerMask.NameToLayer("OnTray"); // Þimdilik OnTray kullanýyoruz, karýþýklýk olmasýn
 
         UpdateVisuals();
     }
@@ -114,9 +108,10 @@ public class Fryable : MonoBehaviour, IGrabable
         isGettingPutOnBasket = true;
         PlayerManager.Instance.ResetPlayerGrab(this);
 
-        ChangeLayer(onBasketLayer);
+        ChangeLayer(onTrayLayer);
 
         rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true; // Fiziði kapat
 
         transform.parent = containerParent; // Sepetin containerýna child ol

@@ -22,8 +22,6 @@ public interface IGrabable
     public Vector3 GrabPositionOffset { get; set; }
     public Vector3 GrabRotationOffset { get; set; }
 
-    public Transform LeftHandPoint { get; set; }
-
     public float ThrowMultiplier { get; set; }
 
     public bool IsThrowable { get; set; }

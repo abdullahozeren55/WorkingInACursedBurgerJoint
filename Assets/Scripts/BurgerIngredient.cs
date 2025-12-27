@@ -118,6 +118,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         ChangeLayer(onTrayLayer);
 
         rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
         rb.isKinematic = true;
 
         transform.parent = parentTray;
