@@ -4,34 +4,49 @@ using UnityEngine;
 public class Fryer : MonoBehaviour
 {
     [Header("Visuals")]
+    [SerializeField] private Transform oilSurfaceTransform; // Hareket edecek Yað Objesi (Plane)
     [SerializeField] private MeshRenderer oilMeshRenderer;
-    [SerializeField] private ParticleSystem bubbleParticles; // Dün yaptýðýmýz baloncuk sistemi
-    [SerializeField] private ParticleSystem splashParticles; // "Splash" için (Opsiyonel, varsa baðla)
+    [SerializeField] private ParticleSystem bubbleParticles;
+    [SerializeField] private ParticleSystem splashParticles;
 
-    [Header("Settings")]
-    [SerializeField] private float baseWeight = 0.2f;       // Sakin hal
-    [SerializeField] private float weightPerBasket = 0.4f;  // Sepet baþý artýþ
-    [SerializeField] private float surgeAmount = 0.3f;      // Ýlk daldýðýnda ne kadar fazladan fýrlasýn? (Juice)
-    [SerializeField] private float surgeDuration = 0.3f;    // Fýrlama süresi
-    [SerializeField] private float settleDuration = 0.5f;   // Geri durulma süresi
+    [Header("Turbulence Settings (Köpürme)")]
+    [SerializeField] private float baseWeight = 0.2f;
+    [SerializeField] private float weightPerBasket = 0.4f;
+    [SerializeField] private float surgeAmount = 0.3f;
+    [SerializeField] private float surgeDuration = 0.3f;
+    [SerializeField] private float settleDuration = 0.5f;
+    [SerializeField] private float minEmission = 5f;
+    [SerializeField] private float maxEmission = 30f;
 
-    [Header("Bubble Settings")]
-    [SerializeField] private float minEmission = 5f;        // Sakin baloncuk sayýsý
-    [SerializeField] private float maxEmission = 30f;       // Full coþmuþ baloncuk sayýsý
+    [Header("Physics Settings (Seviye Yükselmesi)")]
+    [SerializeField] private float risePerEmptyBasket = 0.0002f; // Boþ sepet ne kadar yükseltir?
+    [SerializeField] private float risePerFullBasket = 0.0006f;  // Dolu sepet ne kadar yükseltir? (2 tanesi 0.0012 eder)
+    [SerializeField] private float levelSurgeAmount = 0.0003f;   // Dalarken oluþan dalga yüksekliði (Taþma efekti)
 
-    // Logic
+    // Logic Variables
     private Material oilMat;
-    private int activeFryingCount = 0; // Þu an içinde yemek olan kaç sepet var?
-    private float currentWeight;       // Shader'a giden anlýk deðer
-    private Tween fryerTween;          // Çakýþmalarý yönetmek için tween referansý
+    private int fullBasketsCount = 0;  // Dolu sepet sayýsý
+    private int emptyBasketsCount = 0; // Boþ sepet sayýsý
+
+    private float currentWeight;       // Shader deðiþkeni
+    private float initialLocalZ;       // Yaðýn baþlangýç yüksekliði
+
+    // Tween References (Çakýþma önlemek için)
+    private Tween turbulenceTween;
+    private Tween levelTween;
 
     private void Awake()
     {
         if (oilMeshRenderer != null)
         {
-            // Material instance oluþtur ki diðer yaðlar etkilenmesin
             oilMat = oilMeshRenderer.material;
         }
+
+        // Baþlangýç yüksekliðini kaydet (Referans noktasý)
+        if (oilSurfaceTransform != null)
+            initialLocalZ = oilSurfaceTransform.localPosition.z;
+        else
+            Debug.LogError("Fryer: Oil Surface Transform atanmadý! Yað yükselmeyecek.");
 
         currentWeight = baseWeight;
         UpdateShaderAndParticles();
@@ -39,72 +54,98 @@ public class Fryer : MonoBehaviour
 
     private void Update()
     {
-        // Update içinde her kare set etmek en temizidir,
-        // tween ile direkt material'e dalmaktan daha performanslý ve güvenlidir.
         UpdateShaderAndParticles();
     }
 
-    // Basket scriptinden çaðrýlacak: Sepet yaða GÝRDÝ
+    // --- BASKET TARAFINDAN ÇAÐRILANLAR ---
+
     public void OnBasketDown(bool hasFood)
     {
-        // Her türlü splash yap (Boþ sepet de fiziksel olarak çarpar)
         if (splashParticles != null) splashParticles.Play();
 
-        // Ama kaynama efektini sadece yemek varsa deðiþtir
-        if (hasFood)
-        {
-            activeFryingCount++;
-            AnimateOil(true); // true = Surge (Coþku) yap
-        }
+        // 1. Sayaçlarý Güncelle
+        if (hasFood) fullBasketsCount++;
+        else emptyBasketsCount++;
+
+        // 2. Efektleri Tetikle (Surge = true, yani dalgalanma yap)
+        AnimateTurbulence(hasFood); // Sadece yemek varsa köpürür
+        AnimateOilLevel(true);      // Her türlü seviye yükselir (Dalga yaparak)
     }
 
-    // Basket scriptinden çaðrýlacak: Sepet yaðdan ÇIKTI
     public void OnBasketUp(bool hasFood)
     {
-        if (hasFood)
-        {
-            activeFryingCount--;
-            // Güvenlik: Eksiye düþmesin
-            if (activeFryingCount < 0) activeFryingCount = 0;
+        // 1. Sayaçlarý Güncelle
+        if (hasFood) fullBasketsCount--;
+        else emptyBasketsCount--;
 
-            AnimateOil(false); // false = Sakince düþ
+        // Güvenlik (Eksiye düþmesin)
+        if (fullBasketsCount < 0) fullBasketsCount = 0;
+        if (emptyBasketsCount < 0) emptyBasketsCount = 0;
+
+        // 2. Efektleri Tetikle (Surge = false, sakin dönüþ)
+        AnimateTurbulence(hasFood);
+        AnimateOilLevel(false);
+    }
+
+    // --- ANÝMASYON MANTIÐI ---
+
+    // 1. KÖPÜRME / TURBULENCE (Eski Mantýk)
+    private void AnimateTurbulence(bool triggerSurge)
+    {
+        // Sadece dolu sepetler köpürtür
+        float targetVal = baseWeight + (fullBasketsCount * weightPerBasket);
+        targetVal = Mathf.Clamp(targetVal, 0f, 1.5f);
+
+        if (turbulenceTween != null && turbulenceTween.IsActive()) turbulenceTween.Kill();
+
+        if (triggerSurge && fullBasketsCount > 0) // Dolu sepet girdiyse coþ
+        {
+            float surgeTarget = targetVal + surgeAmount;
+            Sequence seq = DOTween.Sequence();
+            seq.Append(DOTween.To(() => currentWeight, x => currentWeight = x, surgeTarget, surgeDuration).SetEase(Ease.OutCirc));
+            seq.Append(DOTween.To(() => currentWeight, x => currentWeight = x, targetVal, settleDuration).SetEase(Ease.OutQuad));
+            turbulenceTween = seq;
+        }
+        else // Sakin geçiþ (Boþ sepet girdiyse veya sepet çýktýysa)
+        {
+            turbulenceTween = DOTween.To(() => currentWeight, x => currentWeight = x, targetVal, settleDuration).SetEase(Ease.OutQuad);
         }
     }
 
-    private void AnimateOil(bool triggerSurge)
+    // 2. SEVÝYE YÜKSELMESÝ / LEVEL RISE (Yeni Fizik)
+    private void AnimateOilLevel(bool isEntering)
     {
-        // 1. Yeni Hedef Nedir?
-        // Örn: 1 sepet varsa: 0.2 + (1 * 0.4) = 0.6
-        float targetVal = baseWeight + (activeFryingCount * weightPerBasket);
+        if (oilSurfaceTransform == null) return;
 
-        // Limit koyalým (Shader bozulmasýn diye max 1.5 falan olsun, ne olur ne olmaz)
-        targetVal = Mathf.Clamp(targetVal, 0f, 1.5f);
+        // Hedef Yükseklik Hesabý:
+        // Baþlangýç + (Boþlar * Birim) + (Dolular * Birim)
+        float totalRise = (emptyBasketsCount * risePerEmptyBasket) + (fullBasketsCount * risePerFullBasket);
+        float targetZ = initialLocalZ + totalRise;
 
-        // Varsa eski tween'i öldür (Overlap yönetimi)
-        if (fryerTween != null && fryerTween.IsActive()) fryerTween.Kill();
+        // Eski hareketi öldür
+        if (levelTween != null && levelTween.IsActive()) levelTween.Kill();
 
-        if (triggerSurge)
+        if (isEntering)
         {
-            // --- JUICE MOMENT ---
-            // Önce hedefin de üstüne çýk (Surge), sonra hedefe dön.
-            float surgeTarget = targetVal + surgeAmount;
+            // --- DALMA EFEKTÝ (DISPLACEMENT WAVE) ---
+            // Sepet suya girdiðinde önce suyu hedef seviyenin de üstüne iter (Taþma hissi),
+            // sonra dengeye oturur.
+            float surgeZ = targetZ + levelSurgeAmount;
 
             Sequence seq = DOTween.Sequence();
-            // Hýzlýca fýrla (OutCirc: Patlayýcý bir çýkýþ)
-            seq.Append(DOTween.To(() => currentWeight, x => currentWeight = x, surgeTarget, surgeDuration)
-                              .SetEase(Ease.OutCirc));
-            // Sakince hedefe otur
-            seq.Append(DOTween.To(() => currentWeight, x => currentWeight = x, targetVal, settleDuration)
-                              .SetEase(Ease.OutQuad));
+            // Hýzla yüksel (Su itiliyor)
+            seq.Append(oilSurfaceTransform.DOLocalMoveZ(surgeZ, surgeDuration).SetEase(Ease.OutBack));
+            // Hedefe otur
+            seq.Append(oilSurfaceTransform.DOLocalMoveZ(targetZ, settleDuration).SetEase(Ease.InOutSine));
 
-            fryerTween = seq;
+            levelTween = seq;
         }
         else
         {
-            // --- SAKÝN DÖNÜÞ ---
-            // Sepet çýktý, yavaþça seviyeyi düþür.
-            fryerTween = DOTween.To(() => currentWeight, x => currentWeight = x, targetVal, settleDuration)
-                                .SetEase(Ease.OutQuad);
+            // --- ÇIKMA EFEKTÝ ---
+            // Sepet çýkýnca suyun boþluðu doldurmasý biraz daha yavaþtýr.
+            // "InQuad" ile yavaþça baþlar, hýzla iner (Vakum etkisi gibi deðil, süzülme).
+            levelTween = oilSurfaceTransform.DOLocalMoveZ(targetZ, settleDuration * 1.2f).SetEase(Ease.OutQuad);
         }
     }
 
@@ -112,20 +153,13 @@ public class Fryer : MonoBehaviour
     {
         if (oilMat == null) return;
 
-        // 1. Shader Update
-        // "_EffectWeight" senin ShaderGraph'ta verdiðin Reference Name olmalý! Kontrol et.
         oilMat.SetFloat("_EffectWeight", currentWeight);
 
-        // 2. Particle Emission Update
-        // currentWeight 0.2 ile 1.2 arasýnda geziyor. Bunu Emission deðerine mapleyelim.
         if (bubbleParticles != null)
         {
             var emission = bubbleParticles.emission;
-
-            // Remap mantýðý: Weight arttýkça emission artar
-            // Mathf.InverseLerp(0.2f, 1.2f, currentWeight) -> 0 ile 1 arasý oran verir
+            // Baloncuk sadece yemek varsa coþsun
             float t = Mathf.InverseLerp(baseWeight, baseWeight + (2 * weightPerBasket), currentWeight);
-
             emission.rateOverTime = Mathf.Lerp(minEmission, maxEmission, t);
         }
     }

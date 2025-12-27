@@ -50,6 +50,7 @@ public class FryerBasket : MonoBehaviour, IInteractable
     //public string audioTag = "SFX";
 
     private bool isFrying; // true: yaðda, false: askýda
+    private bool isPhysicallyInOil = false;
 
     private Sequence currentSeq; // Ana hareket (A -> B)
     private Sequence settleSeq;  // Yerleþme/Yüzme hareketi (Bitiþteki loop)
@@ -99,123 +100,124 @@ public class FryerBasket : MonoBehaviour, IInteractable
 
     private void TogglePosition()
     {
-        // --- KESÝLME (INTERRUPT) KONTROLÜ ---
+        // --- KESÝLME KONTROLÜ ---
         float currentProgress = 0f;
         bool isEarlyReturn = false;
 
-        // Eðer þu an çalýþan bir animasyon varsa
         if (currentSeq != null && currentSeq.IsActive())
         {
-            // Yüzde kaçý tamamlandý? (0.0 ile 1.0 arasý)
             currentProgress = currentSeq.ElapsedPercentage();
-
-            // Eðer eþik deðerin altýndaysa "Erken Dönüþ" bayraðýný çek
-            if (currentProgress < directReturnThreshold)
-            {
-                isEarlyReturn = true;
-            }
-
+            if (currentProgress < directReturnThreshold) isEarlyReturn = true;
             currentSeq.Kill();
         }
 
-        //Eðer yerleþme/yüzme hareketi yapýyorsa onu da öldür!
-        if (settleSeq != null && settleSeq.IsActive())
-        {
-            settleSeq.Kill();
-        }
+        // Settle animasyonu varsa onu da öldür
+        if (settleSeq != null && settleSeq.IsActive()) settleSeq.Kill();
 
         isFrying = !isFrying;
         basketStateNum = isFrying ? 1 : 0;
 
         //SoundManager.Instance.PlaySoundFX(isFrying ? dropSound : liftSound, transform, 1f, 1f, 1f, true, audioTag);
 
-        // Hedefleri Belirle
         Transform currentHanging = IsHeavy ? hangingHeavyPoint : hangingPoint;
         Transform currentApex = IsHeavy ? apexHeavyPoint : apexPoint;
-
         Transform targetTransform = isFrying ? cookingPoint : currentHanging;
         Transform pathApex = currentApex;
 
         // Sequence Baþlat
         currentSeq = DOTween.Sequence();
 
-        // --- HAREKET MANTIÐI ---
+        // --- HAREKET VE ZAMANLAMA ---
+        float duration = isEarlyReturn ? moveDuration * 0.6f : moveDuration;
+
         if (isEarlyReturn)
         {
-            // SENARYO A: ERKEN DÖNÜÞ (DÜZ GÝT)
-            // Apex'e çýkma, direkt hedefe git.
-            // Süre ayarý: Yol çok kýsa olduðu için normal sürenin yarýsý kadar sürede gitsin (Snappy hissi).
-            float quickDuration = moveDuration * 0.6f;
-
-            // Direkt Pozisyon
-            currentSeq.Append(transform.DOMove(targetTransform.position, quickDuration)
-                                       .SetEase(Ease.OutQuad)); // OutQuad ile yumuþakça dur
-
-            // Direkt Rotasyon
-            currentSeq.Join(transform.DORotateQuaternion(targetTransform.rotation, quickDuration)
-                                     .SetEase(Ease.OutQuad));
+            // Erken Dönüþ (Düz Hareket)
+            currentSeq.Append(transform.DOMove(targetTransform.position, duration).SetEase(Ease.OutQuad));
+            currentSeq.Join(transform.DORotateQuaternion(targetTransform.rotation, duration).SetEase(Ease.OutQuad));
         }
         else
         {
-            // SENARYO B: NORMAL/GEÇ DÖNÜÞ (KAVÝSLÝ GÝT)
-            // Burasý eski mantýk. Önce tepeye (Apex) uðra, sonra hedefe git.
-
-            // 1. Kavisli Yol
+            // Normal Dönüþ (Kavisli)
             Vector3[] pathPoints = new Vector3[] { pathApex.position, targetTransform.position };
-            currentSeq.Append(transform.DOPath(pathPoints, moveDuration, PathType.CatmullRom)
-                                       .SetEase(moveEase));
+            currentSeq.Append(transform.DOPath(pathPoints, duration, PathType.CatmullRom).SetEase(moveEase));
 
-            // 2. Kavisli Rotasyon
-            float halfDuration = moveDuration / 2f;
-            currentSeq.Insert(0f, transform.DORotateQuaternion(pathApex.rotation, halfDuration)
-                                           .SetEase(Ease.OutSine));
-            currentSeq.Insert(halfDuration, transform.DORotateQuaternion(targetTransform.rotation, halfDuration)
-                                                     .SetEase(Ease.InSine));
+            float halfDuration = duration / 2f;
+            currentSeq.Insert(0f, transform.DORotateQuaternion(pathApex.rotation, halfDuration).SetEase(Ease.OutSine));
+            currentSeq.Insert(halfDuration, transform.DORotateQuaternion(targetTransform.rotation, halfDuration).SetEase(Ease.InSine));
         }
 
-        // --- BÝTÝÞ ---
-        // --- BÝTÝÞ EFEKTLERÝ ---
+        // --- KRÝTÝK NOKTA: YAÐ TETÝKLEME ZAMANLAMASI ---
+        if (connectedFryer != null)
+        {
+            if (isFrying)
+            {
+                // SENARYO: AÞAÐI ÝNÝYORUZ (DALDIRMA)
+                // Tam suya gireceði zamaný hesapla (Yolun %85'i gibi)
+                // Eðer EarlyReturn ise yol kýsa olduðu için %70 gibi daha erken bir nokta olabilir
+                float hitWaterTime = duration * (isEarlyReturn ? 0.7f : 0.85f);
+
+                // O saniyeye gelince "SyncFryerState" fonksiyonunu çalýþtýr
+                currentSeq.InsertCallback(hitWaterTime, () => SyncFryerState(true));
+            }
+            else
+            {
+                // SENARYO: YUKARI ÇIKIYORUZ (KALDIRMA)
+                // Hareket baþladýðý an (0. saniye) yaðdan çýkmýþ sayýlýrýz
+                currentSeq.InsertCallback(0f, () => SyncFryerState(false));
+            }
+        }
+
+        // --- BÝTÝÞ EFEKTLERÝ (Sadece Salýným) ---
         currentSeq.OnComplete(() =>
         {
-            // Eski tween kalýntýlarýný temizle (Garanti olsun)
-            if (settleSeq != null && settleSeq.IsActive()) settleSeq.Kill();
-
-            // Yeni sequence'ý sýnýf deðiþkenine ata
             settleSeq = DOTween.Sequence();
 
-            // SENARYO A: ASKIDA (SALLANMA)
-            if (!isFrying)
+            if (!isFrying) // ASKIDA
             {
                 Vector3 targetEuler = IsHeavy ? hangingHeavyPoint.eulerAngles : hangingPoint.eulerAngles;
                 float momentumAngle = IsHeavy ? 6f : 4f;
                 float settleTime = IsHeavy ? 0.35f : 0.2f;
 
-                // settleSeq deðiþkenini kullanýyoruz
                 settleSeq.Append(transform.DORotate(targetEuler + new Vector3(momentumAngle, 0, 0), 0.1f).SetEase(Ease.OutSine));
                 settleSeq.Append(transform.DORotate(targetEuler, settleTime).SetEase(Ease.OutBack));
             }
-            // SENARYO B: YAÐDA (YÜZME/BATMA HÝSSÝ)
-            else
+            else // YAÐDA (YÜZME)
             {
                 float floatAmount = IsHeavy ? 0.015f : 0.04f;
                 float floatDuration = IsHeavy ? 0.4f : 0.6f;
 
-                // settleSeq deðiþkenini kullanýyoruz (Ayrý floatSeq tanýmlamaya gerek yok)
-                settleSeq.Append(transform.DOMove(cookingPoint.position + new Vector3(0, floatAmount, 0), floatDuration * 0.4f)
-                                         .SetEase(Ease.OutSine));
-
-                settleSeq.Append(transform.DOMove(cookingPoint.position, floatDuration * 0.6f)
-                                         .SetEase(Ease.InOutSine));
-            }
-
-            if (connectedFryer != null)
-            {
-                if (isFrying) connectedFryer.OnBasketDown(IsHeavy);
-                else connectedFryer.OnBasketUp(IsHeavy);
+                settleSeq.Append(transform.DOMove(cookingPoint.position + new Vector3(0, floatAmount, 0), floatDuration * 0.4f).SetEase(Ease.OutSine));
+                settleSeq.Append(transform.DOMove(cookingPoint.position, floatDuration * 0.6f).SetEase(Ease.InOutSine));
             }
 
             PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
         });
+    }
+
+    // --- YARDIMCI METOD (KOD TEKRARINI ÖNLEMEK ÝÇÝN) ---
+    private void SyncFryerState(bool enteringOil)
+    {
+        if (connectedFryer == null) return;
+
+        if (enteringOil)
+        {
+            // Ýçeri giriyoruz, eðer zaten içeride deðilsek haber ver
+            if (!isPhysicallyInOil)
+            {
+                connectedFryer.OnBasketDown(IsHeavy);
+                isPhysicallyInOil = true;
+            }
+        }
+        else
+        {
+            // Dýþarý çýkýyoruz, eðer içerideysek haber ver
+            if (isPhysicallyInOil)
+            {
+                connectedFryer.OnBasketUp(IsHeavy);
+                isPhysicallyInOil = false;
+            }
+        }
     }
 
     // --- IInteractable Standart Metotlar ---
