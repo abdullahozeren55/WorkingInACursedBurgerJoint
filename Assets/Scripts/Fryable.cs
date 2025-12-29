@@ -432,10 +432,17 @@ public class Fryable : MonoBehaviour, IGrabable
 
     private void OnDestroy()
     {
-        // Eðer bu obje yok oluyorsa ve bir oyuncu tarafýndan tutuluyorsa veya hedeflenmiþse
+        // 1. Eðer bir sepetteysem, ölmeden önce vasiyetimi býrakýp çýkýyorum
+        if (currentBasket != null)
+        {
+            // Sepete "Ben gidiyorum, listeni güncelle ve alttakinin kilidini aç" diyoruz.
+            // RemoveItem içinde "Contains" kontrolü olduðu için güvenli.
+            currentBasket.RemoveItem(this);
+        }
+
+        // 2. Eðer oyuncunun elindeysem veya hedefindeysem resetle
         if (PlayerManager.Instance != null)
         {
-            // PlayerManager üzerinden resetleme çaðrýsý (Senin bahsettiðin metod)
             PlayerManager.Instance.ResetPlayerGrab(this);
         }
     }

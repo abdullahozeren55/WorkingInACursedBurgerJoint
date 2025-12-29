@@ -8,6 +8,7 @@ public class Holder : MonoBehaviour, IGrabable
         Empty,
         Fries,
         OnionRing,
+        SmileyFries,
         // Ilerde buraya Nugget vs. eklersin
     }
 
@@ -97,14 +98,9 @@ public class Holder : MonoBehaviour, IGrabable
         }
 
         // 4. Türüne göre doldur
-        if (item.data.type == FryableData.FryableType.Fries)
+        if (item.data.type != HolderIngredient.Empty)
         {
-            Fill(HolderIngredient.Fries, item);
-            return true;
-        }
-        else if (item.data.type == FryableData.FryableType.OnionRing)
-        {
-            Fill(HolderIngredient.OnionRing, item);
+            Fill(item.data.type, item);
             return true;
         }
 
@@ -124,8 +120,7 @@ public class Holder : MonoBehaviour, IGrabable
         if (item.CurrentCookingState != Cookable.CookAmount.REGULAR) return false;
 
         // 4. Tür uyuyor mu? (Patates veya Soðan Halkasý)
-        if (item.data.type == FryableData.FryableType.Fries) return true;
-        if (item.data.type == FryableData.FryableType.OnionRing) return true;
+        if (item.data.type != HolderIngredient.Empty) return true;
 
         return false;
     }

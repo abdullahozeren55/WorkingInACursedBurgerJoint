@@ -3,14 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewFryableData", menuName = "Data/Fryable")]
 public class FryableData : ScriptableObject
 {
-    public enum FryableType
-    {
-        Fries,      // Patates
-        OnionRing,  // Soðan Halkasý
-        Nugget,     // Tavuk Parçasý
-        Mozzarella  // Peynir Çubuðu vs.
-    }
-
     [System.Serializable]
     public class MeshConfig
     {
@@ -31,7 +23,7 @@ public class FryableData : ScriptableObject
 
     [Header("Identity")]
     public float putOnBasketDuration = 0.2f; // Varsayýlan 0.2 saniye olsun
-    public FryableType type;
+    public Holder.HolderIngredient type;
     public Sprite icon;
     public string[] focusTextKeys;
     public PlayerManager.HandGrabTypes handGrabType;
