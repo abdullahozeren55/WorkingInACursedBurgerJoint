@@ -15,6 +15,8 @@ public class Trash : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
@@ -222,5 +224,15 @@ public class Trash : MonoBehaviour, IGrabable
     public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
+    }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }

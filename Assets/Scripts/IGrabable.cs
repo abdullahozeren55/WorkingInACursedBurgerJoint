@@ -16,6 +16,8 @@ public interface IGrabable
     public void OnUseRelease();
     public void OutlineChangeCheck();
     public void ChangeLayer(int layer);
+    public bool TryCombine(IGrabable otherItem);
+    bool CanCombine(IGrabable otherItem);
 
     public PlayerManager.HandGrabTypes HandGrabType { get; set; }
 
@@ -28,6 +30,7 @@ public interface IGrabable
     public bool IsGrabbed {  get; set; }
     public bool IsUseable { get; set; }
     public bool OutlineShouldBeRed { get; set; }
+    public bool OutlineShouldBeGreen { get; set; }
     public string FocusTextKey { get; set; }
     public Sprite Icon { get; set; }
 }

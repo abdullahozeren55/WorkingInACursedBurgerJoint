@@ -127,6 +127,7 @@ public class FirstPersonController : MonoBehaviour
     [SerializeField] private Vector2 grabCrosshairSize = new Vector2(4f, 4f);
     [SerializeField] private Color grabCrosshairColor;
     [SerializeField] private Color useCrosshairColor;
+    [SerializeField] private Color combineCrosshairColor;
     [SerializeField] private float maxThrowForce = 1.3f;
     [SerializeField] private float minThrowForce = 0.3f;
     [SerializeField] private float throwMaxChargeTime = 1.5f;
@@ -715,20 +716,42 @@ public class FirstPersonController : MonoBehaviour
 
     private void DecideGrabableOutlineColor()
     {
+        // Önce temizlik: Yeþil bool'larý sýfýrla (Kýrmýzýyý aþaðýda yönetiyoruz ama bunu burada sýfýrlamak güvenli)
+        if (otherGrabable != null) otherGrabable.OutlineShouldBeGreen = false;
+        if (currentGrabable != null) currentGrabable.OutlineShouldBeGreen = false;
+
         // DURUM 1: Elim dolu ve yerde baþka bir þeye bakýyorum
         if (currentGrabable != null && currentGrabable.IsGrabbed && otherGrabable != null)
         {
-            // DÜZELTME BURADA:
-            // Yer yoksa VEYA Þu an elimdekini kullanýyorsam (örn: fýrlatma þarjý) -> KIRMIZI
-            if (!HasEmptySlot() || isUsingGrabbedItem)
+            // --- KRÝTÝK DEÐÝÞÝKLÝK BURADA ---
+
+            // 1. Kombinasyon Kontrolü:
+            // "Elimdeki þey, baktýðým þeyle birleþebilir mi?"
+            bool canCombine = currentGrabable.CanCombine(otherGrabable);
+
+            if (canCombine)
             {
-                otherGrabable.OutlineShouldBeRed = true;
+                // Birleþebiliyorsa:
+                // Kýrmýzý olmasýn (Hata yok)
+                otherGrabable.OutlineShouldBeRed = false;
+                // Yeþil olsun (Kombinasyon var)
+                otherGrabable.OutlineShouldBeGreen = true;
             }
             else
             {
-                otherGrabable.OutlineShouldBeRed = false;
+                // Birleþemiyorsa standart prosedür:
+                // Yer yoksa VEYA Þu an elimdekini kullanýyorsam (örn: fýrlatma þarjý) -> KIRMIZI
+                if (!HasEmptySlot() || isUsingGrabbedItem)
+                {
+                    otherGrabable.OutlineShouldBeRed = true;
+                }
+                else
+                {
+                    otherGrabable.OutlineShouldBeRed = false;
+                }
             }
 
+            // Durumu uygula
             otherGrabable.OutlineChangeCheck();
         }
         // DURUM 2: Telefon elimde ve baþka bir þeye bakýyorum
@@ -775,15 +798,26 @@ public class FirstPersonController : MonoBehaviour
 
     private void DecideCrosshairColor()
     {
-        // 1. Durum: Kýrmýzý olmasý gereken ZORUNLU durumlar
+        // 1. KIRMIZI (Zorunlu Durumlar - Yer yok, meþgul vs.)
+        // Not: OutlineShouldBeGreen true ise Controller tarafýnda OutlineShouldBeRed'i false yapmýþtýk.
+        // O yüzden yeþil durumunda buraya girmez, güvenli.
         if ((currentInteractable != null && currentInteractable.OutlineShouldBeRed) ||
             (otherGrabable != null && otherGrabable.OutlineShouldBeRed) ||
             (currentGrabable != null && currentGrabable.OutlineShouldBeRed) ||
             (currentGrabable == phoneGrabable && isUsingGrabbedItem))
         {
-            ChangeCrosshairColor(useCrosshairColor); // Kýrmýzý
+            ChangeCrosshairColor(useCrosshairColor);
         }
-        // 2. Durum: Bir Grabable'a bakýyoruz veya elimizde bir þey var
+        // --- 2. YEÞÝL (KOMBÝNASYON) --- 
+        // YENÝ EKLEME BURASI
+        // Hem otherGrabable hem currentGrabable kontrol ediyoruz (ne olur ne olmaz)
+        else if ((otherGrabable != null && otherGrabable.OutlineShouldBeGreen) ||
+                 (currentGrabable != null && currentGrabable.OutlineShouldBeGreen))
+        {
+            ChangeCrosshairColor(combineCrosshairColor);
+        }
+        // ------------------------------
+        // 3. TURUNCU / BEYAZ (Standart Grab Durumlarý)
         else if (currentGrabable != null)
         {
             // Telefon kontrolü...
@@ -804,6 +838,7 @@ public class FirstPersonController : MonoBehaviour
             else if (otherGrabable != null)
             {
                 // Yer varsa VE Elim meþgul deðilse -> TURUNCU
+                // (Buraya gelmesi için Yeþil veya Kýrmýzý olmamasý lazým, demek ki normal bir eþya)
                 if (HasEmptySlot() && !isUsingGrabbedItem)
                     ChangeCrosshairColor(grabCrosshairColor); // Turuncu (Alýnabilir)
                 else
@@ -815,7 +850,7 @@ public class FirstPersonController : MonoBehaviour
                 ChangeCrosshairColor(defaultCrosshairColor);
             }
         }
-        // 3. Durum: Hiçbir þey yok
+        // 4. Durum: Hiçbir þey yok
         else
         {
             ChangeCrosshairColor(defaultCrosshairColor);
@@ -1201,7 +1236,7 @@ public class FirstPersonController : MonoBehaviour
         {
             if (hit.collider)
             {
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Grabable") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlined") || hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlinedRed"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Grabable") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlined") || hit.collider.gameObject.layer == LayerMask.NameToLayer("GrabableOutlinedGreen") || hit.collider.gameObject.layer == LayerMask.NameToLayer("InteractableOutlinedRed"))
                 {
                     // --- MAGNETISM ---
                     // Eþya bulduk, yavaþlat
@@ -1459,6 +1494,33 @@ public class FirstPersonController : MonoBehaviour
             {
                 IGrabable targetItem = hit.collider.gameObject.GetComponent<IGrabable>();
                 if (targetItem == null) return;
+
+                // --- YENÝ EKLENEN KISIM: COMBINE CHECK ---
+
+                // Eðer elimde bir þey varsa (currentGrabable) VE baktýðým þey baþkaysa
+                if (currentGrabable != null && currentGrabable.IsGrabbed && targetItem != currentGrabable)
+                {
+                    // Elimdeki eþyaya sor: "Yerdeki bu þeyi içine alabilir misin?"
+                    if (currentGrabable.TryCombine(targetItem))
+                    {
+                        // EÐER EVET ÝSE:
+                        // 1. Birleþtirme baþarýlý oldu (Külah doldu, Patates yok oldu).
+                        // 2. Yerdeki eþya artýk "otherGrabable" olmaktan çýktý çünkü yok oldu.
+
+                        // Referansý temizle ki oyun "olmayan objeye" outline çizmeye çalýþmasýn
+                        if (otherGrabable == targetItem)
+                        {
+                            otherGrabable = null;
+                        }
+
+                        // UI ve Outline'ý güncelle
+                        DecideOutlineAndCrosshair();
+
+                        // Fonksiyondan çýk (Yerden alma iþlemini yapma!)
+                        return;
+                    }
+                }
+                // -----------------------------------------
 
                 // DURUM A: Elim Boþ, direkt al.
                 if ((currentGrabable == null || !currentGrabable.IsGrabbed) && targetItem == currentGrabable && !phoneGrabable.IsGrabbed)
@@ -2472,7 +2534,8 @@ public class FirstPersonController : MonoBehaviour
                layer == LayerMask.NameToLayer("InteractableOutlined") ||
                layer == LayerMask.NameToLayer("InteractableOutlinedRed") ||
                layer == LayerMask.NameToLayer("Grabable") ||
-               layer == LayerMask.NameToLayer("GrabableOutlined");
+               layer == LayerMask.NameToLayer("GrabableOutlined") ||
+               layer == LayerMask.NameToLayer("GrabableOutlinedGreen");
     }
 
     private void OnEnable()

@@ -20,6 +20,8 @@ public class Fryable : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
 
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
     public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
@@ -45,6 +47,7 @@ public class Fryable : MonoBehaviour, IGrabable
     // Cache Layers
     private int grabableLayer;
     private int grabableOutlinedLayer;
+    private int grabableOutlinedGreenLayer;
     private int interactableOutlinedRedLayer;
     private int ungrabableLayer;
     private int grabbedLayer;
@@ -63,6 +66,7 @@ public class Fryable : MonoBehaviour, IGrabable
         // Layer ID'lerini al
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
+        grabableOutlinedGreenLayer = LayerMask.NameToLayer("GrabableOutlinedGreen");
         interactableOutlinedRedLayer = LayerMask.NameToLayer("InteractableOutlinedRed");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         grabbedLayer = LayerMask.NameToLayer("Grabbed");
@@ -342,10 +346,30 @@ public class Fryable : MonoBehaviour, IGrabable
 
     public void OutlineChangeCheck()
     {
-        if (gameObject.layer == grabableOutlinedLayer && OutlineShouldBeRed)
-            ChangeLayer(interactableOutlinedRedLayer);
-        else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
-            ChangeLayer(grabableOutlinedLayer);
+        if (gameObject.layer == grabableOutlinedLayer)
+        {
+            if (OutlineShouldBeRed)
+                ChangeLayer(interactableOutlinedRedLayer);
+            else if (OutlineShouldBeGreen)
+                ChangeLayer(grabableOutlinedGreenLayer);
+        }
+        else if (gameObject.layer == grabableOutlinedGreenLayer)
+        {
+            if (OutlineShouldBeRed)
+                ChangeLayer(interactableOutlinedRedLayer);
+            else if (!OutlineShouldBeGreen)
+                ChangeLayer(grabableOutlinedLayer);
+        }
+        else if (gameObject.layer == interactableOutlinedRedLayer)
+        {
+            if (!OutlineShouldBeRed)
+            {
+                if (OutlineShouldBeGreen)
+                    ChangeLayer(grabableOutlinedGreenLayer);
+                else
+                    ChangeLayer(grabableOutlinedLayer);
+            }
+        }
     }
 
     public float GetHeightForStackIndex(int stackIndex)
@@ -389,4 +413,24 @@ public class Fryable : MonoBehaviour, IGrabable
     public void OnHolster() { }
     public void OnUseHold() { }
     public void OnUseRelease() { }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    private void OnDestroy()
+    {
+        // Eðer bu obje yok oluyorsa ve bir oyuncu tarafýndan tutuluyorsa veya hedeflenmiþse
+        if (PlayerManager.Instance != null)
+        {
+            // PlayerManager üzerinden resetleme çaðrýsý (Senin bahsettiðin metod)
+            PlayerManager.Instance.ResetPlayerGrab(this);
+        }
+    }
 }

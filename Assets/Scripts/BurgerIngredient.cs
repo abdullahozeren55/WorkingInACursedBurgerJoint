@@ -13,6 +13,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
 
     public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -564,5 +566,14 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void OnUseRelease()
     {
+    }
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }

@@ -15,6 +15,8 @@ public class MascottGrabable : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
 
@@ -242,5 +244,15 @@ public class MascottGrabable : MonoBehaviour, IGrabable
             // Böylece child da kendi içine (torunlara) bakýyor.
             ChangeLayerRecursive(child.gameObject, newLayer);
         }
+    }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }

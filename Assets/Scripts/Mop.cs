@@ -15,6 +15,8 @@ public class Mop : MonoBehaviour, IGrabable
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
@@ -318,5 +320,15 @@ public class Mop : MonoBehaviour, IGrabable
 
         useCoroutine = null;
 
+    }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }

@@ -22,6 +22,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset[boxSituation]; set => data.grabPositionOffset[boxSituation] = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset[boxSituation]; set => data.grabRotationOffset[boxSituation] = value; }
 
@@ -363,5 +365,15 @@ public class BurgerBox : MonoBehaviour, IGrabable
     public void OnUseRelease()
     {
 
+    }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }

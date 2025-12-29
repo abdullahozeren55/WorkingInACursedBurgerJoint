@@ -49,7 +49,7 @@ TagManager:
   - CustomerTriggers
   - OrderThrowArea
   - Grabbed
-  - 
+  - GrabableOutlinedGreen
   - 
   - PostProcessInGameUI
   - UI_MainMenu

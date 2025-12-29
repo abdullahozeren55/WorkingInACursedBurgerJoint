@@ -26,6 +26,8 @@ public class Kettle : MonoBehaviour, IGrabable
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
+    public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
+    private bool outlineShouldBeGreen;
     public Vector3 GrabPositionOffset { get => grabPositionOffset; set => grabPositionOffset = value; }
     [SerializeField] private Vector3 grabPositionOffset = new Vector3(0.4f, 0.1f, 2f);
     public Vector3 GrabRotationOffset { get => grabRotationOffset; set => grabRotationOffset = value; }
@@ -355,5 +357,15 @@ public class Kettle : MonoBehaviour, IGrabable
     public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
+    }
+
+    public bool TryCombine(IGrabable otherItem)
+    {
+        return false;
+    }
+
+    public bool CanCombine(IGrabable otherItem)
+    {
+        return false;
     }
 }
