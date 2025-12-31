@@ -1616,6 +1616,9 @@ public class FirstPersonController : MonoBehaviour
                 case PlayerManager.HandGrabTypes.WholeBunGrab:
                     anim.SetInteger("grabInt", 12);
                     break;
+                case PlayerManager.HandGrabTypes.WholeBurgerGrab:
+                    anim.SetInteger("grabInt", 13);
+                    break;
             }
         }
     }

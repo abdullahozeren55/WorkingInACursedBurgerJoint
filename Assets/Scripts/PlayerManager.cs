@@ -37,7 +37,8 @@ public class PlayerManager : MonoBehaviour
         KettleGrab,
         WholeIngredientGrab,
         BigWholeIngredientGrab,
-        WholeBunGrab
+        WholeBunGrab,
+        WholeBurgerGrab
     }
 
     private FirstPersonController firstPersonController;

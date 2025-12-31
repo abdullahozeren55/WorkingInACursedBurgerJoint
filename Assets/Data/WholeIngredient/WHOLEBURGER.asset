@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45eee0ced01b1344782723c93d151f15, type: 3}
+  m_Name: WHOLEBURGER
+  m_EditorClassIdentifier: 
+  isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
+  handGrabType: 7
+  icon: {fileID: 21300000, guid: 7cebde269c78ea84489f5ea6db2351b1, type: 3}
+  grabPositionOffset: {x: 0.6, y: 1, z: 2}
+  grabRotationOffset: {x: -20, y: -70, z: -70}
+  grabLocalPositionOffset: {x: 0.0567, y: -0.008, z: 0.0873}
+  grabLocalRotationOffset: {x: 359.65005, y: 276.15387, z: 353.33194}
+  focusTextKeys:
+  - GRABABLE_LETTUCE

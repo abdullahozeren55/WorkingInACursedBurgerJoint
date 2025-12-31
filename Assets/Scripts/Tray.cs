@@ -12,6 +12,9 @@ public class Tray : MonoBehaviour
     [SerializeField] private BoxCollider boxCollider;
     [SerializeField] private BoxCollider sauceCollider;
 
+    [Header("Whole Burger Settings")]
+    [SerializeField] private WholeBurgerData wholeBurgerData;
+
     // --- YENÝ: Apex Noktasý ---
     [Header("Movement Settings")]
     [SerializeField] private Transform entryApex; // Malzemelerin ineceði tepe nokta
@@ -273,8 +276,19 @@ public class Tray : MonoBehaviour
             .OnComplete(() =>
             {
                 // Geri eski haline (1,1,1) dönerken standart elastiklik kullanýyoruz.
-                ingredientsParent.DOScale(Vector3.one, 0.3f)
+                if (burgerIsDone)
+                {
+                    ingredientsParent.DOScale(new Vector3 (12f, 12f, 12f), 0.3f)
                     .SetEase(Ease.OutElastic);
+
+                    FinalizeBurger();
+                }
+                else
+                {
+                    ingredientsParent.DOScale(Vector3.one, 0.3f)
+                        .SetEase(Ease.OutElastic);
+                }
+                    
             });
     }
 
@@ -419,5 +433,85 @@ public class Tray : MonoBehaviour
             default:
                 return false;
         }
+    }
+
+    private void FinalizeBurger()
+    {
+        // 1. Mevcut Parent'ý Özgür Býrak (Detach)
+        Transform finishedBurger = ingredientsParent;
+        ingredientsParent = null; // Baðlantýyý kopar
+        finishedBurger.SetParent(null); // Dünyaya sal
+
+        // --- GARANTÝ SÝGORTASI ---
+        // Tween devreye girene kadar 1 frame bile olsa cücük kalmasýn.
+        // Zaten Squash içinde tween baþlattýn ama buraya da koymak göz çýkarmaz.
+        finishedBurger.localScale = new Vector3(12f, 12f, 12f);
+        // -------------------------
+
+        // 2. Yeni Tepsi Parent'ýný Oluþtur (Reset için)
+        GameObject newParent = new GameObject("IngredientsParent");
+        newParent.transform.SetParent(this.transform);
+        newParent.transform.localPosition = Vector3.zero;
+        newParent.transform.localRotation = Quaternion.identity;
+        newParent.transform.localScale = Vector3.one;
+        ingredientsParent = newParent.transform;
+
+        // 3. ÖNCE FÝZÝK EKLE (RB)
+        Rigidbody rb = finishedBurger.gameObject.AddComponent<Rigidbody>();
+        rb.mass = 0.2f;
+        rb.interpolation = RigidbodyInterpolation.None;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        // 4. SONRA WHOLEBURGER EKLE
+        WholeBurger wb = finishedBurger.gameObject.AddComponent<WholeBurger>();
+
+        // 5. Çocuklarý Dönüþtür (ChildBurger)
+        List<GameObject> childrenList = new List<GameObject>();
+
+        foreach (GameObject go in allGO)
+        {
+            if (go == null) continue;
+
+            // Eski scriptleri temizle
+            BurgerIngredient oldScript = go.GetComponent<BurgerIngredient>();
+            if (oldScript != null) Destroy(oldScript);
+
+            Cookable cook = go.GetComponent<Cookable>();
+            if (cook != null) Destroy(cook);
+
+            Rigidbody childRb = go.GetComponent<Rigidbody>();
+            if (childRb != null) Destroy(childRb);
+
+            // Collider'larý ellemiyoruz, onlar raycast için lazým.
+            go.tag = "Untagged";
+
+            // Yeni scripti ekle
+            ChildBurger cb = go.AddComponent<ChildBurger>();
+            cb.parentBurger = wb; // Patronu ata
+
+            childrenList.Add(go);
+        }
+
+        // --- TARÝF HESAPLAMA (GELECEK PLAN) ---
+        // Þimdilik "Random Bullshit" (Son index) varsayalým.
+        // Daha sonra GameManager.Instance.CheckBurgerType(...) ile doðru indexi bulup buraya vereceðiz.
+        int burgerIndex = wholeBurgerData.focusTextKeys.Length - 1;
+
+        // 6. INITIALIZE (GÜNCELLENDÝ)
+        // Data ve Index'i de veriyoruz.
+        wb.Initialize(childrenList, rb, wholeBurgerData, burgerIndex);
+
+        // 8. Juice (Zýplatma)
+        rb.AddForce(Vector3.up * 2f, ForceMode.Impulse);
+        rb.AddTorque(Random.insideUnitSphere * 0.5f, ForceMode.Impulse);
+
+        // 9. Tepsiyi Temizle (Objeleri silmeden)
+        allBurgerIngredients.Clear();
+        allSauces.Clear();
+        allGO.Clear();
+
+        burgerIsDone = false;
+
+        ResetPosition();
     }
 }
