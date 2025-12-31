@@ -11,6 +11,7 @@ public class Holder : MonoBehaviour, IGrabable
         SmileyFries,
         DinoNuggets,
         Nuggets,
+        CheeseSticks,
     }
 
     // YENÝ: Hangi enum hangi objeyi açacak?
