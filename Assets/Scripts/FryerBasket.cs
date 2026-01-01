@@ -25,7 +25,6 @@ public class FryerBasket : MonoBehaviour, IInteractable
     [SerializeField] private Transform foodContainer; // Malzemelerin child olacaðý boþ obje (Sepet Tabaný)
     [SerializeField] private Transform basketEntryApex; //Malzemeler girerken tepeden yay çizecekler iþte o tepe
     [SerializeField] private int capacity = 3; // Maksimum kaç yýðýn alýr?
-    [SerializeField] private BoxCollider catchCollider; // Trigger olan collider
 
     [Header("Position References (Normal)")]
     [SerializeField] private Transform cookingPoint; // Yaðdaki hali (Sabit)
@@ -105,6 +104,7 @@ public class FryerBasket : MonoBehaviour, IInteractable
     }
 
     // --- TRIGGER LOGIC (YAKALAMA) ---
+    // --- TRIGGER LOGIC (YAKALAMA) ---
     public void HandleCatch(Collider other)
     {
         // 1. Sepet Yaðda mý? (Yaðdayken içine malzeme düþemez, yaða düþer)
@@ -117,13 +117,19 @@ public class FryerBasket : MonoBehaviour, IInteractable
         Fryable incomingItem = other.GetComponent<Fryable>();
         if (incomingItem == null) return;
 
-        // 4. Zaten sepette mi? (Çift trigger korumasý)
+        // --- YENÝ EKLENEN GÜVENLÝK ---
+        // Eðer bu patatesin zaten bir sahibi (sepeti) varsa, dokunma!
+        // Bu sayede yandaki sepetle ayný anda kapýþmazlar.
+        if (incomingItem.currentBasket != null) return;
+        // -----------------------------
+
+        // 4. Zaten sepette mi? (Kendi içimizdeki çift trigger korumasý)
         if (heldItems.Contains(incomingItem)) return;
 
         // 5. Halihazýrda grab edilmiþ mi? (Elimizdekini zorla almasýn, fýrlatýlýnca alsýn)
-        // Not: IGrabable interface'inden kontrol edebiliriz
         if (incomingItem.IsGrabbed) return;
 
+        // 6. Sadece Çið olanlarý al (Veya piþenleri de almak istersen burayý silebilirsin)
         if (incomingItem.CurrentCookingState != Cookable.CookAmount.RAW) return;
 
         // -- KABUL EDÝLDÝ --
@@ -157,10 +163,12 @@ public class FryerBasket : MonoBehaviour, IInteractable
             localApexPos = foodContainer.InverseTransformPoint(basketEntryApex.position);
         }
 
-        item.SetVisualState(targetIndex, foodContainer, currentStackHeight, localApexPos);
+        item.SetVisualState(targetIndex, foodContainer, currentStackHeight, localApexPos, () =>
+        {
+            UpdateHangingVisuals();
+        });
 
         currentStackHeight += thisItemHeight;
-        
     }
 
     // Fryable.cs tarafýndan çaðrýlýr (OnGrab olduðunda)
@@ -182,6 +190,9 @@ public class FryerBasket : MonoBehaviour, IInteractable
         // 2. Sepet yaðda mý diye bakacak.
         // 3. Yaðdaysa KÝLÝTLÝ, askýdaysa GRABABLE yapacak.
         RefreshTopItemInteractability();
+
+        // --- YENÝ EKLEME: GÖRSELÝ GÜNCELLE ---
+        UpdateHangingVisuals();
     }
 
     private void RecalculateStackHeight()
@@ -284,8 +295,9 @@ public class FryerBasket : MonoBehaviour, IInteractable
         {
             settleSeq = DOTween.Sequence();
 
-            if (!isFrying) // ASKIDA
+            if (!isFrying) // ASKIDA (Mevcut kod ayný kalýyor)
             {
+                // ... (Askýdaki sallanma kodlarý ayný) ...
                 Vector3 targetEuler = IsHeavy ? hangingHeavyPoint.eulerAngles : hangingPoint.eulerAngles;
                 float momentumAngle = IsHeavy ? 6f : 4f;
                 float settleTime = IsHeavy ? 0.35f : 0.2f;
@@ -293,13 +305,26 @@ public class FryerBasket : MonoBehaviour, IInteractable
                 settleSeq.Append(transform.DORotate(targetEuler + new Vector3(momentumAngle, 0, 0), 0.1f).SetEase(Ease.OutSine));
                 settleSeq.Append(transform.DORotate(targetEuler, settleTime).SetEase(Ease.OutBack));
             }
-            else // YAÐDA (YÜZME)
+            else // YAÐDA (YÜZME HÝSSÝ GÜNCELLENDÝ)
             {
-                float floatAmount = IsHeavy ? 0.015f : 0.04f;
-                float floatDuration = IsHeavy ? 0.4f : 0.6f;
+                // Boþ sepet (0 item): Çok yüzer, hýzlý sallanýr (Mantar gibi)
+                // Dolu sepet (3 item): Az yüzer, aðýr aðýr sallanýr (Taþ gibi)
 
+                float ratio = Mathf.Clamp01((float)heldItems.Count / capacity); // 0 (Boþ) -> 1 (Dolu)
+
+                // Float Amount: Boþken 0.04f -> Doluyken 0.01f (Aðýrlaþýnca az batýp çýkar)
+                float floatAmount = Mathf.Lerp(0.04f, 0.01f, ratio);
+
+                // Duration: Boþken 0.6f -> Doluyken 1.2f (Aðýrlaþýnca periyot uzar)
+                float floatDuration = Mathf.Lerp(0.6f, 1.2f, ratio);
+
+                // Hafifçe yukarý çýk (Suyun kaldýrma kuvveti)
                 settleSeq.Append(transform.DOMove(cookingPoint.position + new Vector3(0, floatAmount, 0), floatDuration * 0.4f).SetEase(Ease.OutSine));
+                // Yavaþça dengeye otur
                 settleSeq.Append(transform.DOMove(cookingPoint.position, floatDuration * 0.6f).SetEase(Ease.InOutSine));
+
+                // Loop'a sokmak istersen (Sürekli yüzsün):
+                // settleSeq.SetLoops(-1, LoopType.Yoyo); // Ama þimdilik sadece giriþteki oturma hareketini yapýyoruz.
             }
         });
     }
@@ -309,22 +334,27 @@ public class FryerBasket : MonoBehaviour, IInteractable
     {
         if (connectedFryer == null) return;
 
+        // Gönderilecek miktar: Eðer sepet boþsa 0, doluysa kaç tane olduðu
+        int countToSend = heldItems.Count;
+
         if (enteringOil)
         {
             if (!isPhysicallyInOil)
             {
-                connectedFryer.OnBasketDown(IsHeavy);
+                // Parametre deðiþti: IsHeavy yerine countToSend
+                connectedFryer.OnBasketDown(countToSend);
                 isPhysicallyInOil = true;
-                RefreshTopItemInteractability(); // YENÝ: Girdik, kilitle!
+                RefreshTopItemInteractability();
             }
         }
         else
         {
             if (isPhysicallyInOil)
             {
-                connectedFryer.OnBasketUp(IsHeavy);
+                // Parametre deðiþti
+                connectedFryer.OnBasketUp(countToSend);
                 isPhysicallyInOil = false;
-                RefreshTopItemInteractability(); // YENÝ: Çýktýk, kilidi aç!
+                RefreshTopItemInteractability();
             }
         }
     }
@@ -400,5 +430,32 @@ public class FryerBasket : MonoBehaviour, IInteractable
     public bool IsTopItem(Fryable item)
     {
         return heldItems.Count > 0 && heldItems[heldItems.Count - 1] == item;
+    }
+
+    // --- YENÝ FONKSÝYON: CANLI AÐIRLIK TEPKÝSÝ ---
+    // --- GÜNCELLENEN FONKSÝYON: KADEMELÝ AÐIRLIK VE YAYLANMA ---
+    private void UpdateHangingVisuals()
+    {
+        // 1. Eðer yaðdaysak karýþma
+        if (isFrying) return;
+
+        // 2. Oraný Hesapla (0 ile 1 arasý)
+        // Count / Capacity (Örn: 1/3 = 0.33, 2/3 = 0.66, 3/3 = 1.0)
+        float ratio = Mathf.Clamp01((float)heldItems.Count / capacity);
+
+        // 3. Hedef Pozisyonu ve Rotasyonu Ara Deðerlerden (Lerp) Bul
+        // "HangingPoint" (Baþlangýç) ile "HangingHeavyPoint" (Bitiþ) arasýndaki o noktayý buluyoruz.
+        Vector3 targetPos = Vector3.Lerp(hangingPoint.position, hangingHeavyPoint.position, ratio);
+        Quaternion targetRot = Quaternion.Lerp(hangingPoint.rotation, hangingHeavyPoint.rotation, ratio);
+
+        // 4. Önceki hareketleri temizle
+        if (settleSeq != null && settleSeq.IsActive()) settleSeq.Kill();
+        transform.DOKill();
+
+        // 5. YAYLANMA EFEKTÝ (Ease.OutBack)
+        // OutBack: Hedefe giderken biraz geçer (aþaðý çöker), sonra hedefe geri döner.
+        // Süreyi biraz arttýrdým (0.25 -> 0.4) ki yaylanma hissedilsin.
+        transform.DOMove(targetPos, 0.4f).SetEase(Ease.OutBack, 3f);
+        transform.DORotateQuaternion(targetRot, 0.4f).SetEase(Ease.OutBack, 3f);
     }
 }

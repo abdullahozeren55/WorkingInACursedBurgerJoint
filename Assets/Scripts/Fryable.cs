@@ -132,7 +132,7 @@ public class Fryable : MonoBehaviour, IGrabable
     // --- BASKET LOGIC (Sepete Yerleþme) ---
 
     // Parametre olarak "Vector3 apexLocalPos" eklendi
-    public void SetVisualState(int stackLevel, Transform container, float currentStackZ, Vector3 apexLocalPos)
+    public void SetVisualState(int stackLevel, Transform container, float currentStackZ, Vector3 apexLocalPos, System.Action onWeightApplied = null)
     {
         if (data.basketMeshes == null || data.basketMeshes.Length == 0) return;
 
@@ -160,12 +160,12 @@ public class Fryable : MonoBehaviour, IGrabable
         Quaternion randomRot = Quaternion.identity; // Senin tercihin :)
         Quaternion targetLocalRot = randomRot * fixRot;
 
-        // 4. Yerleþ (Artýk Apex'i de gönderiyoruz)
-        PutOnBasketLocal(targetLocalPos, targetLocalRot, container, apexLocalPos);
+        // Callback'i alt fonksiyona iletiyoruz
+        PutOnBasketLocal(targetLocalPos, targetLocalRot, container, apexLocalPos, onWeightApplied);
     }
 
     // YENÝ DOPath MANTIÐI
-    private void PutOnBasketLocal(Vector3 targetLocalPos, Quaternion targetLocalRot, Transform containerParent, Vector3 apexLocalPos)
+    private void PutOnBasketLocal(Vector3 targetLocalPos, Quaternion targetLocalRot, Transform containerParent, Vector3 apexLocalPos, System.Action onWeightApplied)
     {
         isGettingPutOnBasket = true;
         PlayerManager.Instance.ResetPlayerGrab(this);
@@ -194,6 +194,14 @@ public class Fryable : MonoBehaviour, IGrabable
         // Dönüþ (Eþ zamanlý dönsün)
         seq.Join(transform.DOLocalRotateQuaternion(targetLocalRot, data.putOnBasketDuration)
             .SetEase(Ease.OutCubic));
+
+        // --- ÝÞTE SÝHÝRLÝ DOKUNUÞ BURADA ---
+        // Animasyon süresinin %80'ine gelince bu kodu çalýþtýr.
+        if (onWeightApplied != null)
+        {
+            seq.InsertCallback(data.putOnBasketDuration * 0.8f, () => onWeightApplied.Invoke());
+        }
+        // ------------------------------------
 
         seq.OnComplete(() => {
             isAddedToBasket = true;
