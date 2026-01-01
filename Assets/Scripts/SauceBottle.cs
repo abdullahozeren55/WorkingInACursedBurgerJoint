@@ -36,7 +36,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
         Mayo,
         Mustard,
         BBQ,
-        Water
+        Buffalo
     }
 
     public string FocusTextKey { get => focusTextKey; set => focusTextKey = value; }

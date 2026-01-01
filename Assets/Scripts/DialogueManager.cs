@@ -17,7 +17,6 @@ public class DialogueManager : MonoBehaviour
     public enum TalkType
     {
         TalkWithCustomer,
-        TalkWithSeller,
         TalkWithYourself,
         TalkWithMascott,
         TalkWithYourselfInCutscene,
@@ -70,8 +69,6 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TMP_Text customer0DialogueText;
     [SerializeField] private TMP_Text customer1DialogueText;
     [SerializeField] private TMP_Text sinanSelfTalkDialogueText;
-    [Space]
-    [SerializeField] private ShopSeller shopSeller;
 
     private DialogueData currentDialogueData;
     private TMP_Text currentDialogueText;
@@ -142,8 +139,6 @@ public class DialogueManager : MonoBehaviour
                     {
                         if (talkType == TalkType.TalkWithCustomer)
                             EndCustomerDialogue();
-                        else if (talkType == TalkType.TalkWithSeller)
-                            EndSellerDialogue();
                         else if (talkType == TalkType.TalkWithPhone)
                             EndPhoneDialogue();
                     }
@@ -325,39 +320,6 @@ public class DialogueManager : MonoBehaviour
         sinanSelfTalkTextAnim.StartDisappearingText();
 
         currentInteractable = null;
-    }
-
-    public void StartSellerDialogue(DialogueData data, bool shouldBeUninteractable)
-    {
-        currentDialogueData = data;
-
-        IsInDialogue = true;
-
-        talkType = TalkType.TalkWithSeller;
-
-        PlayerManager.Instance.SetPlayerBasicMovements(false);
-
-        PlayerManager.Instance.ResetPlayerInteract(currentInteractable, shouldBeUninteractable);
-
-        dialogueIndex = 0;
-
-        HandleDialogue();
-    }
-
-    private void EndSellerDialogue()
-    {
-        IsSkipped = false;
-        IsDialogueComplete = false;
-
-        shopSeller.HandleFinishDialogue();
-
-        IsInDialogue = false;
-
-        currentTextAnim.StartDisappearingText();
-
-        CameraManager.Instance.SwitchToFirstPersonCamera();
-        PlayerManager.Instance.SetPlayerBasicMovements(true);
-
     }
 
     public void StartSelfDialogue(DialogueData data)
@@ -552,11 +514,8 @@ public class DialogueManager : MonoBehaviour
 
         RectTransform rect = currentDialogueText.rectTransform;
         rect.anchoredPosition += currentDialogueData.dialogueSegments[dialogueIndex].DialogueOffset;
-
-        if (talkType == TalkType.TalkWithSeller)
-            shopSeller.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim);
-        else
-            currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim, currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnimDelay);
+        
+        currentCustomer?.HandleDialogueAnim(currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnim, currentDialogueData.dialogueSegments[dialogueIndex].dialogueAnimDelay);
 
         DecideFontType(currentDialogueData.dialogueSegments[dialogueIndex].fontType);
 
