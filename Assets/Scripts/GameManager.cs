@@ -29,9 +29,16 @@ public class GameManager : MonoBehaviour
 
     public enum DrinkTypes
     {
-        BlackPop,
-        YellowPop,
-        WhitePop
+        BlackKula,
+        YellowKula,
+        WhiteKula
+    }
+
+    public enum CupSize
+    {
+        Small,
+        Medium,
+        Large,
     }
 
     public enum CursorType

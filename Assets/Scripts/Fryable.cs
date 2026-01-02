@@ -169,7 +169,7 @@ public class Fryable : MonoBehaviour, IGrabable
     {
         isGettingPutOnBasket = true;
         PlayerManager.Instance.ResetPlayerGrab(this);
-        ChangeLayer(onTrayLayer);
+        //ChangeLayer(onTrayLayer); Baskete girerken bana çarpýyo bazen o yüzden kapatýyorum
 
         rb.velocity = Vector3.zero;
         rb.isKinematic = true;

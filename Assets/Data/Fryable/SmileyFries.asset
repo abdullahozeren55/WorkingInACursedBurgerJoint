@@ -38,7 +38,7 @@ MonoBehaviour:
     height: 0
     colliderCenter: {x: 0.00013813522, y: -0.00020229936, z: 0.0006471127}
     colliderSize: {x: 0.0036839792, y: 0.0019664296, z: 0.0013404051}
-  putOnBasketDuration: 0.4
+  putOnBasketDuration: 0.3
   type: 3
   icon: {fileID: 21300000, guid: 7cebde269c78ea84489f5ea6db2351b1, type: 3}
   focusTextKeys:
