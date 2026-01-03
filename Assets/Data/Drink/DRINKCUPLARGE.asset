@@ -15,14 +15,16 @@ MonoBehaviour:
   focusTextKey: GRABABLE_BLACK_POP
   cupSize: 2
   handGrabType: 1
+  handRigType: 1
   icon: {fileID: 21300000, guid: 7cebde269c78ea84489f5ea6db2351b1, type: 3}
   isUseable: 0
   isThrowable: 1
   throwMultiplier: 1
+  fillDuration: 3
   grabPositionOffset: {x: 0.6, y: 0.4, z: 2}
-  grabRotationOffset: {x: -5, y: -70, z: -70}
-  grabLocalPositionOffset: {x: 0.19620475, y: 0.046531077, z: 0.07619475}
-  grabLocalRotationOffset: {x: -0.00043160428, y: 0.00026406656, z: 102.337425}
+  grabRotationOffset: {x: -15, y: -60, z: -50}
+  grabLocalPositionOffset: {x: 0.18560019, y: -0.02163727, z: 0.04958901}
+  grabLocalRotationOffset: {x: 0.80149037, y: 8.651192, z: 84.748795}
   audioClips:
   - {fileID: 8300000, guid: ae7df4ee2fc19fd4a89c3bfb6446b5b1, type: 3}
   - {fileID: 8300000, guid: 5a5f45b1083b46441aa9b227335ba150, type: 3}

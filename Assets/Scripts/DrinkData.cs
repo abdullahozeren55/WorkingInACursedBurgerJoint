@@ -8,11 +8,18 @@ public class DrinkData : ScriptableObject
     public string focusTextKey;
     public GameManager.DrinkTypes drinkType;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType;
     public Sprite icon;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;
     public float throwMultiplier = 1f;
+    [Space]
+    [Header("Break Effects")]
+    public GameObject glassShatterPrefab; // Cam kýrýklarý (Particle System)
+    public GameObject liquidSplashPrefab; // Sývý sýçramasý (Particle System)
+    [Tooltip("Efektin dönme açýsýný ayarlar. Örn: (90, 0, 0)")]
+    public Vector3 effectRotationOffset; // <--- YENÝ
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

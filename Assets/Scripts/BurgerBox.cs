@@ -55,6 +55,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
         set { }
     }
 
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
+
     // References
     private Rigidbody rb;
     private Collider[] allColliders;

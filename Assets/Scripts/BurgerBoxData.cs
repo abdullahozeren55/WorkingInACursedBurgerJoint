@@ -9,6 +9,7 @@ public class BurgerBoxData : ScriptableObject
     public bool isUseable = false;
     public bool isThrowable = true;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     public Sprite[] icon;
     [Space]
     public float timeToPutOnTray = 0.3f;

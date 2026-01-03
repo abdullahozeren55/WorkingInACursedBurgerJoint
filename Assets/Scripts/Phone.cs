@@ -17,6 +17,9 @@ public class Phone : MonoBehaviour, IGrabable
     public PlayerManager.HandGrabTypes HandGrabType { get => handGrabType; set => handGrabType = value; }
     [SerializeField] private PlayerManager.HandGrabTypes handGrabType;
 
+    public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
+    [SerializeField] private PlayerManager.HandRigTypes handRigType;
+
     public bool IsThrowable { get => isThrowable; set => isThrowable = value; }
     [SerializeField] private bool isThrowable = false;
 

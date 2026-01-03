@@ -13,6 +13,8 @@ public class DrinkCup : MonoBehaviour, IGrabable
     private bool isGrabbed;
     public Sprite Icon { get => data.icon; set => data.icon = value; }
 
+    public float GetFillDuration => data.fillDuration;
+
     [SerializeField] private GameObject drinkGO;
     [SerializeField] private GameObject lidGO;
     [SerializeField] private GameObject strawGO;
@@ -32,11 +34,15 @@ public class DrinkCup : MonoBehaviour, IGrabable
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
     public float ThrowMultiplier { get => data.throwMultiplier; set => data.throwMultiplier = value; }
     public bool IsUseable { get => data.isUseable; set => data.isUseable = value; }
+
     public DrinkCupData data;
     public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; }
+
+    public GameManager.DrinkTypes DrinkType = GameManager.DrinkTypes.Null; //Soda Makinesi tarafýndan doldurulurken atanacak
 
     private Rigidbody rb;
     private Collider col;

@@ -8,6 +8,7 @@ public class SauceCollision : MonoBehaviour
     public SauceBottle.SauceType sauceType;
     public float targetScale = 0.15f;
     public float randomMultiplier = 1.2f;
+    public bool canAddToBurger = true; //içecek partikülleri de bu kodu kullanacak burgere içecek koymayalým diye
 
     private ParticleSystem ps;
     private List<ParticleCollisionEvent> collisionEvents;
@@ -20,7 +21,7 @@ public class SauceCollision : MonoBehaviour
 
     void OnParticleCollision(GameObject other)
     {
-        if (other.CompareTag("BurgerSauceArea"))
+        if (other.CompareTag("BurgerSauceArea") && canAddToBurger)
         {
             GameManager.Instance.AddSauceToTray(sauceType);
         }

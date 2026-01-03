@@ -8,6 +8,7 @@ public class SauceCapsuleData : ScriptableObject
     public string focusTextKey;
     public SauceBottle.SauceType sauceType;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     public Sprite icon;
     [Space]
     public bool isUseable = false;

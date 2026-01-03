@@ -26,6 +26,8 @@ public class GrabableChild : MonoBehaviour, IGrabable
         set { if (parentGrabable != null) parentGrabable.HandGrabType = value; }
     }
 
+    public PlayerManager.HandRigTypes HandRigType { get => parentGrabable.HandRigType; set => parentGrabable.HandRigType = value; }
+
     public bool OutlineShouldBeRed
     {
         get => parentGrabable != null && parentGrabable.OutlineShouldBeRed;

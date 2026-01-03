@@ -10,6 +10,7 @@ public class KnifeData : ScriptableObject
     public bool isThrowable = true;
     public float throwMultiplier = 1f;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType;
     public Sprite icon;
     [Space]
     public LayerMask stabableLayers;

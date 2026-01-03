@@ -14,6 +14,7 @@ public class Mop : MonoBehaviour, IGrabable
     [SerializeField] private Sprite icon;
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }

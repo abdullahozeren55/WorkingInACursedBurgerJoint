@@ -13,6 +13,7 @@ public class SauceBottle : MonoBehaviour, IGrabable
     public Sprite Icon { get => data.icon; set => data.icon = value; }
 
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
     public bool IsThrowable { get => data.isThrowable; set => data.isThrowable = value; }
 
     public Transform LeftHandPoint { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
@@ -36,7 +37,11 @@ public class SauceBottle : MonoBehaviour, IGrabable
         Mayo,
         Mustard,
         BBQ,
-        Buffalo
+        Buffalo,
+        OrangeJuice,
+        AppleJuice,
+        CherryJuice,
+        Ayran
     }
 
     public string FocusTextKey { get => focusTextKey; set => focusTextKey = value; }

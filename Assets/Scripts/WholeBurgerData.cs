@@ -10,6 +10,7 @@ public class WholeBurgerData : ScriptableObject
     public float throwMultiplier = 1f;
     [Space]
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     public Sprite icon;
     [Space]
     public Vector3 grabPositionOffset;

@@ -27,6 +27,7 @@ public class WholeIngredientData : ScriptableObject
     public bool isThrowable = true;
     public float throwMultiplier = 1f;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     [Space]
     public float minForce = 0.2f;
     public float maxForce = 0.4f;

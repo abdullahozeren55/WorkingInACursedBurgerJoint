@@ -20,6 +20,8 @@ public class ChildBurger : MonoBehaviour, IGrabable
     public Sprite Icon { get => parentBurger.Icon; set => parentBurger.Icon = value; }
     public PlayerManager.HandGrabTypes HandGrabType { get => parentBurger.HandGrabType; set => parentBurger.HandGrabType = value; }
 
+    public PlayerManager.HandRigTypes HandRigType { get => parentBurger.HandRigType; set => parentBurger.HandRigType = value; }
+
     public bool OutlineShouldBeRed { get => parentBurger.OutlineShouldBeRed; set => parentBurger.OutlineShouldBeRed = value; }
     public bool OutlineShouldBeGreen { get => parentBurger.OutlineShouldBeGreen; set => parentBurger.OutlineShouldBeGreen = value; }
 

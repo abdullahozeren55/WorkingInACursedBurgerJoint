@@ -30,6 +30,7 @@ public class BurgerIngredientData : ScriptableObject
     public IngredientType ingredientType;
     public SauceBottle.SauceType sauceType;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     public Sprite icon;
     public float yHeight = 0.1f;
     public float timeToPutOnTray = 0.3f;

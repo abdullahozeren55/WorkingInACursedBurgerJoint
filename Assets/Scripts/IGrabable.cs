@@ -22,6 +22,7 @@ public interface IGrabable
     bool CanCombine(IGrabable otherItem);
 
     public PlayerManager.HandGrabTypes HandGrabType { get; set; }
+    public PlayerManager.HandRigTypes HandRigType { get; set; }
 
     public Vector3 GrabPositionOffset { get; set; }
     public Vector3 GrabRotationOffset { get; set; }

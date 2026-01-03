@@ -12,6 +12,8 @@ public class Drink : MonoBehaviour, IGrabable
 
     public Sprite Icon { get => data.icon; set => data.icon = value; }
 
+    public PlayerManager.HandRigTypes HandRigType { get => data.handRigType; set => data.handRigType = value; }
+
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
     public bool OutlineShouldBeGreen { get => outlineShouldBeGreen; set => outlineShouldBeGreen = value; }
@@ -33,8 +35,12 @@ public class Drink : MonoBehaviour, IGrabable
     public string FocusTextKey { get => data.focusTextKey; set => data.focusTextKey = value; }
     [Space]
 
+    public GameObject lidGO;
+    public GameObject drinkGO;
+
     private Rigidbody rb;
     private Collider col;
+    private Collider lidCol;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -44,7 +50,6 @@ public class Drink : MonoBehaviour, IGrabable
 
     [HideInInspector] public bool isJustThrowed;
     [HideInInspector] public bool isJustDropped;
-    [HideInInspector] public bool CanBeReceived;
 
     private float lastSoundTime = 0f;
 
@@ -52,6 +57,7 @@ public class Drink : MonoBehaviour, IGrabable
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
+        lidCol = lidGO.GetComponent<Collider>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -63,7 +69,6 @@ public class Drink : MonoBehaviour, IGrabable
 
         isJustThrowed = false;
         isJustDropped = false;
-        CanBeReceived = true;
     }
 
     public void OnHolster()
@@ -74,9 +79,7 @@ public class Drink : MonoBehaviour, IGrabable
     {
         ChangeLayer(grabbedLayer);
 
-        CanBeReceived = true;
-
-        col.enabled = false;
+        HandleColliders(false);
 
         SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
 
@@ -104,7 +107,7 @@ public class Drink : MonoBehaviour, IGrabable
 
     public void OnDrop(Vector3 direction, float force)
     {
-        col.enabled = true;
+        HandleColliders(true);
 
         IsGrabbed = false;
 
@@ -121,7 +124,7 @@ public class Drink : MonoBehaviour, IGrabable
 
     public void OnThrow(Vector3 direction, float force)
     {
-        col.enabled = true;
+        HandleColliders(true);
 
         IsGrabbed = false;
 
@@ -139,6 +142,14 @@ public class Drink : MonoBehaviour, IGrabable
     public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
+        lidGO.layer = layer;
+        drinkGO.layer = layer;
+    }
+
+    private void HandleColliders(bool state)
+    {
+        col.enabled = state;
+        lidCol.enabled = state;
     }
 
     public void OutlineChangeCheck()
@@ -166,18 +177,25 @@ public class Drink : MonoBehaviour, IGrabable
     private void HandleSoundFX(Collision collision)
     {
         // --- 2. Hýz Hesaplama ---
-        // Çarpýþmanýn þiddetini alýyoruz
         float impactForce = collision.relativeVelocity.magnitude;
 
-        // --- 3. Spam Korumasý ve Sessizlik ---
-        // Eðer çok yavaþ sürtünüyorsa (dropThreshold altý) veya
-        // son sesin üzerinden çok az zaman geçtiyse çýk.
+        // --- 3. Spam Korumasý ---
         if (impactForce < data.dropThreshold || Time.time - lastSoundTime < data.soundCooldown) return;
 
-        // --- 4. Hýza Göre Ses Seçimi ---
+        // --- 4. KIRILMA VE SES MANTIÐI ---
         if (impactForce >= data.throwThreshold)
         {
-            // === FIRLATMA SESÝ (Hýzlý) ===
+            // === ÞÝDDETLÝ ÇARPMA (KIRILMA) ===
+
+            // Eðer þiþe kýrýlabiliyorsa (Data'da prefab varsa) kýr.
+            // Yoksa sadece sert çarpma sesi çalmaya devam etsin (Bug olmasýn diye).
+            if (data.glassShatterPrefab != null)
+            {
+                BreakBottle(collision);
+                return; // Kýrýldýðý için aþaðýdaki ses kodlarýný çalýþtýrma, metodu bitir.
+            }
+
+            // Prefab atanmamýþsa eski usul ses çal (Fallback)
             SoundManager.Instance.PlaySoundFX(
                 data.audioClips[2],
                 transform,
@@ -198,8 +216,59 @@ public class Drink : MonoBehaviour, IGrabable
             );
         }
 
-        // Ses çaldýk, zamaný kaydet
         lastSoundTime = Time.time;
+    }
+
+    private void BreakBottle(Collision collision)
+    {
+        // 1. Temas Noktasý ve Normalini Bul
+        Vector3 hitPoint = transform.position;
+        Quaternion finalRotation = Quaternion.identity;
+
+        // Çarpýþma detayý var mý? (Genelde vardýr ama hýzlý fizikte bazen kaçabilir, güvenlik þart)
+        if (collision.contacts.Length > 0)
+        {
+            ContactPoint contact = collision.contacts[0];
+            hitPoint = contact.point;
+
+            // NORMAL: Yüzeyin baktýðý yön (Duvarsa yatay, yerse dikey).
+            // Quaternion.LookRotation(normal): Z eksenini (Maviyi) yüzeyden dýþarý baktýrýr.
+            // Bu genelde "Billboard" veya "Cone" particle sistemleri için en doðru baþlangýçtýr.
+            Quaternion surfaceRotation = Quaternion.LookRotation(contact.normal);
+
+            // OFFSET: Senin inspector'dan gireceðin ince ayarý ekliyoruz.
+            // Rotasyonlarý çarparak toplarýz.
+            finalRotation = surfaceRotation * Quaternion.Euler(data.effectRotationOffset);
+        }
+        else
+        {
+            // Eðer contact yoksa dümdüz yukarý baksýn (Fallback)
+            finalRotation = Quaternion.Euler(data.effectRotationOffset);
+        }
+
+        // 2. Cam Kýrýklarýný Oluþtur
+        if (data.glassShatterPrefab != null)
+        {
+            Instantiate(data.glassShatterPrefab, hitPoint, finalRotation);
+        }
+
+        // 3. Sývý Sýçramasýný Oluþtur
+        if (data.liquidSplashPrefab != null)
+        {
+            // Sývý da ayný yöne veya istersen farklý bir offset ile (genelde ayný) çýkar
+            Instantiate(data.liquidSplashPrefab, hitPoint, finalRotation);
+        }
+
+        // 4. Kýrýlma Sesi (Prefab'da yoksa buraya ekle)
+        // ...
+
+        // 5. Þiþeyi Yok Et
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.ResetPlayerGrab(this);
+        }
+
+        Destroy(gameObject);
     }
     private void OnCollisionEnter(Collision collision)
     {

@@ -56,7 +56,14 @@ public class SauceManager : MonoBehaviour
 
     public void SpawnDrop(SauceBottle.SauceType sauceType, Vector3 position, Quaternion rotation, Vector3 scale, Transform parent)
     {
-        GameObject newDrop = Instantiate(sauceType == SauceBottle.SauceType.Ketchup ? sauceDrops[0] : sauceType == SauceBottle.SauceType.Mayo ? sauceDrops[1] : sauceType == SauceBottle.SauceType.Mustard ? sauceDrops[2] : sauceType == SauceBottle.SauceType.BBQ ? sauceDrops[3] : sauceDrops[4], position, rotation, null);
+        GameObject newDrop = Instantiate(sauceType == SauceBottle.SauceType.Ketchup ? sauceDrops[0] :
+                                        sauceType == SauceBottle.SauceType.Mayo ? sauceDrops[1] :
+                                        sauceType == SauceBottle.SauceType.Mustard ? sauceDrops[2] :
+                                        sauceType == SauceBottle.SauceType.BBQ ? sauceDrops[3] :
+                                        sauceType == SauceBottle.SauceType.Buffalo ? sauceDrops[4] :
+                                        sauceType == SauceBottle.SauceType.OrangeJuice ? sauceDrops[5] :
+                                        sauceType == SauceBottle.SauceType.AppleJuice ? sauceDrops[6] :
+                                        sauceType == SauceBottle.SauceType.CherryJuice ? sauceDrops[7] : sauceDrops[8], position, rotation, null);
 
         newDrop.transform.localScale = scale;
 

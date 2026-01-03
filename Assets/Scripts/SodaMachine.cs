@@ -71,12 +71,20 @@ public class SodaMachine : MonoBehaviour
             if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerInteract(b, true);
         }
 
+        // --- YENÝ: SÜRE HESAPLAMA ---
+        // Varsayýlan olarak makinenin ayarýný al
+        float effectivePourDuration = pourDuration;
+
+        // Eðer bardak varsa, bardaðýn datasýndaki süreyi al
         if (currentCup != null)
         {
+            effectivePourDuration = currentCup.GetFillDuration; // <--- DEÐÝÞÝKLÝK BURADA
+
             currentCup.IsGettingFilled = true;
             currentCup.ChangeLayer(ungrabableLayer);
             if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(currentCup);
         }
+        // -----------------------------
 
         // 2. BUTONU ÝÇERÝ GÖM
         btn.transform.DOKill();
@@ -85,24 +93,20 @@ public class SodaMachine : MonoBehaviour
         // 3. AKIÞI BAÞLAT
         StartPouring(btn.flavorIndex);
 
-        // --- YENÝ: BARDAÐI DOLDURMA EMRÝ ---
         if (currentCup != null)
         {
-            // Hangi rengi seçtik?
             Color selectedColor = Color.white;
             if (btn.flavorIndex >= 0 && btn.flavorIndex < flavorColors.Length)
                 selectedColor = flavorColors[btn.flavorIndex];
 
-            // Toplam süre = Akýþ Süresi + Durma (Damlama) - 0.1f (for juice) Süresi
-            float totalFillTime = pourDuration + stopDuration - 0.1f;
+            // Hesabý "effectivePourDuration" üzerinden yapýyoruz
+            float totalFillTime = effectivePourDuration + stopDuration - 0.1f;
 
-            // Bardaða "Baþla" de
             currentCup.StartFilling(selectedColor, totalFillTime);
         }
-        // ------------------------------------
 
-        // 4. BEKLE
-        yield return new WaitForSeconds(pourDuration);
+        // 4. BEKLE (Artýk dinamik süreyi bekliyoruz)
+        yield return new WaitForSeconds(effectivePourDuration); // <--- DEÐÝÞÝKLÝK BURADA
 
         if (currentCup != null)
             currentCup.FinishGettingFilled();

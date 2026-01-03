@@ -35,10 +35,6 @@ public class OrderThrowArea : MonoBehaviour
                 {
                     Drink drink = other.GetComponent<Drink>();
 
-                    if (!drink.IsGrabbed && drink.CanBeReceived)
-                    {
-                    }
-
                 }
             }
             

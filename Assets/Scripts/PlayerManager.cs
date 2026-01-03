@@ -22,6 +22,7 @@ public class PlayerManager : MonoBehaviour
         Interaction,
         SingleHandGrab,
         Nothing,
+        HoldingTray
     }
 
     public enum HandGrabTypes

@@ -13,6 +13,7 @@ public class FoodPackData : ScriptableObject
     public bool isUseable = false;
     public bool isThrowable = true;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType;
     public float throwMultiplier = 1f;
     [Space]
     public float minForce = 0.2f;

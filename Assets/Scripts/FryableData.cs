@@ -27,6 +27,7 @@ public class FryableData : ScriptableObject
     public Sprite icon;
     public string[] focusTextKeys;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;

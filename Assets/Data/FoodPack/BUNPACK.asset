@@ -18,6 +18,7 @@ MonoBehaviour:
   isUseable: 0
   isThrowable: 1
   handGrabType: 9
+  handRigType: 1
   throwMultiplier: 1
   minForce: 0.1
   maxForce: 0.2

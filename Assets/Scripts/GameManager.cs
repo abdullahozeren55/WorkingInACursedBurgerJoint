@@ -31,7 +31,12 @@ public class GameManager : MonoBehaviour
     {
         BlackKula,
         YellowKula,
-        WhiteKula
+        WhiteKula,
+        OrangeJuice,
+        AppleJuice,
+        CherryJuice,
+        Ayran,
+        Null
     }
 
     public enum CupSize

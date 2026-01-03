@@ -8,11 +8,13 @@ public class DrinkCupData : ScriptableObject
     public string focusTextKey;
     public GameManager.CupSize cupSize;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType;
     public Sprite icon;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;
     public float throwMultiplier = 1f;
+    public float fillDuration = 3.0f;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

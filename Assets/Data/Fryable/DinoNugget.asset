@@ -46,6 +46,7 @@ MonoBehaviour:
   - GRABABLE_PATTY_COOKED
   - GRABABLE_PATTY_BURNT
   handGrabType: 6
+  handRigType: 1
   isUseable: 0
   isThrowable: 1
   throwMultiplier: 1

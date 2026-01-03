@@ -10,6 +10,7 @@ public class HolderData : ScriptableObject
     public Sprite icon;
     public string[] focusTextKeys;
     public PlayerManager.HandGrabTypes handGrabType;
+    public PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.SingleHandGrab;
     [Space]
     public bool isUseable = false;
     public bool isThrowable = true;
