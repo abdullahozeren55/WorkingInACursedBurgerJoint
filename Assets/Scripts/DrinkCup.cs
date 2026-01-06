@@ -361,8 +361,24 @@ public class DrinkCup : MonoBehaviour, IGrabable
         }
     }
 
-    private void OnDisable() { OnLoseFocus(); }
-    private void OnDestroy() { OnLoseFocus(); }
+    private void OnDisable()
+    {
+        if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(this);
+
+        if (currentTray != null)
+        {
+            currentTray.RemoveItem(this);
+        }
+    }
+    private void OnDestroy()
+    {
+        if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(this);
+
+        if (currentTray != null)
+        {
+            currentTray.RemoveItem(this);
+        }
+    }
 
     private void HandleSoundFX(Collision collision)
     {

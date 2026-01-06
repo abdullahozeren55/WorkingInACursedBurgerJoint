@@ -23,6 +23,27 @@ MonoBehaviour:
   glassShatterPrefab: {fileID: 3451705259810622206, guid: 6ee44fc28df59a34585bcaaff13214b5, type: 3}
   liquidSplashPrefab: {fileID: 3451705259810622206, guid: 6903757f7f7b8bc4ebb51c7c9f83be8c, type: 3}
   effectRotationOffset: {x: 0, y: 0, z: 0}
+  slotOffsets:
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  - slotName: 
+    localPosition: {x: 0, y: 0, z: 0}
+    localRotation: {x: 0, y: 0, z: 0}
+  grabbedLocalScale: {x: 7.1111135, y: 7.1111155, z: 7.111111}
+  trayLocalScale: {x: 0.08, y: 0.08056056, z: 0.08627178}
   grabPositionOffset: {x: 0.6, y: 0.5, z: 2}
   grabRotationOffset: {x: -5, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.15265755, y: -0.035082318, z: 0.052563217}

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -51,13 +52,18 @@ public class Drink : MonoBehaviour, IGrabable
     [HideInInspector] public bool isJustThrowed;
     [HideInInspector] public bool isJustDropped;
 
+    // --- LOGIC VARIABLES ---
+    [HideInInspector] public Tray currentTray;
+    private bool isGettingPutOnTray;
+    // -----------------------
+
     private float lastSoundTime = 0f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
-        lidCol = lidGO.GetComponent<Collider>();
+        if (lidGO != null) lidCol = lidGO.GetComponent<Collider>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -71,14 +77,97 @@ public class Drink : MonoBehaviour, IGrabable
         isJustDropped = false;
     }
 
-    public void OnHolster()
+    // --- YERLEÞME METODU ---
+    public void PlaceOnTray(Transform targetSlot, Transform apexTransform, Tray trayRef, int slotIndex)
     {
+        // 1. State
+        isGettingPutOnTray = true;
+        isJustDropped = false;
+        isJustThrowed = false;
+        currentTray = trayRef;
+
+        // Çarpýþmayý Yoksay
+        if (currentTray != null)
+        {
+            ToggleCollisionWithTray(currentTray.GetCollider, true);
+        }
+
+        if (PlayerManager.Instance != null && IsGrabbed)
+        {
+            PlayerManager.Instance.ResetPlayerGrab(this);
+        }
+
+        // 2. Fizik Kapat
+        rb.isKinematic = true; // <-- BURADA TRUE YAPIYORUZ
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.useGravity = false;
+        HandleColliders(false);
+
+        // 3. Parent
+        transform.SetParent(targetSlot, true);
+
+        // 4. Hedef & Randomizasyon
+        Vector3 baseLocalPos = Vector3.zero;
+        Vector3 baseLocalRot = Vector3.zero;
+
+        if (data.slotOffsets != null && slotIndex < data.slotOffsets.Length)
+        {
+            baseLocalPos = data.slotOffsets[slotIndex].localPosition;
+            baseLocalRot = data.slotOffsets[slotIndex].localRotation;
+        }
+
+        float randomZ = Random.Range(0f, 360f);
+        Vector3 finalTargetEuler = new Vector3(baseLocalRot.x, baseLocalRot.y, randomZ);
+        Quaternion finalTargetRotation = Quaternion.Euler(finalTargetEuler);
+
+        // 5. APEX
+        Vector3 localApexPos;
+        if (apexTransform != null)
+        {
+            localApexPos = targetSlot.InverseTransformPoint(apexTransform.position);
+        }
+        else
+        {
+            localApexPos = baseLocalPos + Vector3.up * 0.15f;
+        }
+
+        // 6. DOTween
+        Vector3[] pathPoints = new Vector3[] { localApexPos, baseLocalPos };
+        Sequence seq = DOTween.Sequence();
+
+        seq.Join(transform.DOLocalPath(pathPoints, 0.2f, PathType.CatmullRom).SetEase(Ease.OutSine));
+        seq.Join(transform.DOLocalRotateQuaternion(finalTargetRotation, 0.2f).SetEase(Ease.OutBack));
+        seq.Join(transform.DOScale(data.trayLocalScale, 0.2f));
+
+        seq.OnComplete(() =>
+        {
+            transform.localPosition = baseLocalPos;
+            transform.localRotation = finalTargetRotation;
+
+            isGettingPutOnTray = false;
+            HandleColliders(true);
+
+            if (currentTray != null) ChangeLayer(currentTray.gameObject.layer);
+        });
     }
 
+    // --- GRAB (DÜZELTÝLDÝ) ---
     public void OnGrab(Transform grabPoint)
     {
-        ChangeLayer(grabbedLayer);
+        IsGrabbed = true;
+        isJustDropped = false;
+        isJustThrowed = false;
 
+        if (currentTray != null)
+        {
+            ToggleCollisionWithTray(currentTray.GetCollider, false);
+            currentTray.RemoveItem(this);
+            currentTray = null;
+        }
+        isGettingPutOnTray = false;
+
+        ChangeLayer(grabbedLayer);
         HandleColliders(false);
 
         SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
@@ -86,70 +175,79 @@ public class Drink : MonoBehaviour, IGrabable
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
-
-        IsGrabbed = true;
+        rb.isKinematic = true; // --- DÜZELTME: Elde tutarken Kinematic yap ---
 
         transform.SetParent(grabPoint);
         transform.position = grabPoint.position;
         transform.localPosition = data.grabLocalPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+
+        transform.localScale = data.grabbedLocalScale;
     }
+
+    // --- DROP (DÜZELTÝLDÝ) ---
+    public void OnDrop(Vector3 direction, float force)
+    {
+        HandleColliders(true);
+        IsGrabbed = false;
+        transform.SetParent(null);
+
+        rb.useGravity = true;
+        rb.isKinematic = false; // --- DÜZELTME: Fiziði geri aç ---
+
+        rb.AddForce(direction * force, ForceMode.Impulse);
+        isJustDropped = true;
+        ChangeLayer(ungrabableLayer);
+    }
+
+    // --- THROW (DÜZELTÝLDÝ) ---
+    public void OnThrow(Vector3 direction, float force)
+    {
+        HandleColliders(true);
+        IsGrabbed = false;
+        transform.SetParent(null);
+
+        rb.useGravity = true;
+        rb.isKinematic = false; // --- DÜZELTME: Fiziði geri aç ---
+
+        rb.AddForce(direction * force, ForceMode.Impulse);
+        isJustThrowed = true;
+        ChangeLayer(ungrabableLayer);
+    }
+
+    // --- Kalan Kýsýmlar Ayný ---
+
+    public void OnHolster() { }
+
+    private void ToggleCollisionWithTray(Collider trayCollider, bool ignore)
+    {
+        if (trayCollider == null) return;
+        if (col != null) Physics.IgnoreCollision(col, trayCollider, ignore);
+        if (lidCol != null) Physics.IgnoreCollision(lidCol, trayCollider, ignore);
+    }
+
     public void OnFocus()
     {
-        if (!isJustDropped && !isJustThrowed)
+        if (!isJustDropped && !isJustThrowed && !isGettingPutOnTray)
             ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
-        if (!isJustDropped && !isJustThrowed)
+        if (!isJustDropped && !isJustThrowed && !isGettingPutOnTray)
             ChangeLayer(grabableLayer);
-    }
-
-    public void OnDrop(Vector3 direction, float force)
-    {
-        HandleColliders(true);
-
-        IsGrabbed = false;
-
-        transform.SetParent(null);
-
-        rb.useGravity = true;
-
-        rb.AddForce(direction * force, ForceMode.Impulse);
-
-        isJustDropped = true;
-
-        ChangeLayer(ungrabableLayer);
-    }
-
-    public void OnThrow(Vector3 direction, float force)
-    {
-        HandleColliders(true);
-
-        IsGrabbed = false;
-
-        transform.SetParent(null);
-
-        rb.useGravity = true;
-
-        rb.AddForce(direction * force, ForceMode.Impulse);
-
-        isJustThrowed = true;
-
-        ChangeLayer(ungrabableLayer);
     }
 
     public void ChangeLayer(int layer)
     {
         gameObject.layer = layer;
-        lidGO.layer = layer;
-        drinkGO.layer = layer;
+        if (lidGO != null) lidGO.layer = layer;
+        if (drinkGO != null) drinkGO.layer = layer;
     }
 
     private void HandleColliders(bool state)
     {
-        col.enabled = state;
-        lidCol.enabled = state;
+        if (col != null) col.enabled = state;
+        if (lidCol != null) lidCol.enabled = state;
     }
 
     public void OutlineChangeCheck()
@@ -166,54 +264,41 @@ public class Drink : MonoBehaviour, IGrabable
 
     private void OnDisable()
     {
-        OnLoseFocus();
-    }
+        if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(this);
 
+        if (currentTray != null)
+        {
+            currentTray.RemoveItem(this);
+        }
+    }
     private void OnDestroy()
     {
-        OnLoseFocus();
+        if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(this);
+
+        if (currentTray != null)
+        {
+            currentTray.RemoveItem(this);
+        }
     }
 
     private void HandleSoundFX(Collision collision)
     {
-        // --- 2. Hýz Hesaplama ---
         float impactForce = collision.relativeVelocity.magnitude;
-
-        // --- 3. Spam Korumasý ---
         if (impactForce < data.dropThreshold || Time.time - lastSoundTime < data.soundCooldown) return;
 
-        // --- 4. KIRILMA VE SES MANTIÐI ---
         if (impactForce >= data.throwThreshold)
         {
-            // === ÞÝDDETLÝ ÇARPMA (KIRILMA) ===
-
-            // Eðer þiþe kýrýlabiliyorsa (Data'da prefab varsa) kýr.
-            // Yoksa sadece sert çarpma sesi çalmaya devam etsin (Bug olmasýn diye).
             if (data.glassShatterPrefab != null)
             {
                 BreakBottle(collision);
-                return; // Kýrýldýðý için aþaðýdaki ses kodlarýný çalýþtýrma, metodu bitir.
+                return;
             }
 
-            // Prefab atanmamýþsa eski usul ses çal (Fallback)
-            SoundManager.Instance.PlaySoundFX(
-                data.audioClips[2],
-                transform,
-                data.throwSoundVolume,
-                data.throwSoundMinPitch,
-                data.throwSoundMaxPitch
-            );
+            SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, data.throwSoundVolume, data.throwSoundMinPitch, data.throwSoundMaxPitch);
         }
         else
         {
-            // === DÜÞME SESÝ (Yavaþ/Orta) ===
-            SoundManager.Instance.PlaySoundFX(
-                data.audioClips[1],
-                transform,
-                data.dropSoundVolume,
-                data.dropSoundMinPitch,
-                data.dropSoundMaxPitch
-            );
+            SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, data.dropSoundVolume, data.dropSoundMinPitch, data.dropSoundMaxPitch);
         }
 
         lastSoundTime = Time.time;
@@ -221,96 +306,40 @@ public class Drink : MonoBehaviour, IGrabable
 
     private void BreakBottle(Collision collision)
     {
-        // 1. Temas Noktasý ve Normalini Bul
         Vector3 hitPoint = transform.position;
         Quaternion finalRotation = Quaternion.identity;
 
-        // Çarpýþma detayý var mý? (Genelde vardýr ama hýzlý fizikte bazen kaçabilir, güvenlik þart)
         if (collision.contacts.Length > 0)
         {
             ContactPoint contact = collision.contacts[0];
             hitPoint = contact.point;
-
-            // NORMAL: Yüzeyin baktýðý yön (Duvarsa yatay, yerse dikey).
-            // Quaternion.LookRotation(normal): Z eksenini (Maviyi) yüzeyden dýþarý baktýrýr.
-            // Bu genelde "Billboard" veya "Cone" particle sistemleri için en doðru baþlangýçtýr.
             Quaternion surfaceRotation = Quaternion.LookRotation(contact.normal);
-
-            // OFFSET: Senin inspector'dan gireceðin ince ayarý ekliyoruz.
-            // Rotasyonlarý çarparak toplarýz.
             finalRotation = surfaceRotation * Quaternion.Euler(data.effectRotationOffset);
         }
         else
         {
-            // Eðer contact yoksa dümdüz yukarý baksýn (Fallback)
             finalRotation = Quaternion.Euler(data.effectRotationOffset);
         }
 
-        // 2. Cam Kýrýklarýný Oluþtur
-        if (data.glassShatterPrefab != null)
-        {
-            Instantiate(data.glassShatterPrefab, hitPoint, finalRotation);
-        }
+        if (data.glassShatterPrefab != null) Instantiate(data.glassShatterPrefab, hitPoint, finalRotation);
+        if (data.liquidSplashPrefab != null) Instantiate(data.liquidSplashPrefab, hitPoint, finalRotation);
 
-        // 3. Sývý Sýçramasýný Oluþtur
-        if (data.liquidSplashPrefab != null)
-        {
-            // Sývý da ayný yöne veya istersen farklý bir offset ile (genelde ayný) çýkar
-            Instantiate(data.liquidSplashPrefab, hitPoint, finalRotation);
-        }
-
-        // 4. Kýrýlma Sesi (Prefab'da yoksa buraya ekle)
-        // ...
-
-        // 5. Þiþeyi Yok Et
-        if (PlayerManager.Instance != null)
-        {
-            PlayerManager.Instance.ResetPlayerGrab(this);
-        }
-
+        if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(this);
         Destroy(gameObject);
     }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (!IsGrabbed && !collision.gameObject.CompareTag("Player"))
         {
-            if (isJustThrowed)
-            {
-                ChangeLayer(grabableLayer);
-
-                isJustThrowed = false;
-            }
-            else if (isJustDropped)
-            {
-                ChangeLayer(grabableLayer);
-
-                isJustDropped = false;
-            }
-
+            if (isJustThrowed) { ChangeLayer(grabableLayer); isJustThrowed = false; }
+            else if (isJustDropped) { ChangeLayer(grabableLayer); isJustDropped = false; }
             HandleSoundFX(collision);
-
         }
-
-
     }
 
-    public void OnUseHold()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnUseRelease()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool TryCombine(IGrabable otherItem)
-    {
-        return false;
-    }
-
-    public bool CanCombine(IGrabable otherItem)
-    {
-        return false;
-    }
+    public void OnUseHold() { throw new System.NotImplementedException(); }
+    public void OnUseRelease() { throw new System.NotImplementedException(); }
+    public bool TryCombine(IGrabable otherItem) { return false; }
+    public bool CanCombine(IGrabable otherItem) { return false; }
 }

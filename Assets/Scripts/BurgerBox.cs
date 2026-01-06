@@ -6,6 +6,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
 {
     public IGrabable Master => this;
 
+    public GameManager.BurgerTypes ContainedBurgerType = GameManager.BurgerTypes.Null;
+
     [Header("Visuals")]
     [SerializeField] private Transform boxInnerPoint;
     public GameObject topPart;
@@ -15,13 +17,12 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     // State
     private GameObject containedBurger;
-    private bool isBoxFull = false;
 
     // --- IGrabable Props ---
     public bool IsGrabbed { get => isGrabbed; set => isGrabbed = value; }
     private bool isGrabbed;
 
-    public Sprite Icon { get => data.icon[isBoxFull ? 1 : 0]; set { } }
+    public Sprite Icon { get => data.icon[ContainedBurgerType == GameManager.BurgerTypes.Null ? 0 : 1]; set { } }
     public PlayerManager.HandGrabTypes HandGrabType { get => data.handGrabType; set => data.handGrabType = value; }
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
@@ -217,7 +218,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
     // --- KOMBÝNASYON VE FILLBOX ---
     public bool TryCombine(IGrabable otherItem)
     {
-        if (isBoxFull) return false;
+        if (ContainedBurgerType != GameManager.BurgerTypes.Null) return false;
         WholeBurger burger = null;
         if (otherItem is WholeBurger) burger = (WholeBurger)otherItem;
         else if (otherItem is ChildBurger) burger = ((ChildBurger)otherItem).parentBurger;
@@ -229,15 +230,13 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     public bool CanCombine(IGrabable otherItem)
     {
-        if (isBoxFull) return false;
+        if (ContainedBurgerType != GameManager.BurgerTypes.Null) return false;
         if (otherItem is WholeBurger || otherItem is ChildBurger) return true;
         return false;
     }
 
     private void FillBox(WholeBurger burger)
     {
-        isBoxFull = true;
-        containedBurger = burger.gameObject;
         float burgerHeight = burger.TotalBurgerHeight;
 
         burger.PackIntoBox(this, boxInnerPoint);

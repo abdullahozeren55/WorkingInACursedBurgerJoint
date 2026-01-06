@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
         BBQBurger,
         BasicBurger,
         RandomBullShitBurger,
+        Null
     }
 
     public enum DrinkTypes
@@ -242,7 +243,7 @@ public class GameManager : MonoBehaviour
 
     // --- YENİ: OPTİMİZE EDİLMİŞ BURGER KONTROLÜ ---
     // Artık BurgerBox referansı almıyor, direkt sonucu (int ID) döndürüyor.
-    public int GetBurgerTypeIndex(List<BurgerIngredientData.IngredientType> currentIngredients, List<SauceBottle.SauceType> currentSauces)
+    public BurgerTypes GetBurgerType(List<BurgerIngredientData.IngredientType> currentIngredients, List<SauceBottle.SauceType> currentSauces)
     {
         // Menüdeki tüm burgerleri tara
         for (int i = 0; i < allBurgerMenus.Count; i++)
@@ -256,12 +257,13 @@ public class GameManager : MonoBehaviour
             // İkisi de tutuyorsa bingo!
             if (ingredientsMatch && saucesMatch)
             {
-                return i; // Enum'ın indexini döndür (Örn: Classic için 0)
+                // Index'i Enum'a çevirip döndür
+                return (BurgerTypes)i;
             }
         }
 
         // Hiçbiri tutmadıysa -> Random Bullshit Burger (Enum'ın son elemanı)
-        return (int)BurgerTypes.RandomBullShitBurger;
+        return BurgerTypes.RandomBullShitBurger;
     }
 
     private bool AreListsEqual(List<BurgerIngredientData.IngredientType> list1, List<BurgerIngredientData.IngredientType> list2)

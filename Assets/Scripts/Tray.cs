@@ -164,10 +164,21 @@ public class Tray : MonoBehaviour, IGrabable
                 RegisterItem(item, targetSlotIndex);
             }
         }
+        else if (item is Drink drink)
+        {
+            // Direkt yerleþtir (Herhangi bir doluluk þartý var mý? Kapaklý olmak zorunda mý?)
+            // Þimdilik direkt kabul ediyoruz.
+            drink.PlaceOnTray(slotPoints[targetSlotIndex], slotApexes[targetSlotIndex], this, targetSlotIndex);
+            RegisterItem(item, targetSlotIndex);
+        }
         else if (item is BurgerBox burgerBox)
         {
-            burgerBox.PlaceOnTray(slotPoints[targetSlotIndex], slotApexes[targetSlotIndex], this, targetSlotIndex);
-            RegisterItem(item, targetSlotIndex);
+            if (burgerBox.ContainedBurgerType != GameManager.BurgerTypes.Null)
+            {
+                burgerBox.PlaceOnTray(slotPoints[targetSlotIndex], slotApexes[targetSlotIndex], this, targetSlotIndex);
+                RegisterItem(item, targetSlotIndex);
+            }
+            
         }
     }
 

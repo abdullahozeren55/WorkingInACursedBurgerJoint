@@ -5,7 +5,7 @@ public class WholeBurger : MonoBehaviour, IGrabable
 {
     [Header("Identity")]
     public WholeBurgerData data;
-    [HideInInspector] public int burgerTypeIndex = 0;
+    [HideInInspector] public GameManager.BurgerTypes BurgerType = GameManager.BurgerTypes.Null;
 
     public float TotalBurgerHeight { get; private set; }
 
@@ -32,7 +32,7 @@ public class WholeBurger : MonoBehaviour, IGrabable
 
     public Vector3 GrabPositionOffset { get => data.grabPositionOffset; set => data.grabPositionOffset = value; }
     public Vector3 GrabRotationOffset { get => data.grabRotationOffset; set => data.grabRotationOffset = value; }
-    public string FocusTextKey { get => data.focusTextKeys[burgerTypeIndex]; set => data.focusTextKeys[burgerTypeIndex] = value; }
+    public string FocusTextKey { get => data.focusTextKeys[(int)BurgerType]; set => data.focusTextKeys[(int)BurgerType] = value; }
 
     // References
     private Rigidbody rb;
@@ -62,16 +62,16 @@ public class WholeBurger : MonoBehaviour, IGrabable
     // Rigidbody'yi parametre olarak alýyoruz!
 
     // --- INITIALIZE (GÜNCELLENDÝ) ---
-    public void Initialize(List<GameObject> children, Rigidbody rigidBody, WholeBurgerData burgerData, int typeIndex, float height)
+    public void Initialize(List<GameObject> children, Rigidbody rigidBody, WholeBurgerData burgerData, GameManager.BurgerTypes type, float height)
     {
         childVisuals = children;
         rb = rigidBody;
         data = burgerData;
-        burgerTypeIndex = typeIndex;
 
-        // Boyu kaydet
+        // Enum'ý kaydet
+        BurgerType = type;
+
         TotalBurgerHeight = height;
-
         ChangeLayer(grabableLayer);
     }
 
@@ -212,6 +212,8 @@ public class WholeBurger : MonoBehaviour, IGrabable
             transform.localPosition = Vector3.zero;
             transform.localRotation = Quaternion.identity;
         }
+
+        box.ContainedBurgerType = BurgerType;
 
         // 2. Temizlik ve Devir Teslim Operasyonu
 

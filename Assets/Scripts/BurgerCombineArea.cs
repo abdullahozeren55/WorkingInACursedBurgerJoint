@@ -437,12 +437,12 @@ public class BurgerCombineArea : MonoBehaviour
 
         // --- TARÝF HESAPLAMA ---
         // GameManager'a sor: Bu malzemelerle hangi burger olur?
-        int burgerIndex = GameManager.Instance.GetBurgerTypeIndex(currentIngredients, currentSauces);
+        GameManager.BurgerTypes burgerType = GameManager.Instance.GetBurgerType(currentIngredients, currentSauces);
 
         float totalHeight = currentLocationToPutBurgerIngredient.y - startPointYHeight;
 
-        // 6. INITIALIZE (Data ve ID ile)
-        wb.Initialize(childrenList, rb, wholeBurgerData, burgerIndex, totalHeight);
+        // 6. INITIALIZE (Enum ile)
+        wb.Initialize(childrenList, rb, wholeBurgerData, burgerType, totalHeight);
 
         // 8. Juice (Zýplatma)
         rb.AddForce(Vector3.up * 0.5f, ForceMode.Impulse);
