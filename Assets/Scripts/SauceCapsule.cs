@@ -48,7 +48,6 @@ public class SauceCapsule : MonoBehaviour, IGrabable
 
     [HideInInspector] public bool isJustThrowed;
     [HideInInspector] public bool isJustDropped;
-    [HideInInspector] public bool CanBeReceived;
 
     // --- LOGIC VARIABLES ---
     [HideInInspector] public Tray currentTray;
@@ -72,7 +71,6 @@ public class SauceCapsule : MonoBehaviour, IGrabable
 
         isJustThrowed = false;
         isJustDropped = false;
-        CanBeReceived = true;
 
         CreateDummyBlocker();
     }
@@ -230,7 +228,6 @@ public class SauceCapsule : MonoBehaviour, IGrabable
         SetStacked(false);
 
         IsGrabbed = true;
-        CanBeReceived = true;
         isJustDropped = false;
         isJustThrowed = false;
 

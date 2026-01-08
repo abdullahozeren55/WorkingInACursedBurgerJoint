@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0984139850d29f4488ad93ededc697b, type: 3}
+  m_Name: CLOWN
+  m_EditorClassIdentifier: 
+  focusTextKey: GRABABLE_KETCHUP
+  toyType: 2
+  handGrabType: 9
+  handRigType: 1
+  icon: {fileID: 21300000, guid: 7cebde269c78ea84489f5ea6db2351b1, type: 3}
+  isUseable: 0
+  isThrowable: 1
+  throwMultiplier: 1
+  slotOffsets:
+  - slotName: Slot0
+    localPosition: {x: -0.0004, y: -0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  - slotName: Slot1
+    localPosition: {x: 0, y: -0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  - slotName: Slot2
+    localPosition: {x: 0.0004, y: -0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  - slotName: Slot3
+    localPosition: {x: -0.0004, y: 0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  - slotName: Slot4
+    localPosition: {x: 0, y: 0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  - slotName: Slot5
+    localPosition: {x: 0.0004, y: 0.0006, z: 0.00013}
+    localRotation: {x: 85, y: 0, z: 0}
+  grabbedLocalScale: {x: 0.22222218, y: 0.22222222, z: 0.22222222}
+  trayLocalScale: {x: 0.002, y: 0.002175338, z: 0.0019953165}
+  grabPositionOffset: {x: 0.6, y: 0.3, z: 2}
+  grabRotationOffset: {x: -20, y: -70, z: -70}
+  grabLocalPositionOffset: {x: 0.2054, y: 0.0143, z: 0.041}
+  grabLocalRotationOffset: {x: 73.451256, y: 40.076977, z: 130.32353}
+  audioClips:
+  - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
+  - {fileID: 8300000, guid: 4a402b6beb4e8ba4e966aec7c80f9b9d, type: 3}
+  - {fileID: 8300000, guid: f0efa123572028a43a704e66046edc85, type: 3}
+  grabSoundVolume: 1
+  grabSoundMinPitch: 0.85
+  grabSoundMaxPitch: 1.15
+  dropSoundVolume: 1
+  dropSoundMinPitch: 0.85
+  dropSoundMaxPitch: 1.15
+  throwSoundVolume: 1
+  throwSoundMinPitch: 0.85
+  throwSoundMaxPitch: 1.15
+  soundCooldown: 0.1
+  throwThreshold: 6
+  dropThreshold: 2

@@ -180,6 +180,11 @@ public class Tray : MonoBehaviour, IGrabable
             }
             
         }
+        else if (item is Toy toy)
+        {
+            toy.PlaceOnTray(slotPoints[targetSlotIndex], slotApexes[targetSlotIndex], this, targetSlotIndex);
+            RegisterItem(item, targetSlotIndex);
+        }
     }
 
     // --- YENÝ YARDIMCI FONKSÝYONLAR ---

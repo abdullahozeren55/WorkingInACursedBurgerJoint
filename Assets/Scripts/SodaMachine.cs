@@ -186,13 +186,28 @@ public class SodaMachine : MonoBehaviour
         streamLine.SetPosition(1, new Vector3(0, -currentStreamLength, 0));
     }
 
-    public void HandleCatch(Collider other) //OnTrigger vazifesi görüyor, SodaMachineTriggerRelay çaðýrýyor.
+    public void HandleCatch(Collider other) // OnTrigger vazifesi görüyor
     {
+        // 1. Zaten yuvada bardak varsa alma
         if (currentCup != null) return;
+
+        // --- EKLENECEK KOD ---
+        // Eðer makine þu an boþta deðilse (Pouring veya Stopping ise), 
+        // bardak yerleþtirmeyi reddet.
+        if (currentState != StreamState.Idle) return;
+        // ---------------------
+
         DrinkCup incomingCup = other.GetComponent<DrinkCup>();
         if (incomingCup == null) return;
+        
+        // Elimizde tutuyorsak yuvaya yapýþmasýn
         if (incomingCup.IsGrabbed) return;
+        
+        // Zaten doluysa tekrar girmesin
         if (incomingCup.IsFull) return;
+
+        // Kapak kontrolünü de eklediysen:
+        if (incomingCup.HasLid) return;
 
         SnapCupToMachine(incomingCup);
     }

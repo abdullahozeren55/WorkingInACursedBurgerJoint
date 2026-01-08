@@ -237,11 +237,19 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
     private void FillBox(WholeBurger burger)
     {
+        // 1. ÖNCE REFERANSI AL (HAYAT KURTARAN SATIR)
+        // Burger scripti kendini yok etmeden önce, GameObject'i kutunun deðiþkenine ata.
+        containedBurger = burger.gameObject;
+
+        // Burger boyunu al
         float burgerHeight = burger.TotalBurgerHeight;
 
+        // 2. PAKETLEME ÝÞLEMÝNÝ ÇAÐIR
+        // Bu iþlemden sonra 'burger' (WholeBurger scripti) Destroy(this) ile yok olacak.
+        // Ama yukarýda 'containedBurger' (GameObject) referansýný aldýðýmýz için güvendeyiz.
         burger.PackIntoBox(this, boxInnerPoint);
 
-        // --- DEÐÝÞÝKLÝK 2: Burger parçalarýnýn colliderlarýný listeye ekle ---
+        // --- DEÐÝÞÝKLÝK 2: Artýk 'containedBurger' dolu olduðu için hata vermeyecek ---
         Collider[] burgerColliders = containedBurger.GetComponentsInChildren<Collider>();
         if (burgerColliders != null)
         {
@@ -249,6 +257,7 @@ public class BurgerBox : MonoBehaviour, IGrabable
         }
         // ---------------------------------------------------------------------
 
+        // Layer iþlemlerini GameObject (containedBurger) üzerinden yap
         SetLayerRecursively(containedBurger, grabbedLayer);
 
         if (topPart != null)
@@ -265,8 +274,6 @@ public class BurgerBox : MonoBehaviour, IGrabable
         if (PlayerManager.Instance != null) PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
         SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.closeSoundVolume, data.closeSoundMinPitch, data.closeSoundMaxPitch);
     }
-
-    // ... (Kalan OnDrop, OnThrow, Focus, ChangeLayer vs. ayný) ...
 
     public void OnDrop(Vector3 direction, float force)
     {
