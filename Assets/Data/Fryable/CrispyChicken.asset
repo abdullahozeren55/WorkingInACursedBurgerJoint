@@ -51,6 +51,7 @@ MonoBehaviour:
   isThrowable: 1
   throwMultiplier: 1
   localScaleWhenGrabbed: {x: 6.8, y: 6.6, z: 6.7}
+  localScaleWhenUnpacked: {x: 6.121827, y: 5.9740925, z: 6.0449047}
   grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -20, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.0003, y: 0.0513, z: 0.0937}

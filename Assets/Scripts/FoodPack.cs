@@ -162,21 +162,23 @@ public class FoodPack : MonoBehaviour, IGrabable
         {
             float rand = shouldExplode ? Random.Range(data.minForceExplode, data.maxForceExplode) : Random.Range(data.minForce, data.maxForce);
 
-            if (data.haveWholeIngredient)
-                allTransform[i].GetComponent<WholeIngredient>().HandlePackOpening();
-
-            // Generate a random force direction and magnitude
-            Vector3 randomForce = new Vector3(
-                    Random.Range(-0.5f, 0.5f), // Random x direction
-                    Random.Range(0.5f, 1f), // Random y direction
-                    Random.Range(-0.5f, 0.5f)  // Random z direction
-                ).normalized * rand;
+                // Generate a random force direction and magnitude
+                Vector3 randomForce = new Vector3(
+                        Random.Range(-0.5f, 0.5f), // Random x direction
+                        Random.Range(0.5f, 1f), // Random y direction
+                        Random.Range(-0.5f, 0.5f)  // Random z direction
+                    ).normalized * rand;
 
             allRB[i].isKinematic = false;
             allRB[i].AddForce(randomForce, ForceMode.Impulse);
 
             allCollider[i].enabled = true;
             allTransform[i].SetParent(null);
+
+            if (data.haveWholeIngredient)
+                allTransform[i].GetComponent<WholeIngredient>().HandlePackOpening();
+            else if (data.haveFryable)
+                allTransform[i].GetComponent<Fryable>().HandlePackOpening();
         }
 
         Instantiate(shouldExplode? data.destroyParticleExplode : data.destroyParticle, transform.position, Quaternion.Euler(transform.rotation.x - 90f, transform.rotation.y + 90f, transform.rotation.z + 90f));

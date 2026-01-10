@@ -421,6 +421,17 @@ public class Fryable : MonoBehaviour, IGrabable
         return data.basketMeshes[index].height;
     }
 
+    public void HandlePackOpening()
+    {
+        transform.localScale = data.localScaleWhenUnpacked;
+
+        if (data.type == Holder.HolderIngredient.CrispyChicken)
+        {
+            if (boxCollider != null)
+                boxCollider.enabled = true;
+        }
+    }
+
     // --- COLLISION & SOUNDS ---
 
     private void OnCollisionEnter(Collision collision)

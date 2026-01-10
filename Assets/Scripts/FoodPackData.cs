@@ -21,6 +21,7 @@ public class FoodPackData : ScriptableObject
     public float minForceExplode = 0.3f;
     public float maxForceExplode = 0.6f;
     public bool haveWholeIngredient;
+    public bool haveFryable;
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

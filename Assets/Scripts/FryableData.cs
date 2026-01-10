@@ -34,6 +34,7 @@ public class FryableData : ScriptableObject
     public float throwMultiplier = 1f;
     [Space]
     public Vector3 localScaleWhenGrabbed;
+    public Vector3 localScaleWhenUnpacked = new Vector3(100f, 100f, 100f);
     [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;

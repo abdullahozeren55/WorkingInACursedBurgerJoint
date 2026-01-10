@@ -41,7 +41,7 @@ MonoBehaviour:
     localRotation: {x: 85, y: 0, z: 0}
   grabbedLocalScale: {x: 0.22222218, y: 0.22222222, z: 0.22222222}
   trayLocalScale: {x: 0.002, y: 0.002175338, z: 0.0019953165}
-  grabPositionOffset: {x: 0.6, y: 0.3, z: 2}
+  grabPositionOffset: {x: 0.6, y: 0.1, z: 2}
   grabRotationOffset: {x: -20, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.2054, y: 0.0143, z: 0.041}
   grabLocalRotationOffset: {x: 73.451256, y: 40.076977, z: 130.32353}
