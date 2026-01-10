@@ -17,6 +17,7 @@ public class SupplyBox : MonoBehaviour, IInteractable
     public string FocusTextKey { get => focusTextKey; set => focusTextKey = value; }
     [SerializeField] private string focusTextKey;
     [Space]
+    [SerializeField] private Vector3 spawnRotation = new Vector3(0f, -90f, 180f);
 
     [Header("Layer Settings")]
     private int interactableLayer;
@@ -75,7 +76,7 @@ public class SupplyBox : MonoBehaviour, IInteractable
     {
         if (!CanInteract) return;
 
-        GameObject instantiatedSupply = Instantiate(supply, transform.position, Quaternion.Euler(0f, -90f, 180f), null);
+        GameObject instantiatedSupply = Instantiate(supply, transform.position, Quaternion.Euler(spawnRotation), null);
         PlayerManager.Instance.ResetPlayerGrabAndInteract();
         PlayerManager.Instance.ChangePlayerCurrentGrabable(instantiatedSupply.GetComponent<IGrabable>());
     }
