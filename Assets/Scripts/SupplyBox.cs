@@ -20,6 +20,9 @@ public class SupplyBox : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 spawnRotation = new Vector3(0f, -90f, 180f);
 
     [Header("Layer Settings")]
+    [Tooltip("Eðer true ise, layer deðiþimi tüm child objelere de uygulanýr.")]
+    [SerializeField] private bool shouldChangeChilds = false; // Ýsteðin üzerine eklenen bool
+
     private int interactableLayer;
     private int interactableOutlinedLayer;
     private int interactableOutlinedRedLayer;
@@ -29,6 +32,8 @@ public class SupplyBox : MonoBehaviour, IInteractable
 
     private void Awake()
     {
+        // Child count burada sadece bilgi amaçlý duruyor olabilir,
+        // logic'te kullanýlmýyorsa silebilirsin ama orijinal koda dokunmadým.
         int childCount = transform.childCount;
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
@@ -38,7 +43,30 @@ public class SupplyBox : MonoBehaviour, IInteractable
 
     public void ChangeLayer(int layerIndex)
     {
-        gameObject.layer = layerIndex;
+        if (shouldChangeChilds)
+        {
+            // True ise hem kendini hem de altýndakileri deðiþtir
+            SetLayerRecursively(gameObject, layerIndex);
+        }
+        else
+        {
+            // False ise sadece kendini deðiþtir (eski mantýk)
+            gameObject.layer = layerIndex;
+        }
+    }
+
+    // Recursive fonksiyon: Kendini ve altýndaki her þeyi gezerek layer deðiþtirir
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (obj == null) return;
+
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform)
+        {
+            if (child == null) continue;
+            SetLayerRecursively(child.gameObject, newLayer);
+        }
     }
 
     public void HandleFinishDialogue()
@@ -62,6 +90,8 @@ public class SupplyBox : MonoBehaviour, IInteractable
 
     public void OutlineChangeCheck()
     {
+        // Burada gameObject.layer kontrolü sadece parent'a bakýyor, bu mantýklý.
+        // Childlar zaten parent ile senkronize olacaðý için ekstra kontrole gerek yok.
         if (gameObject.layer == interactableOutlinedLayer && OutlineShouldBeRed)
         {
             ChangeLayer(interactableOutlinedRedLayer);
