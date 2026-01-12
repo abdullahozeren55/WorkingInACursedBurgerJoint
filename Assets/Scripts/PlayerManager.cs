@@ -233,6 +233,31 @@ public class PlayerManager : MonoBehaviour
             
     }
 
+    /// <summary>
+    /// Belirtilen collider listesinin Player ile çarpýþmasýný açar veya kapatýr.
+    /// </summary>
+    /// <param name="targetColliders">Etkilenecek colliderlar</param>
+    /// <param name="shouldIgnore">TRUE ise çarpýþmaz (içinden geçer), FALSE ise çarpýþýr.</param>
+    public void SetIgnoreCollisionWithPlayer(List<Collider> targetColliders, bool shouldIgnore)
+    {
+        if (characterController == null)
+        {
+            Debug.LogWarning("PlayerManager: PlayerController atanmamýþ! Çarpýþma yoksayýlamýyor.");
+            return;
+        }
+
+        if (targetColliders == null) return;
+
+        foreach (Collider col in targetColliders)
+        {
+            if (col != null)
+            {
+                // Unity'nin fizik motoruna bu iki collider'ýn birbirini görmezden gelmesini söylüyoruz.
+                Physics.IgnoreCollision(characterController, col, shouldIgnore);
+            }
+        }
+    }
+
     private IEnumerator KnockbackRoutine(float duration)
     {
         float t = 0f;

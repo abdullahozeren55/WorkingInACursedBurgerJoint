@@ -1260,6 +1260,8 @@ public class FirstPersonController : MonoBehaviour
                 }
 
                 currentInteractable.OnInteract();
+
+                InteractKeyIsDone = true;
             }
         }
     }
@@ -1520,7 +1522,7 @@ public class FirstPersonController : MonoBehaviour
             }
             else
             {
-                if (InputManager.Instance.PlayerInteract())
+                if (InputManager.Instance.PlayerInteract() && !InteractKeyIsDone)
                 {
                     attemptPickUp = true;
                 }
