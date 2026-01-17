@@ -524,12 +524,12 @@ public class MenuManager : MonoBehaviour
     {
         FindAndAssignCamera();
 
-        if (DayManager.Instance != null)
+        if (LoopManager.Instance != null)
         {
             if (scene.name == "Scene0")
             {
                 // --- RESTORED: DayManager Logic ---
-                DayManager.Instance.ResetForGameplay();
+                LoopManager.Instance.ResetForGameplay();
 
                 isGamePaused = false;
                 isSettingsOpen = false;
@@ -552,7 +552,7 @@ public class MenuManager : MonoBehaviour
             else if (scene.name == "MainMenu")
             {
                 // --- RESTORED: DayManager Logic ---
-                DayManager.Instance.ResetForMainMenu();
+                LoopManager.Instance.ResetForMainMenu();
 
                 isGamePaused = false;
                 isSettingsOpen = false;

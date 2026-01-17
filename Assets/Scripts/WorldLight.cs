@@ -4,16 +4,16 @@ public class WorldLight : MonoBehaviour
 {
     void Awake()
     {
-        DayManager.Instance.RegisterLight(gameObject);
-        gameObject.SetActive(DayManager.Instance.CurrentDayState.shouldLightsUp);
+        LoopManager.Instance.RegisterLight(gameObject);
+        gameObject.SetActive(LoopManager.Instance.CurrentLoopState.shouldLightsUp);
     }
 
     void OnDestroy()
     {
         // Eðer oyun kapanýyorsa ve DayManager çoktan gittiyse hata verme
-        if (DayManager.Instance != null)
+        if (LoopManager.Instance != null)
         {
-            DayManager.Instance.UnregisterLight(gameObject);
+            LoopManager.Instance.UnregisterLight(gameObject);
         }
     }
 }

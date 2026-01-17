@@ -5,13 +5,13 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DayManager : MonoBehaviour
+public class LoopManager : MonoBehaviour
 {
-    public static DayManager Instance;
+    public static LoopManager Instance;
 
     public bool DayInLoop = false;
     public bool IsFogControlPaused = false;
-    public int DayPartToInitialize;
+    public int LoopPartToInitialize;
 
     [HideInInspector] public float CurrentCalculatedFogIntensity;
     [HideInInspector] public float CurrentCalculatedFogHeight;
@@ -19,10 +19,10 @@ public class DayManager : MonoBehaviour
     [HideInInspector] public Color CurrentCalculatedFogColorEnd;
 
     [System.Serializable]
-    public class DayState
+    public class LoopState
     {
         [Header("Time Info")]
-        [Range(0, 10)] public int Day;
+        [Range(0, 10)] public int Loop;
         [Range(0, 10)] public int Part;
 
         [Header("Sun Settings")]
@@ -48,8 +48,8 @@ public class DayManager : MonoBehaviour
     }
 
     [Header("Main Config")]
-    public int DayCount = 0;
-    public int DayPartCount = 0;
+    public int LoopCount = 0;
+    public int LoopPartCount = 0;
     public float transitionDuration = 10f;
 
     [Header("Scene References")]
@@ -64,8 +64,8 @@ public class DayManager : MonoBehaviour
     public List<GameObject> allLights = new List<GameObject>();
 
     [Header("Data")]
-    public DayState[] DayStates;
-    public DayState CurrentDayState;
+    public LoopState[] LoopStates;
+    public LoopState CurrentLoopState;
 
     private int currentIndex = 0;
     private Coroutine transitionRoutine;
@@ -114,13 +114,13 @@ public class DayManager : MonoBehaviour
         if (HeightFogScript == null)
             HeightFogScript = FindObjectOfType<HeightFogGlobal>();
 
-        InitializeDay(DayCount, DayPartToInitialize);
+        InitializeLoop(LoopCount, LoopPartToInitialize);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
-            NextDayState();
+            NextLoopState();
     }
 
     private void OnEnable()
@@ -149,16 +149,16 @@ public class DayManager : MonoBehaviour
         HeightFogScript = FindObjectOfType<HeightFogGlobal>();
 
         // 3. Eðer bulduysan ve o anki gün saatine göre bir ayar varsa uygula
-        if (HeightFogScript != null && CurrentDayState != null)
+        if (HeightFogScript != null && CurrentLoopState != null)
         {
             // Script yeni bulunduðu için Main Camera'yý kendi otomatik bulur (Boxophobic özelliði).
             // Biz sadece renk ve yoðunluk ayarlarýný basacaðýz.
-            ApplyStateInstant(CurrentDayState);
+            ApplyStateInstant(CurrentLoopState);
         }
 
-        if (CurrentDayState != null)
+        if (CurrentLoopState != null)
         {
-            ApplyStateInstant(CurrentDayState);
+            ApplyStateInstant(CurrentLoopState);
         }
 
         allLights.RemoveAll(item => item == null);
@@ -174,7 +174,7 @@ public class DayManager : MonoBehaviour
             allLights.Add(lightObj);
             RegisterLightInternal(lightObj);
 
-            float currentLightVal = (CurrentDayState != null && CurrentDayState.shouldLightsUp) ? 1f : 0f;
+            float currentLightVal = (CurrentLoopState != null && CurrentLoopState.shouldLightsUp) ? 1f : 0f;
             UpdateSingleLight(lightObj, currentLightVal);
         }
     }
@@ -198,9 +198,9 @@ public class DayManager : MonoBehaviour
             allLights.Remove(lightObj);
     }
 
-    public void NextDayState()
+    public void NextLoopState()
     {
-        var todaysStates = DayStates.Where(s => s.Day == DayCount).OrderBy(s => s.Part).ToArray();
+        var todaysStates = LoopStates.Where(s => s.Loop == LoopCount).OrderBy(s => s.Part).ToArray();
         if (todaysStates.Length == 0) return;
 
         int nextIndex = (currentIndex + 1) % todaysStates.Length;
@@ -213,37 +213,37 @@ public class DayManager : MonoBehaviour
 
     public void NextDay()
     {
-        DayCount++;
+        LoopCount++;
         currentIndex = 0;
     }
 
     public void ResetForGameplay()
     {
         DayInLoop = false;
-        InitializeDay(DayCount, DayPartCount);
+        InitializeLoop(LoopCount, LoopPartCount);
     }
 
     public void ResetForMainMenu()
     {
         DayInLoop = true;
-        InitializeDay(0, 0);
+        InitializeLoop(0, 0);
     }
 
-    public void InitializeDay(int dayIndex, int partNumber = 0)
+    public void InitializeLoop(int dayIndex, int partNumber = 0)
     {
-        DayCount = dayIndex;
+        LoopCount = dayIndex;
 
-        var targetState = DayStates.FirstOrDefault(s => s.Day == DayCount && s.Part == partNumber);
-        CurrentDayState = targetState;
+        var targetState = LoopStates.FirstOrDefault(s => s.Loop == LoopCount && s.Part == partNumber);
+        CurrentLoopState = targetState;
 
-        var todaysStates = DayStates.Where(s => s.Day == DayCount).OrderBy(s => s.Part).ToList();
+        var todaysStates = LoopStates.Where(s => s.Loop == LoopCount).OrderBy(s => s.Part).ToList();
         currentIndex = todaysStates.IndexOf(targetState);
 
         if (transitionRoutine != null) StopCoroutine(transitionRoutine);
 
         ApplyStateInstant(targetState);
 
-        if (DayInLoop) NextDayState();
+        if (DayInLoop) NextLoopState();
     }
 
     public Color GetOriginalEmissionColor(Material mat)
@@ -317,7 +317,7 @@ public class DayManager : MonoBehaviour
         }
     }
 
-    private void ApplyStateInstant(DayState state)
+    private void ApplyStateInstant(LoopState state)
     {
         sun.transform.rotation = Quaternion.Euler(state.sunRotation);
         sun.intensity = state.sunIntensity;
@@ -340,9 +340,9 @@ public class DayManager : MonoBehaviour
         UpdateCityLightsLerp(state.shouldLightsUp ? 1f : 0f);
     }
 
-    private IEnumerator TransitionRoutine(DayState from, DayState to)
+    private IEnumerator TransitionRoutine(LoopState from, LoopState to)
     {
-        CurrentDayState = to;
+        CurrentLoopState = to;
         float t = 0f;
 
         float startLightVal = from.shouldLightsUp ? 1f : 0f;
@@ -393,7 +393,7 @@ public class DayManager : MonoBehaviour
 
         ApplyStateInstant(to);
 
-        if (DayInLoop) NextDayState();
+        if (DayInLoop) NextLoopState();
     }
 
     private void OnDestroy()

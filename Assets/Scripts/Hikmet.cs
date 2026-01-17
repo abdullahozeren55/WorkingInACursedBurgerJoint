@@ -126,7 +126,7 @@ public class Hikmet : MonoBehaviour, ICustomer, IInteractable
 
     private void OnEnable()
     {
-        day = DayManager.Instance.DayCount;
+        day = LoopManager.Instance.LoopCount;
 
         TrueBurgerReceived = false;
         TrueDrinkReceived = false;
