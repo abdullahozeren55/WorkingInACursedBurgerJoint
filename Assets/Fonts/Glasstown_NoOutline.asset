@@ -29,7 +29,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats: []
-    m_Colors: []
+    m_Colors:
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &11400000
 MonoBehaviour:
@@ -41,11 +42,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: Glasstown_DefaultOutlined
+  m_Name: Glasstown_NoOutline
   m_EditorClassIdentifier: 
-  hashCode: 1119687736
+  hashCode: -101202666
   material: {fileID: -1661135207601777658}
-  materialHashCode: 273489688
+  materialHashCode: -208510218
   m_Version: 1.1.0
   m_SourceFontFileGUID: 820d827e5e088784f8982548c31ddaa4
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 820d827e5e088784f8982548c31ddaa4, type: 3}
