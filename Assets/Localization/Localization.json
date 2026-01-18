@@ -1,0 +1,1600 @@
+{
+      "entries": [
+  {
+    "key": "INTERACTABLE_OPEN_DOOR",
+    "tr": "Kapıyı Aç",
+    "en": "Open Door",
+    "zh": "开门",
+    "ja": "ドアを開ける",
+    "es": "Abrir Puerta",
+    "ru": "Открыть Дверь",
+    "pt": "Abrir Porta"
+  },
+  {
+    "key": "INTERACTABLE_CLOSE_DOOR",
+    "tr": "Kapıyı Kapat",
+    "en": "Close Door",
+    "zh": "关门",
+    "ja": "ドアを閉める",
+    "es": "Cerrar Puerta",
+    "ru": "Закрыть Дверь",
+    "pt": "Fechar Porta"
+  },
+  {
+    "key": "INTERACTABLE_LOCKED_DOOR",
+    "tr": "Kapı Kilitli",
+    "en": "Door Locked",
+    "zh": "门被锁住了",
+    "ja": "鍵がかかっている",
+    "es": "Puerta Cerrada Con Llave",
+    "ru": "Дверь Заперта",
+    "pt": "Porta Trancada"
+  },
+  {
+    "key": "INTERACTABLE_JAMMED_DOOR",
+    "tr": "Kapı Sıkışmış",
+    "en": "Door Jammed",
+    "zh": "门卡住了",
+    "ja": "ドアが食い込んで動かない",
+    "es": "Puerta Atascada",
+    "ru": "Дверь Заклинило",
+    "pt": "Porta Emperrada"
+  },
+  {
+    "key": "INTERACTABLE_OPEN_WINDOW",
+    "tr": "Pencereyi Aç",
+    "en": "Open Window",
+    "zh": "开窗",
+    "ja": "窓を開ける",
+    "es": "Abrir Ventana",
+    "ru": "Открыть Окно",
+    "pt": "Abrir Janela"
+  },
+  {
+    "key": "INTERACTABLE_CLOSE_WINDOW",
+    "tr": "Pencereyi Kapat",
+    "en": "Close Window",
+    "zh": "关窗",
+    "ja": "窓を閉める",
+    "es": "Cerrar Ventana",
+    "ru": "Закрыть Окно",
+    "pt": "Fechar Janela"
+  },
+  {
+    "key": "INTERACTABLE_LOCKED_WINDOW",
+    "tr": "Pencere Kilitli",
+    "en": "Window Locked",
+    "zh": "窗户被锁住了",
+    "ja": "窓に鍵がかかっている",
+    "es": "Ventana Cerrada Con Llave",
+    "ru": "Окно Заперто",
+    "pt": "Janela Trancada"
+  },
+  {
+    "key": "INTERACTABLE_JAMMED_WINDOW",
+    "tr": "Pencere Sıkışmış",
+    "en": "Window Jammed",
+    "zh": "窗户卡住了",
+    "ja": "窓が食い込んで動かない",
+    "es": "Ventana Atascada",
+    "ru": "Окно Заклинило",
+    "pt": "Janela Emperrada"
+  },
+  {
+    "key": "INTERACTABLE_OPEN_COOLER",
+    "tr": "Dolabı Aç",
+    "en": "Open Fridge",
+    "zh": "打开冰箱",
+    "ja": "冷蔵庫を開ける",
+    "es": "Abrir Refrigerador",
+    "ru": "Открыть Холодильник",
+    "pt": "Abrir Geladeira"
+  },
+  {
+    "key": "INTERACTABLE_CLOSE_COOLER",
+    "tr": "Dolabı Kapat",
+    "en": "Close Fridge",
+    "zh": "关闭冰箱",
+    "ja": "冷蔵庫を閉める",
+    "es": "Cerrar Refrigerador",
+    "ru": "Закрыть Холодильник",
+    "pt": "Fechar Geladeira"
+  },
+  {
+    "key": "INTERACTABLE_OPEN_FUSE_BOX",
+    "tr": "Sigorta Kutusunu Aç",
+    "en": "Open Fuse Box",
+    "zh": "打开保险丝盒",
+    "ja": "ヒューズボックスを開ける",
+    "es": "Abrir Caja De Fusibles",
+    "ru": "Открыть Блок Предохранителей",
+    "pt": "Abrir Caixa De Fusíveis"
+  },
+  {
+    "key": "INTERACTABLE_CLOSE_FUSE_BOX",
+    "tr": "Sigorta Kutusunu Kapat",
+    "en": "Close Fuse Box",
+    "zh": "关闭保险丝盒",
+    "ja": "ヒューズボックスを閉める",
+    "es": "Cerrar Caja De Fusibles",
+    "ru": "Закрыть Блок Предохранителей",
+    "pt": "Fechar Caixa De Fusíveis"
+  },
+  {
+    "key": "INTERACTABLE_LIFT_TOILET_LID",
+    "tr": "Kapağı Kaldır",
+    "en": "Lift Toilet Lid",
+    "zh": "掀起马桶盖",
+    "ja": "フタを上げる",
+    "es": "Levantar La Tapa",
+    "ru": "Поднять Крышку",
+    "pt": "Levantar Tampa"
+  },
+  {
+    "key": "INTERACTABLE_LOWER_TOILET_LID",
+    "tr": "Kapağı İndir",
+    "en": "Lower Toilet Lid",
+    "zh": "放下马桶盖",
+    "ja": "フタを下ろす",
+    "es": "Bajar La Tapa",
+    "ru": "Опустить Крышку",
+    "pt": "Baixar Tampa"
+  },
+  {
+    "key": "INTERACTABLE_KNIFE_HOLDER",
+    "tr": "Bıçak Al",
+    "en": "Take Knife",
+    "zh": "拿刀",
+    "ja": "ナイフを取る",
+    "es": "Tomar Cuchillo",
+    "ru": "Взять Нож",
+    "pt": "Pegar Faca"
+  },
+  {
+    "key": "INTERACTABLE_BURGER_BOX_BOX",
+    "tr": "Burger Kutusu Al",
+    "en": "Take Burger Box",
+    "zh": "拿汉堡盒",
+    "ja": "バーガーの箱を取る",
+    "es": "Tomar Caja De Hamburguesa",
+    "ru": "Взять Коробку Для Бургера",
+    "pt": "Pegar Caixa De Hambúrguer"
+  },
+  {
+    "key": "INTERACTABLE_BUN_BOX",
+    "tr": "Ekmek Paketi Al",
+    "en": "Take Bun Pack",
+    "zh": "拿一包面包",
+    "ja": "バンズのパックを取る",
+    "es": "Tomar Paquete De Pan",
+    "ru": "Взять Упаковку Булочек",
+    "pt": "Pegar Pacote De Pães"
+  },
+  {
+    "key": "INTERACTABLE_PATTY_BOX",
+    "tr": "Köfte Paketi Al",
+    "en": "Take Patty Pack",
+    "zh": "拿一包肉饼",
+    "ja": "パティのパックを取る",
+    "es": "Tomar Paquete De Carne",
+    "ru": "Взять Упаковку Котлет",
+    "pt": "Pegar Pacote De Carnes"
+  },
+  {
+    "key": "INTERACTABLE_CHEESE_BOX",
+    "tr": "Peynir Paketi Al",
+    "en": "Take Cheese Pack",
+    "zh": "拿一包芝士",
+    "ja": "チーズのパックを取る",
+    "es": "Tomar Paquete De Queso",
+    "ru": "Взять Упаковку Сыра",
+    "pt": "Pegar Pacote De Queijo"
+  },
+  {
+    "key": "INTERACTABLE_PICKLE_BOX",
+    "tr": "Turşu Paketi Al",
+    "en": "Take Pickle Pack",
+    "zh": "拿一包酸黄瓜",
+    "ja": "ピクルスのパックを取る",
+    "es": "Tomar Paquete De Pepinillos",
+    "ru": "Взять Упаковку Огурцов",
+    "pt": "Pegar Pacote De Picles"
+  },
+  {
+    "key": "INTERACTABLE_TOMATO_BOX",
+    "tr": "Domates Paketi Al",
+    "en": "Take Tomato Pack",
+    "zh": "拿一包番茄",
+    "ja": "トマトのパックを取る",
+    "es": "Tomar Paquete De Tomates",
+    "ru": "Взять Упаковку Помидоров",
+    "pt": "Pegar Pacote De Tomates"
+  },
+  {
+    "key": "INTERACTABLE_ONION_BOX",
+    "tr": "Soğan Paketi Al",
+    "en": "Take Onion Pack",
+    "zh": "拿一包洋葱",
+    "ja": "タマネギのパックを取る",
+    "es": "Tomar Paquete De Cebollas",
+    "ru": "Взять Упаковку Лука",
+    "pt": "Pegar Pacote De Cebolas"
+  },
+  {
+    "key": "INTERACTABLE_LETTUCE_BOX",
+    "tr": "Marul Paketi Al",
+    "en": "Take Lettuce Pack",
+    "zh": "拿一包生菜",
+    "ja": "レタスのパックを取る",
+    "es": "Tomar Paquete De Lechuga",
+    "ru": "Взять Упаковку Салата",
+    "pt": "Pegar Pacote De Alface"
+  },
+  {
+    "key": "INTERACTABLE_KETCHUP_BOX",
+    "tr": "Ketçap Şişesi Al",
+    "en": "Take Ketchup Bottle",
+    "zh": "拿番茄酱瓶",
+    "ja": "ケチャップボトルを取る",
+    "es": "Tomar Botella De Kétchup",
+    "ru": "Взять Бутылку Кетчупа",
+    "pt": "Pegar Frasco De Ketchup"
+  },
+  {
+    "key": "INTERACTABLE_MAYONNAISE_BOX",
+    "tr": "Mayonez Şişesi Al",
+    "en": "Take Mayo Bottle",
+    "zh": "拿蛋黄酱瓶",
+    "ja": "マヨネーズボトルを取る",
+    "es": "Tomar Botella De Mayonesa",
+    "ru": "Взять Бутылку Майонеза",
+    "pt": "Pegar Frasco De Maionese"
+  },
+  {
+    "key": "INTERACTABLE_MUSTARD_BOX",
+    "tr": "Hardal Şişesi Al",
+    "en": "Take Mustard Bottle",
+    "zh": "拿芥末酱瓶",
+    "ja": "マスタードボトルを取る",
+    "es": "Tomar Botella De Mostaza",
+    "ru": "Взять Бутылку Горчицы",
+    "pt": "Pegar Frasco De Mostarda"
+  },
+  {
+    "key": "INTERACTABLE_BBQ_SAUCE_BOX",
+    "tr": "Barbekü Sosu Şişesi Al",
+    "en": "Take BBQ Sauce Bottle",
+    "zh": "拿烧烤酱瓶",
+    "ja": "BBQソースボトルを取る",
+    "es": "Tomar Botella De Salsa Barbacoa",
+    "ru": "Взять Бутылку Соуса Барбекю",
+    "pt": "Pegar Frasco De Molho Barbecue"
+  },
+  {
+    "key": "INTERACTABLE_BUFFALO_SAUCE_BOX",
+    "tr": "Buffalo Sosu Şişesi Al",
+    "en": "Take Buffalo Sauce Bottle",
+    "zh": "拿水牛城辣酱瓶",
+    "ja": "バッファローソースボトルを取る",
+    "es": "Tomar Botella De Salsa Buffalo",
+    "ru": "Взять Бутылку Соуса Баффало",
+    "pt": "Pegar Frasco De Molho Buffalo"
+  },
+  {
+    "key": "INTERACTABLE_KETCHUP_CAPSULE_BOX",
+    "tr": "Ketçap Kabı Al",
+    "en": "Take Ketchup Dip Cup",
+    "zh": "拿番茄酱盒",
+    "ja": "ケチャップカップを取る",
+    "es": "Tomar Tarrina De Kétchup",
+    "ru": "Взять Баночку Кетчупа",
+    "pt": "Pegar Pote De Ketchup"
+  },
+  {
+    "key": "INTERACTABLE_MAYONNAISE_CAPSULE_BOX",
+    "tr": "Mayonez Kabı Al",
+    "en": "Take Mayo Dip Cup",
+    "zh": "拿蛋黄酱盒",
+    "ja": "マヨネーズカップを取る",
+    "es": "Tomar Tarrina De Mayonesa",
+    "ru": "Взять Баночку Майонеза",
+    "pt": "Pegar Pote De Maionese"
+  },
+  {
+    "key": "INTERACTABLE_MUSTARD_CAPSULE_BOX",
+    "tr": "Hardal Kabı Al",
+    "en": "Take Mustard Dip Cup",
+    "zh": "拿芥末酱盒",
+    "ja": "マスタードカップを取る",
+    "es": "Tomar Tarrina De Mostaza",
+    "ru": "Взять Баночку Горчицы",
+    "pt": "Pegar Pote De Mostarda"
+  },
+  {
+    "key": "INTERACTABLE_BBQ_SAUCE_CAPSULE_BOX",
+    "tr": "Barbekü Sos Kabı Al",
+    "en": "Take BBQ Sauce Dip Cup",
+    "zh": "拿烧烤酱盒",
+    "ja": "BBQソースカップを取る",
+    "es": "Tomar Tarrina De Salsa Barbacoa",
+    "ru": "Взять Баночку Соуса Барбекю",
+    "pt": "Pegar Pote De Molho Barbecue"
+  },
+  {
+    "key": "INTERACTABLE_BUFFALO_SAUCE_CAPSULE_BOX",
+    "tr": "Buffalo Sos Kabı Al",
+    "en": "Take Buffalo Sauce Dip Cup",
+    "zh": "拿水牛城辣酱盒",
+    "ja": "バッファローソースカップを取る",
+    "es": "Tomar Tarrina De Salsa Buffalo",
+    "ru": "Взять Баночку Соуса Баффало",
+    "pt": "Pegar Pote De Molho Buffalo"
+  },
+  {
+    "key": "INTERACTABLE_TURN_ON_LIGHT",
+    "tr": "Işığı Aç",
+    "en": "Turn On Light",
+    "zh": "开灯",
+    "ja": "電気をつける",
+    "es": "Encender Luz",
+    "ru": "Включить Свет",
+    "pt": "Acender Luz"
+  },
+  {
+    "key": "INTERACTABLE_TURN_OFF_LIGHT",
+    "tr": "Işığı Kapat",
+    "en": "Turn Off Light",
+    "zh": "关灯",
+    "ja": "電気を消す",
+    "es": "Apagar Luz",
+    "ru": "Выключить Свет",
+    "pt": "Apagar Luz"
+  },
+  {
+    "key": "INTERACTABLE_USE_COMPUTER",
+    "tr": "Bilgisayarı Kullan",
+    "en": "Use Computer",
+    "zh": "使用电脑",
+    "ja": "パソコンを使う",
+    "es": "Usar Computadora",
+    "ru": "Использовать Компьютер",
+    "pt": "Usar Computador"
+  },
+  {
+    "key": "INTERACTABLE_LEAVE_COMPUTER",
+    "tr": "Bilgisayardan Ayrıl",
+    "en": "Leave Computer",
+    "zh": "离开电脑",
+    "ja": "パソコンから離れる",
+    "es": "Dejar Computadora",
+    "ru": "Отойти От Компьютера",
+    "pt": "Sair Do Computador"
+  },
+  {
+    "key": "GRABABLE_BUN",
+    "tr": "Ekmek",
+    "en": "Bun",
+    "zh": "汉堡面包",
+    "ja": "バンズ",
+    "es": "Pan",
+    "ru": "Булочка",
+    "pt": "Pão"
+  },
+  {
+    "key": "GRABABLE_PICKLE",
+    "tr": "Turşu",
+    "en": "Pickle",
+    "zh": "酸黄瓜",
+    "ja": "ピクルス",
+    "es": "Pepinillo",
+    "ru": "Маринованный Огурец",
+    "pt": "Picles"
+  },
+  {
+    "key": "GRABABLE_TOMATO",
+    "tr": "Domates",
+    "en": "Tomato",
+    "zh": "番茄",
+    "ja": "トマト",
+    "es": "Tomate",
+    "ru": "Помидор",
+    "pt": "Tomate"
+  },
+  {
+    "key": "GRABABLE_ONION",
+    "tr": "Soğan",
+    "en": "Onion",
+    "zh": "洋葱",
+    "ja": "タマネギ",
+    "es": "Cebolla",
+    "ru": "Лук",
+    "pt": "Cebola"
+  },
+  {
+    "key": "GRABABLE_LETTUCE",
+    "tr": "Marul",
+    "en": "Lettuce",
+    "zh": "生菜",
+    "ja": "レタス",
+    "es": "Lechuga",
+    "ru": "Салат",
+    "pt": "Alface"
+  },
+  {
+    "key": "GRABABLE_BUN_PACK",
+    "tr": "Ekmek Paketi",
+    "en": "Bun Pack",
+    "zh": "一包面包",
+    "ja": "バンズのパック",
+    "es": "Paquete De Pan",
+    "ru": "Упаковка Булочек",
+    "pt": "Pacote De Pães"
+  },
+  {
+    "key": "GRABABLE_PATTY_PACK",
+    "tr": "Köfte Paketi",
+    "en": "Patty Pack",
+    "zh": "一包肉饼",
+    "ja": "パティのパック",
+    "es": "Paquete De Carne",
+    "ru": "Упаковка Котлет",
+    "pt": "Pacote De Carnes"
+  },
+  {
+    "key": "GRABABLE_CHEESE_PACK",
+    "tr": "Peynir Paketi",
+    "en": "Cheese Pack",
+    "zh": "一包芝士",
+    "ja": "チーズのパック",
+    "es": "Paquete De Queso",
+    "ru": "Упаковка Сыра",
+    "pt": "Pacote De Queijo"
+  },
+  {
+    "key": "GRABABLE_PICKLE_PACK",
+    "tr": "Turşu Paketi",
+    "en": "Pickle Pack",
+    "zh": "一包酸黄瓜",
+    "ja": "ピクルスのパック",
+    "es": "Paquete De Pepinillos",
+    "ru": "Упаковка Огурцов",
+    "pt": "Pacote De Picles"
+  },
+  {
+    "key": "GRABABLE_TOMATO_PACK",
+    "tr": "Domates Paketi",
+    "en": "Tomato Pack",
+    "zh": "一包番茄",
+    "ja": "トマトのパック",
+    "es": "Paquete De Tomates",
+    "ru": "Упаковка Помидоров",
+    "pt": "Pacote De Tomates"
+  },
+  {
+    "key": "GRABABLE_ONION_PACK",
+    "tr": "Soğan Paketi",
+    "en": "Onion Pack",
+    "zh": "一包洋葱",
+    "ja": "タマネギのパック",
+    "es": "Paquete De Cebollas",
+    "ru": "Упаковка Лука",
+    "pt": "Pacote De Cebolas"
+  },
+  {
+    "key": "GRABABLE_LETTUCE_PACK",
+    "tr": "Marul Paketi",
+    "en": "Lettuce Pack",
+    "zh": "一包生菜",
+    "ja": "レタスのパック",
+    "es": "Paquete De Lechuga",
+    "ru": "Упаковка Салата",
+    "pt": "Pacote De Alface"
+  },
+  {
+    "key": "GRABABLE_BOTTOM_BUN_RAW",
+    "tr": "Alt Ekmek (Kızarmamış)",
+    "en": "Bottom Bun (Untoasted)",
+    "zh": "底层面包 (未烤)",
+    "ja": "下のバンズ (焼く前)",
+    "es": "Pan Inferior (Sin Tostar)",
+    "ru": "Нижняя Булочка (Неподжаренная)",
+    "pt": "Pão Inferior (Não Tostado)"
+  },
+  {
+    "key": "GRABABLE_BOTTOM_BUN_COOKED",
+    "tr": "Alt Ekmek (Kızarmış)",
+    "en": "Bottom Bun (Toasted)",
+    "zh": "底层面包 (已烤)",
+    "ja": "下のバンズ (トースト)",
+    "es": "Pan Inferior (Tostado)",
+    "ru": "Нижняя Булочка (Поджаренная)",
+    "pt": "Pão Inferior (Tostado)"
+  },
+  {
+    "key": "GRABABLE_BOTTOM_BUN_BURNT",
+    "tr": "Alt Ekmek (Yanmış)",
+    "en": "Bottom Bun (Burnt)",
+    "zh": "底层面包 (烤焦)",
+    "ja": "下のバンズ (焦げた)",
+    "es": "Pan Inferior (Quemado)",
+    "ru": "Нижняя Булочка (Сгоревшая)",
+    "pt": "Pão Inferior (Queimado)"
+  },
+  {
+    "key": "GRABABLE_TOP_BUN_RAW",
+    "tr": "Üst Ekmek (Kızarmamış)",
+    "en": "Top Bun (Untoasted)",
+    "zh": "顶层面包 (未烤)",
+    "ja": "上のバンズ (焼く前)",
+    "es": "Pan Superior (Sin Tostar)",
+    "ru": "Верхняя Булочка (Неподжаренная)",
+    "pt": "Pão Superior (Não Tostado)"
+  },
+  {
+    "key": "GRABABLE_TOP_BUN_COOKED",
+    "tr": "Üst Ekmek (Kızarmış)",
+    "en": "Top Bun (Toasted)",
+    "zh": "顶层面包 (已烤)",
+    "ja": "上のバンズ (トースト)",
+    "es": "Pan Superior (Tostado)",
+    "ru": "Верхняя Булочка (Поджаренная)",
+    "pt": "Pão Superior (Tostado)"
+  },
+  {
+    "key": "GRABABLE_TOP_BUN_BURNT",
+    "tr": "Üst Ekmek (Yanmış)",
+    "en": "Top Bun (Burnt)",
+    "zh": "顶层面包 (烤焦)",
+    "ja": "上のバンズ (焦げた)",
+    "es": "Pan Superior (Quemado)",
+    "ru": "Верхняя Булочка (Сгоревшая)",
+    "pt": "Pão Superior (Queimado)"
+  },
+  {
+    "key": "GRABABLE_PATTY_RAW",
+    "tr": "Köfte (Çiğ)",
+    "en": "Patty (Raw)",
+    "zh": "肉饼 (生)",
+    "ja": "パティ (生)",
+    "es": "Carne (Cruda)",
+    "ru": "Котлета (Сырая)",
+    "pt": "Carne (Crua)"
+  },
+  {
+    "key": "GRABABLE_PATTY_COOKED",
+    "tr": "Köfte (Pişmiş)",
+    "en": "Patty (Cooked)",
+    "zh": "肉饼 (熟)",
+    "ja": "パティ (焼いた)",
+    "es": "Carne (Cocida)",
+    "ru": "Котлета (Готовая)",
+    "pt": "Carne (Cozida)"
+  },
+  {
+    "key": "GRABABLE_PATTY_BURNT",
+    "tr": "Köfte (Yanmış)",
+    "en": "Patty (Burnt)",
+    "zh": "肉饼 (焦)",
+    "ja": "パティ (焦げた)",
+    "es": "Carne (Quemada)",
+    "ru": "Котлета (Сгоревшая)",
+    "pt": "Carne (Queimada)"
+  },
+  {
+    "key": "GRABABLE_CHEESE_SLICE",
+    "tr": "Peynir Dilimi",
+    "en": "Cheese Slice",
+    "zh": "芝士片",
+    "ja": "スライスチーズ",
+    "es": "Rebanada De Queso",
+    "ru": "Ломтик Сыра",
+    "pt": "Fatia De Queijo"
+  },
+  {
+    "key": "GRABABLE_PICKLE_SLICE",
+    "tr": "Turşu Dilimi",
+    "en": "Pickle Slice",
+    "zh": "酸黄瓜片",
+    "ja": "スライスピクルス",
+    "es": "Rodaja De Pepinillo",
+    "ru": "Ломтик Огурца",
+    "pt": "Fatia De Picles"
+  },
+  {
+    "key": "GRABABLE_TOMATO_SLICE",
+    "tr": "Domates Dilimi",
+    "en": "Tomato Slice",
+    "zh": "番茄片",
+    "ja": "スライストマト",
+    "es": "Rodaja De Tomate",
+    "ru": "Ломтик Помидора",
+    "pt": "Fatia De Tomate"
+  },
+  {
+    "key": "GRABABLE_ONION_SLICE",
+    "tr": "Soğan Dilimi",
+    "en": "Onion Slice",
+    "zh": "洋葱片",
+    "ja": "スライスタマネギ",
+    "es": "Rodaja De Cebolla",
+    "ru": "Ломтик Лука",
+    "pt": "Fatia De Cebola"
+  },
+  {
+    "key": "GRABABLE_LETTUCE_SLICE",
+    "tr": "Marul Dilimi",
+    "en": "Lettuce Slice",
+    "zh": "生菜片",
+    "ja": "スライスレタス",
+    "es": "Hoja De Lechuga",
+    "ru": "Лист Салата",
+    "pt": "Fatia De Alface"
+  },
+  {
+    "key": "GRABABLE_KNIFE",
+    "tr": "Bıçak",
+    "en": "Knife",
+    "zh": "刀",
+    "ja": "ナイフ",
+    "es": "Cuchillo",
+    "ru": "Нож",
+    "pt": "Faca"
+  },
+  {
+    "key": "GRABABLE_KETCHUP_BOTTLE",
+    "tr": "Ketçap Şişesi",
+    "en": "Ketchup Bottle",
+    "zh": "番茄酱瓶",
+    "ja": "ケチャップボトル",
+    "es": "Botella De Kétchup",
+    "ru": "Бутылка Кетчупа",
+    "pt": "Frasco De Ketchup"
+  },
+  {
+    "key": "GRABABLE_MAYONNAISE_BOTTLE",
+    "tr": "Mayonez Şişesi",
+    "en": "Mayo Bottle",
+    "zh": "蛋黄酱瓶",
+    "ja": "マヨネーズボトル",
+    "es": "Botella De Mayonesa",
+    "ru": "Бутылка Майонеза",
+    "pt": "Frasco De Maionese"
+  },
+  {
+    "key": "GRABABLE_MUSTARD_BOTTLE",
+    "tr": "Hardal Şişesi",
+    "en": "Mustard Bottle",
+    "zh": "芥末酱瓶",
+    "ja": "マスタードボトル",
+    "es": "Botella De Mostaza",
+    "ru": "Бутылка Горчицы",
+    "pt": "Frasco De Mostarda"
+  },
+  {
+    "key": "GRABABLE_BBQ_SAUCE_BOTTLE",
+    "tr": "Barbekü Sosu Şişesi",
+    "en": "BBQ Sauce Bottle",
+    "zh": "烧烤酱瓶",
+    "ja": "BBQソースボトル",
+    "es": "Botella De Salsa Barbacoa",
+    "ru": "Бутылка Соуса Барбекю",
+    "pt": "Frasco De Molho Barbecue"
+  },
+  {
+    "key": "GRABABLE_BUFFALO_SAUCE_BOTTLE",
+    "tr": "Buffalo Sosu Şişesi",
+    "en": "Buffalo Sauce Bottle",
+    "zh": "水牛城辣酱瓶",
+    "ja": "バッファローソースボトル",
+    "es": "Botella De Salsa Buffalo",
+    "ru": "Бутылка Соуса Баффало",
+    "pt": "Frasco De Molho Buffalo"
+  },
+  {
+    "key": "GRABABLE_KETCHUP",
+    "tr": "Ketçap",
+    "en": "Ketchup",
+    "zh": "番茄酱",
+    "ja": "ケチャップ",
+    "es": "Kétchup",
+    "ru": "Кетчуп",
+    "pt": "Ketchup"
+  },
+  {
+    "key": "GRABABLE_MAYONNAISE",
+    "tr": "Mayonez",
+    "en": "Mayo",
+    "zh": "蛋黄酱",
+    "ja": "マヨネーズ",
+    "es": "Mayonesa",
+    "ru": "Майонез",
+    "pt": "Maionese"
+  },
+  {
+    "key": "GRABABLE_MUSTARD",
+    "tr": "Hardal",
+    "en": "Mustard",
+    "zh": "芥末酱",
+    "ja": "マスタード",
+    "es": "Mostaza",
+    "ru": "Горчица",
+    "pt": "Mostarda"
+  },
+  {
+    "key": "GRABABLE_BBQ",
+    "tr": "Barbekü Sosu",
+    "en": "BBQ Sauce",
+    "zh": "烧烤酱",
+    "ja": "BBQソース",
+    "es": "Salsa Barbacoa",
+    "ru": "Соус Барбекю",
+    "pt": "Molho Barbecue"
+  },
+  {
+    "key": "GRABABLE_BUFFALO",
+    "tr": "Buffalo Sosu",
+    "en": "Buffalo Sauce",
+    "zh": "水牛城辣酱",
+    "ja": "バッファローソース",
+    "es": "Salsa Buffalo",
+    "ru": "Соус Баффало",
+    "pt": "Molho Buffalo"
+  },
+  {
+    "key": "GRABABLE_KETCHUP_CAPSULE",
+    "tr": "Ketçap Kabı",
+    "en": "Ketchup Dip Cup",
+    "zh": "番茄酱盒",
+    "ja": "ケチャップカップ",
+    "es": "Tarrina De Kétchup",
+    "ru": "Баночка Кетчупа",
+    "pt": "Pote De Ketchup"
+  },
+  {
+    "key": "GRABABLE_MAYONNAISE_CAPSULE",
+    "tr": "Mayonez Kabı",
+    "en": "Mayo Dip Cup",
+    "zh": "蛋黄酱盒",
+    "ja": "マヨネーズカップ",
+    "es": "Tarrina De Mayonesa",
+    "ru": "Баночка Майонеза",
+    "pt": "Pote De Maionese"
+  },
+  {
+    "key": "GRABABLE_MUSTARD_CAPSULE",
+    "tr": "Hardal Kabı",
+    "en": "Mustard Dip Cup",
+    "zh": "芥末酱盒",
+    "ja": "マスタードカップ",
+    "es": "Tarrina De Mostaza",
+    "ru": "Баночка Горчицы",
+    "pt": "Pote De Mostarda"
+  },
+  {
+    "key": "GRABABLE_BBQ_CAPSULE",
+    "tr": "Barbekü Sos Kabı",
+    "en": "BBQ Sauce Dip Cup",
+    "zh": "烧烤酱盒",
+    "ja": "BBQソースカップ",
+    "es": "Tarrina De Salsa Barbacoa",
+    "ru": "Баночка Соуса Барбекю",
+    "pt": "Pote De Molho Barbecue"
+  },
+  {
+    "key": "GRABABLE_BUFFALO_CAPSULE",
+    "tr": "Buffalo Sos Kabı",
+    "en": "Buffalo Sauce Dip Cup",
+    "zh": "水牛城辣酱盒",
+    "ja": "バッファローソースカップ",
+    "es": "Tarrina De Salsa Buffalo",
+    "ru": "Баночка Соуса Баффало",
+    "pt": "Pote De Molho Buffalo"
+  },
+  {
+    "key": "GRABABLE_TRASH",
+    "tr": "Çöp",
+    "en": "Trash",
+    "zh": "垃圾",
+    "ja": "ゴミ",
+    "es": "Basura",
+    "ru": "Мусор",
+    "pt": "Lixo"
+  },
+  {
+    "key": "BURGER_BOX",
+    "tr": "Burger Kutusu",
+    "en": "Burger Box",
+    "zh": "汉堡盒",
+    "ja": "バーガーの箱",
+    "es": "Caja De Hamburguesa",
+    "ru": "Коробка Для Бургера",
+    "pt": "Caixa De Hambúrguer"
+  },
+  {
+    "key": "BURGER_CLASSIC",
+    "tr": "Klasik Burger",
+    "en": "Classic Burger",
+    "zh": "经典汉堡",
+    "ja": "クラシックバーガー",
+    "es": "Hamburguesa Clásica",
+    "ru": "Классический Бургер",
+    "pt": "Hambúrguer Clássico"
+  },
+  {
+    "key": "BURGER_CHEESE",
+    "tr": "Çizburger",
+    "en": "Cheeseburger",
+    "zh": "芝士汉堡",
+    "ja": "チーズバーガー",
+    "es": "Hamburguesa Con Queso",
+    "ru": "Чизбургер",
+    "pt": "Cheeseburger"
+  },
+  {
+    "key": "BURGER_DOUBLE_CHEESE",
+    "tr": "Duble Çizburger",
+    "en": "Double Cheeseburger",
+    "zh": "双层芝士汉堡",
+    "ja": "ダブルチーズバーガー",
+    "es": "Hamburguesa Doble Con Queso",
+    "ru": "Двойной Чизбургер",
+    "pt": "Cheeseburger Duplo"
+  },
+  {
+    "key": "BURGER_FULLY_LOADED",
+    "tr": "Full Karışık Burger",
+    "en": "Fully Loaded Burger",
+    "zh": "至尊汉堡",
+    "ja": "デラックスバーガー",
+    "es": "Hamburguesa Suprema",
+    "ru": "Бургер Гранд",
+    "pt": "Hambúrguer Completo"
+  },
+  {
+    "key": "BURGER_GARDEN",
+    "tr": "Bahçıvan Burger",
+    "en": "Garden Burger",
+    "zh": "田园汉堡",
+    "ja": "ガーデンバーガー",
+    "es": "Hamburguesa De La Huerta",
+    "ru": "Фермерский Бургер",
+    "pt": "Hambúrguer Da Horta"
+  },
+  {
+    "key": "BURGER_DOUBLE_GARDEN",
+    "tr": "Duble Bahçıvan Burger",
+    "en": "Double Garden Burger",
+    "zh": "双层田园汉堡",
+    "ja": "ダブルガーデンバーガー",
+    "es": "Hamburguesa Doble De La Huerta",
+    "ru": "Двойной Фермерский Бургер",
+    "pt": "Hambúrguer Da Horta Duplo"
+  },
+  {
+    "key": "BURGER_SMOKED",
+    "tr": "Dumanlı Burger",
+    "en": "Smoked Burger",
+    "zh": "烟熏汉堡",
+    "ja": "スモークバーガー",
+    "es": "Hamburguesa Ahumada",
+    "ru": "Копченый Бургер",
+    "pt": "Hambúrguer Defumado"
+  },
+  {
+    "key": "BURGER_FLAMING",
+    "tr": "Alevli Burger",
+    "en": "Flaming Burger",
+    "zh": "火焰汉堡",
+    "ja": "フレイミングバーガー",
+    "es": "Hamburguesa En Llamas",
+    "ru": "Пылающий Бургер",
+    "pt": "Hambúrguer Em Chamas"
+  },
+  {
+    "key": "BURGER_PLUS",
+    "tr": "Artı Burger",
+    "en": "Plus Burger",
+    "zh": "普拉斯汉堡",
+    "ja": "プラスバーガー",
+    "es": "Hamburguesa Plus",
+    "ru": "Бургер Плюс",
+    "pt": "Hambúrguer Plus"
+  },
+  {
+    "key": "BURGER_CRISPY_CHICKEN",
+    "tr": "Çıtır Tavuk Burger",
+    "en": "Crispy Chicken Burger",
+    "zh": "香脆鸡肉汉堡",
+    "ja": "クリスピーチキンバーガー",
+    "es": "Hamburguesa De Pollo Crujiente",
+    "ru": "Хрустящий Куриный Бургер",
+    "pt": "Hambúrguer De Frango Crocante"
+  },
+  {
+    "key": "BURGER_FLAMING_CHICKEN",
+    "tr": "Alevli Tavuk Burger",
+    "en": "Flaming Chicken Burger",
+    "zh": "火焰鸡肉汉堡",
+    "ja": "フレイミングチキンバーガー",
+    "es": "Hamburguesa De Pollo En Llamas",
+    "ru": "Пылающий Куриный Бургер",
+    "pt": "Hambúrguer De Frango Em Chamas"
+  },
+  {
+    "key": "BURGER_SMOKED_CHICKEN",
+    "tr": "Dumanlı Tavuk Burger",
+    "en": "Smoked Chicken Burger",
+    "zh": "烟熏鸡肉汉堡",
+    "ja": "スモークチキンバーガー",
+    "es": "Hamburguesa De Pollo Ahumada",
+    "ru": "Копченый Куриный Бургер",
+    "pt": "Hambúrguer De Frango Defumado"
+  },
+  {
+    "key": "BURGER_EXTREME_CHICKEN",
+    "tr": "Aşırı Tavuk Burger",
+    "en": "Extreme Chicken Burger",
+    "zh": "极限鸡肉汉堡",
+    "ja": "エクストリームチキンバーガー",
+    "es": "Hamburguesa De Pollo Extrema",
+    "ru": "Экстремальный Куриный Бургер",
+    "pt": "Hambúrguer De Frango Extremo"
+  },
+  {
+    "key": "BURGER_CHICK",
+    "tr": "Civciv Burger",
+    "en": "Chick Burger",
+    "zh": "小鸡汉堡",
+    "ja": "ひよこバーガー",
+    "es": "Hamburguesa Pollito",
+    "ru": "Бургер Цыпленок",
+    "pt": "Hambúrguer Pintinho"
+  },
+  {
+    "key": "BURGER_GROWN_UP",
+    "tr": "Artık Büyüdüm Burger",
+    "en": "Grown Up Burger",
+    "zh": "小大人汉堡",
+    "ja": "おとなバーガー",
+    "es": "Hamburguesa De Niño Grande",
+    "ru": "Бургер «Я Уже Большой»",
+    "pt": "Hambúrguer De Gente Grande"
+  },
+  {
+    "key": "BURGER_FALLBACK_0",
+    "tr": "Şefin Sürprizi",
+    "en": "Chef's Surprise",
+    "zh": "厨师的惊喜",
+    "ja": "シェフのサプライズ",
+    "es": "Sorpresa Del Chef",
+    "ru": "Сюрприз Шефа",
+    "pt": "Surpresa Do Chef"
+  },
+  {
+    "key": "BURGER_FALLBACK_1",
+    "tr": "Şefin Dalgınlığı",
+    "en": "Chef's Distraction",
+    "zh": "厨师的走神",
+    "ja": "シェフのうっかり",
+    "es": "Despiste Del Chef",
+    "ru": "Рассеянность Шефа",
+    "pt": "Distração Do Chef"
+  },
+  {
+    "key": "BURGER_FALLBACK_2",
+    "tr": "Şefin Hatası",
+    "en": "Chef's Mistake",
+    "zh": "厨师的失误",
+    "ja": "シェフの間違い",
+    "es": "Error Del Chef",
+    "ru": "Ошибка Шефа",
+    "pt": "Erro Do Chef"
+  },
+  {
+    "key": "BURGER_FALLBACK_3",
+    "tr": "Şefin Utancı",
+    "en": "Chef's Shame",
+    "zh": "厨师的耻辱",
+    "ja": "シェフの恥",
+    "es": "Vergüenza Del Chef",
+    "ru": "Позор Шефа",
+    "pt": "Vergonha Do Chef"
+  },
+  {
+    "key": "BURGER_FALLBACK_4",
+    "tr": "Şefin Suçu",
+    "en": "Chef's Crime",
+    "zh": "厨师的罪行",
+    "ja": "シェフの罪",
+    "es": "Crimen Del Chef",
+    "ru": "Преступление Шефа",
+    "pt": "Crime Do Chef"
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_O",
+    "tr": "Bu tarafta işim yok.",
+    "en": "Nothing for me that way."
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_1",
+    "tr": "Nere gidiyorum yav?",
+    "en": "Where am I  going?"
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_2",
+    "tr": "Çok uzaklaşmasam iyi olur.",
+    "en": "Better not go too far away."
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_3",
+    "tr": "Dalmışım gidiyorum ya...",
+    "en": "Im sleepy."
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_4",
+    "tr": "Geri al... Geri al...",
+    "en": "Undo... Undo..."
+  },
+  {
+    "key": "SELF_TALK_WORLD_LIMIT_5",
+    "tr": "Uzaklaşma! Yabancı semtteyiz.",
+    "en": "Dont go too far we dont know this neighbourhood."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_CLASSIC",
+    "tr": "Alt Ekmek x1\nKöfte x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez",
+    "en": "Bottom Bun x1\nPatty x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_CHEESE",
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nTurşu Dilimi x1\nÜst Ekmek x1\n\nKetçap\nHardal",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nPickle Slice x1\nTop Bun x1\n\nKetchup\nMustard"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_DOUBLE_CHEESE",
+    "tr": "Alt Ekmek x1\nKöfte x2\nPeynir Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\n\nKetçap\nHardal",
+    "en": "Bottom Bun x1\nPatty x2\nCheese Slice x2\nPickle Slice x2\nTop Bun x1\n\nKetchup\nMustard"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_FULLY_LOADED",
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez\nHardal\nBarbekü Sosu",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo\nMustard\nBBQ Sauce"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_BUDGET",
+    "tr": "Alt Ekmek x1\nMarul Dilimi x1\nSoğan Dilimi x1\nTurşu Dilimi x1\nDomates Dilimi x1\nÜst Ekmek x1\n\nKetçap\nMayonez",
+    "en": "Bottom Bun x1\nLettuce Slice x1\nOnion Slice x1\nPickle Slice x1\nTomato Slice x1\nTop Bun x1\n\nKetchup\nMayo"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_BROKE_AHH",
+    "tr": "Alt Ekmek x1\nÜst Ekmek x1",
+    "en": "Bottom Bun x1\nTop Bun x1"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_GOUT",
+    "tr": "Alt Ekmek x1\nKöfte x5\nÜst Ekmek x1",
+    "en": "Bottom Bun x1\nPatty x5\nTop Bun x1"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_X",
+    "tr": "Alt Ekmek x2\nKöfte x2\nPeynir Dilimi x2\nMarul Dilimi x2\nSoğan Dilimi x2\nTurşu Dilimi x2\nÜst Ekmek x1\n\nMayonez\nHardal",
+    "en": "Bottom Bun x2\nPatty x2\nCheese Slice x2\nLettuce Slice x2\nOnion Slice x2\nPickle Slice x2\nTop Bun x1\n\nMayo\nMustard"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_LONG_AHH",
+    "tr": "Alt Ekmek x1\nKöfte x3\nPeynir Dilimi x3\nMarul Dilimi x3\nÜst Ekmek x1\n\nKetçap\nMayonez\nHardal",
+    "en": "Bottom Bun x1\nPatty x3\nCheese Slice x3\nLettuce Slice x3\nTop Bun x1\n\nKetchup\nMayo\nMustard"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_TOMATO_LOVER",
+    "tr": "Alt Ekmek x1\nKöfte x1\nDomates Dilimi x4\nÜst Ekmek x1\n\nKetçap",
+    "en": "Bottom Bun x1\nPatty x1\nTomato Slice x4\nTop Bun x1\n\nKetchup"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_BBQ",
+    "tr": "Alt Ekmek x1\nKöfte x1\nPeynir Dilimi x1\nSoğan Dilimi x1\nÜst Ekmek x1\n\nMayonez\nBarbekü Sosu",
+    "en": "Bottom Bun x1\nPatty x1\nCheese Slice x1\nOnion Slice x1\nTop Bun x1\n\nMayo\nBBQ Sauce"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_INGREDIENTS_BASIC",
+    "tr": "Alt Ekmek x1\nKöfte x1\nÜst Ekmek x1\n\nKetçap",
+    "en": "Bottom Bun x1\nPatty x1\nTop Bun x1\n\nKetchup"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_CLASSIC",
+    "tr": "Macera aramayanların klasik lezzeti...",
+    "en": "For those who like to play it safe..."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_CHEESE",
+    "tr": "\"Peynirsiz yapamam.\" diyenlere...",
+    "en": "For those who say, \"I can't live without cheese.\""
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_DOUBLE_CHEESE",
+    "tr": "\"Asıl ben peynirsiz yapamam.\" diyenlere...",
+    "en": "For those who say, \"No, seriously, I can not live without cheese.\""
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_FULLY_LOADED",
+    "tr": "Her şey... HER ŞEY.",
+    "en": "Everything... LITERALLY EVERYTHING."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_BUDGET",
+    "tr": "\"Hem burgerimi yiyorum hem de param cebimde kalıyor. Et mi? O da ne?\"",
+    "en": "\"Full stomach, full wallet. Meat? Never heard of her.\""
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_BROKE_AHH",
+    "tr": "\"Ekmek zeki toplumların temel gıda maddesidir.\" -fukaraburgerfan34",
+    "en": "\"Bread is the fuel of high-IQ societies.\" -brokeahhburgerfan67"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_GOUT",
+    "tr": "Ekmek arası bütün dana.",
+    "en": "A whole cow between two buns."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_X",
+    "tr": "Ağzının tadını bilenlere...",
+    "en": "For those with refined taste..."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_LONG_AHH",
+    "tr": "Dönerden bıkan, zurnadan ise bıkamayanların favorisi...",
+    "en": "For those who believe length matters..."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_TOMATO_LOVER",
+    "tr": "\"Keşke domates olarak doğsaydım.\"",
+    "en": "\"I wish I was born as a tomato.\""
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_BBQ",
+    "tr": "Gerçek gurmelerin seçimi...",
+    "en": "The choice of true gourmets..."
+  },
+  {
+    "key": "UI_MONITOR_BURGER_DESCRIPTION_BASIC",
+    "tr": "Durumu \"Merhaba! Ben VırtApp kullanıyorum.\" olanların tek tercihi...",
+    "en": "The #1 choice for people whose status is \"Hey there! I am using VirtApp\""
+  },
+  {
+    "key": "UI_TRACK",
+    "tr": "Parça",
+    "en": "Track"
+  },
+  {
+    "key": "UI_MAIN_MENU_CONTINUE",
+    "tr": "Devam Et",
+    "en": "Continue"
+  },
+  {
+    "key": "UI_MAIN_MENU_NEW_GAME",
+    "tr": "Yeni Oyun",
+    "en": "New Game"
+  },
+  {
+    "key": "UI_MAIN_MENU_SETTINGS",
+    "tr": "Ayarlar",
+    "en": "Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_QUIT",
+    "tr": "Çıkış",
+    "en": "Quit"
+  },
+  {
+    "key": "UI_MAIN_MENU_GENERAL_SETTINGS",
+    "tr": "Genel Ayarlar",
+    "en": "General Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_SETTINGS",
+    "tr": "Ses Ayarları",
+    "en": "Audio Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_RESOLUTION",
+    "tr": "Çözünürlük",
+    "en": "Resolution"
+  },
+  {
+    "key": "UI_MAIN_MENU_QUALITY",
+    "tr": "Kalite",
+    "en": "Quality"
+  },
+  {
+    "key": "UI_MAIN_MENU_LANGUAGE",
+    "tr": "Dil",
+    "en": "Language"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION",
+    "tr": "Pikselleşme",
+    "en": "Pixelation"
+  },
+  {
+    "key": "UI_MAIN_MENU_UI_SCALE",
+    "tr": "Arayüz Boyutu",
+    "en": "Interface Scale"
+  },
+  {
+    "key": "UI_TOAST_MACHINE",
+    "tr": "Tost Makinesi",
+    "en": "Toast Machine"
+  },
+  {
+    "key": "UI_LOW",
+    "tr": "Düşük",
+    "en": "Low"
+  },
+  {
+    "key": "UI_MEDIUM",
+    "tr": "Orta",
+    "en": "Medium"
+  },
+  {
+    "key": "UI_HIGH",
+    "tr": "Yüksek",
+    "en": "High"
+  },
+  {
+    "key": "UI_ULTRA",
+    "tr": "Ultra",
+    "en": "Ultra"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_0",
+    "tr": "Pikselden Nefret Ederim (Yok)",
+    "en": "I Hate Pixels (None)"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_1",
+    "tr": "Siz Koyun Ben Dur Derim (Az)",
+    "en": "Just A Sprinkle (Low)"
+  },
+  {
+    "key": "UI_MAIN_MENU_PIXELATION_2",
+    "tr": "Piksel Piksel Anadolu (Çok)",
+    "en": "I'm Legally Blind (High)"
+  },
+  {
+    "key": "UI_MAIN_MENU_CONTROL_HINTS",
+    "tr": "Kontrol İpuçları",
+    "en": "Control Hints"
+  },
+  {
+    "key": "UI_MAIN_MENU_INTERACTION_TEXT",
+    "tr": "Etkileşim Metni",
+    "en": "Interaction Text"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_MASTER",
+    "tr": "Ana Ses",
+    "en": "Master Volume"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_SOUND_FX",
+    "tr": "Ses Efektleri",
+    "en": "Sound FX"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_MUSIC",
+    "tr": "Müzik",
+    "en": "Music"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_AMBIANCE",
+    "tr": "Atmosfer",
+    "en": "Ambience"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_TYPEWRITER",
+    "tr": "Yazı Sesi",
+    "en": "Text Sound"
+  },
+  {
+    "key": "UI_MAIN_MENU_AUDIO_UI",
+    "tr": "Arayüz",
+    "en": "Interface"
+  },
+  {
+    "key": "UI_OKAY",
+    "tr": "Tamam",
+    "en": "Okay"
+  },
+  {
+    "key": "UI_DEFAULT",
+    "tr": "Varsayılan",
+    "en": "Default"
+  },
+  {
+    "key": "UI_ON",
+    "tr": "Açık",
+    "en": "On"
+  },
+  {
+    "key": "UI_OFF",
+    "tr": "Kapalı",
+    "en": "Off"
+  },
+  {
+    "key": "UI_MONITOR_BURGER_LIST",
+    "tr": "Burger Listesi",
+    "en": "Burger List"
+  },
+  {
+    "key": "UI_MONITOR_NOTEPAD",
+    "tr": "Not Defteri",
+    "en": "Notepad"
+  },
+  {
+    "key": "UI_MONITOR_MUSIC_PLAYER",
+    "tr": "Müzik Çalar",
+    "en": "Music Player"
+  },
+  {
+    "key": "UI_MONITOR_RECYCLE_BIN",
+    "tr": "Geri Dönüşüm Kutusu",
+    "en": "Recycle Bin"
+  },
+  {
+    "key": "UI_START",
+    "tr": "Başlat",
+    "en": "Start"
+  },
+  {
+    "key": "UI_SHUT_DOWN",
+    "tr": "Kapat",
+    "en": "Shut Down"
+  },
+  {
+    "key": "UI_MONITOR_HOW_TO_PREPARE_BURGER",
+    "tr": "Burger Nasıl Hazırlanır?",
+    "en": "How To Prepare Burger?"
+  },
+  {
+    "key": "UI_MONITOR_HOW_TO_INSTRUCTIONS",
+    "tr": "1. Malzemeleri soğuk odadan temin edin.\n2. Bıçakla paketleri açın ve ekmeği bölün.\n3. Köfte ve ekmeği ızgarada yakmadan pişirin.\n4. Sebzeleri dilimleyin.\n5. Alt Ekmek ile başlayın, sos/malzemeleri dizin, Üst Ekmek ile bitirin.\n6. Ürünü paketleyip servis edin.\n\nDÜZELTME: Hatalı malzemeyi en üstten tıklayarak geri alabilirsiniz.",
+    "en": "1. Retrieve ingredients from cold storage.\n2. Open packs and slice the bun.\n3. Grill patty and bun (avoid burning).\n4. Slice the vegetables.\n5. Start with Bottom Bun, add sauce/toppings, end with Top Bun.\n6. Pack and serve the order.\n\nCORRECTION: Click the top item to remove/undo layers."
+  },
+  {
+    "key": "UI_MONITOR_NOTEPAD_PLACEHOLDER",
+    "tr": "Metin giriniz…",
+    "en": "Enter text…"
+  },
+  {
+    "key": "UI_MONITOR_NOTEPAD_DELETED_NOTE_HEADER",
+    "tr": ":) - Not Defteri",
+    "en": ":) - Notepad"
+  },
+  {
+    "key": "UI_MONITOR_NOTEPAD_DELETED_NOTE",
+    "tr": "seni görüyorum :)",
+    "en": "i see you :)"
+  },
+  {
+    "key": "UI_VOLUME",
+    "tr": "Ses",
+    "en": "Volume"
+  },
+  {
+    "key": "UI_INTERACT",
+    "tr": "Etkileşim",
+    "en": "Interact"
+  },
+  {
+    "key": "UI_TAKE",
+    "tr": "Al",
+    "en": "Take"
+  },
+  {
+    "key": "UI_USE",
+    "tr": "Kullan",
+    "en": "Use"
+  },
+  {
+    "key": "UI_DROP",
+    "tr": "Bırak",
+    "en": "Drop"
+  },
+  {
+    "key": "UI_THROW",
+    "tr": "Fırlat",
+    "en": "Throw"
+  },
+  {
+    "key": "UI_HOLD",
+    "tr": "Basılı Tut",
+    "en": "Hold"
+  },
+  {
+    "key": "UI_TOGGLE",
+    "tr": "Bas-Çek",
+    "en": "Toggle"
+  },
+  {
+    "key": "UI_MAIN_MENU_CONTROL_SETTINGS",
+    "tr": "Kontrol Ayarları",
+    "en": "Control Settings"
+  },
+  {
+    "key": "UI_MAIN_MENU_MOUSE_SENSITIVITY",
+    "tr": "Fare Hassasiyeti",
+    "en": "Mouse Sensitivity"
+  },
+  {
+    "key": "UI_MAIN_MENU_GAMEPAD_SENSITIVITY",
+    "tr": "Oyun Kolu Hassasiyeti",
+    "en": "Gamepad Sensitivity"
+  },
+  {
+    "key": "UI_MAIN_MENU_INVERT_Y",
+    "tr": "Y Eksenini Ters Çevir",
+    "en": "Invert Y"
+  },
+  {
+    "key": "UI_MAIN_MENU_SPRINT_MODE",
+    "tr": "Koşma Modu",
+    "en": "Sprint Mode"
+  },
+  {
+    "key": "UI_MAIN_MENU_CROUCH_MODE",
+    "tr": "Eğilme Modu",
+    "en": "Crouch Mode"
+  },
+  {
+    "key": "UI_MAIN_MENU_KEYBOARD_AND_MOUSE_BINDINGS",
+    "tr": "Klavye & Fare Atamaları",
+    "en": "Keyboard & Mouse Bindings"
+  },
+  {
+    "key": "UI_MAIN_MENU_GAMEPAD_BINDINGS",
+    "tr": "Oyun Kolu Atamaları",
+    "en": "Gamepad Bindings"
+  },
+  {
+    "key": "UI_MOVE_FORWARD",
+    "tr": "İleri Git:",
+    "en": "Move Forward:"
+  },
+  {
+    "key": "UI_MOVE_BACKWARD",
+    "tr": "Geri Git:",
+    "en": "Move Backward:"
+  },
+  {
+    "key": "UI_MOVE_LEFT",
+    "tr": "Sola Git:",
+    "en": "Move Left:"
+  },
+  {
+    "key": "UI_MOVE_RIGHT",
+    "tr": "Sağa Git:",
+    "en": "Move Right:"
+  },
+  {
+    "key": "UI_JUMP",
+    "tr": "Zıpla:",
+    "en": "Jump:"
+  },
+  {
+    "key": "UI_SPRINT",
+    "tr": "Koş:",
+    "en": "Sprint:"
+  },
+  {
+    "key": "UI_CROUCH",
+    "tr": "Eğil:",
+    "en": "Crouch:"
+  },
+  {
+    "key": "UI_PHONE",
+    "tr": "Telefon:",
+    "en": "Phone:"
+  },
+  {
+    "key": "UI_PRESS_ANY_KEY",
+    "tr": "BİR TUŞA BASIN",
+    "en": "PRESS ANY KEY"
+  },
+  {
+    "key": "UI_STICK_LAYOUT",
+    "tr": "Analog Düzeni",
+    "en": "Stick Layout"
+  },
+  {
+    "key": "UI_DEFAULT",
+    "tr": "Normal",
+    "en": "Default"
+  },
+  {
+    "key": "UI_SWAPPED",
+    "tr": "Ters",
+    "en": "Swapped"
+  },
+  {
+    "key": "UI_CANCEL",
+    "tr": "İPTAL",
+    "en": "CANCEL"
+  },
+  {
+    "key": "UI_FIXED",
+    "tr": "SABİT",
+    "en": "FIXED"
+  },
+  {
+    "key": "UI_LOOK",
+    "tr": "Bak:",
+    "en": "Look:"
+  },
+  {
+    "key": "UI_PAUSE",
+    "tr": "Duraklat:",
+    "en": "Pause:"
+  },
+  {
+    "key": "UI_XBOX",
+    "tr": "Xbox",
+    "en": "Xbox"
+  },
+  {
+    "key": "UI_PS",
+    "tr": "PlayStation",
+    "en": "PlayStation"
+  },
+  {
+    "key": "UI_RESET_TO_DEFAULTS",
+    "tr": "Varsayılanlara Sıfırla",
+    "en": "Reset To Defaults"
+  },
+  {
+    "key": "UI_GAMEPAD_ICONS",
+    "tr": "Oyun Kolu İkonları",
+    "en": "Gamepad Icons"
+  },
+  {
+    "key": "UI_MOVE",
+    "tr": "Yürü:",
+    "en": "Move:"
+  },
+  {
+    "key": "UI_CAN_BE_SWAPPED",
+    "tr": "SABİT AMA TERS ÇEVRİLEBİLİR",
+    "en": "FIXED BUT CAN BE SWAPPED"
+  },
+  {
+    "key": "UI_AIM_ASSIST",
+    "tr": "Nişan Yardımı",
+    "en": "Aim Assist"
+  },
+  {
+    "key": "UI_MAIN_MENU_RESUME",
+    "tr": "Oyuna Dön",
+    "en": "Resume"
+  },
+  {
+    "key": "UI_MAIN_MENU",
+    "tr": "Ana Menü",
+    "en": "Main Menu"
+  },
+  {
+    "key": "UI_UNLIMITED",
+    "tr": "Sınırsız",
+    "en": "Unlimited"
+  },
+  {
+    "key": "UI_FPS_LIMIT",
+    "tr": "FPS Sınırı",
+    "en": "FPS Limit"
+  },
+  {
+    "key": "UI_VSYNC",
+    "tr": "VSync",
+    "en": "VSync"
+  }
+]
+
+}

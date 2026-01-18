@@ -1,16 +1,17 @@
-using System; // Action için gerekli
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public enum FontType
 {
-    PixelOutlined,
-    Retro,
-    RetroBold,
-    RetroOutlined,
-    UIKeyboard
+    DialogueOutlined,
+    RetroUIDefaultOutlined,
+    RetroUIThinOutlined,
+    RetroUINoOutline,
+    KeyboardNoOutline
 }
+
 public class LocalizationManager : MonoBehaviour
 {
     public static LocalizationManager Instance;
@@ -19,11 +20,11 @@ public class LocalizationManager : MonoBehaviour
     {
         English,
         Turkish,
-        Chinese,    // Yeni
-        Japanese,   // Yeni
-        Spanish,    // Yeni
-        Russian,    // Yeni
-        Portuguese  // Yeni
+        Chinese,
+        Japanese,
+        Spanish,
+        Russian,
+        Portuguese
     }
 
     [Header("Language Settings")]
@@ -31,13 +32,15 @@ public class LocalizationManager : MonoBehaviour
     public TextAsset localizationJSON;
 
     [Header("Font Settings")]
-    public List<LanguageFontProfile> fontProfiles; // Inspector'dan buraya profilleri (TR, EN, JA) sürükleyeceksin
-    public TMP_FontAsset defaultFallbackFont; // Her þey ters giderse kullanýlacak font
+    // 1. BU ARTIK SENÝN ÝNGÝLÝZCE/LATÝN PROFÝLÝN OLACAK
+    [Tooltip("Ýngilizce, Türkçe, Ýspanyolca vb. için varsayýlan font seti.")]
+    public LanguageFontProfile defaultFontProfile;
+
+    // 2. SADECE RU, JA, ZH ÝÇÝN PROFÝL EKLEYECEKSÝN
+    [Tooltip("Sadece özel karakter gerektiren diller (RU, JA, ZH) için profilleri buraya ekle.")]
+    public List<LanguageFontProfile> fontProfiles;
 
     private Dictionary<string, string> _localizedTexts;
-
-    // --- YENÝ: DÝL DEÐÝÞTÝ EVENTÝ ---
-    // Diðer scriptler buna abone olacak. Dil deðiþince hepsine "Güncellen!" diye baðýracaðýz.
     public event Action OnLanguageChanged;
 
     private void Awake()
@@ -46,8 +49,6 @@ public class LocalizationManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            // Önce kayýtlý dili yükle (PlayerPrefs)
             LoadSavedLanguage();
             LoadLocalization();
         }
@@ -57,30 +58,19 @@ public class LocalizationManager : MonoBehaviour
         }
     }
 
-    // --- YENÝ: DÝL DEÐÝÞTÝRME FONKSÝYONU (ENUM ÝLE) ---
     public void ChangeLanguage(GameLanguage newLang)
     {
         if (currentLanguage == newLang) return;
-
         currentLanguage = newLang;
-
-        // 1. Sözlüðü yeni dile göre tekrar doldur
         LoadLocalization();
-
-        // 2. Sisteme haber ver (Event Fýrlat)
         OnLanguageChanged?.Invoke();
 
-        // 3. Kaydet (Bir sonraki açýlýþta hatýrlasýn)
         string langCode = GetCodeFromLanguage(newLang);
         PlayerPrefs.SetString("Language", langCode);
         PlayerPrefs.Save();
     }
 
-    // Kod tekrarýný önlemek ve temiz tutmak için bu yardýmcý metodu yazdým
-    public string GetCurrentLanguageCode()
-    {
-        return GetCodeFromLanguage(currentLanguage);
-    }
+    public string GetCurrentLanguageCode() => GetCodeFromLanguage(currentLanguage);
 
     private string GetCodeFromLanguage(GameLanguage lang)
     {
@@ -97,7 +87,6 @@ public class LocalizationManager : MonoBehaviour
         }
     }
 
-    // --- YENÝ: DÝL DEÐÝÞTÝRME FONKSÝYONU (STRING ÝLE - Settings.cs ÝÇÝN) ---
     public void ChangeLanguage(string langCode)
     {
         switch (langCode)
@@ -111,40 +100,28 @@ public class LocalizationManager : MonoBehaviour
             case "pt": ChangeLanguage(GameLanguage.Portuguese); break;
             default:
                 Debug.LogWarning("Bilinmeyen dil kodu: " + langCode);
-                ChangeLanguage(GameLanguage.English); // Fallback
+                ChangeLanguage(GameLanguage.English);
                 break;
         }
     }
 
     private void LoadSavedLanguage()
     {
-        string savedLang = PlayerPrefs.GetString("Language", "en"); // Varsayýlan Ýngilizce
-        ChangeLanguage(savedLang); // Yukarýdaki string metodunu kullanarak yükle
+        string savedLang = PlayerPrefs.GetString("Language", "en");
+        ChangeLanguage(savedLang);
     }
 
     private void LoadLocalization()
     {
         _localizedTexts = new Dictionary<string, string>();
-
-        if (localizationJSON == null)
-        {
-            Debug.LogError("Localization JSON atanmadý!");
-            return;
-        }
+        if (localizationJSON == null) return;
 
         LocalizationData data = JsonUtility.FromJson<LocalizationData>(localizationJSON.text);
-
-        if (data == null || data.entries == null)
-        {
-            Debug.LogError("Localization JSON parse edilemedi!");
-            return;
-        }
+        if (data == null || data.entries == null) return;
 
         foreach (var entry in data.entries)
         {
             string value = "";
-
-            // --- KRÝTÝK GÜNCELLEME: Yeni alanlarý buraya ekledik ---
             switch (currentLanguage)
             {
                 case GameLanguage.English: value = entry.en; break;
@@ -157,36 +134,40 @@ public class LocalizationManager : MonoBehaviour
                 default: value = entry.en; break;
             }
 
-            // Eðer çeviri boþsa veya yoksa Ýngilizce dönsün (Fallback)
             if (string.IsNullOrEmpty(value)) value = entry.en;
-
-            if (!_localizedTexts.ContainsKey(entry.key))
-            {
-                _localizedTexts.Add(entry.key, value);
-            }
+            if (!_localizedTexts.ContainsKey(entry.key)) _localizedTexts.Add(entry.key, value);
         }
     }
 
     public string GetText(string key)
     {
         if (_localizedTexts == null) return key;
-        if (_localizedTexts.TryGetValue(key, out string value)) return value;
-        return key;
+        return _localizedTexts.TryGetValue(key, out string value) ? value : key;
     }
 
+    // --- YENÝLENMÝÞ FONT MANTIÐI ---
     public TMP_FontAsset GetFontForCurrentLanguage(FontType type)
     {
-        // 1. Þu anki dil için uygun profili bul
-        LanguageFontProfile profile = fontProfiles.Find(x => x.language == currentLanguage);
+        TMP_FontAsset fontToReturn = null;
 
-        if (profile != null)
+        // 1. Önce þu anki dil için "Özel Profil" var mý diye bak (Örn: Çince, Rusça)
+        LanguageFontProfile specificProfile = fontProfiles.Find(x => x.language == currentLanguage);
+
+        if (specificProfile != null)
         {
-            // 2. Profilin içinden istenen türdeki (Header, Dialogue vs.) fontu çek
-            TMP_FontAsset font = profile.GetFont(type);
-            if (font != null) return font;
+            // O dilde bu tür için (Örn: Header) bir font tanýmlanmýþ mý?
+            fontToReturn = specificProfile.GetFont(type);
         }
 
-        // Eðer o dilde veya o türde font yoksa varsayýlaný döndür
-        return defaultFallbackFont;
+        // 2. Eðer özel profil yoksa VEYA özel profilde bu tür tanýmlý deðilse (null döndüyse)
+        // Varsayýlan (Ýngilizce/Latin) profiline git.
+        if (fontToReturn == null && defaultFontProfile != null)
+        {
+            fontToReturn = defaultFontProfile.GetFont(type);
+        }
+
+        // 3. Eðer hala null ise (Default profilde bile tanýmlanmamýþsa) son çare Unity'nin default fontu dönsün.
+        // Ama yukarýdakileri doðru ayarlarsan buraya hiç düþmez.
+        return fontToReturn;
     }
 }

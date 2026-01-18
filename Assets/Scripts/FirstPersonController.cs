@@ -181,6 +181,7 @@ public class FirstPersonController : MonoBehaviour
     [Header("Grab Parameters")]
     [SerializeField] private Transform grabPoint;
     [SerializeField] private TMP_Text focusText;
+    public FontType focusTextFontType = FontType.RetroUIDefaultOutlined;
     [SerializeField] private TypewriterCore focusTextAnim;
     private bool focusTextComplete;
     private Coroutine grabbedUseCoroutine;
@@ -295,6 +296,8 @@ public class FirstPersonController : MonoBehaviour
         CameraManager.Instance.InitializeCamera(CameraManager.CameraName.FirstPerson);
 
         RefreshUISettings();
+
+        UpdateFocusTextFont();
 
         CalculateArmLengths();
 
@@ -2597,6 +2600,10 @@ public class FirstPersonController : MonoBehaviour
 
     private void ForceUpdateFocusText()
     {
+        // 1. ÖNCE FONTU GÜNCELLE (Bu satýr eksikti!)
+        UpdateFocusTextFont();
+
+        // 2. SONRA METNÝ GÜNCELLE (Mevcut kodun)
         // Hangi objeye baktýðýmýzý bulalým
         string keyToUse = "";
 
@@ -2620,13 +2627,14 @@ public class FirstPersonController : MonoBehaviour
         {
             string newText = LocalizationManager.Instance.GetText(keyToUse);
 
+            // Metni daktilo efektiyle veya direkt göster
             focusTextAnim.ShowText(newText);
             focusTextAnim.SkipTypewriter();
             SetFocusTextComplete(true);
         }
     }
 
-    
+
 
     void CalculateArmLengths()
     {
@@ -2684,6 +2692,20 @@ public class FirstPersonController : MonoBehaviour
             case PlayerManager.HandRigTypes.HoldingTray:
                 SetTrayMode(true);
                 break;
+        }
+    }
+
+    private void UpdateFocusTextFont()
+    {
+        if (LocalizationManager.Instance != null && focusText != null)
+        {
+            TMP_FontAsset newFont = LocalizationManager.Instance.GetFontForCurrentLanguage(focusTextFontType);
+
+            // Gereksiz atamadan kaçýnmak için kontrol
+            if (newFont != null && focusText.font != newFont)
+            {
+                focusText.font = newFont;
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,6 +13,21 @@ public class Settings : MonoBehaviour
 
     [Header("Language Settings")]
     public TMP_Dropdown languageDropdown;
+
+    [Serializable]
+    public struct LanguageDisplayOption
+    {
+        public string languageCode;     // "tr", "zh"
+        public string nativeName;       // "TÃ¼rkÃ§e", "ç®€ä½“ä¸­æ–‡"
+        public TMP_FontAsset fontAsset; // Resources klasÃ¶rÃ¼ndeki font
+        public float fontSize;          // Font boyutu (px)
+
+        [Tooltip("Pozitif deÄŸer yukarÄ±, Negatif deÄŸer aÅŸaÄŸÄ± kaydÄ±rÄ±r.")]
+        public float vOffset;           // YENÄ°: Dikey kaydÄ±rma ayarÄ±
+    }
+
+    // 2. LÄ°STEYÄ° OLUÅžTURUYORUZ (Inspector'dan dolduracaksÄ±n)
+    public List<LanguageDisplayOption> languageDisplayList;
 
     [Header("Quality Settings")]
     public TMP_Dropdown qualityDropdown;
@@ -72,25 +87,14 @@ public class Settings : MonoBehaviour
     public TMP_Text typewriterText;
     public TMP_Text uiText;
 
-    // DÝKKAT: Bu listenin sýrasý, Unity Inspector'daki Dropdown Options sýrasýyla AYNI olmalý!
+    // DÄ°KKAT: Bu listenin sÄ±rasÄ±, Unity Inspector'daki Dropdown Options sÄ±rasÄ±yla AYNI olmalÄ±!
     // Option 0: English -> "en"
-    // Option 1: Türkçe -> "tr"
+    // Option 1: TÃ¼rkÃ§e -> "tr"
     // Option 2: Chinese -> "zh"
     // Option 3: Japanese -> "ja"
     // Option 4: Spanish -> "es"
     // Option 5: Russian -> "ru"
     // Option 6: Portuguese -> "pt"
-
-    private readonly List<string> languageCodes = new List<string>
-    {
-        "en", // 0
-        "tr", // 1
-        "zh", // 2
-        "ja", // 3
-        "es", // 4
-        "ru", // 5
-        "pt"  // 6
-    };
 
     private readonly int[] fpsValues = { 30, 60, 75, 120, 144, 165, 240, 300, 360, -1 };
 
@@ -162,25 +166,25 @@ public class Settings : MonoBehaviour
 
     private void InitializeControls()
     {
-        // 1. Mouse Sens (0-100 arasý tamsayý olarak çekiyoruz)
-        // Varsayýlan 50 olsun (Ortalama hýz)
+        // 1. Mouse Sens (0-100 arasÄ± tamsayÄ± olarak Ã§ekiyoruz)
+        // VarsayÄ±lan 50 olsun (Ortalama hÄ±z)
         float mSens = PlayerPrefs.GetFloat("MouseSens", 30f);
         mouseSensSlider.value = mSens;
         UpdateSensText(mouseSensText, mSens);
 
-        // 2. Gamepad Sens (0-100 arasý)
+        // 2. Gamepad Sens (0-100 arasÄ±)
         float gSens = PlayerPrefs.GetFloat("GamepadSens", 50f);
         gamepadSensSlider.value = gSens;
         UpdateSensText(gamepadSensText, gSens);
 
-        // 3. Dropdown Ýçeriklerini Doldur (Localization)
+        // 3. Dropdown Ä°Ã§eriklerini Doldur (Localization)
         PopulateDropdown(invertYDropdown, offOnKeys);
         PopulateDropdown(sprintModeDropdown, holdToggleKeys);
         PopulateDropdown(crouchModeDropdown, holdToggleKeys);
         PopulateDropdown(stickLayoutDropdown, stickLayoutKeys);
         PopulateDropdown(aimAssistDropdown, aimAssistKeys);
 
-        // 4. Kayýtlý Deðerleri Ata
+        // 4. KayÄ±tlÄ± DeÄŸerleri Ata
         invertYDropdown.value = PlayerPrefs.GetInt("InvertY", 0); // 0: Off, 1: On
         invertYDropdown.RefreshShownValue();
 
@@ -190,12 +194,12 @@ public class Settings : MonoBehaviour
         crouchModeDropdown.value = PlayerPrefs.GetInt("CrouchMode", 0);
         crouchModeDropdown.RefreshShownValue();
 
-        // YENÝ: Stick Layout Baþlangýç Deðeri
+        // YENÄ°: Stick Layout BaÅŸlangÄ±Ã§ DeÄŸeri
         int savedStickLayout = PlayerPrefs.GetInt("StickLayout", 0); // 0: Default, 1: Swapped
         stickLayoutDropdown.value = savedStickLayout;
         stickLayoutDropdown.RefreshShownValue();
 
-        // Baþlangýçta InputManager'a bildir (Eðer varsa)
+        // BaÅŸlangÄ±Ã§ta InputManager'a bildir (EÄŸer varsa)
         if (InputManager.Instance != null)
             InputManager.Instance.SetSwapSticks(savedStickLayout == 1);
 
@@ -205,7 +209,7 @@ public class Settings : MonoBehaviour
         controllerPromptsDropdown.value = savedPrompts;
         controllerPromptsDropdown.RefreshShownValue();
 
-        // Static deðiþkeni güncelle
+        // Static deÄŸiÅŸkeni gÃ¼ncelle
         IsXboxPrompts = (savedPrompts == 0);
 
         int savedAssist = PlayerPrefs.GetInt("AimAssist", 1);
@@ -216,7 +220,7 @@ public class Settings : MonoBehaviour
             InputManager.Instance.SetAimAssistLevel(savedAssist);
     }
 
-    // Dropdown Doldurma Yardýmcýsý (Kod tekrarýný önlemek için)
+    // Dropdown Doldurma YardÄ±mcÄ±sÄ± (Kod tekrarÄ±nÄ± Ã¶nlemek iÃ§in)
     private void PopulateDropdown(TMP_Dropdown dropdown, List<string> keys)
     {
         dropdown.ClearOptions();
@@ -231,14 +235,14 @@ public class Settings : MonoBehaviour
         dropdown.AddOptions(options);
     }
 
-    // UI Text Güncelleme
+    // UI Text GÃ¼ncelleme
     private void UpdateSensText(TMP_Text textComp, float val)
     {
-        // Direkt 0-100 deðerini yazdýrýyoruz
+        // Direkt 0-100 deÄŸerini yazdÄ±rÄ±yoruz
         if (textComp != null) textComp.text = val.ToString("F0");
     }
 
-    // --- EVENT CALLBACKS (Inspector'dan Baðlanacaklar) ---
+    // --- EVENT CALLBACKS (Inspector'dan BaÄŸlanacaklar) ---
 
     public void OnAimAssistChanged(int index)
     {
@@ -298,7 +302,7 @@ public class Settings : MonoBehaviour
 
     private void InitializeGameplaySettings()
     {
-        // --- SEÇENEKLERÝ DOLDUR ---
+        // --- SEÃ‡ENEKLERÄ° DOLDUR ---
         List<string> options = new List<string>();
         foreach (string key in onOffKeys)
         {
@@ -311,14 +315,14 @@ public class Settings : MonoBehaviour
         // --- HINTS DROPDOWN ---
         hintsDropdown.ClearOptions();
         hintsDropdown.AddOptions(options);
-        // Varsayýlan 0 (Visible)
+        // VarsayÄ±lan 0 (Visible)
         hintsDropdown.value = PlayerPrefs.GetInt("ShowHints", 0);
         hintsDropdown.RefreshShownValue();
 
         // --- INTERACT TEXT DROPDOWN ---
         interactTextDropdown.ClearOptions();
         interactTextDropdown.AddOptions(options);
-        // Varsayýlan 0 (Visible)
+        // VarsayÄ±lan 0 (Visible)
         interactTextDropdown.value = PlayerPrefs.GetInt("ShowInteractText", 0);
         interactTextDropdown.RefreshShownValue();
     }
@@ -328,11 +332,11 @@ public class Settings : MonoBehaviour
     // ==================================================================================
     private void InitializeVideoSettings()
     {
-        // --- ÝLK AÇILIÞ KONTROLÜ ---
+        // --- Ä°LK AÃ‡ILIÅž KONTROLÃœ ---
         if (!PlayerPrefs.HasKey("VSync"))
         {
-            // DÝKKAT: Unity'de vSyncCount = 1 demek AÇIK demektir.
-            // Varsayýlan olarak AÇIK olsun istiyorsan 1 yapmalýsýn.
+            // DÄ°KKAT: Unity'de vSyncCount = 1 demek AÃ‡IK demektir.
+            // VarsayÄ±lan olarak AÃ‡IK olsun istiyorsan 1 yapmalÄ±sÄ±n.
             QualitySettings.vSyncCount = 1;
             PlayerPrefs.SetInt("VSync", 0); // Dropdown'da 0. index (UI_ON) olsun diye 0 kaydediyoruz.
 
@@ -349,11 +353,11 @@ public class Settings : MonoBehaviour
         // 1. VSync Dropdown Doldur (0=On, 1=Off)
         PopulateDropdown(vSyncDropdown, onOffKeys);
 
-        // Kayýtlý deðeri çek. (0 ise ON, 1 ise OFF)
-        // Eðer kayýt yoksa yukarýda kaydettiðimiz 0 (ON) gelir.
+        // KayÄ±tlÄ± deÄŸeri Ã§ek. (0 ise ON, 1 ise OFF)
+        // EÄŸer kayÄ±t yoksa yukarÄ±da kaydettiÄŸimiz 0 (ON) gelir.
         int savedVSyncIndex = PlayerPrefs.GetInt("VSync", 0);
 
-        // Unity ayarýný da buna göre yap (Index 0 ise Count 1, Index 1 ise Count 0)
+        // Unity ayarÄ±nÄ± da buna gÃ¶re yap (Index 0 ise Count 1, Index 1 ise Count 0)
         QualitySettings.vSyncCount = (savedVSyncIndex == 0) ? 1 : 0;
 
         vSyncDropdown.value = savedVSyncIndex;
@@ -367,7 +371,7 @@ public class Settings : MonoBehaviour
         fpsDropdown.value = fpsIndex;
         fpsDropdown.RefreshShownValue();
 
-        // 3. UI Kilidi: Eðer Dropdown 0 (AÇIK) ise FPS kutusu kilitlensin.
+        // 3. UI Kilidi: EÄŸer Dropdown 0 (AÃ‡IK) ise FPS kutusu kilitlensin.
         UpdateFPSDropdownInteractivity(savedVSyncIndex == 0);
     }
 
@@ -376,7 +380,7 @@ public class Settings : MonoBehaviour
         fpsDropdown.ClearOptions();
         List<string> options = new List<string>();
 
-        // "Unlimited" kelimesini dil sisteminden çek
+        // "Unlimited" kelimesini dil sisteminden Ã§ek
         string unlimitedText = "Unlimited";
         if (LocalizationManager.Instance != null)
             unlimitedText = LocalizationManager.Instance.GetText("UI_UNLIMITED");
@@ -384,32 +388,32 @@ public class Settings : MonoBehaviour
         foreach (int fps in fpsValues)
         {
             if (fps == -1)
-                options.Add(unlimitedText); // -1 görünce "Sýnýrsýz" yaz
+                options.Add(unlimitedText); // -1 gÃ¶rÃ¼nce "SÄ±nÄ±rsÄ±z" yaz
             else
                 options.Add(fps.ToString());
         }
         fpsDropdown.AddOptions(options);
     }
 
-    // FPS deðerine göre dropdown indexini bulan yardýmcý fonksiyon
+    // FPS deÄŸerine gÃ¶re dropdown indexini bulan yardÄ±mcÄ± fonksiyon
     private int GetFPSIndex(int targetFPS)
     {
         for (int i = 0; i < fpsValues.Length; i++)
         {
             if (fpsValues[i] == targetFPS) return i;
         }
-        return fpsValues.Length - 1; // Listede yoksa "Sýnýrsýz" varsay
+        return fpsValues.Length - 1; // Listede yoksa "SÄ±nÄ±rsÄ±z" varsay
     }
 
-    // --- UI EVENTLERÝ (Dropdownlara Baðlanacak) ---
+    // --- UI EVENTLERÄ° (Dropdownlara BaÄŸlanacak) ---
 
     public void SetVSync(int index)
     {
         // Dropdown Listemiz: { "ON" (0), "OFF" (1) }
         // Unity vSyncCount:  1 = ON, 0 = OFF
 
-        // Eðer index 0 (ON) seçildiyse, Unity'ye 1 gönder.
-        // Eðer index 1 (OFF) seçildiyse, Unity'ye 0 gönder.
+        // EÄŸer index 0 (ON) seÃ§ildiyse, Unity'ye 1 gÃ¶nder.
+        // EÄŸer index 1 (OFF) seÃ§ildiyse, Unity'ye 0 gÃ¶nder.
         QualitySettings.vSyncCount = (index == 0) ? 1 : 0;
 
         bool isVSyncOn = (index == 0);
@@ -417,11 +421,11 @@ public class Settings : MonoBehaviour
 
         if (isVSyncOn)
         {
-            Application.targetFrameRate = -1; // VSync açýksa FPS serbest (monitöre baðlý)
+            Application.targetFrameRate = -1; // VSync aÃ§Ä±ksa FPS serbest (monitÃ¶re baÄŸlÄ±)
         }
         else
         {
-            // VSync kapandýysa FPS sýnýrýný geri getir
+            // VSync kapandÄ±ysa FPS sÄ±nÄ±rÄ±nÄ± geri getir
             SetMaxFPS(fpsDropdown.value);
         }
 
@@ -431,7 +435,7 @@ public class Settings : MonoBehaviour
 
     public void SetMaxFPS(int index)
     {
-        // Eðer VSync açýksa FPS deðiþtirmeye çalýþma, Unity zaten takmaz
+        // EÄŸer VSync aÃ§Ä±ksa FPS deÄŸiÅŸtirmeye Ã§alÄ±ÅŸma, Unity zaten takmaz
         if (QualitySettings.vSyncCount > 0) return;
 
         int targetFPS = fpsValues[index];
@@ -441,13 +445,13 @@ public class Settings : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    // Dropdown'ý pasif/aktif yapma ve þeffaflaþtýrma
+    // Dropdown'Ä± pasif/aktif yapma ve ÅŸeffaflaÅŸtÄ±rma
     private void UpdateFPSDropdownInteractivity(bool isVSyncOn)
     {
         if (fpsDropdown != null)
         {
-            fpsDropdown.interactable = !isVSyncOn; // VSync açýksa týklanamaz
-            fpsDropdownGroup.alpha = isVSyncOn ? 0.5f : 1f; // Yarým þeffaf veya tam
+            fpsDropdown.interactable = !isVSyncOn; // VSync aÃ§Ä±ksa tÄ±klanamaz
+            fpsDropdownGroup.alpha = isVSyncOn ? 0.5f : 1f; // YarÄ±m ÅŸeffaf veya tam
         }
     }
 
@@ -458,7 +462,7 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("ShowHints", index);
         PlayerPrefs.Save();
 
-        // Eðer oyun içindeysek anlýk güncelle
+        // EÄŸer oyun iÃ§indeysek anlÄ±k gÃ¼ncelle
         if (PlayerManager.Instance != null)
             PlayerManager.Instance.UpdateGameplaySettings();
 
@@ -480,11 +484,11 @@ public class Settings : MonoBehaviour
         uiScaleDropdown.ClearOptions();
         List<string> options = new List<string>();
 
-        // Maksimum scale deðerini bul
+        // Maksimum scale deÄŸerini bul
         int maxScale = Mathf.FloorToInt(Screen.height / 360f);
         if (maxScale < 1) maxScale = 1;
 
-        // --- DEÐÝÞÝKLÝK BURADA: "Varsayýlan" Metnini Çek ---
+        // --- DEÄžÄ°ÅžÄ°KLÄ°K BURADA: "VarsayÄ±lan" Metnini Ã‡ek ---
         string defaultText = "Default"; // Fallback (Yedek)
         if (LocalizationManager.Instance != null)
         {
@@ -499,7 +503,7 @@ public class Settings : MonoBehaviour
 
             if (i == 0)
             {
-                // Örn: "(3x) Varsayýlan" veya "(3x) Default"
+                // Ã–rn: "(3x) VarsayÄ±lan" veya "(3x) Default"
                 label = $"{scaleVal}x ({defaultText})";
             }
             else
@@ -518,7 +522,7 @@ public class Settings : MonoBehaviour
         uiScaleDropdown.value = savedOffset;
         uiScaleDropdown.RefreshShownValue();
 
-        // Baþlangýçta uygula (RefreshDropdowns'tan gelince tekrar uygulamasý sorun yaratmaz)
+        // BaÅŸlangÄ±Ã§ta uygula (RefreshDropdowns'tan gelince tekrar uygulamasÄ± sorun yaratmaz)
         if (MenuManager.Instance != null)
         {
             MenuManager.Instance.RefreshAllCanvases(savedOffset);
@@ -531,7 +535,7 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetInt("UIScaleOffset", index);
         PlayerPrefs.Save();
 
-        // Direkt çaðýrmak yerine Coroutine baþlatýyoruz ki araya "Fix" sýkýþtýralým
+        // Direkt Ã§aÄŸÄ±rmak yerine Coroutine baÅŸlatÄ±yoruz ki araya "Fix" sÄ±kÄ±ÅŸtÄ±ralÄ±m
         StartCoroutine(ApplyUIScaleRoutine(index));
     }
 
@@ -539,15 +543,15 @@ public class Settings : MonoBehaviour
     {
         if (MenuManager.Instance != null)
         {
-            // 1. Önce bütün Canvaslarýn boyunu deðiþtir (Büyüt/Küçült)
+            // 1. Ã–nce bÃ¼tÃ¼n CanvaslarÄ±n boyunu deÄŸiÅŸtir (BÃ¼yÃ¼t/KÃ¼Ã§Ã¼lt)
             MenuManager.Instance.RefreshAllCanvases(offset);
 
-            // 2. Unity'ye "Hadi bi hesapla þu yeni boyutlarý" de ve bekle
+            // 2. Unity'ye "Hadi bi hesapla ÅŸu yeni boyutlarÄ±" de ve bekle
             Canvas.ForceUpdateCanvases();
             yield return null;
             yield return null; // Garanti olsun diye 2 kare bekle
 
-            // 3. ÞÝMDÝ o kayan panelleri yeni sýnýrlara ýþýnla
+            // 3. ÅžÄ°MDÄ° o kayan panelleri yeni sÄ±nÄ±rlara Ä±ÅŸÄ±nla
             MenuManager.Instance.FixMenuPositions();
         }
     }
@@ -576,8 +580,8 @@ public class Settings : MonoBehaviour
 
     public void SetPixelation(int limitIndex)
     {
-        // limitIndex büyüdükçe (0->3) pikselleþme artar (Kalite düþer)
-        // Tam istediðin mantýk bu.
+        // limitIndex bÃ¼yÃ¼dÃ¼kÃ§e (0->3) pikselleÅŸme artar (Kalite dÃ¼ÅŸer)
+        // Tam istediÄŸin mantÄ±k bu.
         QualitySettings.globalTextureMipmapLimit = limitIndex;
         PlayerPrefs.SetInt("TextureMipmapLimit", limitIndex);
         PlayerPrefs.Save();
@@ -587,7 +591,7 @@ public class Settings : MonoBehaviour
     {
         if (textComp != null)
         {
-            // 0-1 arasýndaki deðeri 100 ile çarpýp tam sayýya yuvarlýyoruz
+            // 0-1 arasÄ±ndaki deÄŸeri 100 ile Ã§arpÄ±p tam sayÄ±ya yuvarlÄ±yoruz
             int percentage = Mathf.RoundToInt(value * 100);
             textComp.text = "%" + percentage; // Veya istersen: percentage + "%"
         }
@@ -595,7 +599,7 @@ public class Settings : MonoBehaviour
 
     private void InitializeAudio()
     {
-        // 1. Kayýtlý deðerleri çek (Yoksa 0.75 varsayýlan olsun)
+        // 1. KayÄ±tlÄ± deÄŸerleri Ã§ek (Yoksa 0.75 varsayÄ±lan olsun)
         float masterVol = PlayerPrefs.GetFloat("MasterVol", defaultMasterVolume);
         float soundFXVol = PlayerPrefs.GetFloat("SoundFXVol", defaultSoundFXVolume);
         float musicVol = PlayerPrefs.GetFloat("MusicVol", defaultMusicVolume);
@@ -603,7 +607,7 @@ public class Settings : MonoBehaviour
         float typewriterVol = PlayerPrefs.GetFloat("TypewriterVol", defaultTypewriterVolume);
         float uiVol = PlayerPrefs.GetFloat("UIVol", defaultUIVolume);
 
-        // 2. Sliderlarý bu deðerlere getir
+        // 2. SliderlarÄ± bu deÄŸerlere getir
         if (masterSlider) masterSlider.value = masterVol;
         if (soundFXSlider) soundFXSlider.value = soundFXVol;
         if (musicSlider) musicSlider.value = musicVol;
@@ -618,9 +622,9 @@ public class Settings : MonoBehaviour
         UpdateVolumeText(typewriterText, typewriterVol);
         UpdateVolumeText(uiText, uiVol);
 
-        // 3. Sesi de ayarla (SoundManager üzerinden)
-        // NOT: SoundManager'ýn Start'ýnda da bunu çaðýrýyor olabilirsin, 
-        // çakýþmamasý için SoundManager'da PlayerPrefs okuma varsa orayý silip buradan yönetebilirsin.
+        // 3. Sesi de ayarla (SoundManager Ã¼zerinden)
+        // NOT: SoundManager'Ä±n Start'Ä±nda da bunu Ã§aÄŸÄ±rÄ±yor olabilirsin, 
+        // Ã§akÄ±ÅŸmamasÄ± iÃ§in SoundManager'da PlayerPrefs okuma varsa orayÄ± silip buradan yÃ¶netebilirsin.
         if (SoundManager.Instance != null)
         {
             SoundManager.Instance.SetMasterVolume(masterVol);
@@ -685,10 +689,10 @@ public class Settings : MonoBehaviour
         qualityDropdown.ClearOptions();
         List<string> options = new List<string>();
 
-        // Her bir key için o anki dildeki karþýlýðýný çek
+        // Her bir key iÃ§in o anki dildeki karÅŸÄ±lÄ±ÄŸÄ±nÄ± Ã§ek
         foreach (string key in qualityKeys)
         {
-            string localizedName = "MISSING_TEXT"; // Güvenlik önlemi
+            string localizedName = "MISSING_TEXT"; // GÃ¼venlik Ã¶nlemi
 
             if (LocalizationManager.Instance != null)
                 localizedName = LocalizationManager.Instance.GetText(key);
@@ -698,16 +702,16 @@ public class Settings : MonoBehaviour
 
         qualityDropdown.AddOptions(options);
 
-        int currentQuality = PlayerPrefs.GetInt("Quality", 2); // Varsayýlan: Medium (Index 2)
+        int currentQuality = PlayerPrefs.GetInt("Quality", 2); // VarsayÄ±lan: Medium (Index 2)
 
-        // Grafik ayarýný uygula
+        // Grafik ayarÄ±nÄ± uygula
         QualitySettings.SetQualityLevel(currentQuality, true);
 
         qualityDropdown.value = currentQuality;
         qualityDropdown.RefreshShownValue();
     }
 
-    // Dropdown'a baðlanacak fonksiyon
+    // Dropdown'a baÄŸlanacak fonksiyon
     public void SetQuality(int qualityIndex)
     {
         QualitySettings.SetQualityLevel(qualityIndex, true);
@@ -768,65 +772,95 @@ public class Settings : MonoBehaviour
         Resolution resolution = filteredResolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
 
-        // Unity'nin kendine gelmesi için biraz daha uzun bir nefes (3 kare)
+        // Unity'nin kendine gelmesi iÃ§in biraz daha uzun bir nefes (3 kare)
         yield return null;
         yield return null;
         yield return null;
 
         if (MenuManager.Instance != null)
         {
-            // 1. Önce Scalerlarý güncelle (UI Boyutlansýn)
+            // 1. Ã–nce ScalerlarÄ± gÃ¼ncelle (UI BoyutlansÄ±n)
             MenuManager.Instance.RefreshAllCanvases();
 
-            // 2. Canvas'ý zorla güncelle (Layoutlar otursun)
+            // 2. Canvas'Ä± zorla gÃ¼ncelle (Layoutlar otursun)
             Canvas.ForceUpdateCanvases();
 
-            // 3. ÞÝMDÝ Pozisyonlarý düzelt
+            // 3. ÅžÄ°MDÄ° PozisyonlarÄ± dÃ¼zelt
             MenuManager.Instance.FixMenuPositions();
 
             InitializeUIScale();
         }
     }
 
-    // --- LANGUAGE KISMI (YENÝ EKLENDÝ) ---
+    // --- LANGUAGE KISMI (YENÄ° EKLENDÄ°) ---
 
     private void InitializeLanguage()
     {
-        // Mevcut dili bul (LocalizationManager veya PlayerPrefs üzerinden)
-        // Senin sisteminde dil "tr", "en" gibi string olarak tutuluyordu.
-        // Örnek: LocalizationManager.Instance.CurrentLanguageKey gibi bir yerden çekiyoruz.
-        // Eðer elinde böyle bir deðiþken yoksa PlayerPrefs'ten okuruz:
+        // 1. DROPDOWN'I ZENGÄ°N METÄ°NLE DOLDUR
+        PopulateLanguageDropdown();
 
-        string currentLang = PlayerPrefs.GetString("Language", "en"); // Varsayýlan en
+        // 2. MEVCUT DÄ°LÄ° SEÃ‡
+        string currentLang = PlayerPrefs.GetString("Language", "en");
 
-        // Bu dil kodunun listede kaçýncý sýrada olduðunu bul
-        int index = languageCodes.IndexOf(currentLang);
+        // Listeden kodu bulup indexi ayarlÄ±yoruz
+        int index = languageDisplayList.FindIndex(x => x.languageCode == currentLang);
 
-        // Eðer listede varsa dropdown'ý o sayýya getir
         if (index != -1)
         {
             languageDropdown.value = index;
             languageDropdown.RefreshShownValue();
         }
 
-        // 3. KRÝTÝK HAMLE: LocalizationManager'a bu dili ZORLA uygula!
-        // (Bunu yapmazsak Manager sistem dilini kullanýp Türkçe açabilir)
+        // 3. DÄ°LÄ° UYGULA
         if (LocalizationManager.Instance != null)
         {
-            // Eðer Manager zaten o dildeyse bile tekrar set etmekte zarar yok, garanti olsun.
             LocalizationManager.Instance.ChangeLanguage(currentLang);
         }
     }
 
-    // Dropdown OnValueChanged olayýna baðlanacak fonksiyon
+    private void PopulateLanguageDropdown()
+    {
+        languageDropdown.ClearOptions();
+        List<string> options = new List<string>();
+
+        foreach (var langOption in languageDisplayList)
+        {
+            // Font adÄ± ve Font boyutu
+            string fontName = langOption.fontAsset.name;
+            string pixelSize = langOption.fontSize.ToString("F0");
+
+            // YENÄ°: Offset deÄŸerini string'e Ã§evir
+            string offsetVal = langOption.vOffset.ToString("F0");
+
+            // --- BÃœYÃœLÃœ FORMÃœL ---
+            // <voffset=14> ... </voffset>
+
+            string finalString = $"<font=\"{fontName}\"><size={pixelSize}><voffset={offsetVal}>{langOption.nativeName}</voffset></size></font>";
+
+            options.Add(finalString);
+        }
+
+        languageDropdown.AddOptions(options);
+    }
+
+    // YENÄ° EKLEME: Dropdown'dan seÃ§im yapÄ±ldÄ±ÄŸÄ±nda index'i koda Ã§evirip dili deÄŸiÅŸtirmemiz lazÄ±m
+    public void OnLanguageDropdownChanged(int index)
+    {
+        if (index >= 0 && index < languageDisplayList.Count)
+        {
+            SetLanguage(index); // Mevcut SetLanguage fonksiyonunu string alacak ÅŸekilde overload etmen gerekebilir veya aÅŸaÄŸÄ±ya bak
+        }
+    }
+
+    // Mevcut SetLanguage int alÄ±yordu, onu gÃ¼ncellememiz gerekebilir.
+    // EÄŸer senin Dropdown eventin direkt SetLanguage(int index) Ã§aÄŸÄ±rÄ±yorsa:
     public void SetLanguage(int index)
     {
-        // Seçilen index'e karþýlýk gelen kodu al (0 -> tr, 1 -> en)
-        string selectedCode = languageCodes[index];
+        // Listeden kodu bul
+        string selectedCode = languageDisplayList[index].languageCode;
 
-        LocalizationManager.Instance.ChangeLanguage(selectedCode); 
+        LocalizationManager.Instance.ChangeLanguage(selectedCode);
 
-        // 2. Kaydet (Eðer Manager kaydetmiyorsa sen kaydet)
         PlayerPrefs.SetString("Language", selectedCode);
         PlayerPrefs.Save();
     }
@@ -846,10 +880,10 @@ public class Settings : MonoBehaviour
             LocalizationManager.Instance.OnLanguageChanged -= RefreshDropdowns;
     }
 
-    // Dil deðiþince bu çalýþacak
+    // Dil deÄŸiÅŸince bu Ã§alÄ±ÅŸacak
     private void RefreshDropdowns()
     {
-        // Kalite listesini yeni dile göre tekrar oluþtur
+        // Kalite listesini yeni dile gÃ¶re tekrar oluÅŸtur
         InitializeQuality();
         InitializeVideoSettings();
         InitializePixelation();
@@ -860,7 +894,7 @@ public class Settings : MonoBehaviour
 
     public void ResetGamepadUISettings()
     {
-        // 1. Stick Layout (Varsayýlan: 0 -> Normal)
+        // 1. Stick Layout (VarsayÄ±lan: 0 -> Normal)
         if (stickLayoutDropdown != null)
         {
             stickLayoutDropdown.value = 0;
@@ -868,12 +902,12 @@ public class Settings : MonoBehaviour
             OnStickLayoutChanged(0); // PlayerPrefs kaydet ve InputManager'a bildir
         }
 
-        // 2. Controller Prompts (Varsayýlan: 0 -> Xbox)
+        // 2. Controller Prompts (VarsayÄ±lan: 0 -> Xbox)
         if (controllerPromptsDropdown != null)
         {
             controllerPromptsDropdown.value = 0;
             controllerPromptsDropdown.RefreshShownValue();
-            OnControllerPromptsChanged(0); // PlayerPrefs kaydet ve Event fýrlat
+            OnControllerPromptsChanged(0); // PlayerPrefs kaydet ve Event fÄ±rlat
         }
 
         if (aimAssistDropdown != null)
@@ -883,26 +917,26 @@ public class Settings : MonoBehaviour
             OnAimAssistChanged(1);
         }
 
-        Debug.Log("Gamepad Dropdownlarý ve Ayarlarý Sýfýrlandý.");
+        Debug.Log("Gamepad DropdownlarÄ± ve AyarlarÄ± SÄ±fÄ±rlandÄ±.");
     }
 
     public void ResetControlsSettings()
     {
-        // 1. Mouse Hassasiyeti (Varsayýlan: 30)
+        // 1. Mouse Hassasiyeti (VarsayÄ±lan: 30)
         if (mouseSensSlider != null)
         {
             mouseSensSlider.value = 30f;
             OnMouseSensChanged(30f);
         }
 
-        // 2. Gamepad Hassasiyeti (Varsayýlan: 50)
+        // 2. Gamepad Hassasiyeti (VarsayÄ±lan: 50)
         if (gamepadSensSlider != null)
         {
             gamepadSensSlider.value = 50f;
             OnGamepadSensChanged(50f);
         }
 
-        // 3. Invert Y (Varsayýlan: Kapalý / 1)
+        // 3. Invert Y (VarsayÄ±lan: KapalÄ± / 1)
         if (invertYDropdown != null)
         {
             invertYDropdown.value = 0;
@@ -910,7 +944,7 @@ public class Settings : MonoBehaviour
             OnInvertYChanged(0);
         }
 
-        // 4. Sprint Mode (Varsayýlan: Hold / 0)
+        // 4. Sprint Mode (VarsayÄ±lan: Hold / 0)
         if (sprintModeDropdown != null)
         {
             sprintModeDropdown.value = 0;
@@ -918,7 +952,7 @@ public class Settings : MonoBehaviour
             OnSprintModeChanged(0);
         }
 
-        // 5. Crouch Mode (Varsayýlan: Hold / 0)
+        // 5. Crouch Mode (VarsayÄ±lan: Hold / 0)
         if (crouchModeDropdown != null)
         {
             crouchModeDropdown.value = 0;
@@ -926,12 +960,12 @@ public class Settings : MonoBehaviour
             OnCrouchModeChanged(0);
         }
 
-        // NOT: Senin daha önce yazdýðýn "ResetGamepadUISettings" fonksiyonunu da 
-        // buraya dahil etmek istersen (Stick Layout, Aim Assist vb. de sýfýrlansýn diye)
-        // þu satýrý açabilirsin:
+        // NOT: Senin daha Ã¶nce yazdÄ±ÄŸÄ±n "ResetGamepadUISettings" fonksiyonunu da 
+        // buraya dahil etmek istersen (Stick Layout, Aim Assist vb. de sÄ±fÄ±rlansÄ±n diye)
+        // ÅŸu satÄ±rÄ± aÃ§abilirsin:
         // ResetGamepadUISettings(); 
 
-        Debug.Log("Kontrol Ayarlarý Varsayýlanlara Döndü.");
+        Debug.Log("Kontrol AyarlarÄ± VarsayÄ±lanlara DÃ¶ndÃ¼.");
     }
 
     // ==================================================================================
@@ -939,7 +973,7 @@ public class Settings : MonoBehaviour
     // ==================================================================================
     public void ResetAudioSettings()
     {
-        // Settings.cs baþýnda tanýmladýðýn "default...Volume" deðiþkenlerini kullanýyoruz.
+        // Settings.cs baÅŸÄ±nda tanÄ±mladÄ±ÄŸÄ±n "default...Volume" deÄŸiÅŸkenlerini kullanÄ±yoruz.
 
         // Ana Ses
         if (masterSlider != null)
@@ -955,7 +989,7 @@ public class Settings : MonoBehaviour
             OnSoundFXSliderChanged(defaultSoundFXVolume);
         }
 
-        // Müzik
+        // MÃ¼zik
         if (musicSlider != null)
         {
             musicSlider.value = defaultMusicVolume;
@@ -983,7 +1017,7 @@ public class Settings : MonoBehaviour
             OnUISliderChanged(defaultUIVolume);
         }
 
-        Debug.Log("Ses Ayarlarý Varsayýlanlara Döndü.");
+        Debug.Log("Ses AyarlarÄ± VarsayÄ±lanlara DÃ¶ndÃ¼.");
     }
 
     // ==================================================================================
@@ -991,12 +1025,12 @@ public class Settings : MonoBehaviour
     // ==================================================================================
     public void ResetGeneralSettings()
     {
-        // --- ÇÖZÜNÜRLÜK KISMI ÝPTAL EDÝLDÝ ---
-        // Çözünürlük deðiþimi donanýmý yoruyor ve ekraný kilitleyebiliyor.
-        // O yüzden çözünürlüðe dokunmuyoruz, oyuncu ne seçtiyse o kalsýn.
+        // --- Ã‡Ã–ZÃœNÃœRLÃœK KISMI Ä°PTAL EDÄ°LDÄ° ---
+        // Ã‡Ã¶zÃ¼nÃ¼rlÃ¼k deÄŸiÅŸimi donanÄ±mÄ± yoruyor ve ekranÄ± kilitleyebiliyor.
+        // O yÃ¼zden Ã§Ã¶zÃ¼nÃ¼rlÃ¼ÄŸe dokunmuyoruz, oyuncu ne seÃ§tiyse o kalsÄ±n.
         // ------------------------------------
 
-        // 1. Kalite (Varsayýlan: Medium / 2)
+        // 1. Kalite (VarsayÄ±lan: Medium / 2)
         if (qualityDropdown != null)
         {
             qualityDropdown.value = 2;
@@ -1004,27 +1038,27 @@ public class Settings : MonoBehaviour
             SetQuality(2);
         }
 
-        // YENÝ: VSync (Varsayýlan: ON / Dropdown Index 0)
+        // YENÄ°: VSync (VarsayÄ±lan: ON / Dropdown Index 0)
         if (vSyncDropdown != null)
         {
             vSyncDropdown.value = 0; // 0 = "UI_ON"
             vSyncDropdown.RefreshShownValue();
 
-            // SetVSync(0) çaðýrýnca yukarýdaki yeni mantýkla Unity ayarýný 1 yapacak.
+            // SetVSync(0) Ã§aÄŸÄ±rÄ±nca yukarÄ±daki yeni mantÄ±kla Unity ayarÄ±nÄ± 1 yapacak.
             SetVSync(0);
         }
 
-        // YENÝ: FPS (Varsayýlan: Unlimited)
+        // YENÄ°: FPS (VarsayÄ±lan: Unlimited)
         if (fpsDropdown != null)
         {
-            // Sýnýrsýz listenin son elemaný
+            // SÄ±nÄ±rsÄ±z listenin son elemanÄ±
             int lastIndex = fpsValues.Length - 1;
             fpsDropdown.value = lastIndex;
             fpsDropdown.RefreshShownValue();
             SetMaxFPS(lastIndex);
         }
 
-        // 3. Arayüz Boyutu (Varsayýlan: 0 - Offset Yok)
+        // 3. ArayÃ¼z Boyutu (VarsayÄ±lan: 0 - Offset Yok)
         if (uiScaleDropdown != null)
         {
             uiScaleDropdown.value = 0;
@@ -1032,7 +1066,7 @@ public class Settings : MonoBehaviour
             OnUIScaleChanged(0);
         }
 
-        // 4. Ýpuçlarý (Varsayýlan: Görünür / 0)
+        // 4. Ä°puÃ§larÄ± (VarsayÄ±lan: GÃ¶rÃ¼nÃ¼r / 0)
         if (hintsDropdown != null)
         {
             hintsDropdown.value = 0;
@@ -1040,7 +1074,7 @@ public class Settings : MonoBehaviour
             SetHints(0);
         }
 
-        // 5. Etkileþim Metni (Varsayýlan: Görünür / 0)
+        // 5. EtkileÅŸim Metni (VarsayÄ±lan: GÃ¶rÃ¼nÃ¼r / 0)
         if (interactTextDropdown != null)
         {
             interactTextDropdown.value = 0;
@@ -1048,7 +1082,7 @@ public class Settings : MonoBehaviour
             SetInteractText(0);
         }
 
-        // 6. Pikselleþme (Varsayýlan: HD / 0)
+        // 6. PikselleÅŸme (VarsayÄ±lan: HD / 0)
         if (pixelationDropdown != null)
         {
             pixelationDropdown.value = 0; // 0: En net
@@ -1056,6 +1090,6 @@ public class Settings : MonoBehaviour
             SetPixelation(0);
         }
 
-        Debug.Log("Genel Ayarlar (Çözünürlük Hariç) Varsayýlanlara Döndü.");
+        Debug.Log("Genel Ayarlar (Ã‡Ã¶zÃ¼nÃ¼rlÃ¼k HariÃ§) VarsayÄ±lanlara DÃ¶ndÃ¼.");
     }
 }

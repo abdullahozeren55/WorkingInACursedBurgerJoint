@@ -6,7 +6,7 @@ public class LocalizedText : MonoBehaviour
     public string localizationKey;
 
     // YENÝ: Bu metin hangi türde? (Inspector'dan seç: Header mý? Dialogue mi?)
-    public FontType fontType = FontType.PixelOutlined;
+    public FontType fontType = FontType.DialogueOutlined;
 
     private TMP_Text _textComp;
 
