@@ -1,14 +1,18 @@
-Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
+Shader "Custom/PixelFontOutline_AnimSupport_Final"
 {
     Properties
     {
         _MainTex ("Font Atlas", 2D) = "white" {}
-        _Color ("Text Color", Color) = (1,1,1,1)
+        _Color ("Main Color (Vertex)", Color) = (1,1,1,1)
         
+        // --- UIGlowController ÝÇÝN GEREKLÝ ---
+        // Scriptin aradýðý _FaceColor özelliði. Default beyaz yaptýk ki script çalýþmazsa yazý normal görünsün.
+        [HDR] _FaceColor ("Face Color (Glow)", Color) = (1,1,1,1)
+        // -------------------------------------
+
         [Header(Outline Settings)]
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _AtlasWidth ("Atlas Width (Pixel)", Float) = 512.0
-        // YENÝ EKLENEN KALINLIK AYARI (Slider olarak 0-5 arasý)
         [Range(0, 5)] _OutlineThickness ("Outline Thickness", Float) = 1.0
 
         // --- MASK FIX STANDARTLARI ---
@@ -18,7 +22,6 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
         [HideInInspector] _StencilWriteMask ("Stencil Write Mask", Float) = 255
         [HideInInspector] _StencilReadMask ("Stencil Read Mask", Float) = 255
         [HideInInspector] _ColorMask ("Color Mask", Float) = 15
-        // -----------------------------
     }
 
     SubShader
@@ -32,7 +35,6 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
             "CanUseSpriteAtlas"="True"
         }
         
-        // --- STENCIL BLOK (Maskeleme için gerekli) ---
         Stencil
         {
             Ref [_Stencil]
@@ -41,7 +43,6 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
             ReadMask [_StencilReadMask]
             WriteMask [_StencilWriteMask]
         }
-        // --------------------------------------------
 
         Cull Off
         Lighting Off
@@ -77,8 +78,11 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
             float4 _MainTex_ST;
             fixed4 _Color;
             fixed4 _OutlineColor;
+            
+            // Scriptten gelen Glow Rengi buraya düþecek
+            fixed4 _FaceColor; 
+
             float _AtlasWidth;
-            // Yeni kalýnlýk deðiþkeni
             float _OutlineThickness;
             float4 _ClipRect;
 
@@ -88,19 +92,15 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
                 OUT.worldPosition = IN.vertex;
                 OUT.vertex = UnityObjectToClipPos(IN.vertex);
                 OUT.texcoord = TRANSFORM_TEX(IN.texcoord, _MainTex);
-                // Text Animator'dan gelen renk ve alpha deðiþimlerini alýyoruz
+                // Vertex color (Text Animator vs) ile Main Color çarpýmý
                 OUT.color = IN.color * _Color; 
                 return OUT;
             }
 
             fixed4 frag(v2f IN) : SV_Target
             {
-                // 1 pikselin UV'deki karþýlýðý
                 float baseStep = 1.0 / _AtlasWidth;
-                // Kalýnlýk ile çarpýlmýþ nihai ofset deðeri
                 float offset = baseStep * max(0.0, _OutlineThickness);
-
-                // Texture Alpha deðerini al
                 float mainAlpha = tex2D(_MainTex, IN.texcoord).a;
 
                 fixed4 finalColor = fixed4(0,0,0,0);
@@ -109,15 +109,21 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
                 // 1. ANA YAZI
                 if (mainAlpha > 0.1)
                 {
-                    finalColor = fixed4(IN.color.rgb, mainAlpha * IN.color.a);
+                    // BURASI DEÐÝÞTÝ:
+                    // IN.color (Vertex+Main) * _FaceColor (Scriptten gelen Glow)
+                    // Böylece script rengi parlattýðýnda yazý da parlayacak.
+                    finalColor = IN.color * _FaceColor;
+                    
+                    // Alpha'yý texture'dan alýp uyguluyoruz
+                    finalColor.a *= mainAlpha;
+                    
                     hasColor = true;
                 }
-                // 2. OUTLINE KONTROLÜ (Eðer kalýnlýk 0'dan büyükse)
+                // 2. OUTLINE KONTROLÜ
                 else if (_OutlineThickness > 0.0)
                 {
                     float alphaSum = 0.0;
                     
-                    // 4 Yön + Çaprazlar (Artýk 'offset' deðiþkenini kullanýyor)
                     alphaSum += tex2D(_MainTex, IN.texcoord + float2(offset, 0)).a;
                     alphaSum += tex2D(_MainTex, IN.texcoord - float2(offset, 0)).a;
                     alphaSum += tex2D(_MainTex, IN.texcoord + float2(0, offset)).a;
@@ -130,7 +136,9 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
 
                     if (alphaSum > 0.1)
                     {
-                        // Outline rengini al, Alpha'sýný Text Animator'ýn gönderdiði Alpha ile çarp.
+                        // Outline rengi scriptten etkilenmesin istiyorsan böyle kalsýn.
+                        // Etkilensin istersen _OutlineColor * _FaceColor yapabilirsin.
+                        // Þimdilik sadece ana yazý parlasýn diye böyle býrakýyorum.
                         finalColor = fixed4(_OutlineColor.rgb, _OutlineColor.a * IN.color.a);
                         hasColor = true;
                     }
@@ -138,7 +146,6 @@ Shader "Custom/PixelFontOutline_AnimSupport_Fixed_Thick"
 
                 if (hasColor)
                 {
-                    // --- MASK CHECK --- (RectMask2D ve Normal Mask desteði)
                     finalColor.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
                     return finalColor;
                 }
