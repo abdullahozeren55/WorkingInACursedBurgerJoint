@@ -146,28 +146,35 @@ public class LocalizationManager : MonoBehaviour
     }
 
     // --- YENÝLENMÝÞ FONT MANTIÐI ---
-    public TMP_FontAsset GetFontForCurrentLanguage(FontType type)
+    // 1. Mevcut dilin ayarlarýný getir
+    public LanguageFontProfile.FontData GetFontDataForCurrentLanguage(FontType type)
     {
-        TMP_FontAsset fontToReturn = null;
-
-        // 1. Önce þu anki dil için "Özel Profil" var mý diye bak (Örn: Çince, Rusça)
+        // Önce özel dile bak (Japonca, Rusça vs.)
         LanguageFontProfile specificProfile = fontProfiles.Find(x => x.language == currentLanguage);
-
         if (specificProfile != null)
         {
-            // O dilde bu tür için (Örn: Header) bir font tanýmlanmýþ mý?
-            fontToReturn = specificProfile.GetFont(type);
+            // O profilde bu FontType tanýmlý mý diye kontrol et
+            var data = specificProfile.GetFontData(type);
+            if (data.font != null) return data;
         }
 
-        // 2. Eðer özel profil yoksa VEYA özel profilde bu tür tanýmlý deðilse (null döndüyse)
-        // Varsayýlan (Ýngilizce/Latin) profiline git.
-        if (fontToReturn == null && defaultFontProfile != null)
+        // Yoksa Default (Latin) profilinden getir
+        if (defaultFontProfile != null)
         {
-            fontToReturn = defaultFontProfile.GetFont(type);
+            return defaultFontProfile.GetFontData(type);
         }
 
-        // 3. Eðer hala null ise (Default profilde bile tanýmlanmamýþsa) son çare Unity'nin default fontu dönsün.
-        // Ama yukarýdakileri doðru ayarlarsan buraya hiç düþmez.
-        return fontToReturn;
+        return new LanguageFontProfile.FontData();
+    }
+
+    // 2. Default (Latin/Referans) ayarlarýný getir (ORAN HESABI ÝÇÝN GEREKLÝ)
+    public LanguageFontProfile.FontData GetDefaultFontData(FontType type)
+    {
+        if (defaultFontProfile != null)
+        {
+            return defaultFontProfile.GetFontData(type);
+        }
+        // Acil durum kaçýþý
+        return new LanguageFontProfile.FontData { basePixelSize = 16f };
     }
 }

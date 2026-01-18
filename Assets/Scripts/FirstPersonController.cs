@@ -186,6 +186,15 @@ public class FirstPersonController : MonoBehaviour
     private bool focusTextComplete;
     private Coroutine grabbedUseCoroutine;
 
+    // Orijinal deðerleri saklamak için (Hafýza)
+    private float _initFocusFontSize;
+    private float _initFocusCharSpacing;
+    private float _initFocusWordSpacing;
+    private float _initFocusLineSpacing;
+    private Vector2 _initFocusAnchoredPos;
+    private RectTransform _focusTextRect;
+    // --- YENÝ EKLENENLER BÝTÝÞ ---
+
     [Header("HandControlSettings")]
     [SerializeField, Range(0, 10)] private float handControlSpeedX = 0.2f;
     [SerializeField, Range(0, 10)] private float handControlSpeedY = 0.2f;
@@ -272,6 +281,20 @@ public class FirstPersonController : MonoBehaviour
 
         DecideOutlineAndCrosshair();
 
+        if (focusText != null)
+        {
+            _focusTextRect = focusText.GetComponent<RectTransform>();
+
+            // Orijinal deðerleri "Referans" olarak kaydet
+            _initFocusFontSize = focusText.fontSize;
+            _initFocusCharSpacing = focusText.characterSpacing;
+            _initFocusWordSpacing = focusText.wordSpacing;
+            _initFocusLineSpacing = focusText.lineSpacing;
+
+            if (_focusTextRect != null)
+                _initFocusAnchoredPos = _focusTextRect.anchoredPosition;
+        }
+
         defaultWalkSpeed = walkSpeed;
         defaultSprintSpeed = sprintSpeed;
         defaultLookSpeedX = lookSpeedX;
@@ -297,7 +320,7 @@ public class FirstPersonController : MonoBehaviour
 
         RefreshUISettings();
 
-        UpdateFocusTextFont();
+        UpdateFocusTextAppearance();
 
         CalculateArmLengths();
 
@@ -2601,7 +2624,7 @@ public class FirstPersonController : MonoBehaviour
     private void ForceUpdateFocusText()
     {
         // 1. ÖNCE FONTU GÜNCELLE (Bu satýr eksikti!)
-        UpdateFocusTextFont();
+        UpdateFocusTextAppearance();
 
         // 2. SONRA METNÝ GÜNCELLE (Mevcut kodun)
         // Hangi objeye baktýðýmýzý bulalým
@@ -2695,17 +2718,44 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    private void UpdateFocusTextFont()
+    // YENÝLENMÝÞ FONKSÝYON: Font, Boyut, Konum ve Spacing ayarlarýný yapar
+    private void UpdateFocusTextAppearance()
     {
-        if (LocalizationManager.Instance != null && focusText != null)
-        {
-            TMP_FontAsset newFont = LocalizationManager.Instance.GetFontForCurrentLanguage(focusTextFontType);
+        if (LocalizationManager.Instance == null || focusText == null) return;
 
-            // Gereksiz atamadan kaçýnmak için kontrol
-            if (newFont != null && focusText.font != newFont)
-            {
-                focusText.font = newFont;
-            }
+        // 1. Gerekli Datalarý Çek
+        // Hedef dil (Örn: Japonca)
+        var targetData = LocalizationManager.Instance.GetFontDataForCurrentLanguage(focusTextFontType);
+        // Referans dil (Latin) - Oran hesabý için
+        var defaultData = LocalizationManager.Instance.GetDefaultFontData(focusTextFontType);
+
+        // 2. Font Assetini Deðiþtir
+        if (targetData.font != null && focusText.font != targetData.font)
+        {
+            focusText.font = targetData.font;
+        }
+
+        // --- MATEMATÝKSEL HESAPLAMALAR ---
+
+        // 3. BOYUT (Ratio Scaling)
+        // Senin Inspector'da verdiðin boyut, Latin Base boyutunun kaç katý?
+        float defaultBaseSize = Mathf.Max(defaultData.basePixelSize, 0.1f); // 0 hatasý önlemi
+        float scaleRatio = _initFocusFontSize / defaultBaseSize;
+
+        // Yeni fontu da ayný oranda büyüt
+        focusText.fontSize = targetData.basePixelSize * scaleRatio;
+
+        // 4. SPACING (Additive Offset)
+        // Farklarý ekle
+        focusText.characterSpacing = _initFocusCharSpacing + (targetData.characterSpacingOffset - defaultData.characterSpacingOffset);
+        focusText.wordSpacing = _initFocusWordSpacing + (targetData.wordSpacingOffset - defaultData.wordSpacingOffset);
+        focusText.lineSpacing = _initFocusLineSpacing + (targetData.lineSpacingOffset - defaultData.lineSpacingOffset);
+
+        // 5. KONUM (Delta Offset)
+        if (_focusTextRect != null)
+        {
+            Vector2 offsetDelta = targetData.positionOffset - defaultData.positionOffset;
+            _focusTextRect.anchoredPosition = _initFocusAnchoredPos + offsetDelta;
         }
     }
 
