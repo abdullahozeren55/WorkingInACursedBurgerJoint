@@ -331,6 +331,46 @@
     "pt": "Pegar Pote De Molho Buffalo"
   },
   {
+    "key": "INTERACTABLE_ORANGE_JUICE_BOX",
+    "tr": "Portakal Suyu Al",
+    "en": "Take Orange Juice",
+    "zh": "拿橙汁",
+    "ja": "オレンジジュースを取る",
+    "es": "Tomar Jugo De Naranja",
+    "ru": "Взять Апельсиновый Сок",
+    "pt": "Pegar Suco De Laranja"
+  },
+  {
+    "key": "INTERACTABLE_CHERRY_JUICE_BOX",
+    "tr": "Vişne Suyu Al",
+    "en": "Take Cherry Juice",
+    "zh": "拿樱桃汁",
+    "ja": "チェリージュースを取る",
+    "es": "Tomar Jugo De Cereza",
+    "ru": "Взять Вишневый Сок",
+    "pt": "Pegar Suco De Cereja"
+  },
+  {
+    "key": "INTERACTABLE_LEMONADE_BOX",
+    "tr": "Limonata Al",
+    "en": "Take Lemonade",
+    "zh": "拿柠檬水",
+    "ja": "レモネードを取る",
+    "es": "Tomar Limonada",
+    "ru": "Взять Лимонад",
+    "pt": "Pegar Limonada"
+  },
+  {
+    "key": "INTERACTABLE_AYRAN_BOX",
+    "tr": "Ayran Al",
+    "en": "Take Ayran",
+    "zh": "拿爱兰",
+    "ja": "アイランを取る",
+    "es": "Tomar Ayran",
+    "ru": "Взять Айран",
+    "pt": "Pegar Ayran"
+  },
+  {
     "key": "INTERACTABLE_TURN_ON_LIGHT",
     "tr": "Işığı Aç",
     "en": "Turn On Light",

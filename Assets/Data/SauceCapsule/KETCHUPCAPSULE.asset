@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdc209bf6bae9e24c9230f296d5ffdf9, type: 3}
   m_Name: KETCHUPCAPSULE
   m_EditorClassIdentifier: 
-  focusTextKey: GRABABLE_KETCHUP
+  focusTextKey: GRABABLE_KETCHUP_CAPSULE
   sauceType: 0
   handGrabType: 13
   handRigType: 1
@@ -41,6 +41,7 @@ MonoBehaviour:
     localRotation: {x: 0, y: -90, z: -90}
   grabbedLocalScale: {x: 22.222225, y: 17.77778, z: 22.222223}
   trayLocalScale: {x: 0.24999999, y: 0.18528475, z: 0.22960493}
+  zHeightIncreasePerSauce: 0.0005
   grabPositionOffset: {x: 0.6, y: 1, z: 2}
   grabRotationOffset: {x: -20, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.01, y: 0.0673, z: 0.0372}

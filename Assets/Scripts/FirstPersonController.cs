@@ -1793,17 +1793,30 @@ public class FirstPersonController : MonoBehaviour
 
     public void ForceUpdateCurrentGrabableReference(IGrabable newReference)
     {
+        // --- EKLENEN KRÝTÝK KISIM: HISTORY GÜNCELLEMESÝ ---
+        // Eski script (þu anki currentGrabable) tarihçede kayýtlýysa,
+        // onun yerini de yeni script (BurgerIngredient) almalý.
+        // Bunu yapmazsak drop/throw sonrasý otomatik seçim sistemi eski scripti arar ve bulamaz.
+        if (currentGrabable != null)
+        {
+            int historyIndex = itemPickupHistory.IndexOf(currentGrabable);
+            if (historyIndex != -1)
+            {
+                itemPickupHistory[historyIndex] = newReference;
+            }
+        }
+        // --------------------------------------------------
+
         // 1. Ana referansý güncelle
         currentGrabable = newReference;
 
-        // 2. Envanter dizisini güncelle (Çok Kritik!)
-        // Bunu yapmazsak slot deðiþtirdiðinde veya tekrar baktýðýnda eski scripti bulur.
+        // 2. Envanter dizisini güncelle
         if (currentSlotIndex != -1 && currentSlotIndex < inventoryItems.Length)
         {
             inventoryItems[currentSlotIndex] = newReference;
         }
 
-        // 3. UI'ý güncelle (Ýkon deðiþmiþ olabilir)
+        // 3. UI'ý güncelle
         RefreshInventoryUI();
 
         // 4. Outline rengini yeni scripte göre tekrar hesapla
