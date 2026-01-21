@@ -43,6 +43,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     // Hangi ýzgaradayým? (Grill.cs tarafýndan atanýr)
     [HideInInspector] public Grill currentGrill;
+    [HideInInspector] public ParticleSystem attachedSmoke;
 
     private Rigidbody rb;
     private Collider col;
@@ -252,6 +253,16 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 burgerCombineArea.RemoveIngredient();
 
             isAddedToBurger = false;
+        }
+
+        if (attachedSmoke != null)
+        {
+            if (cookAmount == CookAmount.RAW)
+            {
+                attachedSmoke.Stop();
+                attachedSmoke = null; // Artýk dumaným yok
+            }
+            // Else: Piþmiþse dokunma, benimle gelsin.
         }
 
         // Eðer bir ýzgaradaysak, önce oradan çýkýþ yapalým
@@ -464,6 +475,12 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         // Sticker (Yapýþma) mantýðý (Mevcut kodun)
         if (value == 0) canStick = true;
         else canStick = false;
+
+        // --- YENÝ: IZGARAYA HABER VER (PARTÝKÜL RENGÝ ÝÇÝN) ---
+        if (currentGrill != null)
+        {
+            currentGrill.OnItemStateChanged(this, cookAmount);
+        }
     }
 
     private void OnDestroy()

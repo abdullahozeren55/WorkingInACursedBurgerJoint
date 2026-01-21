@@ -19,6 +19,25 @@ public class BurgerIngredientData : ScriptableObject
         CRISPYCHICKEN,
     }
 
+    [System.Serializable]
+    public struct ParticleColorSet
+    {
+        public Color minColor;
+        public Color maxColor;
+    }
+
+    [Header("Cooking Particle Colors")]
+    public ParticleColorSet rawParticleColors;
+    public ParticleColorSet cookedParticleColors;
+    public ParticleColorSet burntParticleColors;
+
+    [Header("Smoke Particle Colors")]
+    public ParticleColorSet rawSmokeColors;
+    public ParticleColorSet cookedSmokeColors;
+    public ParticleColorSet burntSmokeColors;
+
+    [Space]
+
     public bool isUseable = false;
     public bool isSauce = false;
     public bool isThrowable = true;

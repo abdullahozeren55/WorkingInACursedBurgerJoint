@@ -12,6 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
   m_Name: BOTTOMBUN
   m_EditorClassIdentifier: 
+  rawParticleColors:
+    minColor: {r: 0.8679245, g: 0.76996136, b: 0.59362763, a: 1}
+    maxColor: {r: 0.7924528, g: 0.5942656, b: 0.3999644, a: 1}
+  cookedParticleColors:
+    minColor: {r: 0.754717, g: 0.5705366, b: 0.3737985, a: 1}
+    maxColor: {r: 0.5754717, g: 0.38574934, b: 0.23616058, a: 1}
+  burntParticleColors:
+    minColor: {r: 0.3773585, g: 0.27230468, b: 0.21181916, a: 1}
+    maxColor: {r: 0.1981132, g: 0.13769063, b: 0.08877714, a: 1}
+  rawSmokeColors:
+    minColor: {r: 1, g: 1, b: 1, a: 0.1254902}
+    maxColor: {r: 0.8584906, g: 0.8584906, b: 0.8584906, a: 0.3764706}
+  cookedSmokeColors:
+    minColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 0.2509804}
+    maxColor: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 0.5019608}
+  burntSmokeColors:
+    minColor: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 0.5019608}
+    maxColor: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 0.89411765}
   isUseable: 0
   isSauce: 0
   isThrowable: 1

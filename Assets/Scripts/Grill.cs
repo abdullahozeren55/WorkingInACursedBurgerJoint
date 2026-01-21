@@ -23,22 +23,37 @@ public class Grill : MonoBehaviour
     private float targetVolume = 0f;
     private Coroutine audioFadeCoroutine;
 
-    [Header("Smoke Visuals")]
-    [SerializeField] private ParticleSystem smokeParticles;
-    [SerializeField] private float minSmokeEmission = 5f;
-    [SerializeField] private float maxSmokeEmission = 30f;
-
     [Header("Animation Settings")]
     [SerializeField] private float placementApexHeight = 0.2f; // Tepeden inme yüksekliði (User's Z offset request)
     [SerializeField] private float placementDuration = 0.5f;   // Yerleþme süresi (Biraz daha yavaþ ve tok)
     [SerializeField] private Ease placementEase = Ease.OutSine; // Yumuþak bitiþ
+
+    [Header("Cooking Particles (Per Slot)")]
+    [SerializeField] private ParticleSystem pattyCookParticlesPrefab;
+    [SerializeField] private ParticleSystem topBunCookParticlesPrefab;
+    [SerializeField] private ParticleSystem bottomBunCookParticlesPrefab;
+
+    [Header("Smoke Particles")]
+    [SerializeField] private ParticleSystem smokePrefabWorld;
+    [SerializeField] private ParticleSystem smokePrefabLocal;
+
+    // Slotlardaki aktif dumanlarý takip etmek için:
+    private ParticleSystem[] activeSmokeParticles;
+
+    // Hangi slotta hangi partikül çalýþýyor takip etmek için:
+    private ParticleSystem[] activeSlotParticles;
 
     private void Awake()
     {
         grillAudioSource = GetComponent<AudioSource>();
 
         if (cookingSlots != null)
+        {
             occupiedSlots = new BurgerIngredient[cookingSlots.Count];
+            // Partikül takip dizisini slot sayýsý kadar oluþtur
+            activeSlotParticles = new ParticleSystem[cookingSlots.Count];
+            activeSmokeParticles = new ParticleSystem[cookingSlots.Count];
+        }
 
         if (grillAudioSource != null)
         {
@@ -50,27 +65,43 @@ public class Grill : MonoBehaviour
 
     private void Update()
     {
-        // --- PÝÞÝRME DÖNGÜSÜ ---
-        int currentlyCookingCount = 0; // Duman için sayýyoruz
+        int currentlyCookingCount = 0;
 
         for (int i = 0; i < occupiedSlots.Length; i++)
         {
             BurgerIngredient item = occupiedSlots[i];
 
+            // Item var mý?
             if (item != null)
             {
-                // Item'ýn piþme metodunu çalýþtýr (Time.deltaTime gönderiyoruz)
-                // Metot geriye "Hala piþiyor mu?" (Yandý mý?) döner.
                 bool isStillCooking = item.ProcessCooking(Time.deltaTime);
 
                 if (isStillCooking)
                 {
                     currentlyCookingCount++;
                 }
+                else
+                {
+                    // --- YENÝ MANTIK ---
+                    // Eðer piþme bittiyse (yandýysa) ve partikül hala "Playing" durumundaysa
+                    // (Yani henüz stop emri almadýysa) yavaþça söndür.
+                    if (activeSlotParticles[i] != null && activeSlotParticles[i].isPlaying)
+                    {
+                        // false -> Yavaþça (0.2sn) söndür
+                        StopCookParticles(i, false);
+                    }
+
+                    if (activeSmokeParticles[i] != null && activeSmokeParticles[i].isPlaying)
+                        StopSmokeParticles(i, false);
+                }
+            }
+            // Item yok ama partikül kalmýþsa (Hata durumu veya animasyon bitiþi)
+            else if (activeSlotParticles[i] != null || activeSmokeParticles[i] != null) // Hata korumasý
+            {
+                if (activeSlotParticles[i] != null) StopCookParticles(i, true);
+                if (activeSmokeParticles[i] != null) StopSmokeParticles(i, true);
             }
         }
-
-        HandleSmoke(currentlyCookingCount);
     }
 
     // --- TRIGGER TARAFINDAN ÇAÐRILACAK ---
@@ -117,7 +148,10 @@ public class Grill : MonoBehaviour
             occupiedSlots[index] = null;
             item.currentGrill = null;
 
-            // SES: Listeden çýkan elemanýn türüne göre sayacý azalt
+            // --- GÜNCELLEME: true parametresi ile anýnda durdur ---
+            StopCookParticles(index, true);
+            StopSmokeParticles(index, true);
+
             UpdateAudioCounts(item.data.ingredientType, false);
         }
     }
@@ -165,25 +199,6 @@ public class Grill : MonoBehaviour
         }
 
         grillAudioSource.volume = targetVolume;
-    }
-
-    // --- HELPER METHODS ---
-    private void HandleSmoke(int cookingCount)
-    {
-        if (smokeParticles == null) return;
-
-        var emission = smokeParticles.emission;
-
-        if (cookingCount > 0)
-        {
-            if (!smokeParticles.isPlaying) smokeParticles.Play();
-            float ratio = (float)cookingCount / cookingSlots.Count;
-            emission.rateOverTime = Mathf.Lerp(minSmokeEmission, maxSmokeEmission, ratio);
-        }
-        else
-        {
-            smokeParticles.Stop();
-        }
     }
 
     private void MoveItemToSlot(BurgerIngredient item, int slotIndex)
@@ -247,6 +262,9 @@ public class Grill : MonoBehaviour
             {
                 item.PlayPutOnSoundEffect();
                 item.SetOnGrabableLayer();
+
+                SpawnCookParticles(item, slotIndex);
+                SpawnSmokeParticles(item, slotIndex);
             }
 
             // --- SQUASH EFFECT (SLOT ÜZERÝNDEN) ---
@@ -277,5 +295,209 @@ public class Grill : MonoBehaviour
         for (int i = 0; i < occupiedSlots.Length; i++)
             if (occupiedSlots[i] == item) return i;
         return -1;
+    }
+
+    private void SpawnCookParticles(BurgerIngredient item, int slotIndex)
+    {
+        // 1. Tip kontrolü yapýp doðru prefabý seçelim
+        ParticleSystem prefabToSpawn = null;
+
+        if (item.data.ingredientType == BurgerIngredientData.IngredientType.PATTY)
+        {
+            prefabToSpawn = pattyCookParticlesPrefab;
+        }
+        else if (item.data.ingredientType == BurgerIngredientData.IngredientType.BOTTOMBUN)
+        {
+            // Alt ekmek için özel partikül
+            prefabToSpawn = bottomBunCookParticlesPrefab;
+        }
+        else if (item.data.ingredientType == BurgerIngredientData.IngredientType.TOPBUN)
+        {
+            // Üst ekmek için özel partikül
+            prefabToSpawn = topBunCookParticlesPrefab;
+        }
+
+        // Eðer prefab yoksa veya atanmamýþsa çýk
+        if (prefabToSpawn == null) return;
+
+        // 2. Instantiate Ýþlemi
+        // Pozisyon: Item'ýn o anki (random offsetli) konumu
+        // Parent: Slot
+        ParticleSystem newParticle = Instantiate(prefabToSpawn, item.transform.position, Quaternion.identity, cookingSlots[slotIndex]);
+
+        // 3. Referansý kaydet
+        activeSlotParticles[slotIndex] = newParticle;
+
+        // Item o an hangi durumdaysa (RAW, REGULAR vs.) o renkle baþla
+        UpdateParticleColor(newParticle, item.data, item.cookAmount);
+    }
+
+    private void StopCookParticles(int slotIndex, bool isImmediate = false)
+    {
+        ParticleSystem ps = activeSlotParticles[slotIndex];
+
+        if (ps != null)
+        {
+            // Eðer "Hemen Durdur" dendiyse veya zaten sönme aþamasýndaysa direkt kes
+            if (isImmediate)
+            {
+                ps.Stop();
+                activeSlotParticles[slotIndex] = null;
+            }
+            else
+            {
+                // Yavaþça söndür (0.5sn)
+                var emission = ps.emission;
+                float startRate = emission.rateOverTime.constant; // O anki hýzý al
+
+                // DOTween ile sanal bir float deðeri 0'a indiriyoruz
+                DOVirtual.Float(startRate, 0f, 1f, (value) =>
+                {
+                    // Her adýmda emission deðerini güncelle
+                    var e = ps.emission;
+                    e.rateOverTime = value;
+                })
+                .OnComplete(() =>
+                {
+                    // Tween bitince tamamen durdur ve referansý sil
+                    ps.Stop();
+                    // Garanti olsun diye tekrar eski hýzýna çek (Object Pooling vs kullanýrsan ilerde lazým olur)
+                    var e = ps.emission;
+                    e.rateOverTime = startRate;
+
+                    // Eðer bu süreçte slot dolmadýysa referansý temizle
+                    if (activeSlotParticles[slotIndex] == ps)
+                        activeSlotParticles[slotIndex] = null;
+                });
+            }
+        }
+    }
+
+    // --- BURGER INGREDIENT TARAFINDAN ÇAÐRILACAK (Durum Deðiþince) ---
+    public void OnItemStateChanged(BurgerIngredient item, CookAmount newState)
+    {
+        int index = GetSlotIndexForItem(item);
+        if (index == -1) return;
+
+        // 1. Piþme Partikülü (Cýzýrtý)
+        if (activeSlotParticles[index] != null)
+            UpdateParticleColor(activeSlotParticles[index], item.data, newState);
+
+        // 2. World Duman
+        if (activeSmokeParticles[index] != null)
+            UpdateSmokeColor(activeSmokeParticles[index], item.data, newState);
+
+        // 3. YENÝ: Local Duman (Item'ýn üzerindeki)
+        if (item.attachedSmoke != null)
+            UpdateSmokeColor(item.attachedSmoke, item.data, newState);
+    }
+
+    private void UpdateParticleColor(ParticleSystem ps, BurgerIngredientData data, CookAmount state)
+    {
+        var main = ps.main;
+        BurgerIngredientData.ParticleColorSet colorSet;
+
+        // Duruma göre doðru renk setini seç
+        switch (state)
+        {
+            case CookAmount.RAW:
+                colorSet = data.rawParticleColors;
+                break;
+            case CookAmount.REGULAR:
+                colorSet = data.cookedParticleColors;
+                break;
+            case CookAmount.BURNT:
+                colorSet = data.burntParticleColors;
+                break;
+            default:
+                colorSet = data.rawParticleColors;
+                break;
+        }
+
+        // Partikül sistemine "Random Between Two Colors" olarak ata
+        main.startColor = new ParticleSystem.MinMaxGradient(colorSet.minColor, colorSet.maxColor);
+    }
+
+    private void SpawnSmokeParticles(BurgerIngredient item, int slotIndex)
+    {
+        // 1. WORLD SMOKE (Mevcut Sistem)
+        if (smokePrefabWorld != null)
+        {
+            ParticleSystem newWorldSmoke = Instantiate(smokePrefabWorld, item.transform.position, Quaternion.identity, cookingSlots[slotIndex]);
+            activeSmokeParticles[slotIndex] = newWorldSmoke;
+            UpdateSmokeColor(newWorldSmoke, item.data, item.cookAmount);
+        }
+
+        // 2. LOCAL SMOKE (Yeni Sistem)
+        if (smokePrefabLocal != null)
+        {
+            // Item'ýn çocuðu yapýyoruz (transform)
+            ParticleSystem newLocalSmoke = Instantiate(smokePrefabLocal, item.transform.position, Quaternion.identity, item.transform);
+
+            // Item'a "Al bu senin dumanýn" diyoruz
+            item.attachedSmoke = newLocalSmoke;
+
+            // Rengini ayarla (Ayný mantýk)
+            UpdateSmokeColor(newLocalSmoke, item.data, item.cookAmount);
+        }
+    }
+
+    private void StopSmokeParticles(int slotIndex, bool isImmediate = false)
+    {
+        ParticleSystem ps = activeSmokeParticles[slotIndex];
+
+        if (ps != null)
+        {
+            if (isImmediate)
+            {
+                ps.Stop();
+                activeSmokeParticles[slotIndex] = null;
+            }
+            else
+            {
+                // 0.5 saniyede sönerek dur (Senin yeni tercihin)
+                var emission = ps.emission;
+                float startRate = emission.rateOverTime.constant;
+
+                DOVirtual.Float(startRate, 0f, 1f, (value) =>
+                {
+                    var e = ps.emission;
+                    e.rateOverTime = value;
+                })
+                .OnComplete(() =>
+                {
+                    ps.Stop();
+                    var e = ps.emission;
+                    e.rateOverTime = startRate; // Reset for pooling logic if needed
+
+                    if (activeSmokeParticles[slotIndex] == ps)
+                        activeSmokeParticles[slotIndex] = null;
+                });
+            }
+        }
+    }
+
+    private void UpdateSmokeColor(ParticleSystem ps, BurgerIngredientData data, CookAmount state)
+    {
+        var main = ps.main;
+        BurgerIngredientData.ParticleColorSet colorSet;
+
+        switch (state)
+        {
+            case CookAmount.RAW:
+                colorSet = data.rawSmokeColors;
+                break;
+            case CookAmount.REGULAR:
+                colorSet = data.cookedSmokeColors;
+                break;
+            case CookAmount.BURNT:
+                colorSet = data.burntSmokeColors;
+                break;
+            default:
+                colorSet = data.rawSmokeColors;
+                break;
+        }
+
+        main.startColor = new ParticleSystem.MinMaxGradient(colorSet.minColor, colorSet.maxColor);
     }
 }
