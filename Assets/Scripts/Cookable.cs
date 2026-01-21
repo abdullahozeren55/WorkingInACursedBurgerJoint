@@ -66,12 +66,22 @@ public class Cookable : MonoBehaviour
         {
             currentSmokeParticlesLocal.transform.position = transform.position;
         }
+
+        if (currentCookingParticles != null)
+        {
+            currentCookingParticles.transform.position = transform.position;
+        }
+
+        if (currentSmokeParticlesWorld != null)
+        {
+            currentSmokeParticlesWorld.transform.position = transform.position;
+        }
     }
 
     private void CreateCookingParticles()
     {
-        currentCookingParticles =  Instantiate(cookableData.cookingParticles, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
-        currentSmokeParticlesWorld =  Instantiate(cookableData.smokeParticlesWorld, transform.position, Quaternion.Euler(-90f, 0f, 0f), transform);
+        currentCookingParticles =  Instantiate(cookableData.cookingParticles, transform.position, Quaternion.Euler(-90f, 0f, 0f));
+        currentSmokeParticlesWorld =  Instantiate(cookableData.smokeParticlesWorld, transform.position, Quaternion.Euler(-90f, 0f, 0f));
         
         if (currentSmokeParticlesLocal == null)
         {
@@ -86,14 +96,14 @@ public class Cookable : MonoBehaviour
         // 1. Cýzbýz Efekti (World)
         if (currentCookingParticles != null)
         {
-            DetachAndDestroy(currentCookingParticles);
+            currentCookingParticles.Stop();
             currentCookingParticles = null;
         }
 
         // 2. Izgara Dumaný (World)
         if (currentSmokeParticlesWorld != null)
         {
-            DetachAndDestroy(currentSmokeParticlesWorld);
+            currentSmokeParticlesWorld.Stop();
             currentSmokeParticlesWorld = null;
         }
 
@@ -109,27 +119,6 @@ public class Cookable : MonoBehaviour
             // 2. Referansý kopar (LateUpdate artýk takip etmesin, olduðu yerde kalsýn)
             currentSmokeParticlesLocal = null;
         }
-    }
-
-    // YENÝ YARDIMCI FONKSÝYON:
-    // Partikülü Burgerden ayýrýr ama boyutunu bozmaz.
-    private void DetachAndDestroy(ParticleSystem ps)
-    {
-        // 1. "Hayalet" bir obje yarat
-        GameObject ghost = new GameObject("Temp_Particle_Ghost");
-
-        // 2. Bu hayaleti Burgerin olduðu yere ve AYNI SCALE deðerine getir
-        ghost.transform.SetPositionAndRotation(transform.position, transform.rotation);
-        ghost.transform.localScale = transform.lossyScale; // <-- Scale sorununu çözen satýr!
-
-        // 3. Partikülü Burgerden alýp Hayalete evlatlýk ver
-        ps.transform.SetParent(ghost.transform);
-
-        // 4. Durdur
-        ps.Stop();
-
-        // 5. Hayaleti (ve içindeki partikülü) 15 saniye sonra komple yok et
-        Destroy(ghost, 15f);
     }
 
     private void OnDisable()
