@@ -10,7 +10,7 @@ public class Fryable : MonoBehaviour, IGrabable
 
     [Header("Cooking State")]
     [SerializeField] private float currentCookingTime = 0f;
-    public Cookable.CookAmount CurrentCookingState = Cookable.CookAmount.RAW;
+    public CookAmount CurrentCookingState = CookAmount.RAW;
 
     [Header("Conversion Settings")]
     [SerializeField] private BurgerIngredient burgerIngredientScript; // Inspector'dan atayacaðýn kapalý script
@@ -101,19 +101,19 @@ public class Fryable : MonoBehaviour, IGrabable
     // --- COOKING LOGIC (Mevcut Kodun) ---
     public void Cook(float heatAmount)
     {
-        if (CurrentCookingState == Cookable.CookAmount.BURNT) return;
+        if (CurrentCookingState == CookAmount.BURNT) return;
         currentCookingTime += heatAmount;
         CheckState();
     }
 
     private void CheckState()
     {
-        Cookable.CookAmount oldState = CurrentCookingState;
+        CookAmount oldState = CurrentCookingState;
 
         // ARTIK DATA YERÝNE YEREL DEÐÝÞKENLERÝ KULLANIYORUZ:
-        if (currentCookingTime >= targetBurnTime) CurrentCookingState = Cookable.CookAmount.BURNT;
-        else if (currentCookingTime >= targetCookTime) CurrentCookingState = Cookable.CookAmount.REGULAR;
-        else CurrentCookingState = Cookable.CookAmount.RAW;
+        if (currentCookingTime >= targetBurnTime) CurrentCookingState = CookAmount.BURNT;
+        else if (currentCookingTime >= targetCookTime) CurrentCookingState = CookAmount.REGULAR;
+        else CurrentCookingState = CookAmount.RAW;
 
         if (CurrentCookingState != oldState)
         {
@@ -127,9 +127,9 @@ public class Fryable : MonoBehaviour, IGrabable
         if (meshRenderer == null || data == null) return;
         switch (CurrentCookingState)
         {
-            case Cookable.CookAmount.RAW: meshRenderer.material = data.rawMat; break;
-            case Cookable.CookAmount.REGULAR: meshRenderer.material = data.cookedMat; break;
-            case Cookable.CookAmount.BURNT: meshRenderer.material = data.burntMat; break;
+            case CookAmount.RAW: meshRenderer.material = data.rawMat; break;
+            case CookAmount.REGULAR: meshRenderer.material = data.cookedMat; break;
+            case CookAmount.BURNT: meshRenderer.material = data.burntMat; break;
         }
     }
 
@@ -304,7 +304,7 @@ public class Fryable : MonoBehaviour, IGrabable
         // --- DÖNÜÞÜM BLOÐU (Hybrid Item) ---
         // Eðer bu bir Çýtýr Tavuksa VE Piþmiþse
         if (data.type == Holder.HolderIngredient.CrispyChicken &&
-            CurrentCookingState == Cookable.CookAmount.REGULAR)
+            CurrentCookingState == CookAmount.REGULAR)
         {
             TransformToBurgerIngredient();
         }

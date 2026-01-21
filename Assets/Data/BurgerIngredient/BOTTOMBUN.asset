@@ -15,10 +15,16 @@ MonoBehaviour:
   isUseable: 0
   isSauce: 0
   isThrowable: 1
+  isCookable: 1
   sauceDropAmount: 5
   targetDropScale: 0.8
   randomMultiplier: 1.3
   throwMultiplier: 1
+  timeToCook: 10
+  timeToBurn: 20
+  rawMat: {fileID: 2100000, guid: 310a98676eab266418638be623013b04, type: 2}
+  cookedMat: {fileID: 2100000, guid: 2ad6620bede8d5f468666b5840cc125b, type: 2}
+  burntMat: {fileID: 2100000, guid: 716d4654074817a43ad590b410b87ab7, type: 2}
   ingredientType: 0
   sauceType: 0
   handGrabType: 5
@@ -36,6 +42,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -20, y: -70, z: -70}
   grabLocalPositionOffset: {x: -0.0038548177, y: 0.058651187, z: 0.08770516}
   grabLocalRotationOffset: {x: 298.35657, y: 329.12845, z: 207.488}
+  grillPositionOffset: {x: 0, y: 0, z: 0.0001}
+  grillRotationOffset: {x: 0, y: -90, z: -270}
   focusTextKeys:
   - GRABABLE_BOTTOM_BUN_RAW
   - GRABABLE_BOTTOM_BUN_COOKED
@@ -53,6 +61,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f0efa123572028a43a704e66046edc85, type: 3}
   - {fileID: 8300000, guid: f0efa123572028a43a704e66046edc85, type: 3}
   - {fileID: 8300000, guid: 29073a5f8ca3bbe49ba983bf8a3ec393, type: 3}
+  cookingSound: {fileID: 8300000, guid: 37ed047ef5a0db24b9883d5cbb5270f6, type: 3}
   grabSoundVolume: 0.7
   grabSoundMinPitch: 1
   grabSoundMaxPitch: 1.2
@@ -65,6 +74,9 @@ MonoBehaviour:
   traySoundVolume: 1
   traySoundMinPitch: 0.8
   traySoundMaxPitch: 1.2
+  cookingSoundVolume: 0.15
+  cookingSoundMinPitch: 0.5
+  cookingSoundMaxPitch: 0.7
   soundCooldown: 0.1
   throwThreshold: 5
   dropThreshold: 1

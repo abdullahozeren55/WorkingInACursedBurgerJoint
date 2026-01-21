@@ -1,6 +1,5 @@
 using DG.Tweening;
 using UnityEngine;
-using static SauceBottle;
 
 public class BurgerIngredient : MonoBehaviour, IGrabable
 {
@@ -38,9 +37,17 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     [HideInInspector] public bool canAddToTray;
 
+    [Header("Cooking State (Auto-Managed)")]
+    public float currentCookTime = 0f;
+    public CookAmount cookAmount = CookAmount.RAW;
+
+    // Hangi ýzgaradayým? (Grill.cs tarafýndan atanýr)
+    [HideInInspector] public Grill currentGrill;
+
     private Rigidbody rb;
     private Collider col;
     private MeshCollider meshCol;
+    private MeshRenderer meshRenderer;
 
     private int grabableLayer;
     private int grabableOutlinedLayer;
@@ -54,9 +61,6 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     private bool isStuck;
     public bool canStick;
 
-    private Cookable cookable;
-    public Cookable.CookAmount cookAmount;
-
     private float lastSoundTime = 0f;
     private bool isStuckAndCantPlayAudioUntilPickedAgain;
 
@@ -67,7 +71,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
         rb = GetComponent<Rigidbody>();
         col = GetComponent<Collider>();
         meshCol = GetComponent<MeshCollider>();
-        cookable = GetComponent<Cookable>();
+        meshRenderer = GetComponent<MeshRenderer>();
 
         grabableLayer = LayerMask.NameToLayer("Grabable");
         grabableOutlinedLayer = LayerMask.NameToLayer("GrabableOutlined");
@@ -96,11 +100,70 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
             SetOnGrabableLayer();
         }
+
+        UpdateVisuals();
     }
 
     private void Start()
     {
         //SIRF INSPECTORDA SCRIPT DISABLE EDÝLEBÝLSÝN DÝYE KOYDUM
+    }
+
+    public bool ProcessCooking(float deltaTime)
+    {
+        if (!data.isCookable) return false;
+        if (cookAmount == CookAmount.BURNT) return false;
+
+        currentCookTime += deltaTime;
+
+        // Önceki durumu kaydet
+        CookAmount oldState = cookAmount;
+        CookAmount newState = cookAmount; // Varsayýlan olarak aynýsý
+
+        // Yeni durumu hesapla
+        if (currentCookTime >= data.timeToBurn)
+        {
+            newState = CookAmount.BURNT;
+        }
+        else if (currentCookTime >= data.timeToCook)
+        {
+            newState = CookAmount.REGULAR;
+        }
+        else
+        {
+            newState = CookAmount.RAW;
+        }
+
+        // SADECE Durum deðiþtiyse uygula
+        if (newState != oldState)
+        {
+            ChangeCookAmount((int)newState);
+
+            // Buraya "Piþti" sesi vb. eklenebilir.
+            // SoundManager.Instance.PlayOneShot...
+        }
+
+        return cookAmount != CookAmount.BURNT;
+    }
+
+    private void UpdateVisuals()
+    {
+        if (meshRenderer == null || data == null) return;
+
+        if (!data.isCookable) return;
+
+        switch (cookAmount)
+        {
+            case CookAmount.RAW:
+                meshRenderer.material = data.rawMat;
+                break;
+            case CookAmount.REGULAR:
+                meshRenderer.material = data.cookedMat;
+                break;
+            case CookAmount.BURNT:
+                meshRenderer.material = data.burntMat;
+                break;
+        }
     }
 
     public void SetOnTrayLayer()
@@ -112,6 +175,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void SetOnGrabableLayer()
     {
+        isJustDropped = false;
+        isJustThrowed = false;
         isGettingPutOnTray = false;
         ChangeLayer(grabableLayer);
     }
@@ -189,17 +254,20 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
             isAddedToBurger = false;
         }
 
-        col.enabled = false;
+        // Eðer bir ýzgaradaysak, önce oradan çýkýþ yapalým
+        if (currentGrill != null)
+        {
+            currentGrill.RemoveItem(this); // Grill'deki sesi ve slotu günceller
+        }
 
-        if (cookable != null)
-            cookable.StopCooking();
+        col.enabled = false;
 
         if (isStuck)
             Unstick();
 
         SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume,
-                                          data.grabSoundMinPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
-                                          data.grabSoundMaxPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier));
+                                          data.grabSoundMinPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
+                                          data.grabSoundMaxPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier));
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
@@ -383,26 +451,19 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     public void ChangeCookAmount(int value)
     {
+        // Enum cast
+        cookAmount = (CookAmount)value;
 
-        if (value == 0)
-        {
-            cookAmount = Cookable.CookAmount.RAW;
-            canStick = true;
+        // Focus text güncelleme (Mevcut kodun)
+        if (PlayerManager.Instance != null)
+            PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
 
-            
-        }
-        else if (value == 1)
-        {
-            cookAmount = Cookable.CookAmount.REGULAR;
-            canStick = false;
-        }
-        else
-        {
-            cookAmount = Cookable.CookAmount.BURNT;
-            canStick = false;
-        }
+        // Görsel güncelle
+        UpdateVisuals();
 
-        PlayerManager.Instance.TryChangingFocusText(this, FocusTextKey);
+        // Sticker (Yapýþma) mantýðý (Mevcut kodun)
+        if (value == 0) canStick = true;
+        else canStick = false;
     }
 
     private void OnDestroy()
@@ -429,8 +490,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 data.audioClips[2],
                 transform,
                 data.throwSoundVolume,
-                data.throwSoundMinPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
-                data.throwSoundMaxPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier), false
+                data.throwSoundMinPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
+                data.throwSoundMaxPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier), false
             );
 
             if (data.throwParticles[(int)cookAmount] != null)
@@ -446,8 +507,8 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
                 data.audioClips[1],
                 transform,
                 data.dropSoundVolume,
-                data.dropSoundMinPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
-                data.dropSoundMaxPitch * (cookAmount == Cookable.CookAmount.RAW ? 1f : cookAmount == Cookable.CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier), false
+                data.dropSoundMinPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier),
+                data.dropSoundMaxPitch * (cookAmount == CookAmount.RAW ? 1f : cookAmount == CookAmount.REGULAR ? data.cookedSoundMultiplier : data.burntSoundMultiplier), false
             );
 
             if (data.dropParticles[(int)cookAmount] != null)
@@ -519,5 +580,10 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
     public bool CanCombine(IGrabable otherItem)
     {
         return false;
+    }
+
+    public void PlayPutOnSoundEffect()
+    {
+        SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
     }
 }

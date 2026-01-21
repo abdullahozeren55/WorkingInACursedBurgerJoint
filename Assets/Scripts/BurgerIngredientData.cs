@@ -22,10 +22,17 @@ public class BurgerIngredientData : ScriptableObject
     public bool isUseable = false;
     public bool isSauce = false;
     public bool isThrowable = true;
+    public bool isCookable = false;
     public int sauceDropAmount = 5;
     public float targetDropScale = 0.8f;
     public float randomMultiplier = 1.3f;
     public float throwMultiplier = 1f;
+    public float timeToCook = 10f;
+    public float timeToBurn = 10f;
+    [Space]
+    public Material rawMat;
+    public Material cookedMat;
+    public Material burntMat;
     [Space]
     public IngredientType ingredientType;
     public SauceBottle.SauceType sauceType;
@@ -43,12 +50,16 @@ public class BurgerIngredientData : ScriptableObject
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
     [Space]
+    public Vector3 grillPositionOffset;
+    public Vector3 grillRotationOffset;
+    [Space]
     public string[] focusTextKeys;
     [Space]
     public ParticleSystem[] dropParticles;
     public ParticleSystem[] throwParticles;
     [Space]
     public AudioClip[] audioClips;
+    public AudioClip cookingSound; // O meþhur COSS sesi
     [Space]
     public float grabSoundVolume = 1f;
     public float grabSoundMinPitch = 0.85f;
@@ -65,6 +76,10 @@ public class BurgerIngredientData : ScriptableObject
     public float traySoundVolume = 1f;
     public float traySoundMinPitch = 0.85f;
     public float traySoundMaxPitch = 1.15f;
+    [Space]
+    public float cookingSoundVolume = 1f;
+    public float cookingSoundMinPitch = 0.85f;
+    public float cookingSoundMaxPitch = 1.15f;
     [Space]
     public float soundCooldown = 0.1f;
     public float throwThreshold = 6f;

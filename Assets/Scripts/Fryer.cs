@@ -33,6 +33,9 @@ public class Fryer : MonoBehaviour
     [SerializeField] private float risePerFullBasket = 0.0006f;  // Dolu sepet ne kadar yükseltir? (2 tanesi 0.0012 eder)
     [SerializeField] private float levelSurgeAmount = 0.0003f;   // Dalarken oluþan dalga yüksekliði (Taþma efekti)
 
+    [Header("Basket Management")]
+    [SerializeField] private FryerBasket[] baskets; // 0: Sol, 1: Sað (Inspector'dan ata)
+
     // Logic Variables
     private Material oilMat;
     private int totalFoodItemsCount = 0;
@@ -230,6 +233,63 @@ public class Fryer : MonoBehaviour
             float t = Mathf.InverseLerp(baseWeight, maxExpectedWeight, currentWeight);
 
             emission.rateOverTime = Mathf.Lerp(minEmission, maxEmission, t);
+        }
+    }
+
+    public void HandleGlobalCatch(Collider other)
+    {
+        // 1. Gelen þey geçerli bir Fryable mý?
+        Fryable incomingItem = other.GetComponent<Fryable>();
+        if (incomingItem == null) return;
+
+        // Zaten bir sepeti varsa veya oyuncunun elindeyse iþlem yapma
+        if (incomingItem.currentBasket != null || incomingItem.IsGrabbed) return;
+        // Sadece Çið olanlarý al (Basket kodundaki kontrolü buraya da taþýdýk)
+        if (incomingItem.CurrentCookingState != CookAmount.RAW) return;
+
+        FryerBasket bestBasket = null;
+        float bestScore = -1f;
+
+        // 2. Sepetleri gez ve puanla
+        for (int i = 0; i < baskets.Length; i++)
+        {
+            FryerBasket basket = baskets[i];
+
+            // Eðer sepet uygun deðilse (yaðdaysa veya tamsa) direkt ele
+            if (!basket.CanAcceptItem) continue;
+
+            float score = 0f;
+
+            // KRÝTER 1: Ýçinde item var mý? (Dolu olmaya meyilli olana öncelik)
+            if (basket.ItemCount > 0)
+            {
+                score += 1000f; // Ýçinde item olmasý en büyük puan
+                score += basket.ItemCount * 10f; // Ne kadar çok item varsa o kadar iyi (Daha çabuk dolsun)
+            }
+
+            // KRÝTER 2: Ýkisi de boþsa Sað Tarafa (Index 1) öncelik ver
+            // Genelde Index 0: Sol, Index 1: Sað kabul edilir.
+            if (i == 1)
+            {
+                score += 1f; // Eþitlik bozucu küçük puan (Tie-breaker)
+            }
+
+            // En yüksek puanlýyý seç
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestBasket = basket;
+            }
+        }
+
+        // 3. Kazanan varsa ona gönder
+        if (bestBasket != null)
+        {
+            // Sepetin kendi HandleCatch'i collider istiyor, ama biz zaten checkleri yaptýk.
+            // Yine de mevcut yapýný bozmamak için onun methodunu çaðýrýyoruz.
+            // Not: FryerBasket.HandleCatch içindeki kontrolleri (IsGrabbed vb) zaten yukarýda yaptýk, 
+            // güvenle geçebilir.
+            bestBasket.HandleCatch(other);
         }
     }
 }

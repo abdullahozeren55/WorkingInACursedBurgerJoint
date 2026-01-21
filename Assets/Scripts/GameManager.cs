@@ -8,6 +8,12 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
+public enum CookAmount
+{
+    RAW,
+    REGULAR,
+    BURNT
+}
 public class GameManager : MonoBehaviour
 {
     public enum BurgerTypes

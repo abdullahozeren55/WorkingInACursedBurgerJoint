@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - Door
-  - Grill
   - BurgerIngredient
   - BurgerBox
   - BurgerBoxClosed
@@ -16,12 +15,8 @@ TagManager:
   - Trash
   - Drink
   - Knife
-  - Noodle
-  - NevzatTrigger
   - SauceBottle
   - BurgerSauceArea
-  - SaucePack
-  - Kettle
   - FoodPack
   - Stain
   - BurgerIngredientTrigger
@@ -42,7 +37,7 @@ TagManager:
   - Grabable
   - GrabableOutlined
   - Ungrabable
-  - Grill
+  - 
   - InteractableOutlinedRed
   - OnTray
   - OnlySauceParticleCollision

@@ -259,7 +259,7 @@ public class Holder : MonoBehaviour, IGrabable
         if (currentIngredientType != HolderIngredient.Empty) return false;
         Fryable item = otherItem as Fryable;
         if (item == null) return false;
-        if (item.CurrentCookingState != Cookable.CookAmount.REGULAR) return false;
+        if (item.CurrentCookingState != CookAmount.REGULAR) return false;
         if (item.data.type != HolderIngredient.Empty && item.data.type != HolderIngredient.CrispyChicken)
         {
             Fill(item.data.type, item);
@@ -273,7 +273,7 @@ public class Holder : MonoBehaviour, IGrabable
         if (currentIngredientType != HolderIngredient.Empty) return false;
         Fryable item = otherItem as Fryable;
         if (item == null) return false;
-        if (item.CurrentCookingState != Cookable.CookAmount.REGULAR) return false;
+        if (item.CurrentCookingState != CookAmount.REGULAR) return false;
         if (item.data.type != HolderIngredient.Empty && item.data.type != HolderIngredient.CrispyChicken) return true;
         return false;
     }

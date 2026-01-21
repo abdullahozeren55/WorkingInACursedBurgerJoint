@@ -331,7 +331,7 @@ public class BurgerCombineArea : MonoBehaviour
         {
             // Sadece BOTTOM BUN (Alt Ekmek) kabul et ve piþmiþ olmalý
             return ingredient.data.ingredientType == BurgerIngredientData.IngredientType.BOTTOMBUN &&
-                   ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+                   ingredient.cookAmount == CookAmount.REGULAR;
         }
 
         // 2. Burger bitmiþse (burgerIsDone) -> Hiçbir þey kabul etme
@@ -362,18 +362,18 @@ public class BurgerCombineArea : MonoBehaviour
 
             case BurgerIngredientData.IngredientType.PATTY:
                 // Köfte sadece piþmiþse
-                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+                return ingredient.cookAmount == CookAmount.REGULAR;
 
             case BurgerIngredientData.IngredientType.BOTTOMBUN:
                 // Ýkinci bir alt ekmek? (Big Mac tarzý). Þimdilik izin verelim ama piþmiþ olmalý.
-                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+                return ingredient.cookAmount == CookAmount.REGULAR;
 
             case BurgerIngredientData.IngredientType.TOPBUN:
                 // Üst ekmek sadece piþmiþse ve burgeri bitirir.
-                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+                return ingredient.cookAmount == CookAmount.REGULAR;
 
             case BurgerIngredientData.IngredientType.CRISPYCHICKEN:
-                return ingredient.cookAmount == Cookable.CookAmount.REGULAR;
+                return ingredient.cookAmount == CookAmount.REGULAR;
 
             default:
                 return false;
@@ -437,9 +437,6 @@ public class BurgerCombineArea : MonoBehaviour
                 Destroy(oldScript);
             }
             // -----------------------
-
-            Cookable cook = go.GetComponent<Cookable>();
-            if (cook != null) Destroy(cook);
 
             Rigidbody childRb = go.GetComponent<Rigidbody>();
             if (childRb != null) Destroy(childRb);

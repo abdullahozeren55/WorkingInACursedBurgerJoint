@@ -21,6 +21,15 @@ public class FryerBasket : MonoBehaviour, IInteractable
 
     public bool IsHeavy => heldItems.Count > 0;
 
+    // Sepet þu an müsait mi? (Yaðda deðilse ve yer varsa)
+    public bool CanAcceptItem => !isFrying && !isPhysicallyInOil && heldItems.Count < capacity;
+
+    // Sepet dolu mu?
+    public bool IsFull => heldItems.Count >= capacity;
+
+    // Ýçinde kaç tane var?
+    public int ItemCount => heldItems.Count;
+
     [Header("Container Settings")] 
     [SerializeField] private Transform foodContainer; // Malzemelerin child olacaðý boþ obje (Sepet Tabaný)
     [SerializeField] private Transform basketEntryApex; //Malzemeler girerken tepeden yay çizecekler iþte o tepe
@@ -141,7 +150,7 @@ public class FryerBasket : MonoBehaviour, IInteractable
         if (incomingItem.IsGrabbed) return;
 
         // 6. Sadece Çið olanlarý al (Veya piþenleri de almak istersen burayý silebilirsin)
-        if (incomingItem.CurrentCookingState != Cookable.CookAmount.RAW) return;
+        if (incomingItem.CurrentCookingState != CookAmount.RAW) return;
 
         // -- KABUL EDÝLDÝ --
         AddItem(incomingItem);
@@ -485,7 +494,7 @@ public class FryerBasket : MonoBehaviour, IInteractable
             // (Yanýklar piþme dumaný çýkarmaz - veya baþka duman çýkarýr ama onu karýþtýrmýyoruz)
             foreach (var item in heldItems)
             {
-                if (item.CurrentCookingState != Cookable.CookAmount.BURNT)
+                if (item.CurrentCookingState != CookAmount.BURNT)
                 {
                     cookingItemCount++;
                 }

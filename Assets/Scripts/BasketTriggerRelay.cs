@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class BasketTriggerRelay : MonoBehaviour
 {
-    [SerializeField] private FryerBasket parentBasket;
+    [SerializeField] private Fryer connectedFryer;
 
     private void OnTriggerEnter(Collider other)
     {
-        // Tetiklenince ana sepetteki fonksiyonu çaðýr
-        if (parentBasket != null)
+        // Tetiklenince kararý Fryer'a býrak
+        if (connectedFryer != null)
         {
-            parentBasket.HandleCatch(other);
+            connectedFryer.HandleGlobalCatch(other);
         }
     }
 }
