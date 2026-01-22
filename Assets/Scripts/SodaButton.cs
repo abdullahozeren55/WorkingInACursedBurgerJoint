@@ -8,6 +8,20 @@ public class SodaButton : MonoBehaviour, IInteractable
     [Tooltip("0: Cola, 1: Fanta, 2: Sprite...")]
     public int flavorIndex;
 
+    // --- SES AYARLARI---
+    [Header("Audio Settings")]
+    [SerializeField] private AudioClip pressClip; // Basma sesi
+    [SerializeField] private float pressVolume = 1f;
+    [SerializeField] private float pressMinPitch = 0.9f;
+    [SerializeField] private float pressMaxPitch = 1.1f;
+
+    [Space(10)]
+    [SerializeField] private AudioClip releaseClip; // Geri çýkma sesi
+    [SerializeField] private float releaseVolume = 1f;
+    [SerializeField] private float releaseMinPitch = 0.9f;
+    [SerializeField] private float releaseMaxPitch = 1.1f;
+    // ------------------------------------------
+
     [Tooltip("Bardaða atanacak mantýksal içecek türü")]
     public GameManager.DrinkTypes drinkType; // <-- YENÝ: Enum ekledik
 
@@ -55,4 +69,23 @@ public class SodaButton : MonoBehaviour, IInteractable
     public void OnLoseFocus() { ChangeLayer(interactableLayer); }
     public void OutlineChangeCheck() { }
     public void HandleFinishDialogue() { }
+
+    // --- YENÝ SES ÇALMA FONKSÝYONLARI ---
+    // Makine tarafýndan çaðýrýlacaklar
+    public void PlayPressSound()
+    {
+        if (SoundManager.Instance != null && pressClip != null)
+        {
+            SoundManager.Instance.PlaySoundFX(pressClip, transform, pressVolume, pressMinPitch, pressMaxPitch);
+        }
+    }
+
+    public void PlayReleaseSound()
+    {
+        if (SoundManager.Instance != null && releaseClip != null)
+        {
+            SoundManager.Instance.PlaySoundFX(releaseClip, transform, releaseVolume, releaseMinPitch, releaseMaxPitch);
+        }
+    }
+    // ------------------------------------
 }

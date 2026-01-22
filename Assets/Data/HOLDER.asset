@@ -66,3 +66,27 @@ MonoBehaviour:
   grabRotationOffset: {x: -20, y: -90, z: -70}
   grabLocalPositionOffset: {x: -0.0109, y: 0.0609, z: 0.0533}
   grabLocalRotationOffset: {x: 3.6346002, y: 284.52606, z: 61.24388}
+  audioClips:
+  - {fileID: 8300000, guid: edf94ed3ad2a3c34287758cdf9801a31, type: 3}
+  - {fileID: 8300000, guid: e22115af83c98b84cac0fe788f534f16, type: 3}
+  - {fileID: 8300000, guid: e22115af83c98b84cac0fe788f534f16, type: 3}
+  - {fileID: 8300000, guid: b3b201ed1eb2914479c164621cdcb3f9, type: 3}
+  - {fileID: 8300000, guid: 29073a5f8ca3bbe49ba983bf8a3ec393, type: 3}
+  grabSoundVolume: 0.3
+  grabSoundMinPitch: 1
+  grabSoundMaxPitch: 1.2
+  dropSoundVolume: 0.6
+  dropSoundMinPitch: 1.3
+  dropSoundMaxPitch: 1.6
+  throwSoundVolume: 0.8
+  throwSoundMinPitch: 1
+  throwSoundMaxPitch: 1.2
+  packUpSoundVolume: 0.7
+  packUpSoundMinPitch: 1.2
+  packUpSoundMaxPitch: 1.5
+  traySoundVolume: 1
+  traySoundMinPitch: 0.6
+  traySoundMaxPitch: 0.8
+  soundCooldown: 0.1
+  throwThreshold: 5
+  dropThreshold: 1

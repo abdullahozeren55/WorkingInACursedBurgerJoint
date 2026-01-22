@@ -44,6 +44,10 @@ public class SauceCapsuleData : ScriptableObject
     public float throwSoundMinPitch = 0.85f;
     public float throwSoundMaxPitch = 1.15f;
     [Space]
+    public float traySoundVolume = 1f;
+    public float traySoundMinPitch = 0.8f;
+    public float traySoundMaxPitch = 1.2f;
+    [Space]
     public float soundCooldown = 0.1f;
     public float throwThreshold = 6f;
     public float dropThreshold = 2f;

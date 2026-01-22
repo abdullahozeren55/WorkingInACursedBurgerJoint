@@ -143,6 +143,7 @@ public class Drink : MonoBehaviour, IGrabable
 
         seq.OnComplete(() =>
         {
+            SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
             transform.localPosition = baseLocalPos;
             transform.localRotation = finalTargetRotation;
 

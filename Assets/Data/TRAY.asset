@@ -31,14 +31,14 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 188b6e2c2769410459bed79d50290335, type: 3}
   - {fileID: 8300000, guid: 188b6e2c2769410459bed79d50290335, type: 3}
   grabSoundVolume: 1
-  grabSoundMinPitch: 1
-  grabSoundMaxPitch: 1.2
-  dropSoundVolume: 0.8
-  dropSoundMinPitch: 1
-  dropSoundMaxPitch: 1.2
-  throwSoundVolume: 0.8
-  throwSoundMinPitch: 1
-  throwSoundMaxPitch: 1.2
+  grabSoundMinPitch: 0.9
+  grabSoundMaxPitch: 1.1
+  dropSoundVolume: 1
+  dropSoundMinPitch: 0.9
+  dropSoundMaxPitch: 1.1
+  throwSoundVolume: 1
+  throwSoundMinPitch: 0.9
+  throwSoundMaxPitch: 1.1
   soundCooldown: 0.1
   throwThreshold: 6
   dropThreshold: 2

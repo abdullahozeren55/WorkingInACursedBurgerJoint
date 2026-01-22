@@ -21,7 +21,7 @@ public class SodaMachine : MonoBehaviour
     [SerializeField] private float pourSpeed = 10f;
 
     [Header("Process Settings")]
-    [SerializeField] private float pourDuration = 3.0f;
+    [SerializeField] private float pourDuration = 1.0f;
     [SerializeField] private float stopDuration = 0.3f;
     [SerializeField] private float buttonPressDepth = 0.02f;
 
@@ -31,7 +31,38 @@ public class SodaMachine : MonoBehaviour
     private DrinkCup currentCup;
 
     [Header("Audio")]
-    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] cupFillSounds; //0 small, 1 medium, 2 large
+    [SerializeField] private float fillVolume = 1f;
+    [SerializeField] private float fillMinPitch = 0.9f;
+    [SerializeField] private float fillMaxPitch = 1.1f;
+    [Tooltip("Sývýnýn musluktan çýkýp bardaða deðmesi için geçecek süre (Delay)")]
+    [SerializeField] private float soundStartDelay = 0.15f; // <-- YENÝ: Bunu isteðine göre 0.1 ile 0.3 arasý ayarlarsýn
+
+    [Header("Machine Working Sound (Loop)")]
+    [SerializeField] private AudioClip machineWorkClip;
+    [SerializeField] private float machineTargetVolume = 0.5f; // Ulaþýlacak ses seviyesi
+    [SerializeField] private float machineFadeInTime = 0.5f;
+    [SerializeField] private float machineFadeOutTime = 0.5f;
+
+    [Header("Empty Pour FX (No Cup)")]
+    [SerializeField] private GameObject splashFXPrefab; // Sýçrama Partikülü
+    [SerializeField] private Transform splashPoint;     // Izgaranýn olduðu nokta (Target)
+    [SerializeField] private float splashDelay = 0.25f; // Musluktan yere düþme süresi
+    [SerializeField] private AudioClip splashSound;     // "Pýssss" veya þapýrdama sesi
+    [SerializeField] private float splashVolume = 0.8f;
+    // Sýçrama sesinin pitch aralýðý
+    [SerializeField] private float splashMinPitch = 0.9f;
+    [SerializeField] private float splashMaxPitch = 1.1f;
+
+    [Header("Cup Placement Sound")]
+    [SerializeField] private AudioClip cupPlaceSound;
+    [SerializeField] private float cupPlaceVolume = 1f;
+    [SerializeField] private float cupPlaceMinPitch = 0.9f;
+    [SerializeField] private float cupPlaceMaxPitch = 1.1f;
+
+    
+
+    private AudioSource machineAudioSource; // Private referans
 
     private enum StreamState { Idle, Pouring, Stopping }
     private StreamState currentState = StreamState.Idle;
@@ -56,6 +87,24 @@ public class SodaMachine : MonoBehaviour
         interactableLayer = LayerMask.NameToLayer("Interactable");
         ungrabableLayer = LayerMask.NameToLayer("Ungrabable");
         grababaleLayer = LayerMask.NameToLayer("Grabable");
+
+        machineAudioSource = GetComponent<AudioSource>();
+
+        // Klibi ata
+        if (machineWorkClip != null)
+        {
+            machineAudioSource.clip = machineWorkClip;
+        }
+
+        // Ýsteðin üzerine: Loop açýk, Ses 0, Oyun baþlar baþlamaz dönmeye baþlasýn.
+        machineAudioSource.loop = true;
+        machineAudioSource.volume = 0f;
+        machineAudioSource.playOnAwake = true;
+
+        if (!machineAudioSource.isPlaying)
+        {
+            machineAudioSource.Play();
+        }
     }
 
     private void Start()
@@ -80,48 +129,86 @@ public class SodaMachine : MonoBehaviour
     private IEnumerator PourRoutine(SodaButton btn)
     {
         // 1. BUTONLARI KÝLÝTLE
-        foreach (var b in buttons)
+        SetButtonsState(false);
+
+        // --- MOTOR SESÝ FADE IN ---
+        if (machineAudioSource != null)
         {
-            b.CanInteract = false;
-            if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerInteract(b, true);
+            machineAudioSource.DOKill();
+            machineAudioSource.DOFade(machineTargetVolume, machineFadeInTime);
         }
 
-        // --- YENÝ: SÜRE HESAPLAMA ---
-        // Varsayýlan olarak makinenin ayarýný al
+        // --- SÜRE VE DURUM AYARLAMASI ---
+        // Varsayýlan olarak 1 saniye (Boþa akýtma süresi)
         float effectivePourDuration = pourDuration;
 
-        // Eðer bardak varsa, bardaðýn datasýndaki süreyi al
+        // Eðer bardak VARSA süreyi ondan al
         if (currentCup != null)
         {
-            effectivePourDuration = currentCup.GetFillDuration; // <--- DEÐÝÞÝKLÝK BURADA
+            effectivePourDuration = currentCup.GetFillDuration;
 
             currentCup.IsGettingFilled = true;
             currentCup.ChangeLayer(ungrabableLayer);
             if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerGrab(currentCup);
         }
-        // -----------------------------
 
         // 2. BUTONU ÝÇERÝ GÖM
+        btn.PlayPressSound();
         btn.transform.DOKill();
         btn.transform.DOLocalMove(btn.initialPos + (Vector3.up * buttonPressDepth), 0.2f).SetEase(Ease.OutQuad);
 
         // 3. AKIÞI BAÞLAT
         StartPouring(btn.flavorIndex);
 
+        // Rengi belirle (Hem bardak hem splash için lazým)
+        Color selectedColor = Color.white;
+        if (btn.flavorIndex >= 0 && btn.flavorIndex < flavorColors.Length)
+            selectedColor = flavorColors[btn.flavorIndex];
+
+        // --- SADECE BARDAK VARSA ÇALIÞACAK KISIMLAR ---
         if (currentCup != null)
         {
-            Color selectedColor = Color.white;
-            if (btn.flavorIndex >= 0 && btn.flavorIndex < flavorColors.Length)
-                selectedColor = flavorColors[btn.flavorIndex];
-
-            // Hesabý "effectivePourDuration" üzerinden yapýyoruz
+            // Görsel dolumu baþlat
             float totalFillTime = effectivePourDuration + stopDuration - 0.1f;
-
             currentCup.StartFilling(selectedColor, totalFillTime, btn.drinkType);
+
+            // --- DOLUM SESÝ (Sadece bardak varsa çalar) ---
+            if (SoundManager.Instance != null && cupFillSounds != null && cupFillSounds.Length > 0)
+            {
+                int soundIndex = 0;
+                // Bardaðýn süresine göre ses seçimi
+                if (effectivePourDuration > 1.5f && effectivePourDuration <= 2.5f) soundIndex = 1;
+                else if (effectivePourDuration > 2.5f) soundIndex = 2;
+
+                if (soundIndex < cupFillSounds.Length && cupFillSounds[soundIndex] != null)
+                {
+                    SoundManager.Instance.PlaySoundFXWithRandomDelay(
+                        cupFillSounds[soundIndex],
+                        currentCup.transform, // Burada currentCup null olmadýðý garanti
+                        fillVolume,
+                        fillMinPitch,
+                        fillMaxPitch,
+                        soundStartDelay,
+                        soundStartDelay
+                    );
+                }
+            }
+        }
+        else
+        {
+            // Paralel bir Coroutine baþlatýyoruz ki ana akýþý bekletmesin
+            StartCoroutine(HandleEmptyPourFX(effectivePourDuration, selectedColor));
         }
 
-        // 4. BEKLE (Artýk dinamik süreyi bekliyoruz)
-        yield return new WaitForSeconds(effectivePourDuration); // <--- DEÐÝÞÝKLÝK BURADA
+        // 4. BEKLE (1 saniye veya bardak süresi kadar)
+        yield return new WaitForSeconds(effectivePourDuration);
+
+        // --- MOTOR SESÝ FADE OUT ---
+        if (machineAudioSource != null)
+        {
+            machineAudioSource.DOKill();
+            machineAudioSource.DOFade(0f, machineFadeOutTime);
+        }
 
         if (currentCup != null)
             currentCup.FinishGettingFilled();
@@ -130,25 +217,21 @@ public class SodaMachine : MonoBehaviour
         BeginStopping();
 
         // 6. BUTONU GERÝ ÇIKAR
+        btn.PlayReleaseSound();
         btn.transform.DOKill();
         btn.transform.DOLocalMove(btn.initialPos, stopDuration).SetEase(Ease.Linear);
 
-        // 7. BEKLE (Stopping Süresi)
+        // 7. BEKLE
         yield return new WaitForSeconds(stopDuration);
 
         // 8. KAPAT
         FullStop();
 
-        // 9. KÝLÝTLERÝ AÇ
-        foreach (var b in buttons)
+        if (currentCup == null)
         {
-            b.ChangeLayer(interactableLayer);
-            b.CanInteract = true;
+            SetButtonsState(true);
         }
     }
-
-    // ... (StartPouring, StopPouring, HandleStreamVisuals, OnTriggerEnter, SnapCupToMachine, ReleaseCup ayný) ...
-    // ... Bu kýsýmlar deðiþmediði için tekrar kopyalamýyorum, önceki cevabýn aynýsý ...
 
     private void StartPouring(int flavorIndex)
     {
@@ -167,7 +250,6 @@ public class SodaMachine : MonoBehaviour
         }
 
         streamLine.gameObject.SetActive(true);
-        if (audioSource) audioSource.Play();
     }
 
     private void BeginStopping()
@@ -179,7 +261,6 @@ public class SodaMachine : MonoBehaviour
     {
         currentState = StreamState.Idle;
         streamLine.gameObject.SetActive(false);
-        if (audioSource) audioSource.Stop();
     }
 
     private void HandleStreamVisuals()
@@ -259,6 +340,7 @@ public class SodaMachine : MonoBehaviour
             .SetEase(Ease.OutSine)
             .OnComplete(() =>
             {
+                SoundManager.Instance.PlaySoundFX(cupPlaceSound, cup.transform, cupPlaceVolume, cupPlaceMinPitch, cupPlaceMaxPitch);
                 // Garanti olsun diye tam 0 noktasýna oturt
                 cup.transform.localPosition = Vector3.zero;
                 cup.FinishPuttingOnSodaMachine();
@@ -271,6 +353,8 @@ public class SodaMachine : MonoBehaviour
     public void ReleaseCup()
     {
         currentCup = null;
+
+        SetButtonsState(true);
     }
 
     private void InitializeStack(System.Collections.Generic.List<DrinkCup> stack)
@@ -322,5 +406,80 @@ public class SodaMachine : MonoBehaviour
             return true; // Bulduk ve sildik
         }
         return false; // Bu listede deðilmiþ
+    }
+
+    // --- YENÝ EKLENEN COROUTINE: BOÞ AKITMA EFEKTLERÝ ---
+    private IEnumerator HandleEmptyPourFX(float duration, Color liquidColor)
+    {
+        // 1. Sývýnýn yere düþmesini bekle
+        yield return new WaitForSeconds(splashDelay);
+
+        GameObject tempSplashObj = null;
+
+        // 2. Partikül Efektini Baþlat
+        if (splashFXPrefab != null && splashPoint != null)
+        {
+            tempSplashObj = Instantiate(splashFXPrefab, splashPoint.position, Quaternion.identity, splashPoint);
+
+            // Rengi içeceðe göre ayarla
+            ParticleSystem ps = tempSplashObj.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                var main = ps.main;
+                main.startColor = liquidColor;
+            }
+        }
+
+        // 3. Sesi Çal
+        // Delay'i zaten yukarýda WaitForSeconds ile yaptýk, o yüzden buradaki delay 0.
+        if (SoundManager.Instance != null && splashSound != null && splashPoint != null)
+        {
+            SoundManager.Instance.PlaySoundFXWithRandomDelay(
+                splashSound,
+                splashPoint,
+                splashVolume,
+                splashMinPitch,
+                splashMaxPitch,
+                0f, 0f // Zaten bekledik, anýnda çalsýn
+            );
+        }
+
+        // 4. Akýþýn geri kalaný kadar bekle
+        // Toplam süre - geçen süre (delay)
+        float remainingTime = duration - splashDelay;
+        if (remainingTime > 0)
+            yield return new WaitForSeconds(remainingTime);
+
+        // 5. Partikülü Durdur ve Yok Et
+        if (tempSplashObj != null)
+        {
+            ParticleSystem ps = tempSplashObj.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                ps.Stop(); // Emission durur, mevcutlar bitince biter
+            }
+            // Garanti temizlik
+            Destroy(tempSplashObj, 2.0f);
+        }
+    }
+
+    // --- YENÝ HELPER: Butonlarýn durumunu toplu deðiþtir ---
+    private void SetButtonsState(bool isActive)
+    {
+        foreach (var b in buttons)
+        {
+            b.CanInteract = isActive;
+
+            // Eðer aktifse normal layer, pasifse player interact edemesin
+            if (isActive)
+            {
+                b.ChangeLayer(interactableLayer);
+            }
+            else
+            {
+                // Buton kilitliyken basýlmasýný engellemek için Interact resetliyoruz
+                if (PlayerManager.Instance != null) PlayerManager.Instance.ResetPlayerInteract(b, true);
+            }
+        }
     }
 }

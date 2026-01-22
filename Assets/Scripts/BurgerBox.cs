@@ -153,6 +153,8 @@ public class BurgerBox : MonoBehaviour, IGrabable
 
         seq.OnComplete(() =>
         {
+            SoundManager.Instance.PlaySoundFX(data.audioClips[4], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
+
             transform.localPosition = baseLocalPos;
             transform.localRotation = finalTargetRotation;
 

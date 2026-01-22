@@ -69,7 +69,7 @@ public class DrinkCup : MonoBehaviour, IGrabable
     public GameManager.DrinkTypes DrinkType = GameManager.DrinkTypes.Null; //Soda Makinesi tarafýndan doldurulurken atanacak
 
     // --- JUICE STATE VARIABLES (Fryable Mantýðý) ---
-    private bool isGettingPutOnTray; // Animasyon oynuyor mu?
+    private bool IsGettingPutOnTray; // Animasyon oynuyor mu?
     // ----------------------------------------------
 
     private Rigidbody rb;
@@ -86,6 +86,8 @@ public class DrinkCup : MonoBehaviour, IGrabable
     [HideInInspector] public bool isJustThrowed;
     [HideInInspector] public bool isJustDropped;
     private float lastSoundTime = 0f;
+
+    private ParticleSystem currentFrothFX;
 
     private void Awake()
     {
@@ -112,7 +114,7 @@ public class DrinkCup : MonoBehaviour, IGrabable
     public void PlaceOnTray(Transform targetSlot, Transform apexTransform, Tray trayRef, int slotIndex)
     {
         // 1. State Ayarla
-        isGettingPutOnTray = true;
+        IsGettingPutOnTray = true;
         isJustDropped = false;
         isJustThrowed = false;
         currentTray = trayRef;
@@ -184,11 +186,12 @@ public class DrinkCup : MonoBehaviour, IGrabable
 
         seq.OnComplete(() =>
         {
+            SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
             // Ýþlem bitince transformlarý netle (Floating point hatasý kalmasýn)
             transform.localPosition = baseLocalPos;
             transform.localRotation = finalTargetRotation;
 
-            isGettingPutOnTray = false;
+            IsGettingPutOnTray = false;
             HandleColliders(true);
             if (currentTray != null) ChangeLayer(currentTray.gameObject.layer);
         });
@@ -221,9 +224,9 @@ public class DrinkCup : MonoBehaviour, IGrabable
     {
         if (IsFull || HasLid) return;
 
-        // Tipi ata
         DrinkType = typeToFill;
 
+        // 1. SIVI GÖRSELÝNÝ AKTÝF ET VE RENGÝNÝ VER
         if (drinkGO != null)
         {
             drinkGO.SetActive(true);
@@ -234,15 +237,16 @@ public class DrinkCup : MonoBehaviour, IGrabable
                 int blendShapeIndex = 0;
                 meshRenderer.SetBlendShapeWeight(blendShapeIndex, 0f);
 
+                // BlendShape: 0 -> 96
                 DOTween.To(() => meshRenderer.GetBlendShapeWeight(blendShapeIndex),
                            x => meshRenderer.SetBlendShapeWeight(blendShapeIndex, x),
                            96f, duration)
-                           .SetEase(Ease.Linear);
+                           .SetEase(Ease.Linear); // <--- ÖNEMLÝ: Linear olmalý
             }
         }
 
-        // Dolum baþlarken henüz tam dolmadýðý için text güncellemiyoruz 
-        // ya da "Doluyor" gibi bir state istersen buraya ekleyebilirsin.
+        // 2. KÖPÜK EFEKTÝNÝ BAÞLAT (YENÝ KISIM)
+        HandleFrothFX(liquidColor, duration);
     }
 
     public void OnHolster() { }
@@ -263,6 +267,8 @@ public class DrinkCup : MonoBehaviour, IGrabable
 
     public void OnGrab(Transform grabPoint)
     {
+        transform.DOKill();
+
         ChangeLayer(grabbedLayer);
 
         if (currentTray != null)
@@ -275,7 +281,7 @@ public class DrinkCup : MonoBehaviour, IGrabable
             currentTray = null;
         }
 
-        isGettingPutOnTray = false;
+        IsGettingPutOnTray = false;
 
         // Eðer bu bardak raftan alýnýyorsa, makineye haber ver ki alttakini açsýn.
         if (IsInCupHolder && SodaMachineSC != null)
@@ -320,12 +326,12 @@ public class DrinkCup : MonoBehaviour, IGrabable
 
     public void OnFocus()
     {
-        if (!isJustDropped && !isJustThrowed && !IsGettingFilled && !isGettingPutOnTray)
+        if (!isJustDropped && !isJustThrowed && !IsGettingFilled && !IsGettingPutOnTray)
             ChangeLayer(grabableOutlinedLayer);
     }
     public void OnLoseFocus()
     {
-        if (!isJustDropped && !isJustThrowed && !IsGettingFilled && !isGettingPutOnTray)
+        if (!isJustDropped && !isJustThrowed && !IsGettingFilled && !IsGettingPutOnTray)
             ChangeLayer(grabableLayer);
     }
 
@@ -395,6 +401,12 @@ public class DrinkCup : MonoBehaviour, IGrabable
         {
             currentTray.RemoveItem(this);
         }
+
+        // Eðer köpük hala varsa yok et
+        if (currentFrothFX != null)
+        {
+            Destroy(currentFrothFX.gameObject);
+        }
     }
     private void OnDestroy()
     {
@@ -403,6 +415,12 @@ public class DrinkCup : MonoBehaviour, IGrabable
         if (currentTray != null)
         {
             currentTray.RemoveItem(this);
+        }
+
+        // Eðer köpük hala varsa yok et
+        if (currentFrothFX != null)
+        {
+            Destroy(currentFrothFX.gameObject);
         }
     }
 
@@ -498,9 +516,19 @@ public class DrinkCup : MonoBehaviour, IGrabable
         IsFull = true;
 
         UpdateFocusTextState();
-
         ChangeLayer(grabableLayer);
-        
+
+        // --- FIX: GARANTÝ TEMÝZLÝK ---
+        if (currentFrothFX != null)
+        {
+            currentFrothFX.Stop();
+
+            // Partiküllerin sönmesi için 2 saniye verip objeyi tamamen yok et.
+            // Böylece envantere girip çýksa bile orada kalamaz.
+            Destroy(currentFrothFX.gameObject, 3.0f);
+
+            currentFrothFX = null;
+        }
     }
 
     // --- YENÝ METOD: State Hesaplayýcý ---
@@ -540,5 +568,30 @@ public class DrinkCup : MonoBehaviour, IGrabable
         }
 
         currentTextStateIndex = baseIndex;
+    }
+
+    // --- YENÝ METOD: KÖPÜK YÖNETÝMÝ ---
+    private void HandleFrothFX(Color liquidColor, float duration)
+    {
+        if (data == null || data.frothFXPrefab == null) return;
+
+        GameObject fxObj = Instantiate(data.frothFXPrefab, transform);
+        fxObj.transform.localPosition = new Vector3(0f, data.liquidStartHeight, 0f);
+        fxObj.transform.localRotation = Quaternion.identity;
+
+        currentFrothFX = fxObj.GetComponent<ParticleSystem>();
+        if (currentFrothFX != null)
+        {
+            var main = currentFrothFX.main;
+            main.startColor = liquidColor;
+
+            // --- FIX: ZOMBÝ KÖPÜK ENGELLEYÝCÝ ---
+            // Prefab'da PlayOnAwake açýk olsa bile, instance'da kapatýyoruz.
+            // Böylece bardak disable/enable olsa bile (envanter) tekrar baþlamaz.
+            main.playOnAwake = false;
+            // ------------------------------------
+
+            fxObj.transform.DOLocalMoveY(data.liquidEndHeight, duration).SetEase(Ease.Linear);
+        }
     }
 }

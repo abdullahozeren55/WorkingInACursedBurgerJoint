@@ -80,6 +80,8 @@ public class Holder : MonoBehaviour, IGrabable
     private int grabableOutlinedGreenLayer;
     private int interactableOutlinedRedLayer;
 
+    private float lastSoundTime = 0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -166,6 +168,7 @@ public class Holder : MonoBehaviour, IGrabable
 
         seq.OnComplete(() =>
         {
+            SoundManager.Instance.PlaySoundFX(data.audioClips[4], transform, data.traySoundVolume, data.traySoundMinPitch, data.traySoundMaxPitch);
             // Floating point hatalarýný temizle
             transform.localPosition = baseLocalPos;
             transform.localRotation = finalTargetRotation;
@@ -208,6 +211,8 @@ public class Holder : MonoBehaviour, IGrabable
         transform.SetParent(grabPoint);
         transform.localPosition = data.grabLocalPositionOffset;
         transform.localRotation = Quaternion.Euler(data.grabLocalRotationOffset);
+
+        SoundManager.Instance.PlaySoundFX(data.audioClips[0], transform, data.grabSoundVolume, data.grabSoundMinPitch, data.grabSoundMaxPitch);
 
         // SCALE RESET (Ýsteðin üzerine eklendi)
         transform.localScale = data.grabbedLocalScale;
@@ -285,6 +290,7 @@ public class Holder : MonoBehaviour, IGrabable
         UpdateVisuals();
         Instantiate(data.smokePrefabLocal, transform);
         Destroy(sourceItem.gameObject);
+        SoundManager.Instance.PlaySoundFX(data.audioClips[3], transform, data.packUpSoundVolume, data.packUpSoundMinPitch, data.packUpSoundMaxPitch);
     }
 
     private void UpdateVisuals()
@@ -335,8 +341,25 @@ public class Holder : MonoBehaviour, IGrabable
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!IsGrabbed && gameObject.layer == ungrabableLayer) ChangeLayer(grabableLayer);
-        isJustDropped = false;
-        isJustThrowed = false;
+        if (!IsGrabbed && !collision.gameObject.CompareTag("Player"))
+        {
+            if (isJustThrowed) { ChangeLayer(grabableLayer); isJustThrowed = false; }
+            else if (isJustDropped) { ChangeLayer(grabableLayer); isJustDropped = false; }
+            else if (gameObject.layer == ungrabableLayer) ChangeLayer(grabableLayer);
+
+            HandleSoundFX(collision);
+        }
+    }
+
+    private void HandleSoundFX(Collision collision)
+    {
+        float impactForce = collision.relativeVelocity.magnitude;
+        if (impactForce < data.dropThreshold || Time.time - lastSoundTime < data.soundCooldown) return;
+
+        if (impactForce >= data.throwThreshold)
+            SoundManager.Instance.PlaySoundFX(data.audioClips[2], transform, data.throwSoundVolume, data.throwSoundMinPitch, data.throwSoundMaxPitch);
+        else
+            SoundManager.Instance.PlaySoundFX(data.audioClips[1], transform, data.dropSoundVolume, data.dropSoundMinPitch, data.dropSoundMaxPitch);
+        lastSoundTime = Time.time;
     }
 }

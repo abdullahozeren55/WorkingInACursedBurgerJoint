@@ -19,6 +19,11 @@ public class DrinkCupData : ScriptableObject
     public Vector3 grabbedLocalScale;
     public Vector3 trayLocalScale = Vector3.one;
     [Space]
+    [Header("Liquid FX Settings")]
+    public GameObject frothFXPrefab; // Köpük Partikül Prefabý
+    public float liquidStartHeight = 0.05f; // Sývýnýn en dipteki (boþken) Y pozisyonu
+    public float liquidEndHeight = 0.25f;   // Sývýnýn en tepedeki (doluyken) Y pozisyonu
+    [Space]
     public Vector3 grabPositionOffset;
     public Vector3 grabRotationOffset;
     [Space]
@@ -42,6 +47,10 @@ public class DrinkCupData : ScriptableObject
     public float throwSoundVolume = 1f;
     public float throwSoundMinPitch = 0.85f;
     public float throwSoundMaxPitch = 1.15f;
+    [Space]
+    public float traySoundVolume = 1f;
+    public float traySoundMinPitch = 0.8f;
+    public float traySoundMaxPitch = 1.2f;
     [Space]
     public float soundCooldown = 0.1f;
     public float throwThreshold = 6f;

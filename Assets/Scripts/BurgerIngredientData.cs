@@ -94,8 +94,8 @@ public class BurgerIngredientData : ScriptableObject
     public float throwSoundMaxPitch = 1.15f;
     [Space]
     public float traySoundVolume = 1f;
-    public float traySoundMinPitch = 0.85f;
-    public float traySoundMaxPitch = 1.15f;
+    public float traySoundMinPitch = 0.8f;
+    public float traySoundMaxPitch = 1.2f;
     [Space]
     public float cookingSoundVolume = 1f;
     public float cookingSoundMinPitch = 0.85f;

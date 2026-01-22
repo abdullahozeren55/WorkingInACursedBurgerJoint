@@ -30,4 +30,30 @@ public class HolderData : ScriptableObject
     public Vector3 grabRotationOffset;
     public Vector3 grabLocalPositionOffset;
     public Vector3 grabLocalRotationOffset;
+    [Space]
+    public AudioClip[] audioClips;
+    [Space]
+    public float grabSoundVolume = 1f;
+    public float grabSoundMinPitch = 0.85f;
+    public float grabSoundMaxPitch = 1.15f;
+    [Space]
+    public float dropSoundVolume = 1f;
+    public float dropSoundMinPitch = 0.85f;
+    public float dropSoundMaxPitch = 1.15f;
+    [Space]
+    public float throwSoundVolume = 1f;
+    public float throwSoundMinPitch = 0.85f;
+    public float throwSoundMaxPitch = 1.15f;
+    [Space]
+    public float packUpSoundVolume = 1f;
+    public float packUpSoundMinPitch = 0.85f;
+    public float packUpSoundMaxPitch = 1.15f;
+    [Space]
+    public float traySoundVolume = 1f;
+    public float traySoundMinPitch = 0.8f;
+    public float traySoundMaxPitch = 1.2f;
+    [Space]
+    public float soundCooldown = 0.1f;
+    public float throwThreshold = 6f;
+    public float dropThreshold = 2f;
 }
