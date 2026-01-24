@@ -314,8 +314,6 @@ public class FirstPersonController : MonoBehaviour
             smr.localBounds = new Bounds(Vector3.zero, Vector3.one * 5f); // overly large bounds to guarantee visibility
         }
 
-        CameraManager.Instance.InitializeCamera(CameraManager.CameraName.FirstPerson);
-
         RefreshUISettings();
 
         UpdateFocusTextAppearance();
@@ -1432,14 +1430,21 @@ public class FirstPersonController : MonoBehaviour
             // SENARYO A: FIRLATILABÝLÝR BÝR EÞYA (Eski Þarjlý Sistem)
             if (currentGrabable.IsThrowable)
             {
-                // --- KÝLÝT KONTROLÜ EKLENDÝ (&& !throwInputConsumed) ---
-                // Eðer önceki iþlemde tuþ "tüketildiyse" buraya girme.
-                if (InputManager.Instance.PlayerThrow() && !ThrowKeyIsDone)
+                // --- FIX BAÞLANGICI ---
+
+                // Animasyon parametresini "Bayrak" (Flag) olarak kullanýyoruz.
+                // Eðer "chargingThrow" zaten true ise, demek ki þarj iþlemi baþladý, bir daha baþlatma.
+                bool isAlreadyCharging = anim.GetBool("chargingThrow");
+
+                // Þarta !isAlreadyCharging ekledik
+                if (InputManager.Instance.PlayerThrow() && !ThrowKeyIsDone && !isAlreadyCharging)
                 {
-                    // ... (Þarj ve Fýrlatma kodlarý aynen kalýr) ...
                     ResetHandAnim();
+
+                    // Artýk burasý sadece tuþa ÝLK bastýðýn karede 1 kere çalýþýr.
                     CameraManager.Instance.PlayThrowEffects(true);
-                    anim.SetBool("chargingThrow", true);
+
+                    anim.SetBool("chargingThrow", true); // Bayraðý kaldýr
                     DecideOutlineAndCrosshair();
 
                     if (singleHandThrowCoroutine != null)
@@ -1449,27 +1454,25 @@ public class FirstPersonController : MonoBehaviour
                     }
                     singleHandThrowCoroutine = StartCoroutine(SingleHandThrow());
                 }
+                // --- FIX BÝTÝÞÝ ---
 
-                if (InputManager.Instance.PlayerThrowRelease()) // Sað týk býrakma (Fýrlat)
+                if (InputManager.Instance.PlayerThrowRelease())
                 {
                     if (ignoreNextThrowRelease)
                     {
-                        // "Bu release sinyali aslýnda tepsiyi býrakan parmaða ait, bana (Burger'e) ait deðil."
-                        ignoreNextThrowRelease = false; // Nöbeti bitir
+                        ignoreNextThrowRelease = false;
 
-                        // Eli temizle (Þarj efektini vs. iptal et)
                         CameraManager.Instance.PlayThrowEffects(false);
                         ResetHandAnim();
-                        anim.SetBool("chargingThrow", false);
+                        anim.SetBool("chargingThrow", false); // Bayraðý indir
 
-                        // El havada kaldýysa indir (Reset to Idle)
                         if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
                         rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
-                        // Not: True dedik çünkü elimizde eþya var, yukarýda kalsýn.
 
-                        return; // ÝÞLEMÝ ÝPTAL ET VE ÇIK
+                        return;
                     }
 
+                    // Fýrlatma gerçekleþtiðinde veya iptal olduðunda efektleri bitir
                     CameraManager.Instance.PlayThrowEffects(false);
 
                     if (singleHandThrowCoroutine != null)
@@ -1487,7 +1490,7 @@ public class FirstPersonController : MonoBehaviour
                     rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(false, false));
                     ResetHandAnim();
 
-                    // Hedef Hesaplama (Nereye atýyoruz?)
+                    // ... (Fýrlatma gücü hesaplama ve fýrlatma kodlarý ayný) ...
                     Vector3 targetPoint;
                     Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
                     if (Physics.Raycast(ray, out RaycastHit hit, 50f, throwRaycastLayers))
@@ -1496,7 +1499,6 @@ public class FirstPersonController : MonoBehaviour
                         targetPoint = ray.GetPoint(50f);
                     Vector3 throwDir = (targetPoint - grabPoint.position).normalized;
 
-                    // Fýrlatma Gücü Kararý
                     if (throwChargeTimer <= quickTapThreshold)
                         currentGrabable.OnDrop(throwDir, isCrouching ? minThrowForce * 0.5f : IsSprinting ? minThrowForce * 1.5f : minThrowForce);
                     else
@@ -1507,10 +1509,11 @@ public class FirstPersonController : MonoBehaviour
 
                     ThrowKeyIsDone = true;
 
-                    // Temizlik
                     RemoveItemFromInventory(currentGrabable);
                     throwChargeTimer = 0f;
+
                     anim.SetBool("throw", false);
+                    anim.SetBool("chargingThrow", false); // Bayraðý indir (Emin olmak için tekrar)
 
                     if (currentSlotIndex == -1)
                     {

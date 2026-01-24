@@ -9,14 +9,7 @@ public class LoopManager : MonoBehaviour
 {
     public static LoopManager Instance;
 
-    public bool DayInLoop = false;
-    public bool IsFogControlPaused = false;
     public int LoopPartToInitialize;
-
-    [HideInInspector] public float CurrentCalculatedFogIntensity;
-    [HideInInspector] public float CurrentCalculatedFogHeight;
-    [HideInInspector] public Color CurrentCalculatedFogColorStart;
-    [HideInInspector] public Color CurrentCalculatedFogColorEnd;
 
     [System.Serializable]
     public class LoopState
@@ -36,12 +29,11 @@ public class LoopManager : MonoBehaviour
         public Color skyboxColor;
         [ColorUsage(true, true)] public Color environmentColor;
 
-        // --- 2. ESKÝ FOG AYARLARI GÝTTÝ, YENÝLERÝ GELDÝ ---
         [Header("Atmospheric Fog Settings")]
-        [Range(0f, 1f)] public float fogIntensity; // Yeni Intensity
-        public float fogHeightEnd;                 // Yeni Yükseklik (Height End)
-        public Color fogColorStart;                // Zemin rengi
-        public Color fogColorEnd;                  // Ufuk rengi
+        [Range(0f, 1f)] public float fogIntensity;
+        public float fogHeightEnd;
+        public Color fogColorStart;
+        public Color fogColorEnd;
 
         [Header("City Lights")]
         public bool shouldLightsUp;
@@ -56,12 +48,11 @@ public class LoopManager : MonoBehaviour
     public Light sun;
     [SerializeField] private Material originalSkyboxMat;
 
-    // --- 3. SAHNEDEKÝ FOG SCRIPTI REFERANSI ---
     public HeightFogGlobal HeightFogScript;
 
     [Header("Street Lights")]
-    [SerializeField] private Material[] lightMats; // Ana materyaller
-    public List<GameObject> allLights = new List<GameObject>();
+    [SerializeField] private Material[] lightMats; // Sokak lambalarýnýn materyalleri (Emmision kontrolü için)
+    public List<GameObject> allLights = new List<GameObject>(); // Sokak lambalarýnýn ýþýk bileþenleri (Intensity kontrolü için)
 
     [Header("Data")]
     public LoopState[] LoopStates;
@@ -71,7 +62,7 @@ public class LoopManager : MonoBehaviour
     private Coroutine transitionRoutine;
     private Material instancedSkybox;
 
-    // --- YENÝ DEÐÝÞKENLER (HAFIZA) ---
+    // Hedef (açýk haldeki) renkleri ve ýþýk þiddetlerini hafýzada tutuyoruz
     private Dictionary<Light, float> defaultLightIntensities = new Dictionary<Light, float>();
     private Dictionary<Material, Color> defaultEmissions = new Dictionary<Material, Color>();
 
@@ -88,7 +79,7 @@ public class LoopManager : MonoBehaviour
             return;
         }
 
-        // --- HAFIZAYA ALMA ÝÞLEMÝ ---
+        // 1. Materyallerin "AÇIK" halindeki renklerini kaydet (Target Color)
         foreach (var mat in lightMats)
         {
             if (mat != null && !defaultEmissions.ContainsKey(mat))
@@ -98,29 +89,22 @@ public class LoopManager : MonoBehaviour
             }
         }
 
+        // 2. Iþýklarýn "AÇIK" halindeki intensity deðerlerini kaydet
         foreach (var obj in allLights)
         {
             RegisterLightInternal(obj);
         }
 
-        // --- MATERIAL FIX ---
         if (originalSkyboxMat != null)
         {
             instancedSkybox = new Material(originalSkyboxMat);
             RenderSettings.skybox = instancedSkybox;
         }
 
-        // Eðer HeightFogScript atanmamýþsa, sahnede bulmaya çalýþ (Güvenlik önlemi)
         if (HeightFogScript == null)
             HeightFogScript = FindObjectOfType<HeightFogGlobal>();
 
         InitializeLoop(LoopCount, LoopPartToInitialize);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-            NextLoopState();
     }
 
     private void OnEnable()
@@ -140,21 +124,8 @@ public class LoopManager : MonoBehaviour
             RenderSettings.skybox = instancedSkybox;
         }
 
-        // KRÝTÝK KISIM: YENÝ SAHNEDEKÝ SÝSÝ BULMA
-        // 1. Önce eski referansý boþalt (Hafýza temizliði)
         HeightFogScript = null;
-
-        // 2. Sahnede aktif bir HeightFogGlobal var mý ara
-        // FindObjectOfType, sahnedeki aktif objeler arasýnda arama yapar.
         HeightFogScript = FindObjectOfType<HeightFogGlobal>();
-
-        // 3. Eðer bulduysan ve o anki gün saatine göre bir ayar varsa uygula
-        if (HeightFogScript != null && CurrentLoopState != null)
-        {
-            // Script yeni bulunduðu için Main Camera'yý kendi otomatik bulur (Boxophobic özelliði).
-            // Biz sadece renk ve yoðunluk ayarlarýný basacaðýz.
-            ApplyStateInstant(CurrentLoopState);
-        }
 
         if (CurrentLoopState != null)
         {
@@ -163,6 +134,7 @@ public class LoopManager : MonoBehaviour
 
         allLights.RemoveAll(item => item == null);
 
+        // Null olan ýþýk keylerini temizle
         var keysToRemove = defaultLightIntensities.Keys.Where(k => k == null).ToList();
         foreach (var key in keysToRemove) defaultLightIntensities.Remove(key);
     }
@@ -209,24 +181,14 @@ public class LoopManager : MonoBehaviour
         transitionRoutine = StartCoroutine(TransitionRoutine(todaysStates[currentIndex], todaysStates[nextIndex]));
 
         currentIndex = nextIndex;
+        LoopPartCount = todaysStates[currentIndex].Part;
     }
 
     public void NextDay()
     {
         LoopCount++;
         currentIndex = 0;
-    }
-
-    public void ResetForGameplay()
-    {
-        DayInLoop = false;
-        InitializeLoop(LoopCount, LoopPartCount);
-    }
-
-    public void ResetForMainMenu()
-    {
-        DayInLoop = true;
-        InitializeLoop(0, 0);
+        InitializeLoop(LoopCount, 0);
     }
 
     public void InitializeLoop(int dayIndex, int partNumber = 0)
@@ -234,29 +196,27 @@ public class LoopManager : MonoBehaviour
         LoopCount = dayIndex;
 
         var targetState = LoopStates.FirstOrDefault(s => s.Loop == LoopCount && s.Part == partNumber);
+
+        if (targetState == null)
+        {
+            Debug.LogWarning($"LoopState {dayIndex}-{partNumber} bulunamadý!");
+            return;
+        }
+
         CurrentLoopState = targetState;
 
         var todaysStates = LoopStates.Where(s => s.Loop == LoopCount).OrderBy(s => s.Part).ToList();
         currentIndex = todaysStates.IndexOf(targetState);
+        LoopPartCount = partNumber;
 
         if (transitionRoutine != null) StopCoroutine(transitionRoutine);
 
         ApplyStateInstant(targetState);
-
-        if (DayInLoop) NextLoopState();
-    }
-
-    public Color GetOriginalEmissionColor(Material mat)
-    {
-        if (mat != null && defaultEmissions.ContainsKey(mat))
-        {
-            return defaultEmissions[mat];
-        }
-        return mat != null ? mat.GetColor("_EmissionColor") : Color.black;
     }
 
     private void UpdateCityLightsLerp(float percent)
     {
+        // 3. Materyal Emission Kontrolü (Siyah -> Orjinal Renk arasý geçiþ)
         foreach (var kvp in defaultEmissions)
         {
             Material mat = kvp.Key;
@@ -272,6 +232,7 @@ public class LoopManager : MonoBehaviour
             }
         }
 
+        // 4. Iþýk Intensity Kontrolü (0 -> Orjinal Þiddet arasý geçiþ)
         foreach (var kvp in defaultLightIntensities)
         {
             Light l = kvp.Key;
@@ -301,14 +262,7 @@ public class LoopManager : MonoBehaviour
 
     private void ApplyFogValues(float intensity, float height, Color startColor, Color endColor)
     {
-        // A. Önce hesaplanan deðerleri hafýzaya al (Her zaman güncel kalsýn)
-        CurrentCalculatedFogIntensity = intensity;
-        CurrentCalculatedFogHeight = height;
-        CurrentCalculatedFogColorStart = startColor;
-        CurrentCalculatedFogColorEnd = endColor;
-
-        // B. Eðer kontrol PAUSE edilmediyse (Soðuk odada deðilsek), scripte uygula
-        if (!IsFogControlPaused && HeightFogScript != null)
+        if (HeightFogScript != null)
         {
             HeightFogScript.fogIntensity = intensity;
             HeightFogScript.fogHeightEnd = height;
@@ -329,9 +283,6 @@ public class LoopManager : MonoBehaviour
             instancedSkybox.SetFloat("_Rotation", state.skyboxRotate);
             instancedSkybox.SetColor("_Tint", state.skyboxColor);
         }
-
-        // --- 4. ESKÝ RENDER SETTINGS YERÝNE YENÝ FOG AYARLARI ---
-        // RenderSettings.fogColor ve fogDensity SÝLÝNDÝ.
 
         ApplyFogValues(state.fogIntensity, state.fogHeightEnd, state.fogColorStart, state.fogColorEnd);
 
@@ -361,7 +312,6 @@ public class LoopManager : MonoBehaviour
             t += Time.deltaTime / transitionDuration;
             float lerpT = t;
 
-            // ... (Sun ayný) ...
             sun.transform.rotation = Quaternion.Slerp(Quaternion.Euler(from.sunRotation), Quaternion.Euler(to.sunRotation), lerpT);
             sun.intensity = Mathf.Lerp(from.sunIntensity, to.sunIntensity, lerpT);
             sun.color = Color.Lerp(from.sunColor, to.sunColor, lerpT);
@@ -373,7 +323,6 @@ public class LoopManager : MonoBehaviour
                 instancedSkybox.SetColor("_Tint", Color.Lerp(from.skyboxColor, to.skyboxColor, lerpT));
             }
 
-            // --- 5. LERP ÝÞLEMÝ DE YENÝ SÝSTEME UYARLANDI ---
             ApplyFogValues
                 (
                     Mathf.Lerp(from.fogIntensity, to.fogIntensity, lerpT),
@@ -382,7 +331,6 @@ public class LoopManager : MonoBehaviour
                     Color.Lerp(from.fogColorEnd, to.fogColorEnd, lerpT)
                 );
 
-            // RenderSettings.fogColor ve Density SÝLÝNDÝ.
             RenderSettings.ambientLight = Color.Lerp(from.environmentColor, to.environmentColor, lerpT);
 
             float currentLightVal = Mathf.Lerp(startLightVal, endLightVal, lerpT);
@@ -392,19 +340,20 @@ public class LoopManager : MonoBehaviour
         }
 
         ApplyStateInstant(to);
-
-        if (DayInLoop) NextLoopState();
     }
 
     private void OnDestroy()
     {
-        foreach (var kvp in defaultEmissions)
+        // --- TEMÝZLÝK: Emission geri yükleme döngüsü silindi ---
+        // Sadece Skybox instance'ýný temizliyoruz.
+
+        if (instancedSkybox != null)
         {
-            if (kvp.Key != null)
-            {
-                kvp.Key.SetColor("_EmissionColor", kvp.Value);
-                kvp.Key.EnableKeyword("_EMISSION");
-            }
+#if UNITY_EDITOR
+            DestroyImmediate(instancedSkybox);
+#else
+            Destroy(instancedSkybox);
+#endif
         }
     }
 }

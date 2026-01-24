@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -12,10 +13,7 @@ public class PlayerManager : MonoBehaviour
     [Header("UI Settings")]
     public GameObject crosshairGO;
 
-    [Header("Knockback Settings")]
-    public float knockbackDuration = 0.35f;
-
-    private Vector3 knockbackVelocity;
+    [SerializeField] private SkinnedMeshRenderer headRenderer; // Inspector'dan kafayý ata
 
     public enum HandRigTypes
     {
@@ -162,13 +160,6 @@ public class PlayerManager : MonoBehaviour
         characterController.Move(moveForce);
     }
 
-    public void ApplyKnockback(Vector3 direction, float force)
-    {
-        knockbackVelocity = direction * force;
-
-        StartCoroutine(KnockbackRoutine(knockbackDuration));
-    }
-
     public void SetPlayerAnimBool(string boolName, bool value)
     {
         playerAnim.SetBool(boolName, value);
@@ -211,6 +202,19 @@ public class PlayerManager : MonoBehaviour
     }
 
     public Transform GetHeadTransform() => CameraManager.Instance.GetFirstPersonCamTransform();
+
+    /// <summary>
+    /// True ise kafa görünür (Menu modu), False ise kafa sadece gölge atar (FPS modu).
+    /// </summary>
+    public void SetHeadVisibility(bool isVisible)
+    {
+        if (headRenderer != null)
+        {
+            headRenderer.shadowCastingMode = isVisible
+                ? ShadowCastingMode.On
+                : ShadowCastingMode.ShadowsOnly;
+        }
+    }
 
     public void DecideUIText()
     {
@@ -262,26 +266,6 @@ public class PlayerManager : MonoBehaviour
                 // Unity'nin fizik motoruna bu iki collider'ýn birbirini görmezden gelmesini söylüyoruz.
                 Physics.IgnoreCollision(characterController, col, shouldIgnore);
             }
-        }
-    }
-
-    private IEnumerator KnockbackRoutine(float duration)
-    {
-        float t = 0f;
-
-        while (t < duration)
-        {
-            characterController.Move(knockbackVelocity * Time.deltaTime);
-
-            knockbackVelocity += Physics.gravity * 0.5f * Time.deltaTime;
-            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, Time.deltaTime * 2f);
-
-            // Yere çarpýnca erken bitir
-            if (characterController.isGrounded && knockbackVelocity.y < 0.2f)
-                break;
-
-            t += Time.deltaTime;
-            yield return null;
         }
     }
 }

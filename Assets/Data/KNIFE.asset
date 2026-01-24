@@ -32,7 +32,7 @@ MonoBehaviour:
   useRotationOffset: {x: 0, y: -70, z: -130}
   useLocalPositionOffset: {x: -0.013618964, y: 0.020353079, z: 0.033785075}
   useLocalRotationOffset: {x: 8.037032, y: 69.726715, z: 281.35193}
-  usingFOV: 70
+  usingFOV: 60
   timeToUse: 0.3
   focusTextKey: GRABABLE_KNIFE
   audioClips:

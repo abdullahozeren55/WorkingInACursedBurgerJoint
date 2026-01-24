@@ -48,10 +48,6 @@ public class CameraManager : MonoBehaviour
         Null,
         FirstPerson,
         Monitor,
-        CustomerDialogue,
-        PhoneLook,
-        ShopSellerDialogue,
-        CustomerDialogueAtTheDoor
     }
 
     [System.Serializable]
@@ -61,8 +57,24 @@ public class CameraManager : MonoBehaviour
         public CinemachineVirtualCamera vCam;
     }
 
-    [Space]
+    [Header("Gameplay Cameras")]
     [SerializeField] private CameraEntry[] cameras;
+
+    [Header("Main Menu Cameras (Random System)")]
+    [SerializeField] private List<CinemachineVirtualCamera> mainMenuCameras;
+    [SerializeField] private float menuToGameBlendTime = 2.0f; // Menüden oyuna geçiş süresi
+    [SerializeField] private float gameToMenuBlendTime = 1.5f; // Oyundan menüye geçiş süresi
+
+    [Header("Render Setup")]
+    [SerializeField] private Camera mainCamera;   // Main Camera'yı ata
+    [SerializeField] private Camera overlayCamera; // Overlay Camera'yı ata (UI veya Weapon Cam)
+
+    [Tooltip("Main Camera'nın OYUN İÇİNDE görmesi gereken layerlar (Player ve Grabbed HARİÇ her şey)")]
+    [SerializeField] private LayerMask gameplayCullingMask;
+
+    [Tooltip("Main Camera'nın MENÜDE görmesi gereken layerlar (HER ŞEY dahil)")]
+    [SerializeField] private LayerMask menuCullingMask;
+
     [Space]
     [SerializeField] private List<JumpscareSettings> jumpscarePresets;
     [Space]
@@ -90,17 +102,6 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float colorAdjustmentsIncreaseTimeForColdRoom = 1f;
     [SerializeField] private float colorAdjustmentsDecreaseTimeForColdRoom = 0.5f;
 
-    [Header("Car Hit Effect Settings")]
-    [SerializeField] private float carHitDuration = 1f;        // Kırmızı ekran ve yamuk kafa süresi
-    [SerializeField] private float carHitShakeDuration = 0.25f; // EKLENDİ: Sadece titreme süresi (Kısa olmalı)
-    [SerializeField] private float turnNormalDuration = 1f;    // Normale dönüş yumuşaklığı
-    [SerializeField] private float carHitShakeAmp = 5f;
-    [SerializeField] private float carHitShakeFreq = 20f;
-    [SerializeField] private float carHitVignetteIntensity = 0.55f;
-    [SerializeField] private Color carHitVignetteColor = Color.red;
-    [SerializeField] private float carHitDutchAngle = 20f;
-    [SerializeField] private float carHitFOV = 70f;
-
     private float normalFOV;
     private float normalVignetteValue;
     private Color normalVignetteColor;
@@ -110,85 +111,174 @@ public class CameraManager : MonoBehaviour
     private float normalFOVCurrentCam;
 
     private CinemachineVirtualCamera firstPersonCam;
-    private CinemachineVirtualCamera customerDialogueCam;
-    private CinemachineVirtualCamera customerDialogueAtTheDoorCam;
+    private CinemachineBrain cinemachineBrain; // Geçiş sürelerini yönetmek için
 
     private CinemachineBasicMultiChannelPerlin perlin;
     private Vignette vignette;
     private ColorAdjustments colorAdjustments;
 
     private CameraEntry currentCam;
+    private CinemachineVirtualCamera currentMenuCam; // Şu an aktif olan menü kamerası
     private int basePriority = 10;
 
     private Tween firstPersonCamFOVTween;
+
+    private Coroutine renderTransitionRoutine; // Render ayarlarını değiştiren zamanlayıcı
+    private Coroutine blendResetRoutine;       // Geçiş süresini sıfırlayan zamanlayıcı
+    private Coroutine controlUnlockRoutine; // Oyuncuya kontrolü verme zamanlayıcısı
 
     private void Awake()
     {
         if (Instance == null)
         {
-            // If not, set this instance as the singleton
             Instance = this;
         }
         else
         {
-            // If an instance already exists, destroy this one to enforce the singleton pattern
             Destroy(gameObject);
+            return;
         }
+
+        // Main Camera üzerindeki Brain'i bul
+        if (Camera.main != null)
+            cinemachineBrain = Camera.main.GetComponent<CinemachineBrain>();
 
         foreach (CameraEntry entry in cameras)
         {
             if (entry.camName == CameraName.FirstPerson)
             {
                 firstPersonCam = entry.vCam;
-
                 perlin = firstPersonCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
                 normalFOV = firstPersonCam.m_Lens.FieldOfView;
             }
-            else if (entry.camName == CameraName.CustomerDialogue)
-            {
-                customerDialogueCam = entry.vCam;
-            }
-            else if (entry.camName == CameraName.CustomerDialogueAtTheDoor)
-            {
-                customerDialogueAtTheDoorCam = entry.vCam;
-            }
         }
-
-        if (GameManager.Instance.PostProcessVolume.profile.TryGet(out Vignette v))
-        {
-            vignette = v;
-
-            normalVignetteValue = vignette.intensity.value;
-            normalVignetteColor = vignette.color.value;
-        }
-
-        if (GameManager.Instance.PostProcessVolume.profile.TryGet(out ColorAdjustments c))
-        {
-            colorAdjustments = c;
-
-            normalColorAdjustmentsPostExposureValue = colorAdjustments.postExposure.value;
-            normalColorAdjustmentsColor = colorAdjustments.colorFilter.value;
-
-        }
-
-
     }
+
+    private void Start()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.PostProcessVolume != null)
+        {
+            if (GameManager.Instance.PostProcessVolume.profile.TryGet(out Vignette v))
+            {
+                vignette = v;
+                normalVignetteValue = vignette.intensity.value;
+                normalVignetteColor = vignette.color.value;
+            }
+
+            if (GameManager.Instance.PostProcessVolume.profile.TryGet(out ColorAdjustments c))
+            {
+                colorAdjustments = c;
+                normalColorAdjustmentsPostExposureValue = colorAdjustments.postExposure.value;
+                normalColorAdjustmentsColor = colorAdjustments.colorFilter.value;
+            }
+        }
+    }
+
+    // --- YENİ EKLENEN: MENÜ VE OYUN GEÇİŞ SİSTEMİ ---
+
+    public void SwitchToRandomMainMenuCamera(bool instant = false)
+    {
+        if (renderTransitionRoutine != null) StopCoroutine(renderTransitionRoutine);
+        if (blendResetRoutine != null) StopCoroutine(blendResetRoutine);
+        if (controlUnlockRoutine != null) StopCoroutine(controlUnlockRoutine);
+
+        if (PlayerManager.Instance != null) PlayerManager.Instance.SetPlayerCanPlay(false);
+
+        if (mainMenuCameras == null || mainMenuCameras.Count == 0) return;
+
+        // Menüye dönüşte de sabit süreyi koruyoruz (Instant hariç)
+        if (cinemachineBrain != null)
+        {
+            cinemachineBrain.m_DefaultBlend.m_Time = instant ? 0f : gameToMenuBlendTime;
+        }
+
+        ResetAllPriorities();
+        int randomIndex = Random.Range(0, mainMenuCameras.Count);
+        currentMenuCam = mainMenuCameras[randomIndex];
+        if (currentMenuCam != null) currentMenuCam.Priority = basePriority + 1;
+        currentCam = null;
+
+        SetRenderStateForMainMenu();
+    }
+
+    public void SwitchToGameplayCamera()
+    {
+        // 1. Temizlik
+        if (renderTransitionRoutine != null) StopCoroutine(renderTransitionRoutine);
+        if (blendResetRoutine != null) StopCoroutine(blendResetRoutine);
+        if (controlUnlockRoutine != null) StopCoroutine(controlUnlockRoutine);
+
+        // 2. Dinamik Süre Hesabı (SADECE EVENTLER İÇİN)
+        // Kameraya "2 saniyede git" diyeceğiz ama yarı yoldaysak 
+        // Cinemachine veya bizim hissettiğimiz süre aslında daha kısa olacak.
+        // O yüzden eventleri bu kısa süreye göre ayarlıyoruz.
+        float multiplier = 1f;
+
+        if (cinemachineBrain != null && cinemachineBrain.IsBlending)
+        {
+            var activeBlend = cinemachineBrain.ActiveBlend;
+            if (activeBlend.Duration > 0)
+            {
+                // Ne kadar tamamlandıysa, dönüş süresi o oranda kısalır.
+                multiplier = activeBlend.TimeInBlend / activeBlend.Duration;
+            }
+        }
+
+        // Bu "tahmini/hissedilen" gerçek süre
+        float effectiveDuration = menuToGameBlendTime * multiplier;
+
+        // Çok aşırı kısa olmasın (glitch önlemi)
+        effectiveDuration = Mathf.Max(effectiveDuration, 0.1f);
+
+        // 3. KAMERA AYARI (SABİT SÜRE - DOKUNMUYORUZ)
+        // Kullanıcının isteği üzerine buraya "multiplier" uygulamıyoruz.
+        // Cinemachine'e "Standart süreni kullan" diyoruz.
+        if (cinemachineBrain != null)
+            cinemachineBrain.m_DefaultBlend.m_Time = menuToGameBlendTime;
+
+        SwitchToCamera(CameraName.FirstPerson);
+
+        // 4. ZAMANLAYICILAR (DİNAMİK/KISA SÜREYE GÖRE)
+
+        // Render değişimi: Efektif sürenin %90'ında
+        renderTransitionRoutine = StartCoroutine(TransitionToGameplayRenderRoutine(effectiveDuration * 0.97f));
+
+        // Kontrol verme: Efektif sürenin %60'ında
+        controlUnlockRoutine = StartCoroutine(UnlockPlayerControlRoutine(effectiveDuration * 0.5f));
+
+        // Blend reset: Efektif süre bittiğinde
+        blendResetRoutine = StartCoroutine(ResetBlendTimeAfterDelay(effectiveDuration));
+    }
+
+    private void ResetAllPriorities()
+    {
+        // Oyun kameralarını düşür
+        foreach (var entry in cameras)
+        {
+            if (entry.vCam != null) entry.vCam.Priority = basePriority;
+        }
+
+        // Menü kameralarını düşür
+        foreach (var cam in mainMenuCameras)
+        {
+            if (cam != null) cam.Priority = basePriority;
+        }
+    }
+
+    // ------------------------------------------------
 
     public void SwitchToCamera(CameraName name)
     {
-        if (name == currentCam.camName || name == CameraName.Null)
-            return;
+        // Eğer menüden geliyorsak priority sıfırlaması yapalım ki çakışma olmasın
+        ResetAllPriorities();
 
-        // Lower priority of current camera
+        // Standart kamera geçişi
         foreach (CameraEntry entry in cameras)
         {
             if (entry.camName == name)
             {
-                currentCam.vCam.Priority = basePriority;
                 currentCam = entry;
                 currentCam.vCam.Priority = basePriority + 1;
-
                 break;
             }
         }
@@ -199,16 +289,7 @@ public class CameraManager : MonoBehaviour
         if (currentCam != null)
             return;
 
-        foreach (CameraEntry entry in cameras)
-        {
-            if (entry.camName == name)
-            {
-                currentCam = entry;
-                currentCam.vCam.Priority = basePriority + 1;
-
-                break;
-            }
-        }
+        SwitchToCamera(name);
     }
 
     public void ChangeFirstPersonCameraFOV(float targetFOV, float duration, float delay)
@@ -217,7 +298,12 @@ public class CameraManager : MonoBehaviour
 
         firstPersonCamFOVTween = DOTween.To(
             () => firstPersonCam.m_Lens.FieldOfView,
-            x => firstPersonCam.m_Lens.FieldOfView = x,
+            x =>
+            {
+                LensSettings lens = firstPersonCam.m_Lens;
+                lens.FieldOfView = x;
+                firstPersonCam.m_Lens = lens;
+            },
             targetFOV,
             duration
         )
@@ -232,7 +318,12 @@ public class CameraManager : MonoBehaviour
 
         firstPersonCamFOVTween = DOTween.To(
             () => firstPersonCam.m_Lens.FieldOfView,
-            x => firstPersonCam.m_Lens.FieldOfView = x,
+            x =>
+            {
+                LensSettings lens = firstPersonCam.m_Lens;
+                lens.FieldOfView = x;
+                firstPersonCam.m_Lens = lens;
+            },
             normalFOV,
             duration
         )
@@ -242,15 +333,11 @@ public class CameraManager : MonoBehaviour
 
     public CinemachineVirtualCamera GetCamera()
     {
-        return currentCam.vCam;
-    }
+        // Eğer menü kamerası aktifse onu döndür, yoksa oyun kamerasını
+        if (currentCam == null && currentMenuCam != null)
+            return currentMenuCam;
 
-    public void SetCustomerCamLookAt(Transform lookAt, CameraName name = CameraName.CustomerDialogue)
-    {
-        if (name == CameraName.CustomerDialogue)
-            customerDialogueCam.LookAt = lookAt;
-        else if (name == CameraName.CustomerDialogueAtTheDoor)
-            customerDialogueAtTheDoorCam.LookAt = lookAt;
+        return currentCam != null ? currentCam.vCam : firstPersonCam;
     }
 
     public void SwitchToFirstPersonCamera()
@@ -270,58 +357,32 @@ public class CameraManager : MonoBehaviour
 
     public void PlayVignette(float targetIntensity, float duration, Color targetColor, Ease ease = Ease.OutSine, string tweenId = "Vignette")
     {
-        // Mevcut tweeni öldür
         DOTween.Kill(tweenId);
+        if (vignette == null) return;
 
-        // Başlangıç değerlerini al
         Color startColor = vignette.color.value;
         float startIntensity = vignette.intensity.value;
 
-        // Sequence oluştur
         Sequence seq = DOTween.Sequence().SetId(tweenId).SetEase(ease);
 
-        // Color tween
-        seq.Join(DOTween.To(
-            () => startColor,
-            x => vignette.color.value = x,
-            targetColor,
-            duration));
-
-        // Intensity tween
-        seq.Join(DOTween.To(
-            () => startIntensity,
-            x => vignette.intensity.value = x,
-            targetIntensity,
-            duration));
+        seq.Join(DOTween.To(() => startColor, x => vignette.color.value = x, targetColor, duration));
+        seq.Join(DOTween.To(() => startIntensity, x => vignette.intensity.value = x, targetIntensity, duration));
 
         seq.Play();
     }
 
     public void PlayerColorAdjustments(float targetPostExposure, float duration, Color targetColor, Ease ease = Ease.OutSine, string tweenId = "ColorAdjustments")
     {
-        // Mevcut tweeni öldür
         DOTween.Kill(tweenId);
+        if (colorAdjustments == null) return;
 
-        // Başlangıç değerlerini al
         Color startColor = colorAdjustments.colorFilter.value;
         float startPostExposure = colorAdjustments.postExposure.value;
 
-        // Sequence oluştur
         Sequence seq = DOTween.Sequence().SetId(tweenId).SetEase(ease);
 
-        // Color tween
-        seq.Join(DOTween.To(
-            () => startColor,
-            x => colorAdjustments.colorFilter.value = x,
-            targetColor,
-            duration));
-
-        // Intensity tween
-        seq.Join(DOTween.To(
-            () => startPostExposure,
-            x => colorAdjustments.postExposure.value = x,
-            targetPostExposure,
-            duration));
+        seq.Join(DOTween.To(() => startColor, x => colorAdjustments.colorFilter.value = x, targetColor, duration));
+        seq.Join(DOTween.To(() => startPostExposure, x => colorAdjustments.postExposure.value = x, targetPostExposure, duration));
 
         seq.Play();
     }
@@ -336,13 +397,22 @@ public class CameraManager : MonoBehaviour
 
     public void PlayCurrentCamFOV(float targetFOV, float duration, Ease ease = Ease.InOutBack, float easeValue = 1.7f, string tweenId = "FOVCurrentCam")
     {
-        CinemachineVirtualCamera currentCam = GetCamera();
+        CinemachineVirtualCamera cam = GetCamera();
+        if (cam == null) return;
 
-        normalFOVCurrentCam = currentCam.m_Lens.FieldOfView;
+        normalFOVCurrentCam = cam.m_Lens.FieldOfView;
 
         DOTween.Kill(tweenId);
 
-        DOTween.To(() => currentCam.m_Lens.FieldOfView, x => currentCam.m_Lens.FieldOfView = x, targetFOV, duration)
+        DOTween.To(
+            () => cam.m_Lens.FieldOfView,
+            x =>
+            {
+                LensSettings lens = cam.m_Lens;
+                lens.FieldOfView = x;
+                cam.m_Lens = lens;
+            },
+            targetFOV, duration)
             .SetEase(ease, easeValue)
             .SetId(tweenId);
     }
@@ -356,42 +426,24 @@ public class CameraManager : MonoBehaviour
     {
         DOTween.Kill(tweenId);
 
-        DOTween.To(() => firstPersonCam.m_Lens.FieldOfView, x => firstPersonCam.m_Lens.FieldOfView = x, targetFOV, duration)
-            .SetEase(ease, easeValue)
-            .SetId(tweenId);
+        DOTween.To(
+            () => firstPersonCam.m_Lens.FieldOfView,
+            x =>
+            {
+                LensSettings lens = firstPersonCam.m_Lens;
+                lens.FieldOfView = x;
+                firstPersonCam.m_Lens = lens;
+            },
+            targetFOV,
+            duration
+        )
+        .SetEase(ease, easeValue)
+        .SetId(tweenId);
     }
 
     public void EndFOV(float delay, float duration)
     {
         StartCoroutine(EndFOVCoroutine(delay, duration));
-    }
-
-    public void PlayCarHitEffects(float hitDirection)
-    {
-        // 1. Ekran Sallantısı (ANLIK DARBE)
-        perlin.m_NoiseProfile = shakeNoise;
-        // Süreyi çok kısa (0.05f) veriyoruz ki "KÜT" diye anında en tepeye çıksın, yavaş yavaş artmasın.
-        PlayScreenShake(carHitShakeAmp, carHitShakeFreq, 0.05f, Ease.OutQuad);
-
-        // 2. Kırmızı Vignette (Acı hissi - Uzun kalacak)
-        PlayVignette(carHitVignetteIntensity, 0.1f, carHitVignetteColor, Ease.OutQuad);
-
-        // 3. FOV Kick (Darbe anında görüntü geri gider - Uzun kalacak)
-        PlayFOV(carHitFOV, 0.1f, Ease.OutBack);
-
-        // 4. Dutch Angle (Kafa Yamulması - Uzun kalacak)
-        float tiltDirection = Mathf.Sign(hitDirection);
-        float finalTilt = carHitDutchAngle * -tiltDirection; // - ile çarptım ki savrulduğu yöne yatsın (Test edip ters gelirse -'yi kaldır)
-
-        PlayDutchAngle(finalTilt, 0.15f, Ease.OutBack);
-
-        // --- AYRIŞTIRMA BURADA ---
-
-        // Shake'i hemen durdur (Darbe bitti)
-        StartCoroutine(EndScreenShake(carHitShakeDuration, 0.2f));
-
-        // Diğer efektleri (Kızarıklık, yamukluk) uçuş bitince durdur
-        StartCoroutine(ResetCarHitVisuals(carHitDuration));
     }
 
     public void PlayColdRoomEffects(bool isEntering)
@@ -400,7 +452,6 @@ public class CameraManager : MonoBehaviour
         float durationColorAdjustments = isEntering ? colorAdjustmentsIncreaseTimeForColdRoom : colorAdjustmentsDecreaseTimeForColdRoom;
         Ease ease = isEntering ? Ease.OutSine : Ease.InSine;
 
-        // Diğer efektler aynen kalıyor...
         PlayVignette(isEntering ? vignetteIntensityForColdRoom : normalVignetteValue, durationVig, isEntering ? coldRoomVignetteColor : normalVignetteColor, ease);
         PlayerColorAdjustments(isEntering ? colorAdjustmentsPostExposureForColdRoom : normalColorAdjustmentsPostExposureValue, durationColorAdjustments, isEntering ? coldRoomColorAdjustmentsColor : normalColorAdjustmentsColor, ease);
     }
@@ -434,13 +485,8 @@ public class CameraManager : MonoBehaviour
             return;
         }
 
-        // Screen Shake
         PlayScreenShake(preset.amplitude, preset.frequency, preset.shakeLerpDuration, Ease.OutBack);
-
-        // Vignette
         PlayVignette(preset.vignetteIntensity, preset.vignetteLerpDuration, preset.vignetteColor, Ease.OutSine);
-
-        // FOV
         PlayFOV(preset.fov, preset.fovLerpDuration, Ease.OutSine);
 
         StartCoroutine(EndScreenShake(preset.shakeTotalDuration, preset.shakeResetLerpDuration));
@@ -448,38 +494,71 @@ public class CameraManager : MonoBehaviour
         StartCoroutine(EndFOVCoroutine(preset.fovTotalDuration, preset.fovResetLerpDuration));
     }
 
-    public Transform GetFirstPersonCamTransform() => firstPersonCam != null ? firstPersonCam.transform : transform; //Olmazsa kendi transformunu döndürüyo hata vermesin diye
-
+    public Transform GetFirstPersonCamTransform() => firstPersonCam != null ? firstPersonCam.transform : transform;
     private IEnumerator EndScreenShake(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
-
         perlin.m_NoiseProfile = shakeNoise;
-
         PlayScreenShake(0f, 0f, duration, Ease.OutExpo);
     }
 
     private IEnumerator EndVignette(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
-
         PlayVignette(normalVignetteValue, duration, normalVignetteColor, Ease.InSine);
     }
 
     private IEnumerator EndFOVCoroutine(float delay, float duration)
     {
         yield return new WaitForSeconds(delay);
-
         PlayFOV(normalFOV, duration, Ease.InSine);
     }
 
-    private IEnumerator ResetCarHitVisuals(float delay)
+    // --- RENDER YÖNETİMİ ---
+
+    private void SetRenderStateForMainMenu()
+    {
+        // 1. Overlay kamerayı kapat
+        if (overlayCamera != null) overlayCamera.gameObject.SetActive(false);
+
+        // 2. Main Camera her şeyi görsün
+        if (mainCamera != null) mainCamera.cullingMask = menuCullingMask;
+
+        // 3. Kafayı görünür yap
+        if (PlayerManager.Instance != null) PlayerManager.Instance.SetHeadVisibility(true);
+    }
+
+    private IEnumerator TransitionToGameplayRenderRoutine(float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        // Yavaşça (turnNormalDuration) normale dön
-        PlayVignette(normalVignetteValue, turnNormalDuration, normalVignetteColor, Ease.InSine);
-        PlayFOV(normalFOV, turnNormalDuration, Ease.InSine);
-        PlayDutchAngle(0f, turnNormalDuration, Ease.OutBack);
+        // Süre doldu, render ayarlarını OYUN moduna geçir
+        if (PlayerManager.Instance != null) PlayerManager.Instance.SetHeadVisibility(false);
+        if (mainCamera != null) mainCamera.cullingMask = gameplayCullingMask;
+        if (overlayCamera != null) overlayCamera.gameObject.SetActive(true);
+
+        renderTransitionRoutine = null; // İş bitti, referansı boşa çıkar
+    }
+
+    private IEnumerator ResetBlendTimeAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (cinemachineBrain != null)
+            cinemachineBrain.m_DefaultBlend.m_Time = 0.5f;
+
+        blendResetRoutine = null; // İş bitti
+    }
+
+    private IEnumerator UnlockPlayerControlRoutine(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.SetPlayerCanPlay(true);
+        }
+
+        controlUnlockRoutine = null;
     }
 }

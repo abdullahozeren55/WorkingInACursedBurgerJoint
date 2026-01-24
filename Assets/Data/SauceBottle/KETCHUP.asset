@@ -30,7 +30,7 @@ MonoBehaviour:
   useLocalPositionOffset: {x: 0.0013, y: -0.0234, z: 0.0623}
   useLocalRotationOffset: {x: 82.59771, y: 254.85889, z: 341.03546}
   timeToUse: 0.3
-  usingFOV: 70
+  usingFOV: 60
   audioClips:
   - {fileID: 8300000, guid: 802098a4a628b9441a8dd1ab6f99016f, type: 3}
   - {fileID: 8300000, guid: 661b5a0ce5cbad3449ff0fb5b5e8d22d, type: 3}

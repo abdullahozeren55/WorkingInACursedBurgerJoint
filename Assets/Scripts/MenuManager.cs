@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
@@ -27,8 +26,8 @@ public class MenuManager : MonoBehaviour
     public GameObject rebindBlocker;
 
     [Header("Rebind Ýpuçlarý")]
-    public GameObject rebindHintKeyboard; // Ýçinde "ESC - Ýptal" yazan obje
-    public GameObject rebindHintGamepad;  // Ýçinde "Gamepad Ýkonu - Ýptal" yazan obje
+    public GameObject rebindHintKeyboard;
+    public GameObject rebindHintGamepad;
 
     [Header("Settings Sub-Panels")]
     public RectTransform settingsMainRect;
@@ -47,7 +46,7 @@ public class MenuManager : MonoBehaviour
     [Header("Animation References")]
     public RectTransform mainMenuRect;
     public RectTransform settingsRect;
-    public RectTransform pauseMenuRect; // Pause Menüsü Animasyonu için
+    public RectTransform pauseMenuRect;
 
     [Header("Animation Settings")]
     public float slideDuration = 0.5f;
@@ -62,7 +61,7 @@ public class MenuManager : MonoBehaviour
     [Header("Canvas")]
     public Canvas menuCanvas;
     public Canvas mouseCanvas;
-    
+
     private RectTransform canvasRect;
     private List<PixelPerfectCanvasScaler> activeScalers = new List<PixelPerfectCanvasScaler>();
 
@@ -79,7 +78,7 @@ public class MenuManager : MonoBehaviour
         float width = GetCanvasWidth();
         float height = GetCanvasHeight();
 
-        // Panelleri ýþýnla
+        // Panelleri baþlangýç konumlarýna ýþýnla
         settingsGeneralRect.anchoredPosition = new Vector2(0, height);
         settingsAudioRect.anchoredPosition = new Vector2(0, -height);
         settingsControlsRect.anchoredPosition = new Vector2(width, 0);
@@ -92,31 +91,8 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
-        if (mainMenuRect != null && settingsRect != null)
-        {
-            float width = GetCanvasWidth();
-
-            mainMenu.SetActive(true);
-            settingsMenu.SetActive(true);
-            pauseMenu.SetActive(false);
-
-            mainMenuRect.gameObject.SetActive(true);
-            mainMenuRect.anchoredPosition = Vector2.zero;
-
-            settingsRect.anchoredPosition = new Vector2(width, 0);
-            ResetSettingsState();
-        }
-
-        isGamePaused = false;
-        InputManager.Instance.SwitchToUIMode();
-
-        // --- ÝÞTE EKSÝK OLAN PARÇA ---
-        // Oyun ilk açýldýðýnda kimse cursor'ý açmýyordu. Elle açýyoruz.
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
-            GameManager.Instance.SetCursorLock(false); // Kilit Açýk = Görünür Cursor
-        }
+        // Oyun baþladýðýnda direkt ANA MENÜ modunda baþla
+        EnterMainMenuMode(true);
     }
 
     private void Update()
@@ -142,6 +118,147 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
+
+    // --- YENÝ SÝSTEM: Mod Deðiþtirme Fonksiyonlarý ---
+
+    /// <summary>
+    /// Oyunu Ana Menü durumuna getirir. (Eski 'MainMenu' sahnesi mantýðý)
+    /// </summary>
+    public void EnterMainMenuMode(bool instant = false)
+    {
+        if (!instant) isBusy = true;
+
+        float height = GetCanvasHeight();
+
+        mainMenu.SetActive(true);
+        settingsMenu.SetActive(true);
+        settingsRect.anchoredPosition = new Vector2(GetCanvasWidth(), 0);
+        ResetSettingsState();
+
+        if (instant)
+        {
+            // ANLIK GEÇÝÞ (Oyun Açýlýþý)
+            HandleTimeScale(1); // Ýlk açýlýþta da zamanýn aktýðýndan emin olalým
+            mainMenuRect.anchoredPosition = Vector2.zero;
+            if (pauseMenuRect) pauseMenuRect.anchoredPosition = new Vector2(0, height);
+            pauseMenu.SetActive(false);
+
+            FinishMainMenuEnterLogic(true);
+        }
+        else
+        {
+            // ANÝMASYONLU GEÇÝÞ (Pause -> Main Menu)
+
+            // 1. KRÝTÝK HAMLE: ZAMANI HEMEN BAÞLAT!
+            // Pause'daydýk (Time=0), bunu 1 yapmazsak Cinemachine hareket etmez!
+            HandleTimeScale(1);
+
+            // 2. KAMERA GEÇÝÞÝ
+            if (CameraManager.Instance != null)
+                CameraManager.Instance.SwitchToRandomMainMenuCamera(false);
+
+            // 3. PAUSE MENÜSÜ YUKARI
+            if (pauseMenu.activeSelf && pauseMenuRect != null)
+            {
+                pauseMenuRect.DOKill(true);
+                pauseMenuRect.DOAnchorPosY(height, slideDuration)
+                    .SetEase(slideEase)
+                    .SetUpdate(true) // Time=1 yaptýk ama UI için SetUpdate(true) kalmasýnda zarar yok
+                    .OnComplete(() => pauseMenu.SetActive(false));
+            }
+
+            // 4. ANA MENÜ AÞAÐIDAN YUKARI
+            mainMenuRect.DOKill(true);
+            mainMenuRect.anchoredPosition = new Vector2(0, -height);
+
+            mainMenuRect.DOAnchorPosY(0, slideDuration)
+                .SetEase(slideEase)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    FinishMainMenuEnterLogic(false);
+                    isBusy = false;
+                });
+        }
+    }
+
+    // Kod tekrarýný önlemek için mantýk kýsmý ayrýldý
+    private void FinishMainMenuEnterLogic(bool instant)
+    {
+        isGamePaused = false;
+        isSettingsOpen = false;
+        // isBusy = false; // Bunu animasyon bitimine saklýyoruz (instant ise zaten sorun yok)
+        if (instant) isBusy = false;
+
+        CanPause = false;
+
+        HandleTimeScale(1);
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+            GameManager.Instance.SetCursorLock(false);
+        }
+
+        InputManager.Instance.SwitchToUIMode();
+        UpdateDoFState(true);
+
+        if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
+
+        // Eðer instant ise kamerayý da küt diye geçir
+        if (instant && CameraManager.Instance != null)
+            CameraManager.Instance.SwitchToRandomMainMenuCamera(true);
+    }
+
+    /// <summary>
+    /// Oyuna Baþla Butonu
+    /// </summary>
+    public void EnterGameplayMode()
+    {
+        if (isBusy) return;
+        isBusy = true;
+
+        HandleTimeScale(1);
+
+        float height = GetCanvasHeight();
+
+        // Kamera geçiþi
+        if (CameraManager.Instance != null)
+            CameraManager.Instance.SwitchToGameplayCamera();
+
+        // UI Animasyonu
+        mainMenuRect.DOKill(true);
+        mainMenuRect.DOAnchorPosY(-height, slideDuration)
+            .SetEase(slideEase)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                HandleMainMenu(false);
+                isBusy = false;
+            });
+
+        if (pauseMenu && pauseMenu.activeSelf) pauseMenu.SetActive(false);
+
+        isGamePaused = false;
+        isSettingsOpen = false;
+        
+        CanPause = true;
+
+        HandleTimeScale(1);
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+            GameManager.Instance.SetCursorLock(true);
+        }
+
+        InputManager.Instance.SwitchToGameplayMode();
+        UpdateDoFState(false);
+
+        if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
+    }
+
+    // ---------------------------------------------------
 
     public void TogglePause()
     {
@@ -280,7 +397,6 @@ public class MenuManager : MonoBehaviour
 
     public void HandleBack()
     {
-        // Eðer tuþ atama ekraný (Blocker) açýksa geri dönmeyi engelle
         if (rebindBlocker != null && rebindBlocker.activeSelf) return;
 
         if (isSettingsOpen)
@@ -494,6 +610,8 @@ public class MenuManager : MonoBehaviour
         isBusy = false;
     }
 
+    // --- YARDIMCI METODLAR ---
+
     public void HandleMainMenu(bool shouldTurnOn)
     {
         mainMenu.SetActive(shouldTurnOn);
@@ -511,103 +629,10 @@ public class MenuManager : MonoBehaviour
     public void SetCanPause(bool pause) => CanPause = pause;
     public void SetPlayerCanPlay(bool can) => PlayerManager.Instance.SetPlayerCanPlay(can);
 
-    public void LoadScene(string sceneName) { SceneManager.LoadScene(sceneName); }
     public void QuitGame() { Application.Quit(); }
 
     private float GetCanvasWidth() { if (canvasRect != null) return canvasRect.rect.width; return 1920f; }
     private float GetCanvasHeight() { if (canvasRect != null) return canvasRect.rect.height; return 1080f; }
-
-    private void OnEnable() { SceneManager.sceneLoaded += OnSceneLoaded; }
-    private void OnDisable() { SceneManager.sceneLoaded -= OnSceneLoaded; }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        FindAndAssignCamera();
-
-        if (LoopManager.Instance != null)
-        {
-            if (scene.name == "Scene0")
-            {
-                // --- RESTORED: DayManager Logic ---
-                LoopManager.Instance.ResetForGameplay();
-
-                isGamePaused = false;
-                isSettingsOpen = false;
-                isBusy = false;
-
-                HandleMainMenu(false);
-                if (pauseMenu) pauseMenu.SetActive(false);
-
-                CanPause = true;
-                InputManager.Instance.SwitchToGameplayMode();
-
-                HandleTimeScale(1);
-                GameManager.Instance.SetCursor(GameManager.CursorType.Default);
-                GameManager.Instance.SetCursorLock(true);
-                SetPlayerCanPlay(true);
-
-                UpdateDoFState(false);
-                if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
-            }
-            else if (scene.name == "MainMenu")
-            {
-                // --- RESTORED: DayManager Logic ---
-                LoopManager.Instance.ResetForMainMenu();
-
-                isGamePaused = false;
-                isSettingsOpen = false;
-                isBusy = false;
-
-                HandleMainMenu(true);
-                if (pauseMenu) pauseMenu.SetActive(false);
-                CanPause = false;
-                InputManager.Instance.SwitchToUIMode();
-
-                HandleTimeScale(1);
-                GameManager.Instance.SetCursor(GameManager.CursorType.Default);
-                GameManager.Instance.SetCursorLock(false);
-
-                UpdateDoFState(true);
-                if (SoundManager.Instance) SoundManager.Instance.SwitchSnapshot("Outside", 0f);
-            }
-        }
-    }
-
-    // --- YARDIMCI METODLAR ---
-
-    void FindAndAssignCamera()
-    {
-        GameObject camObj = GameObject.Find("UIMainMenu_Camera");
-        if (camObj != null)
-        {
-            Camera uiCam = camObj.GetComponent<Camera>();
-
-            if (menuCanvas != null)
-            {
-                menuCanvas.worldCamera = uiCam;
-            }
-
-            if (mouseCanvas != null)
-            {
-                mouseCanvas.worldCamera = uiCam;
-            }
-
-            Camera mainCam = Camera.main;
-            if (mainCam != null)
-            {
-                var cameraData = mainCam.GetUniversalAdditionalCameraData();
-                bool isAlreadyInStack = false;
-                foreach (var c in cameraData.cameraStack)
-                {
-                    if (c == uiCam) isAlreadyInStack = true;
-                }
-                if (!isAlreadyInStack)
-                {
-                    cameraData.cameraStack.Add(uiCam);
-                }
-            }
-        }
-    }
 
     private void UpdateDoFState(bool enableDoF)
     {
@@ -625,7 +650,6 @@ public class MenuManager : MonoBehaviour
     public void UnregisterScaler(PixelPerfectCanvasScaler scaler) { if (activeScalers.Contains(scaler)) activeScalers.Remove(scaler); }
     public void RefreshAllCanvases(int offset = -1)
     {
-        // Eðer yeni bir deðer geldiyse hafýzaya al
         if (offset != -1)
         {
             GlobalScaleOffset = offset;
@@ -640,8 +664,6 @@ public class MenuManager : MonoBehaviour
     public void SetRebindBlocker(bool on, bool isGamepadMode = false)
     {
         rebindBlocker.SetActive(on);
-
-        // Eðer blocker açýlýyorsa, doðru ipucunu göster
         if (on)
         {
             if (rebindHintKeyboard) rebindHintKeyboard.SetActive(!isGamepadMode);

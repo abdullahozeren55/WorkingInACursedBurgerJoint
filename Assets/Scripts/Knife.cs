@@ -86,6 +86,8 @@ public class Knife : MonoBehaviour, IGrabable
 
         triggerCol.enabled = false;
 
+        CameraManager.Instance.EndFOV(0f, data.timeToUse / 2f);
+
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
         transform.SetParent(null);
@@ -155,6 +157,8 @@ public class Knife : MonoBehaviour, IGrabable
 
         triggerCol.enabled = true;
         triggerSC.IsJustThrowed = true;
+
+        CameraManager.Instance.EndFOV(0f, data.timeToUse / 2f);
 
         PlayerManager.Instance.SetPlayerIsUsingItemXY(false, false);
 
