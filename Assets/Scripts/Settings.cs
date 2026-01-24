@@ -25,7 +25,7 @@ public class Settings : MonoBehaviour
         public string nativeName;
         public TMP_FontAsset fontAsset;
         public float fontSize;
-        public float vOffset;
+        // vOffset SİLİNDİ
     }
 
     public List<LanguageDisplayOption> languageDisplayList;
@@ -119,51 +119,33 @@ public class Settings : MonoBehaviour
     {
         if (LocalizationManager.Instance == null) return rawText;
 
-        // 1. Verileri Çek
         var targetData = LocalizationManager.Instance.GetFontDataForCurrentLanguage(dropdownFontType);
         var defaultData = LocalizationManager.Instance.GetDefaultFontData(dropdownFontType);
 
         if (targetData.font == null) return rawText;
 
-        // --- HESAPLAMALAR ---
-
         // A. Font Boyutu Oranı (Yüzde)
         float defaultBase = Mathf.Max(defaultData.basePixelSize, 1f);
         float ratio = targetData.basePixelSize / defaultBase;
-        float sizePercentage = ratio * 100f; 
+        float sizePercentage = ratio * 100f;
 
-        // B. Dikey Offset (Scale edilmiş fark)
-        float offsetDiff = targetData.verticalOffset - defaultData.verticalOffset;
-        float finalVOffset = offsetDiff * ratio;
+        // B. vOffset SİLİNDİ
 
-        // C. Karakter Boşluğu (Scale EDİLMEMİŞ ham fark - LocalizedText ile uyumlu)
-        // Eğer Japonca profilinde '2' yazıyorsa, harfleri 2 birim açar.
+        // C. Karakter Boşluğu (Bu kalsın, japonca için iyidir)
         float charSpacingDiff = targetData.characterSpacingOffset - defaultData.characterSpacingOffset;
 
-        // --- ETİKETLERİ OLUŞTUR ---
-        
+        // --- ETİKETLER ---
         string fontName = targetData.font.name;
-
-        // Temel yapı: Font ve Boyut
         string prefix = $"<font=\"{fontName}\"><size={sizePercentage:F0}%>";
         string suffix = "</size></font>";
 
-        // Eğer kayda değer bir dikey kaydırma varsa ekle
-        if (Mathf.Abs(finalVOffset) > 0.1f)
-        {
-            prefix += $"<voffset={finalVOffset:F2}>";
-            suffix = "</voffset>" + suffix;
-        }
-
-        // YENİ: Eğer kayda değer bir karakter boşluğu farkı varsa ekle
-        // <cspace=XX> etiketi karakterlerin arasını açar/kısar
+        // Sadece cspace ekliyoruz artık
         if (Mathf.Abs(charSpacingDiff) > 0.1f)
         {
             prefix += $"<cspace={charSpacingDiff:F2}>";
             suffix = "</cspace>" + suffix;
         }
 
-        // Sonucu birleştir
         return $"{prefix}{rawText}{suffix}";
     }
 
@@ -492,9 +474,9 @@ public class Settings : MonoBehaviour
         {
             string fontName = langOption.fontAsset.name;
             string pixelSize = langOption.fontSize.ToString("F0");
-            string offsetVal = langOption.vOffset.ToString("F0");
-            // Burası kendi özel mantığını koruyor
-            string finalString = $"<font=\"{fontName}\"><size={pixelSize}><voffset={offsetVal}>{langOption.nativeName}</voffset></size></font>";
+
+            // vOffset yok, direkt temiz hali:
+            string finalString = $"<font=\"{fontName}\"><size={pixelSize}>{langOption.nativeName}</size></font>";
             options.Add(finalString);
         }
         languageDropdown.AddOptions(options);

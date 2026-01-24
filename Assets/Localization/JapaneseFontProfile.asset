@@ -24,28 +24,28 @@ MonoBehaviour:
   - type: 1
     font: {fileID: 11400000, guid: 1a5ca14c74ccf2e44b1cd8c815949f01, type: 2}
     basePixelSize: 16
-    verticalOffset: 0
+    verticalOffset: 2
     characterSpacingOffset: 0
     wordSpacingOffset: 0
     lineSpacingOffset: 0
   - type: 2
     font: {fileID: 11400000, guid: fc449532da7a8da4cb089e4c989faa4b, type: 2}
     basePixelSize: 16
-    verticalOffset: 0
+    verticalOffset: 2
     characterSpacingOffset: 0
     wordSpacingOffset: 0
     lineSpacingOffset: 0
   - type: 3
     font: {fileID: 11400000, guid: 80194ab5ae5cf1d4d9df8eec44408341, type: 2}
     basePixelSize: 16
-    verticalOffset: 0
+    verticalOffset: 2
     characterSpacingOffset: 0
     wordSpacingOffset: 0
     lineSpacingOffset: 0
   - type: 4
     font: {fileID: 11400000, guid: 80194ab5ae5cf1d4d9df8eec44408341, type: 2}
     basePixelSize: 16
-    verticalOffset: 0
+    verticalOffset: 2
     characterSpacingOffset: 0
     wordSpacingOffset: 0
     lineSpacingOffset: 0

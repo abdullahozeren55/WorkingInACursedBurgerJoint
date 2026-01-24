@@ -8,9 +8,6 @@ public class LocalizedText : MonoBehaviour
 
     private TMP_Text _textComp;
 
-    // ARTIK RECT TRANSFORM'A ÝHTÝYACIMIZ YOK
-    // private RectTransform _rectTransform; <-- Sildik
-
     // Hafýza Deðerleri
     private float _initialFontSize;
     private float _initialCharSpacing;
@@ -20,8 +17,6 @@ public class LocalizedText : MonoBehaviour
     private void Awake()
     {
         _textComp = GetComponent<TMP_Text>();
-        // RectTransform atamasýný sildik.
-
         if (_textComp != null)
         {
             _initialFontSize = _textComp.fontSize;
@@ -65,32 +60,18 @@ public class LocalizedText : MonoBehaviour
             _textComp.font = targetData.font;
         }
 
-        // 3. BOYUT HESABI (Ayný Kalýyor)
+        // 3. BOYUT HESABI (Scale)
         float defaultBaseSize = Mathf.Max(defaultData.basePixelSize, 0.1f);
         float scaleRatio = _initialFontSize / defaultBaseSize;
 
         _textComp.fontSize = targetData.basePixelSize * scaleRatio;
 
-        // 4. OFFSET HESABI (<voffset> için)
-        // Hedef dilin offseti ile Default dilin offseti arasýndaki farký bul ve scale ile çarp.
-        float rawOffsetDiff = targetData.verticalOffset - defaultData.verticalOffset;
-        float finalVOffset = rawOffsetDiff * scaleRatio;
+        // --- OFFSET HESABI SÝLÝNDÝ (Layout Group dostu oldu) ---
 
-        // 5. METNÝ OLUÞTUR VE YAZ (BÜYÜ BURADA)
-        string rawText = LocalizationManager.Instance.GetText(localizationKey);
+        // 4. METNÝ DÝREKT YAZ
+        _textComp.text = LocalizationManager.Instance.GetText(localizationKey);
 
-        // Eðer offset 0.1'den küçükse tag ekleyip string'i kirletmeyelim, gerek yok.
-        if (Mathf.Abs(finalVOffset) > 0.1f)
-        {
-            // Metni <voffset=XX>...</voffset> içine alýyoruz.
-            _textComp.text = $"<voffset={finalVOffset:F2}>{rawText}</voffset>";
-        }
-        else
-        {
-            _textComp.text = rawText;
-        }
-
-        // 6. SPACING HESABI (Ayný Kalýyor)
+        // 5. SPACING HESABI (Karakter boþluðu kalabilir, Layout bozmaz)
         _textComp.characterSpacing = _initialCharSpacing + (targetData.characterSpacingOffset - defaultData.characterSpacingOffset);
         _textComp.wordSpacing = _initialWordSpacing + (targetData.wordSpacingOffset - defaultData.wordSpacingOffset);
         _textComp.lineSpacing = _initialLineSpacing + (targetData.lineSpacingOffset - defaultData.lineSpacingOffset);

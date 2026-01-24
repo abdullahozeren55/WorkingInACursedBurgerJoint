@@ -199,9 +199,6 @@ public class FirstPersonController : MonoBehaviour
     private IGrabable _cachedGrabable; // (Hem current hem other için tek deðiþken yeterli, çünkü ayný anda ikisine odaklanamayýz)
     private Color _cachedColor;
 
-    // YENÝ: Anlýk olarak kullanacaðýmýz hesaplanmýþ offset deðeri
-    private float _currentFocusVOffset = 0f;
-
     [Header("HandControlSettings")]
     [SerializeField, Range(0, 10)] private float handControlSpeedX = 0.2f;
     [SerializeField, Range(0, 10)] private float handControlSpeedY = 0.2f;
@@ -2828,27 +2825,25 @@ public class FirstPersonController : MonoBehaviour
         _cachedInteractable = null;
         _cachedGrabable = null;
 
-        // 1. Görünüm ayarlarýný (ve offset deðerini) güncelle
+        // 1. Görünüm ayarlarýný güncelle
         UpdateFocusTextAppearance();
 
         // 2. Metni bul
         string keyToUse = "";
-        // ... (Key bulma mantýðý aynen kalýyor) ...
+
+        // Mantýk aynen kalýyor...
+        if (currentInteractable != null) keyToUse = currentInteractable.FocusTextKey;
+        else if (currentGrabable != null && !currentGrabable.IsGrabbed) keyToUse = currentGrabable.FocusTextKey;
+        else if (otherGrabable != null) keyToUse = otherGrabable.FocusTextKey;
 
         if (!string.IsNullOrEmpty(keyToUse) && showInteractText)
         {
             string rawText = LocalizationManager.Instance.GetText(keyToUse);
 
-            // YENÝ: Tag ekleme iþlemi
-            string finalString = rawText;
+            // SADECE RENK FORMATLA (Offset yok)
+            string finalText = GetFormattedText(rawText, crosshair.color);
 
-            if (Mathf.Abs(_currentFocusVOffset) > 0.1f)
-            {
-                // Typewriter efektine göndermeden önce offset tag'ini ekle
-                finalString = $"<voffset={_currentFocusVOffset:F2}>{rawText}</voffset>";
-            }
-
-            focusTextAnim.ShowText(finalString);
+            focusTextAnim.ShowText(finalText);
             focusTextAnim.SkipTypewriter();
             SetFocusTextComplete(true);
         }
@@ -2937,25 +2932,21 @@ public class FirstPersonController : MonoBehaviour
         var targetData = LocalizationManager.Instance.GetFontDataForCurrentLanguage(focusTextFontType);
         var defaultData = LocalizationManager.Instance.GetDefaultFontData(focusTextFontType);
 
-        // Font
+        // 1. Font
         if (targetData.font != null && focusText.font != targetData.font)
             focusText.font = targetData.font;
 
-        // Boyut
+        // 2. Boyut (Scale Ratio)
         float defaultBaseSize = Mathf.Max(defaultData.basePixelSize, 0.1f);
         float scaleRatio = _initFocusFontSize / defaultBaseSize;
         focusText.fontSize = targetData.basePixelSize * scaleRatio;
 
-        // Spacing
+        // 3. Spacing (Bunu tutuyoruz, karakter arasý boþluk için gerekli)
         focusText.characterSpacing = _initFocusCharSpacing + (targetData.characterSpacingOffset - defaultData.characterSpacingOffset);
         focusText.wordSpacing = _initFocusWordSpacing + (targetData.wordSpacingOffset - defaultData.wordSpacingOffset);
         focusText.lineSpacing = _initFocusLineSpacing + (targetData.lineSpacingOffset - defaultData.lineSpacingOffset);
 
-        // --- YENÝ: OFFSET HESABI (Sadece deðeri hesapla ve sakla) ---
-        float rawOffsetDiff = targetData.verticalOffset - defaultData.verticalOffset;
-
-        // Bu deðeri global deðiþkene atýyoruz ki metin deðiþince kullanalým
-        _currentFocusVOffset = rawOffsetDiff * scaleRatio;
+        // OFFSET HESABI SÝLÝNDÝ
     }
 
     // Yardýmcý Fonksiyon: Ham metni alýr, gerekiyorsa <voffset> ekleyip geri döndürür.
@@ -2963,14 +2954,9 @@ public class FirstPersonController : MonoBehaviour
     {
         string processedText = rawText;
 
-        // 1. Önce Offset Tag'i (Varsa)
-        if (Mathf.Abs(_currentFocusVOffset) > 0.1f)
-        {
-            processedText = $"<voffset={_currentFocusVOffset:F2}>{processedText}</voffset>";
-        }
+        // OFFSET TAG KISMI SÝLÝNDÝ
 
-        // 2. Sonra Renk Tag'i (Kesinlikle ekliyoruz)
-        // Bu sayede metin disappear olurken rengini kaybetmez.
+        // Renk Tag'i (Kesinlikle ekliyoruz, animasyon için gerekli)
         string hexColor = ColorToHex(targetColor);
         processedText = $"<color=#{hexColor}>{processedText}</color>";
 
