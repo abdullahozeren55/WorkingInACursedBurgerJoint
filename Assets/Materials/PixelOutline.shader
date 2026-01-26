@@ -1,19 +1,26 @@
-Shader "Custom/PixelFontOutline_AnimSupport_Final"
+Shader "Custom/PixelFontOutline_Glitch_Chromatic_Final"
 {
     Properties
     {
         _MainTex ("Font Atlas", 2D) = "white" {}
         _Color ("Main Color (Vertex)", Color) = (1,1,1,1)
         
-        // --- UIGlowController ÝÇÝN GEREKLÝ ---
-        // Scriptin aradýðý _FaceColor özelliði. Default beyaz yaptýk ki script çalýþmazsa yazý normal görünsün.
+        // --- UIGlowController ---
         [HDR] _FaceColor ("Face Color (Glow)", Color) = (1,1,1,1)
-        // -------------------------------------
+        // ------------------------
 
         [Header(Outline Settings)]
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _AtlasWidth ("Atlas Width (Pixel)", Float) = 512.0
         [Range(0, 5)] _OutlineThickness ("Outline Thickness", Float) = 1.0
+
+        // --- GLITCH & CHROMATIC AYARLARI ---
+        [Header(Glitch Settings)]
+        [Range(0, 1)] _GlitchStrength ("Glitch Strength", Float) = 0.0
+        [Range(0, 50)] _GlitchFrequency ("Glitch Speed", Float) = 10.0
+        [Range(1, 100)] _GlitchVertical ("Vertical Noise Density", Float) = 20.0
+        // YENÝ: Renklerin ne kadar ayrýþacaðýný belirler
+        [Range(0, 0.05)] _GlitchColorSplit ("Color Split Amount", Float) = 0.01 
 
         // --- MASK FIX STANDARTLARI ---
         [HideInInspector] _StencilComp ("Stencil Comparison", Float) = 8
@@ -78,13 +85,22 @@ Shader "Custom/PixelFontOutline_AnimSupport_Final"
             float4 _MainTex_ST;
             fixed4 _Color;
             fixed4 _OutlineColor;
-            
-            // Scriptten gelen Glow Rengi buraya düþecek
             fixed4 _FaceColor; 
 
             float _AtlasWidth;
             float _OutlineThickness;
             float4 _ClipRect;
+
+            // GLITCH DEÐÝÞKENLERÝ
+            float _GlitchStrength;
+            float _GlitchFrequency;
+            float _GlitchVertical;
+            float _GlitchColorSplit; // Yeni eklenen deðiþken
+
+            float random(float2 uv)
+            {
+                return frac(sin(dot(uv, float2(12.9898, 78.233))) * 43758.5453123);
+            }
 
             v2f vert(appdata_t IN)
             {
@@ -92,53 +108,96 @@ Shader "Custom/PixelFontOutline_AnimSupport_Final"
                 OUT.worldPosition = IN.vertex;
                 OUT.vertex = UnityObjectToClipPos(IN.vertex);
                 OUT.texcoord = TRANSFORM_TEX(IN.texcoord, _MainTex);
-                // Vertex color (Text Animator vs) ile Main Color çarpýmý
                 OUT.color = IN.color * _Color; 
                 return OUT;
             }
 
             fixed4 frag(v2f IN) : SV_Target
             {
-                float baseStep = 1.0 / _AtlasWidth;
-                float offset = baseStep * max(0.0, _OutlineThickness);
-                float mainAlpha = tex2D(_MainTex, IN.texcoord).a;
+                // 1. GLITCH VE NOISE HESAPLAMASI
+                // ------------------------------
+                float2 glitchUV = IN.texcoord;
+                float splitAmount = 0.0; // Renk ayrýþma miktarý
+
+                if (_GlitchStrength > 0.0)
+                {
+                    float timeStep = floor(_Time.y * _GlitchFrequency);
+                    float noiseVal = random(float2(timeStep, floor(IN.texcoord.y * _GlitchVertical)));
+
+                    if (noiseVal > (1.0 - _GlitchStrength * 0.5)) 
+                    {
+                        // 1. Ana Koordinat Kaymasý (Mevcut özellik)
+                        float shift = (random(float2(noiseVal, timeStep)) - 0.5) * 2.0; 
+                        glitchUV.x += shift * _GlitchStrength * 0.1;
+
+                        // 2. Renk Ayrýþmasý (Yeni Özellik)
+                        // Glitch anýnda rastgele bir renk ayrýþmasý hesaplýyoruz.
+                        // noiseVal'i kullanarak her satýrda farklý yöne ayrýlsýn istiyoruz.
+                        splitAmount = shift * _GlitchColorSplit * _GlitchStrength;
+                    }
+                }
+                
+                // 2. TEXTURE OKUMALARI (CHROMATIC ABERRATION)
+                // -------------------------------------------
+                // RGB kanallarý için 3 ayrý UV koordinatý
+                float2 uvR = glitchUV + float2(splitAmount, 0); // Kýrmýzý saða/sola
+                float2 uvG = glitchUV;                          // Yeþil merkezde (orijinal glitch konumu)
+                float2 uvB = glitchUV - float2(splitAmount, 0); // Mavi tam ters yöne
+                
+                // 3 kere texture okuyoruz (Maliyet artýþý, analizde açýklayacaðým)
+                float alphaR = tex2D(_MainTex, uvR).a;
+                float alphaG = tex2D(_MainTex, uvG).a;
+                float alphaB = tex2D(_MainTex, uvB).a;
+
+                // Maksimum alpha'yý buluyoruz ki maskeleme doðru olsun
+                float maxAlpha = max(alphaR, max(alphaG, alphaB));
 
                 fixed4 finalColor = fixed4(0,0,0,0);
                 bool hasColor = false;
 
-                // 1. ANA YAZI
-                if (mainAlpha > 0.1)
+                // 3. ANA YAZI RENGÝNÝ OLUÞTURMA
+                if (maxAlpha > 0.1)
                 {
-                    // BURASI DEÐÝÞTÝ:
-                    // IN.color (Vertex+Main) * _FaceColor (Scriptten gelen Glow)
-                    // Böylece script rengi parlattýðýnda yazý da parlayacak.
-                    finalColor = IN.color * _FaceColor;
+                    // Temel renk (Scriptten gelen FaceColor ve VertexColor)
+                    fixed4 baseCol = IN.color * _FaceColor;
+
+                    // RGB Kanallarýný birleþtiriyoruz:
+                    // Kýrmýzý kanalýna -> R texture alphasýný atýyoruz
+                    // Yeþil kanalýna  -> G texture alphasýný atýyoruz
+                    // Mavi kanalýna   -> B texture alphasýný atýyoruz
+                    finalColor.r = baseCol.r * alphaR;
+                    finalColor.g = baseCol.g * alphaG;
+                    finalColor.b = baseCol.b * alphaB;
                     
-                    // Alpha'yý texture'dan alýp uyguluyoruz
-                    finalColor.a *= mainAlpha;
+                    // Alpha, en görünür olan kanalýn alphasý olur.
+                    finalColor.a = baseCol.a * maxAlpha;
                     
                     hasColor = true;
                 }
-                // 2. OUTLINE KONTROLÜ
+
+                // 4. OUTLINE KONTROLÜ
+                // Performans için Outline'a renk ayrýþmasý uygulamýyoruz.
+                // Outline sadece "Merkez" (Yeþil) koordinata göre çizilir.
+                // Bu sayede renkler outline'ýn dýþýna taþar (glitch hissini artýrýr).
                 else if (_OutlineThickness > 0.0)
                 {
+                    float baseStep = 1.0 / _AtlasWidth;
+                    float offset = baseStep * max(0.0, _OutlineThickness);
                     float alphaSum = 0.0;
                     
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(offset, 0)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord - float2(offset, 0)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(0, offset)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord - float2(0, offset)).a;
+                    // Outline için hala 8 okuma yapýyoruz (glitchUV kullanarak)
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(offset, 0)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV - float2(offset, 0)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(0, offset)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV - float2(0, offset)).a;
                     
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(offset, offset)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(offset, -offset)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(-offset, offset)).a;
-                    alphaSum += tex2D(_MainTex, IN.texcoord + float2(-offset, -offset)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(offset, offset)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(offset, -offset)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(-offset, offset)).a;
+                    alphaSum += tex2D(_MainTex, glitchUV + float2(-offset, -offset)).a;
 
                     if (alphaSum > 0.1)
                     {
-                        // Outline rengi scriptten etkilenmesin istiyorsan böyle kalsýn.
-                        // Etkilensin istersen _OutlineColor * _FaceColor yapabilirsin.
-                        // Þimdilik sadece ana yazý parlasýn diye böyle býrakýyorum.
                         finalColor = fixed4(_OutlineColor.rgb, _OutlineColor.a * IN.color.a);
                         hasColor = true;
                     }

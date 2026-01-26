@@ -28,7 +28,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _GlitchAmount: 0
+    - _GlitchColorSplit: 0.4
+    - _GlitchFrequency: 32
+    - _GlitchSpeed: 50
+    - _GlitchStrength: 0
+    - _GlitchVertical: 64
     m_Colors: []
   m_BuildTextureStacks: []
 --- !u!114 &11400000
