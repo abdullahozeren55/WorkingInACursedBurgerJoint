@@ -2461,6 +2461,66 @@
     "pt": "Lançar"
   },
   {
+    "key": "UI_SLOT_1",
+    "tr": "Slot 1",
+    "en": "Slot 1",
+    "zh": "栏位 1",
+    "ja": "スロット1",
+    "es": "Ranura 1",
+    "ru": "Слот 1",
+    "pt": "Slot 1"
+  },
+  {
+    "key": "UI_SLOT_2",
+    "tr": "Slot 2",
+    "en": "Slot 2",
+    "zh": "栏位 2",
+    "ja": "スロット2",
+    "es": "Ranura 2",
+    "ru": "Слот 2",
+    "pt": "Slot 2"
+  },
+  {
+    "key": "UI_SLOT_3",
+    "tr": "Slot 3",
+    "en": "Slot 3",
+    "zh": "栏位 3",
+    "ja": "スロット3",
+    "es": "Ranura 3",
+    "ru": "Слот 3",
+    "pt": "Slot 3"
+  },
+  {
+    "key": "UI_SLOT_4",
+    "tr": "Slot 4",
+    "en": "Slot 4",
+    "zh": "栏位 4",
+    "ja": "スロット4",
+    "es": "Ranura 4",
+    "ru": "Слот 4",
+    "pt": "Slot 4"
+  },
+  {
+    "key": "UI_SLOT_LEFT",
+    "tr": "Sol Slot",
+    "en": "Slot Left",
+    "zh": "左侧栏位",
+    "ja": "左スロット",
+    "es": "Ranura Izq.",
+    "ru": "Слот Влево",
+    "pt": "Slot Esq."
+  },
+  {
+    "key": "UI_SLOT_RIGHT",
+    "tr": "Sağ Slot",
+    "en": "Slot Right",
+    "zh": "右侧栏位",
+    "ja": "右スロット",
+    "es": "Ranura Der.",
+    "ru": "Слот Вправо",
+    "pt": "Slot Dir."
+  },
+  {
     "key": "UI_HOLD",
     "tr": "Basılı Tut",
     "en": "Hold",
@@ -2562,83 +2622,73 @@
   },
   {
     "key": "UI_MOVE_FORWARD",
-    "tr": "İleri Git:",
-    "en": "Move Forward:",
-    "zh": "向前移动:",
-    "ja": "前進:",
-    "es": "Moverse Adelante:",
-    "ru": "Движение Вперед:",
-    "pt": "Mover Para Frente:"
+    "tr": "İleri",
+    "en": "Forward",
+    "zh": "前进",
+    "ja": "前進",
+    "es": "Adelante",
+    "ru": "Вперед",
+    "pt": "Frente"
   },
   {
     "key": "UI_MOVE_BACKWARD",
-    "tr": "Geri Git:",
-    "en": "Move Backward:",
-    "zh": "向后移动:",
-    "ja": "後退:",
-    "es": "Moverse Atrás:",
-    "ru": "Движение Назад:",
-    "pt": "Mover Para Trás:"
+    "tr": "Geri",
+    "en": "Back",
+    "zh": "后退",
+    "ja": "後退",
+    "es": "Atrás",
+    "ru": "Назад",
+    "pt": "Trás"
   },
   {
     "key": "UI_MOVE_LEFT",
-    "tr": "Sola Git:",
-    "en": "Move Left:",
-    "zh": "向左移动:",
-    "ja": "左移動:",
-    "es": "Moverse Izquierda:",
-    "ru": "Движение Влево:",
-    "pt": "Mover Para Esquerda:"
+    "tr": "Sol",
+    "en": "Left",
+    "zh": "向左",
+    "ja": "左",
+    "es": "Izquierda",
+    "ru": "Влево",
+    "pt": "Esquerda"
   },
   {
     "key": "UI_MOVE_RIGHT",
-    "tr": "Sağa Git:",
-    "en": "Move Right:",
-    "zh": "向右移动:",
-    "ja": "右移動:",
-    "es": "Moverse Derecha:",
-    "ru": "Движение Вправо:",
-    "pt": "Mover Para Direita:"
+    "tr": "Sağ",
+    "en": "Right",
+    "zh": "向右",
+    "ja": "右",
+    "es": "Derecha",
+    "ru": "Вправо",
+    "pt": "Direita"
   },
   {
     "key": "UI_JUMP",
-    "tr": "Zıpla:",
-    "en": "Jump:",
-    "zh": "跳跃:",
-    "ja": "ジャンプ:",
-    "es": "Saltar:",
-    "ru": "Прыжок:",
-    "pt": "Pular:"
+    "tr": "Zıpla",
+    "en": "Jump",
+    "zh": "跳跃",
+    "ja": "ジャンプ",
+    "es": "Saltar",
+    "ru": "Прыжок",
+    "pt": "Pular"
   },
   {
     "key": "UI_SPRINT",
-    "tr": "Koş:",
-    "en": "Sprint:",
-    "zh": "冲刺:",
-    "ja": "ダッシュ:",
-    "es": "Esprintar:",
-    "ru": "Бег:",
-    "pt": "Correr:"
+    "tr": "Koş",
+    "en": "Sprint",
+    "zh": "冲刺",
+    "ja": "ダッシュ",
+    "es": "Esprintar",
+    "ru": "Бег",
+    "pt": "Correr"
   },
   {
     "key": "UI_CROUCH",
-    "tr": "Eğil:",
-    "en": "Crouch:",
-    "zh": "蹲伏:",
-    "ja": "しゃがむ:",
-    "es": "Agacharse:",
-    "ru": "Присесть:",
-    "pt": "Agachar:"
-  },
-  {
-    "key": "UI_PHONE",
-    "tr": "Telefon:",
-    "en": "Phone:",
-    "zh": "手机:",
-    "ja": "スマホ:",
-    "es": "Teléfono:",
-    "ru": "Телефон:",
-    "pt": "Celular:"
+    "tr": "Eğil",
+    "en": "Crouch",
+    "zh": "蹲伏",
+    "ja": "しゃがむ",
+    "es": "Agacharse",
+    "ru": "Присесть",
+    "pt": "Agachar"
   },
   {
     "key": "UI_PRESS_ANY_KEY",
@@ -2702,23 +2752,23 @@
   },
   {
     "key": "UI_LOOK",
-    "tr": "Bak:",
-    "en": "Look:",
-    "zh": "视角:",
-    "ja": "視点:",
-    "es": "Mirar:",
-    "ru": "Обзор:",
-    "pt": "Olhar:"
+    "tr": "Bak",
+    "en": "Look",
+    "zh": "视角",
+    "ja": "視点",
+    "es": "Mirar",
+    "ru": "Обзор",
+    "pt": "Olhar"
   },
   {
     "key": "UI_PAUSE",
-    "tr": "Duraklat:",
-    "en": "Pause:",
-    "zh": "暂停:",
-    "ja": "ポーズ:",
-    "es": "Pausa:",
-    "ru": "Пауза:",
-    "pt": "Pausa:"
+    "tr": "Duraklat",
+    "en": "Pause",
+    "zh": "暂停",
+    "ja": "ポーズ",
+    "es": "Pausa",
+    "ru": "Пауза",
+    "pt": "Pausa"
   },
   {
     "key": "UI_XBOX",
@@ -2762,13 +2812,13 @@
   },
   {
     "key": "UI_MOVE",
-    "tr": "Yürü:",
-    "en": "Move:",
-    "zh": "移动:",
-    "ja": "移動:",
-    "es": "Moverse:",
-    "ru": "Перемещение:",
-    "pt": "Mover:"
+    "tr": "Yürü",
+    "en": "Move",
+    "zh": "移动",
+    "ja": "移動",
+    "es": "Moverse",
+    "ru": "Перемещение",
+    "pt": "Mover"
   },
   {
     "key": "UI_CAN_BE_SWAPPED",

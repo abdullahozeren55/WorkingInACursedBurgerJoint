@@ -121,56 +121,99 @@ public class RebindUI : MonoBehaviour
 
         isAnyRebindingInProgress = true;
 
-        // Gamepad binding yapıyorsak (!excludeGamepad), Gamepad hintini göster
-        bool isGamepadMode = !excludeGamepad;
-        MenuManager.Instance.SetRebindBlocker(true, isGamepadMode);
+        // 1. MEVCUT DURUMU KAYDET (Sigorta)
+        string originalPath = _targetAction.bindings[selectedBindingIndex].overridePath;
+        MenuManager.Instance.SetRebindBlocker(true);
 
-        // 1. UI Butonlarının etkileşimini kapat (Görsel olarak disable olmadan önce)
         if (keyboardButtonComp) keyboardButtonComp.interactable = false;
         if (mouseButtonComp) mouseButtonComp.interactable = false;
 
-        // --- DEĞİŞİKLİK BURADA: 0.1sn YERİNE 1 KARE BEKLE ---
-        // Bu, "Tıklama anı" ile "Dinleme anı"nı birbirinden ayırır ama kullanıcı hissetmez.
         yield return null;
 
-        // 2. Aksiyonu durdur
         _targetAction.Disable();
 
-        // 3. GÖRSEL DÜZENLEME
         if (keyboardButtonObj != null) keyboardButtonObj.SetActive(false);
         mouseButtonObj.SetActive(false);
         helperTextObj.SetActive(true);
 
-        // 4. Animasyonu Başlat
         if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
         _pulseCoroutine = StartCoroutine(PulseHelperText());
 
-        // 5. Operasyonu Başlat
-        var rebindOperation = _targetAction.PerformInteractiveRebinding(selectedBindingIndex);
+        // --- OPERASYON ---
+        var op = _targetAction.PerformInteractiveRebinding(selectedBindingIndex);
 
-        if (excludeGamepad)
+        // A. GÜRÜLTÜ ENGELLEME (Ön Filtreler)
+        // Unity bunları baştan engellesin (ama kaçırırsa aşağıda yakalayacağız)
+        op.WithControlsExcluding("<Mouse>/position");
+        op.WithControlsExcluding("<Mouse>/delta");
+        op.WithControlsExcluding("<Pointer>/position");
+
+        // YENİ: Scroll ve Stickleri önceden engellemeye çalış
+        op.WithControlsExcluding("<Mouse>/scroll");
+        op.WithControlsExcluding("<Gamepad>/leftStick");
+        op.WithControlsExcluding("<Gamepad>/rightStick");
+
+        // İptal Tuşlarını Tanıt
+        op.WithCancelingThrough("<Keyboard>/escape");
+        op.WithCancelingThrough("<Gamepad>/start");
+
+        op.OnComplete(operation =>
         {
-            // Klavye + Mouse Modu
-            rebindOperation.WithControlsExcluding("<Gamepad>");
-            rebindOperation.WithControlsExcluding("<Mouse>/position");
-            rebindOperation.WithControlsExcluding("<Mouse>/delta");
-            rebindOperation.WithControlsExcluding("<Mouse>/scroll"); // Tekerleği de engellemiştik
-            rebindOperation.WithCancelingThrough("<Keyboard>/escape");
-        }
-        else
+            // --- SONUÇ KONTROLÜ (MAHKEME) ---
+
+            // 1. Yeni atanan yol nedir?
+            string newPath = _targetAction.bindings[selectedBindingIndex].effectivePath;
+
+            // Küçük harfe çevir ki kontrol kolay olsun
+            string lowerPath = newPath.ToLower();
+
+            // 2. İPTAL TUŞU MU?
+            bool isCancelKey = lowerPath.Contains("escape") ||
+                               lowerPath.Contains("start") ||
+                               lowerPath.Contains("/menu");
+
+            // 3. YANLIŞ CİHAZ MI?
+            bool isWrongDevice = false;
+            if (excludeGamepad && newPath.Contains("<Gamepad>")) isWrongDevice = true;
+            if (!excludeGamepad && !newPath.Contains("<Gamepad>")) isWrongDevice = true;
+
+            // 4. YENİ: YASAKLI HAREKET Mİ? (Analog ve Scroll)
+            // Path içinde 'stick' veya 'scroll' geçiyorsa bu bir tuş değildir, harekettir.
+            bool isForbiddenMotion = lowerPath.Contains("stick") ||
+                                     lowerPath.Contains("scroll");
+
+            // 5. KARAR ANI
+            if (operation.canceled || isCancelKey || isWrongDevice || isForbiddenMotion)
+            {
+                // Eğer iptal edildiyse, yanlış tuşsa veya stick/scroll oynadıysa:
+                // ESKİ HALİNE GERİ DÖNDÜR
+
+                if (string.IsNullOrEmpty(originalPath))
+                {
+                    _targetAction.RemoveBindingOverride(selectedBindingIndex);
+                }
+                else
+                {
+                    _targetAction.ApplyBindingOverride(selectedBindingIndex, originalPath);
+                }
+            }
+
+            RebindCompleted();
+        });
+
+        op.OnCancel(operation =>
         {
-            // Gamepad Modu
-            rebindOperation.WithControlsHavingToMatchPath("<Gamepad>");
-            rebindOperation.WithControlsExcluding("<Gamepad>/leftStick");
-            rebindOperation.WithControlsExcluding("<Gamepad>/rightStick");
-            rebindOperation.WithCancelingThrough("<Gamepad>/start");
-        }
+            // İptal durumunda da sigortayı çalıştır
+            if (string.IsNullOrEmpty(originalPath))
+                _targetAction.RemoveBindingOverride(selectedBindingIndex);
+            else
+                _targetAction.ApplyBindingOverride(selectedBindingIndex, originalPath);
 
-        rebindOperation.WithControlsExcluding("<Pointer>/position");
-        rebindOperation.OnComplete(operation => RebindCompleted());
-        rebindOperation.OnCancel(operation => RebindCompleted());
+            RebindCompleted();
+        });
 
-        _rebindingOperation = rebindOperation.Start();
+        _rebindingOperation = op;
+        op.Start();
     }
 
     // --- YANIP SÖNME ANİMASYONU ---

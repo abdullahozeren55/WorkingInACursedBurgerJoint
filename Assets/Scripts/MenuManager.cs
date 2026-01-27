@@ -24,10 +24,7 @@ public class MenuManager : MonoBehaviour
     public GameObject settingsMenu;
     public GameObject raycastBlockerForPause;
     public GameObject rebindBlocker;
-
-    [Header("Rebind Ýpuçlarý")]
-    public GameObject rebindHintKeyboard;
-    public GameObject rebindHintGamepad;
+    
 
     [Header("Settings Sub-Panels")]
     public RectTransform settingsMainRect;
@@ -661,13 +658,8 @@ public class MenuManager : MonoBehaviour
                 scaler.UpdateScale(offset != -1 ? offset : GlobalScaleOffset);
         }
     }
-    public void SetRebindBlocker(bool on, bool isGamepadMode = false)
+    public void SetRebindBlocker(bool on)
     {
         rebindBlocker.SetActive(on);
-        if (on)
-        {
-            if (rebindHintKeyboard) rebindHintKeyboard.SetActive(!isGamepadMode);
-            if (rebindHintGamepad) rebindHintGamepad.SetActive(isGamepadMode);
-        }
     }
 }

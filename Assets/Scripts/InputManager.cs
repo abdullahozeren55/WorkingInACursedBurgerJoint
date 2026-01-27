@@ -214,7 +214,6 @@ public class InputManager : MonoBehaviour
     public bool PlayerThrow() => _gameControls.Player.Throw.triggered;
     public bool PlayerThrowHold() => _gameControls.Player.Throw.phase == InputActionPhase.Performed;
     public bool PlayerThrowRelease() => _gameControls.Player.Throw.WasReleasedThisFrame();
-    public bool PlayerPhone() => _gameControls.Player.Phone.triggered;
 
     public bool PlayerSlot1() => _gameControls.Player.Slot1.triggered;
     public bool PlayerSlot2() => _gameControls.Player.Slot2.triggered;

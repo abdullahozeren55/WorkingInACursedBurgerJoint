@@ -109,7 +109,7 @@ public class MonitorManager : MonoBehaviour
     {
         if (IsFocused)
         {
-            if (InputManager.Instance.PlayerPhone() || InputManager.Instance.PlayerThrow())
+            if (InputManager.Instance.PlayerThrow())
             {
 
                 notePadInputMirror.SyncInputs();

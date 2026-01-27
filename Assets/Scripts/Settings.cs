@@ -253,24 +253,56 @@ public class Settings : MonoBehaviour
 
     private void InitializeVideoSettings()
     {
-        if (!PlayerPrefs.HasKey("VSync")) { QualitySettings.vSyncCount = 1; PlayerPrefs.SetInt("VSync", 0); PlayerPrefs.Save(); }
-        if (!PlayerPrefs.HasKey("TargetFPS")) { Application.targetFrameRate = -1; PlayerPrefs.SetInt("TargetFPS", -1); PlayerPrefs.Save(); }
+        // 1. Varsayılan Anahtarları Oluştur (Yoksa)
+        if (!PlayerPrefs.HasKey("VSync"))
+        {
+            QualitySettings.vSyncCount = 1;
+            PlayerPrefs.SetInt("VSync", 0); // 0 = UI_ON (Listenin ilk elemanı)
+            PlayerPrefs.Save();
+        }
+        if (!PlayerPrefs.HasKey("TargetFPS"))
+        {
+            Application.targetFrameRate = -1;
+            PlayerPrefs.SetInt("TargetFPS", -1);
+            PlayerPrefs.Save();
+        }
 
-        // VSync Dropdown (Populate helper kullanıyor, otomatik formatlı)
-        PopulateDropdown(vSyncDropdown, onOffKeys);
+        // 2. VSync Dropdown Ayarları
+        PopulateDropdown(vSyncDropdown, onOffKeys); // onOffKeys = {"UI_ON", "UI_OFF"}
 
         int savedVSyncIndex = PlayerPrefs.GetInt("VSync", 0);
+        // Index 0 ise (ON) -> vSyncCount 1 olsun. Index 1 ise (OFF) -> vSyncCount 0 olsun.
         QualitySettings.vSyncCount = (savedVSyncIndex == 0) ? 1 : 0;
+
         vSyncDropdown.value = savedVSyncIndex;
         vSyncDropdown.RefreshShownValue();
 
-        InitializeFPSDropdown(); // FPS içinde manuel işlem var, aşağıda güncelledim
+        // 3. FPS Dropdown Ayarları
+        InitializeFPSDropdown();
 
-        int currentFPS = Application.targetFrameRate;
-        int fpsIndex = GetFPSIndex(currentFPS);
+        // --- DÜZELTME BURADA ---
+        // Eskiden 'Application.targetFrameRate' okuyorduk, bu yanlıştı.
+        // Doğrudan kaydedilmiş tercihi okuyoruz:
+        int savedFPS = PlayerPrefs.GetInt("TargetFPS", -1);
+
+        // Bu FPS değeri listede kaçıncı sırada? Bulamazsa -1 (Unlimited) yap.
+        int fpsIndex = GetFPSIndex(savedFPS);
         fpsDropdown.value = fpsIndex;
         fpsDropdown.RefreshShownValue();
 
+        // 4. Değerleri Motora Uygula (Kritik Adım)
+        // Eğer VSync KAPALI ise (Index 1), FPS limitini hemen uygula.
+        // VSync AÇIK ise (Index 0), FPS limiti -1 olsun (Unity kuralı).
+        if (savedVSyncIndex == 1)
+        {
+            Application.targetFrameRate = savedFPS;
+        }
+        else
+        {
+            Application.targetFrameRate = -1;
+        }
+
+        // 5. UI Etkileşimini Güncelle
         UpdateFPSDropdownInteractivity(savedVSyncIndex == 0);
     }
 
@@ -306,7 +338,37 @@ public class Settings : MonoBehaviour
     }
 
     // ... (SetVSync, SetMaxFPS, UpdateFPSDropdownInteractivity, SetHints, SetInteractText AYNI) ...
-    public void SetVSync(int index) { QualitySettings.vSyncCount = (index == 0) ? 1 : 0; bool isVSyncOn = (index == 0); UpdateFPSDropdownInteractivity(isVSyncOn); if (isVSyncOn) Application.targetFrameRate = -1; else SetMaxFPS(fpsDropdown.value); PlayerPrefs.SetInt("VSync", index); PlayerPrefs.Save(); }
+    public void SetVSync(int index)
+    {
+        // Index 0: ON, Index 1: OFF
+        bool isVSyncOn = (index == 0);
+        QualitySettings.vSyncCount = isVSyncOn ? 1 : 0;
+
+        UpdateFPSDropdownInteractivity(isVSyncOn);
+
+        if (isVSyncOn)
+        {
+            Application.targetFrameRate = -1;
+        }
+        else
+        {
+            // VSync kapattığımız an, FPS dropdown'daki değeri değil,
+            // GERÇEK kayıtlı hedefi veya dropdown'ın temsil ettiği değeri almalıyız.
+            // fpsDropdown.value bazen güncellenmemiş olabilir, o yüzden listeden çekmek daha güvenli:
+
+            int currentDropdownIndex = fpsDropdown.value;
+            // Diziden güvenli şekilde FPS değerini al
+            if (currentDropdownIndex >= 0 && currentDropdownIndex < fpsValues.Length)
+            {
+                int targetFPS = fpsValues[currentDropdownIndex];
+                Application.targetFrameRate = targetFPS;
+                PlayerPrefs.SetInt("TargetFPS", targetFPS); // Emin olmak için tekrar kaydet
+            }
+        }
+
+        PlayerPrefs.SetInt("VSync", index);
+        PlayerPrefs.Save();
+    }
     public void SetMaxFPS(int index) { if (QualitySettings.vSyncCount > 0) return; int targetFPS = fpsValues[index]; Application.targetFrameRate = targetFPS; PlayerPrefs.SetInt("TargetFPS", targetFPS); PlayerPrefs.Save(); }
     private void UpdateFPSDropdownInteractivity(bool isVSyncOn) { if (fpsDropdown != null) { fpsDropdown.interactable = !isVSyncOn; fpsDropdownGroup.alpha = isVSyncOn ? 0.5f : 1f; } }
     public void SetHints(int index) { PlayerPrefs.SetInt("ShowHints", index); PlayerPrefs.Save(); if (PlayerManager.Instance != null) PlayerManager.Instance.UpdateGameplaySettings(); if (MonitorManager.Instance != null) MonitorManager.Instance.UpadateShowHint(); }
@@ -320,17 +382,12 @@ public class Settings : MonoBehaviour
         int maxScale = Mathf.FloorToInt(Screen.height / 360f);
         if (maxScale < 1) maxScale = 1;
 
-        string defaultText = "Default";
-        if (LocalizationManager.Instance != null)
-            defaultText = LocalizationManager.Instance.GetText("UI_DEFAULT");
-
         for (int i = 0; i < maxScale; i++)
         {
             string label = "";
             int scaleVal = maxScale - i;
-
-            if (i == 0) label = $"{scaleVal}x ({defaultText})";
-            else label = scaleVal + "x";
+            
+            label = scaleVal + "x";
 
             // YENİ: UI Scale metinlerini de formatlıyoruz
             options.Add(FormatDropdownText(label));
@@ -338,7 +395,7 @@ public class Settings : MonoBehaviour
 
         uiScaleDropdown.AddOptions(options);
 
-        int savedOffset = PlayerPrefs.GetInt("UIScaleOffset", 0);
+        int savedOffset = PlayerPrefs.GetInt("UIScaleOffset", 1);
         if (savedOffset >= options.Count) savedOffset = options.Count - 1;
 
         uiScaleDropdown.value = savedOffset;
@@ -448,24 +505,42 @@ public class Settings : MonoBehaviour
         resolutionDropdown.ClearOptions();
 
         List<string> options = new List<string>();
+
+        // YENİ: Hangi çözünürlükleri eklediğimizi 'ham' string olarak tutan bir küme (HashSet performanslıdır)
+        HashSet<string> addedResolutions = new HashSet<string>();
+
         int currentResolutionIndex = 0;
 
         for (int i = 0; i < allResolutions.Length; i++)
         {
+            // Min çözünürlük filtresi
             if (allResolutions[i].width < 1024 || allResolutions[i].height < 720) continue;
-            string option = allResolutions[i].width + " x " + allResolutions[i].height;
 
-            if (!options.Contains(option))
+            string rawOption = allResolutions[i].width + " x " + allResolutions[i].height;
+
+            // KONTROL: Eğer bu ham metin daha önce eklendiyse, bu turu pas geç (continue)
+            if (addedResolutions.Contains(rawOption))
             {
-                // Çözünürlük metnini de formatlıyoruz (Rakamların fontu uysun diye)
-                options.Add(FormatDropdownText(option));
+                continue;
+            }
 
-                filteredResolutions.Add(allResolutions[i]);
-                if (allResolutions[i].width == Screen.width && allResolutions[i].height == Screen.height)
-                    currentResolutionIndex = filteredResolutions.Count - 1;
+            // Eklenmediyse listeye al
+            addedResolutions.Add(rawOption);
+
+            // Dropdown için süslü (formatlı) halini oluştur ve ekle
+            options.Add(FormatDropdownText(rawOption));
+
+            // Arka plan listesine objeyi ekle
+            filteredResolutions.Add(allResolutions[i]);
+
+            // Eğer şu anki ekran çözünürlüğü buysa indexi kaydet
+            if (allResolutions[i].width == Screen.width && allResolutions[i].height == Screen.height)
+            {
+                currentResolutionIndex = filteredResolutions.Count - 1;
             }
         }
 
+        // Eğer hiç uygun çözünürlük bulamazsa (çok düşük çözünürlüklü ekran vb.) mevcut olanı ekle
         if (options.Count == 0)
         {
             string currentOption = Screen.width + " x " + Screen.height;
@@ -536,12 +611,12 @@ public class Settings : MonoBehaviour
     public void ResetGamepadUISettings() { if (stickLayoutDropdown != null) { stickLayoutDropdown.value = 0; stickLayoutDropdown.RefreshShownValue(); OnStickLayoutChanged(0); } if (controllerPromptsDropdown != null) { controllerPromptsDropdown.value = 0; controllerPromptsDropdown.RefreshShownValue(); OnControllerPromptsChanged(0); } if (aimAssistDropdown != null) { aimAssistDropdown.value = 1; aimAssistDropdown.RefreshShownValue(); OnAimAssistChanged(1); } Debug.Log("Gamepad Dropdownları ve Ayarları Sıfırlandı."); }
     public void ResetControlsSettings() { if (mouseSensSlider != null) { mouseSensSlider.value = 30f; OnMouseSensChanged(30f); } if (gamepadSensSlider != null) { gamepadSensSlider.value = 50f; OnGamepadSensChanged(50f); } if (invertYDropdown != null) { invertYDropdown.value = 0; invertYDropdown.RefreshShownValue(); OnInvertYChanged(0); } if (sprintModeDropdown != null) { sprintModeDropdown.value = 0; sprintModeDropdown.RefreshShownValue(); OnSprintModeChanged(0); } if (crouchModeDropdown != null) { crouchModeDropdown.value = 0; crouchModeDropdown.RefreshShownValue(); OnCrouchModeChanged(0); } Debug.Log("Kontrol Ayarları Varsayılanlara Döndü."); }
     public void ResetAudioSettings() { if (masterSlider != null) { masterSlider.value = defaultMasterVolume; OnMasterSliderChanged(defaultMasterVolume); } if (soundFXSlider != null) { soundFXSlider.value = defaultSoundFXVolume; OnSoundFXSliderChanged(defaultSoundFXVolume); } if (musicSlider != null) { musicSlider.value = defaultMusicVolume; OnMusicSliderChanged(defaultMusicVolume); } if (ambianceSlider != null) { ambianceSlider.value = defaultAmbianceVolume; OnAmbianceSliderChanged(defaultAmbianceVolume); } if (typewriterSlider != null) { typewriterSlider.value = defaultTypewriterVolume; OnTypewriterSliderChanged(defaultTypewriterVolume); } if (uiSlider != null) { uiSlider.value = defaultUIVolume; OnUISliderChanged(defaultUIVolume); } Debug.Log("Ses Ayarları Varsayılanlara Döndü."); }
-    public void ResetGeneralSettings() { if (qualityDropdown != null) { qualityDropdown.value = 2; qualityDropdown.RefreshShownValue(); SetQuality(2); } if (vSyncDropdown != null) { vSyncDropdown.value = 0; vSyncDropdown.RefreshShownValue(); SetVSync(0); } if (fpsDropdown != null) { int lastIndex = fpsValues.Length - 1; fpsDropdown.value = lastIndex; fpsDropdown.RefreshShownValue(); SetMaxFPS(lastIndex); } if (uiScaleDropdown != null) { uiScaleDropdown.value = 0; uiScaleDropdown.RefreshShownValue(); OnUIScaleChanged(0); } if (hintsDropdown != null) { hintsDropdown.value = 0; hintsDropdown.RefreshShownValue(); SetHints(0); } if (interactTextDropdown != null) { interactTextDropdown.value = 0; interactTextDropdown.RefreshShownValue(); SetInteractText(0); }
+    public void ResetGeneralSettings() { if (qualityDropdown != null) { qualityDropdown.value = 2; qualityDropdown.RefreshShownValue(); SetQuality(2); } if (vSyncDropdown != null) { vSyncDropdown.value = 0; vSyncDropdown.RefreshShownValue(); SetVSync(0); } if (fpsDropdown != null) { int lastIndex = fpsValues.Length - 1; fpsDropdown.value = lastIndex; fpsDropdown.RefreshShownValue(); SetMaxFPS(lastIndex); } if (uiScaleDropdown != null) { uiScaleDropdown.value = 1; uiScaleDropdown.RefreshShownValue(); OnUIScaleChanged(1); } if (hintsDropdown != null) { hintsDropdown.value = 0; hintsDropdown.RefreshShownValue(); SetHints(0); } if (interactTextDropdown != null) { interactTextDropdown.value = 0; interactTextDropdown.RefreshShownValue(); SetInteractText(0); }
         if (distortionDropdown != null)
         {
-            distortionDropdown.value = 2; // Default High
+            distortionDropdown.value = 3; // Default High
             distortionDropdown.RefreshShownValue();
-            SetDistortion(2);
+            SetDistortion(3);
         }
         Debug.Log("Genel Ayarlar (Çözünürlük Hariç) Varsayılanlara Döndü."); }
 }
