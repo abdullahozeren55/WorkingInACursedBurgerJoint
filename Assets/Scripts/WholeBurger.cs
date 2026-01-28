@@ -77,7 +77,7 @@ public class WholeBurger : MonoBehaviour, IGrabable
         rb = rigidBody;
         data = burgerData;
 
-        pitchMultiplier = height >= 1 ? 0.8f : height >= 0.5f ? 1f : 1.2f;
+        pitchMultiplier = height >= 1.18 ? 0.8f : height >= 1.13f ? 1f : 1.2f;
 
         // Enum'ý kaydet
         BurgerType = type;

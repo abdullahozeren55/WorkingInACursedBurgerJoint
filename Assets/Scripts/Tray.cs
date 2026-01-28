@@ -119,6 +119,10 @@ public class Tray : MonoBehaviour, IGrabable
     [SerializeField] private Transform[] slotPoints; // 6 adet nokta
     [SerializeField] private Transform[] slotApexes; // 6 adet apex
 
+    [Header("IK Grip Points For Customers")]
+    public Transform LeftHandGrip;  // Sol elin duracaðý nokta
+    public Transform RightHandGrip; // Sað elin duracaðý nokta
+
     // Hangi slot dolu? (true = dolu)
     private bool[] isSlotOccupied;
 
@@ -654,4 +658,23 @@ public class Tray : MonoBehaviour, IGrabable
     public void OnUseRelease() { }
     public bool TryCombine(IGrabable otherItem) { return false; }
     public bool CanCombine(IGrabable otherItem) { return false; }
+
+    // Tepsiyi tamamen fiziksel olarak var et veya yok et
+    public void SetPhysicsState(bool isEnabled)
+    {
+        // 1. Rigidbody'i ayarla (Eðer açýk olacaksa fizik çalýþsýn, kapalýysa kinematik olsun)
+        if (rb)
+        {
+            rb.isKinematic = !isEnabled;
+        }
+
+        // 2. KENDÝSÝ VE TÜM ÇOCUKLARINDAKÝ Colliderlarý bul
+        // true parametresi: "Inactive" (kapalý) objelerin colliderlarýný da bulur, garanti olsun.
+        Collider[] allColliders = GetComponentsInChildren<Collider>(true);
+
+        foreach (var col in allColliders)
+        {
+            col.enabled = isEnabled;
+        }
+    }
 }

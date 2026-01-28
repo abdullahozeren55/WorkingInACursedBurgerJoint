@@ -27,14 +27,18 @@ public class SeatManager : MonoBehaviour
 
         if (possibleTables.Count == 0) return null; // Yer yok!
 
-        // 2. En "uygun" masayý seç.
-        // Optimizasyon: 2 kiþilik grup için 6 kiþilik masayý ziyan etmeyelim.
-        // Kapasitesi grup boyutuna en yakýn olaný seçelim.
-        var bestTable = possibleTables
-            .OrderBy(t => t.TotalCapacity) // Küçükten büyüðe sýrala (önce 2 kiþilik, sonra 4...)
-            .First();
+        // 2. En verimli kapasiteyi bul (Örn: 2 kiþi için en iyi kapasite 2'dir, 4 deðil)
+        int bestCapacity = possibleTables.Min(t => t.TotalCapacity);
 
-        bestTable.ReserveTable();
-        return bestTable;
+        // 3. Bu kapasiteye sahip TÜM masalarý al (Örn: 3 tane 4 kiþilik masa varsa üçünü de al)
+        var candidateTables = possibleTables
+            .Where(t => t.TotalCapacity == bestCapacity)
+            .ToList();
+
+        // 4. Aralarýndan RASTGELE birini seç
+        DiningTable selectedTable = candidateTables[Random.Range(0, candidateTables.Count)];
+
+        selectedTable.ReserveTable();
+        return selectedTable;
     }
 }

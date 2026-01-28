@@ -36,7 +36,11 @@ public class DiningTable : MonoBehaviour
     // Müþteriye masadan rastgele boþ bir koltuk/nokta ver
     public Transform GetSeatForCustomer(ICustomer customer)
     {
-        foreach (var seat in SeatsAroundTable)
+        // Listeyi bozmadan rastgele sýralanmýþ geçici bir liste oluþtur (Shuffle)
+        // OrderBy(GUID) veya Random.value basit ve etkili bir karýþtýrma yöntemidir.
+        var shuffledSeats = SeatsAroundTable.OrderBy(x => UnityEngine.Random.value).ToList();
+
+        foreach (var seat in shuffledSeats)
         {
             // Koltukta yer var mý?
             if (seat.TryOccupy(customer, out Transform sitPoint))
@@ -44,7 +48,7 @@ public class DiningTable : MonoBehaviour
                 return sitPoint;
             }
         }
-        return null; // Yer kalmadý (Ama mantýken rezerve ederken kontrol ettik, kalmalý)
+        return null;
     }
 
     // Masa tamamen boþaldý mý kontrol et (Her müþteri kalktýðýnda çaðýrýlýr)

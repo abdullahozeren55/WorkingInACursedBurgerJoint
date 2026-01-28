@@ -16,11 +16,22 @@ public class Seat : MonoBehaviour
     // Boþ bir nokta ver
     public Transform GetFreePoint()
     {
+        // Önce boþ olan tüm noktalarý bir listeye topla
+        List<Transform> availablePoints = new List<Transform>();
+
         foreach (var point in sitPoints)
         {
-            if (!occupants.ContainsKey(point)) return point;
+            if (!occupants.ContainsKey(point))
+            {
+                availablePoints.Add(point);
+            }
         }
-        return null;
+
+        // Eðer hiç boþ yer yoksa null dön
+        if (availablePoints.Count == 0) return null;
+
+        // Boþ yerler arasýndan RASTGELE birini seç
+        return availablePoints[Random.Range(0, availablePoints.Count)];
     }
 
     // Müþteriyi oturt

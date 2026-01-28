@@ -68,6 +68,9 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     // YENÝ: Bakýlan noktanýn anlýk (yumuþatýlmýþ) pozisyonu
     private Vector3 currentSmoothedLookPos;
 
+    private float handIKWeight = 0f; // Ellerin tepsiye yapýþma kuvveti (0 = Serbest, 1 = Yapýþýk)
+    private Tray carriedTray; // Þu an taþýdýðýmýz tepsi referansý
+
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -256,6 +259,42 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             currentLookWeight = Mathf.Lerp(currentLookWeight, 0f, Time.deltaTime * 5f);
             anim.SetLookAtWeight(currentLookWeight);
         }
+
+        // ---------------------------------------------------------
+        // 2. EL TAKÝBÝ (Hand IK) - YENÝ KISIM
+        // ---------------------------------------------------------
+
+        // Eðer 'MovingToSeat' durumundaysak ve elimizde tepsi varsa IK aðýrlýðýný artýr
+        bool isCarryingTray = (CurrentState == CustomerState.MovingToSeat) && (carriedTray != null);
+
+        // Aðýrlýðý yumuþakça deðiþtir (Lerp)
+        float targetHandWeight = isCarryingTray ? 1f : 0f;
+        handIKWeight = Mathf.Lerp(handIKWeight, targetHandWeight, Time.deltaTime * 5f);
+
+        if (handIKWeight > 0.01f && carriedTray != null)
+        {
+            // SOL EL
+            if (carriedTray.LeftHandGrip != null)
+            {
+                anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, handIKWeight);
+                anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, handIKWeight);
+                anim.SetIKPosition(AvatarIKGoal.LeftHand, carriedTray.LeftHandGrip.position);
+                anim.SetIKRotation(AvatarIKGoal.LeftHand, carriedTray.LeftHandGrip.rotation);
+            }
+
+            // SAÐ EL
+            if (carriedTray.RightHandGrip != null)
+            {
+                anim.SetIKPositionWeight(AvatarIKGoal.RightHand, handIKWeight);
+                anim.SetIKRotationWeight(AvatarIKGoal.RightHand, handIKWeight);
+                anim.SetIKPosition(AvatarIKGoal.RightHand, carriedTray.RightHandGrip.position);
+                anim.SetIKRotation(AvatarIKGoal.RightHand, carriedTray.RightHandGrip.rotation);
+            }
+
+            // --- GÖVDE DÜZELTMESÝ (Opsiyonel) ---
+            // Tepsi taþýrken hafif öne eðilmesini engellemek veya kollarýn yetiþmesi için
+            // Body pozisyonuyla oynanabilir ama þimdilik ellere odaklanalým.
+        }
     }
 
     // --- YENÝ HELPER METODLAR (DialogueManager Çaðýracak) ---
@@ -340,15 +379,21 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
     private void GrabTray(Tray tray)
     {
-        var trayRb = tray.GetComponent<Rigidbody>();
-        if (trayRb) trayRb.isKinematic = true;
+        carriedTray = tray; // IK için referansý al
 
-        var trayCol = tray.GetComponent<Collider>();
-        if (trayCol) trayCol.enabled = false;
+        // --- DEÐÝÞÝKLÝK BURADA ---
+        // Eski manuel kapatma kodlarýný sil (trayRb.isKinematic = true, trayCol.enabled = false vs.)
+        // Yerine tek satýrla her þeyi kapat:
+        tray.SetPhysicsState(false);
+        // -------------------------
 
+        // Tepsiyi 'trayHoldPoint'e baðla
         tray.transform.SetParent(trayHoldPoint != null ? trayHoldPoint : transform);
 
+        // Pozisyonu sýfýrla (Böylece HoldPoint nerede duruyorsa oraya ýþýnlanýr)
         tray.transform.DOLocalMove(Vector3.zero, 0.5f).SetEase(Ease.OutBack);
+
+        // Rotasyonu sýfýrla (HoldPoint nasýl dönükse öyle döner)
         tray.transform.DOLocalRotate(Vector3.zero, 0.5f);
     }
 
@@ -463,7 +508,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             case CustomerState.Eating:
                 agent.isStopped = true;
                 anim.SetBool("walk", false);
-                anim.SetBool("Sitting", true);
+                anim.SetBool("sit", true);
                 break;
         }
     }
@@ -520,7 +565,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
         agent.SetDestination(exitInfo.interactionPoint.position);
 
-        anim.SetBool("Sitting", false);
+        anim.SetBool("sit", false);
         // agent.isStopped ve animasyon ayarý GoToState içinde yapýlýyor
 
         GoToState(CustomerState.ApproachingDoor);
