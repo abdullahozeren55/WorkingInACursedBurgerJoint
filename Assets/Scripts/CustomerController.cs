@@ -279,7 +279,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         // ---------------------------------------------------------
 
         // Eðer 'MovingToSeat' durumundaysak ve elimizde tepsi varsa IK aðýrlýðýný artýr
-        bool isCarryingTray = (CurrentState == CustomerState.MovingToSeat) && (carriedTray != null);
+        bool isCarryingTray = (carriedTray != null);
 
         // Aðýrlýðý yumuþakça deðiþtir (Lerp)
         float targetHandWeight = isCarryingTray ? 1f : 0f;
@@ -382,6 +382,28 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         GoToState(CustomerState.WaitingForFood);
     }
 
+    // --- YENÝ YARDIMCI METOT ---
+    private DialogueData GetRandomFeedbackDialogue(List<CustomerProfile.InteractionDialogue> options)
+    {
+        if (options == null || options.Count == 0) return null;
+
+        // 1. Listeden Rastgele Bir Seçenek Al
+        var selection = options[Random.Range(0, options.Count)];
+
+        // 2. Glitch Zarý At
+        float roll = Random.Range(0f, 100f);
+
+        // Þartlar: Zar tuttuysa VE Glitch diyaloðu tanýmlýysa
+        if (roll < selection.GlitchChance && selection.GlitchDialogue != null)
+        {
+            return selection.GlitchDialogue;
+        }
+
+        // Yoksa normali döndür
+        return selection.NormalDialogue;
+    }
+
+    // --- GÜNCELLENMÝÞ TryReceiveTray (Doðru Sipariþ) ---
     public bool TryReceiveTray(Tray tray)
     {
         if (CurrentState != CustomerState.WaitingForFood) return false;
@@ -390,19 +412,27 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
         if (isOrderCorrect)
         {
-            GrabTray(tray);
+            GrabTray(tray); // Tepsi yapýþýr, IK devreye girer.
 
-            if (currentProfile.CorrectOrderDialogue)
-                DialogueManager.Instance.StartDialogue(currentProfile.CorrectOrderDialogue);
+            // YENÝ SEÇÝM SÝSTEMÝ:
+            DialogueData selectedDialogue = GetRandomFeedbackDialogue(currentProfile.PossibleCorrectOrderDialogues);
+
+            if (selectedDialogue != null)
+            {
+                // Diyalog bitince masaya git (Callback)
+                DialogueManager.Instance.StartDialogue(selectedDialogue, HandleFinishDialogue);
+            }
             else
+            {
+                // Diyalog yoksa direkt git
                 HandleFinishDialogue();
+            }
 
             return true;
         }
         else
         {
-            if (currentProfile.WrongOrderDialogue)
-                DialogueManager.Instance.StartDialogue(currentProfile.WrongOrderDialogue);
+            // Yanlýþ sipariþ ise sessizce reddet (Manager konuþacak)
             return false;
         }
     }
@@ -727,13 +757,51 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         isInteractingWithDoor = false; // KÝLÝDÝ AÇ (Gerçi state deðiþtiði için gerek kalmaz ama temizlik)
     }
 
+    // --- GÜNCELLENMÝÞ OnWrongOrderReceived (Yanlýþ Sipariþ) ---
+    // Bu fonksiyonu CustomerManager çaðýrýyor.
     public void OnWrongOrderReceived()
     {
-        // Eðer zaten konuþuyorsa bölme veya üst üste bindirme
-        // Basitçe:
-        if (currentProfile.WrongOrderDialogue != null)
+        // YENÝ SEÇÝM SÝSTEMÝ:
+        DialogueData selectedDialogue = GetRandomFeedbackDialogue(currentProfile.PossibleWrongOrderDialogues);
+
+        // Eðer zaten konuþuyorsa (bir önceki cümlesi bitmediyse) kesip yenisini mi söylesin?
+        // DialogueManager.StartDialogue zaten öncekini keser.
+        if (selectedDialogue != null)
         {
-            DialogueManager.Instance.StartDialogue(currentProfile.WrongOrderDialogue);
+            DialogueManager.Instance.StartDialogue(selectedDialogue);
         }
+    }
+
+    // --- YENÝ: Boþ Tepsi Reaksiyonu (Manager çaðýracak) ---
+    public void OnEmptyTrayReceived()
+    {
+        DialogueData feedback = GetRandomFeedbackDialogue(currentProfile.PossibleEmptyTrayDialogues);
+
+        if (feedback != null)
+        {
+            DialogueManager.Instance.StartDialogue(feedback);
+        }
+        else
+        {
+            // Eðer boþ tepsi diyaloðu yazmadýysan varsayýlan olarak yanlýþ sipariþ desin
+            OnWrongOrderReceived();
+        }
+    }
+
+    // --- YENÝ: Býçaklanma Reaksiyonu (Knife çaðýracak) ---
+    public void OnHitByKnife()
+    {
+        // 1. Diyalog Baþlat
+        DialogueData feedback = GetRandomFeedbackDialogue(currentProfile.PossibleKnifeHitDialogues);
+        if (feedback != null)
+        {
+            DialogueManager.Instance.StartDialogue(feedback);
+        }
+
+        // 2. (Opsiyonel) Efekt/Animasyon
+        // Buraya "Pain" animasyonu, kan efekti veya iliþki düþmesi eklenebilir.
+        // anim.SetTrigger("Hit"); 
+
+        Debug.Log($"{name}: BIÇAKLANDIM!");
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CAR
   m_EditorClassIdentifier: 
   focusTextKey: GRABABLE_TOY_CAR
-  toyType: 2
+  toyType: 1
   handGrabType: 10
   handRigType: 1
   iconData:

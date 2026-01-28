@@ -110,23 +110,27 @@ public class CustomerManager : MonoBehaviour
     {
         if (customersAtCounter.Count == 0) return false;
 
-        // Erken Teslimat Kontrolü
+        // Erken Teslimat Kontrolü (Hala konuþuyorlarsa tepki verme)
         bool isAnyoneWaiting = customersAtCounter.Any(x => x.CurrentState == CustomerState.WaitingForFood);
         if (!isAnyoneWaiting) return false;
 
-        foreach (var customer in customersAtCounter)
+        var victim = customersAtCounter.FirstOrDefault(x => x.CurrentState == CustomerState.WaitingForFood);
+
+        // --- YENÝ: BOÞ TEPSÝ KONTROLÜ ---
+        if (tray.CurrentContent.IsEmpty())
         {
-            if (customer.CurrentState == CustomerState.WaitingForFood)
+            Debug.Log("Tepsi tamamen boþ!");
+
+            if (victim != null)
             {
-                if (customer.TryReceiveTray(tray))
-                {
-                    return true;
-                }
+                victim.OnEmptyTrayReceived();
             }
+            return false;
         }
+        // --------------------------------
 
         // Yanlýþ sipariþ
-        var victim = customersAtCounter.FirstOrDefault(x => x.CurrentState == CustomerState.WaitingForFood);
+        
         if (victim != null) victim.OnWrongOrderReceived();
 
         return false;

@@ -35,6 +35,15 @@ public class TrayContent
         Sauces.Clear();
         Toys.Clear();
     }
+
+    public bool IsEmpty()
+    {
+        return Burgers.Count == 0 &&
+               Drinks.Count == 0 &&
+               Sides.Count == 0 &&
+               Sauces.Count == 0 &&
+               Toys.Count == 0;
+    }
 }
 
 public static class OrderValidator

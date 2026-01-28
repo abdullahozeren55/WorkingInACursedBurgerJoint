@@ -29,12 +29,34 @@ public class CustomerProfile : ScriptableObject
         [Range(0f, 100f)] public float GlitchChance; // % kaç ihtimalle korkunç olacak?
     }
 
+    // --- YENÝ STRUCT: Sadece diyalog ve glitch ihtimali ---
+    [System.Serializable]
+    public struct InteractionDialogue
+    {
+        [Header("Normal")]
+        public DialogueData NormalDialogue;
+
+        [Header("Horror")]
+        public DialogueData GlitchDialogue;
+        [Range(0f, 100f)] public float GlitchChance; // % kaç ihtimalle korkunç cevap verecek?
+    }
+
     // Bu profildeki müþteri neleri sipariþ edebilir?
     public List<PotentialOrder> PossibleOrders;
 
-    // Yanlýþ sipariþ gelirse ne desin?
-    public DialogueData WrongOrderDialogue;
+    [Header("Feedbacks")]
+    // ESKÝSÝ: public DialogueData WrongOrderDialogue;
+    // YENÝSÝ:
+    public List<InteractionDialogue> PossibleWrongOrderDialogues;
 
-    // Doðru sipariþ gelirse ne desin?
-    public DialogueData CorrectOrderDialogue;
+    // ESKÝSÝ: public DialogueData CorrectOrderDialogue;
+    // YENÝSÝ:
+    public List<InteractionDialogue> PossibleCorrectOrderDialogues;
+
+    [Header("Reactions")]
+    // Tepsi boþsa ne desin? ("Dalga mý geçiyorsun?", "Tabak boþ?")
+    public List<InteractionDialogue> PossibleEmptyTrayDialogues;
+
+    // Býçak yerse ne desin? ("AH!", "DELÝ MÝSÝN?!", "SENÝ POLÝSE VERECEÐÝM!")
+    public List<InteractionDialogue> PossibleKnifeHitDialogues;
 }

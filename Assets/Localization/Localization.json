@@ -3091,28 +3091,308 @@
     "pt": "VSync"
   },
   {
+    "key": "CURSED_SPEECH_0",
+    "tr": "SENİN SUÇUN.",
+    "en": "IT'S YOUR FAULT.",
+    "zh": "都是你的错。",
+    "ja": "お前のせいだ。",
+    "es": "ES TU CULPA.",
+    "ru": "ЭТО ТВОЯ ВИНА.",
+    "pt": "A CULPA É SUA."
+  },
+  {
+    "key": "CURSED_SPEECH_1",
+    "tr": "KAÇAMAZSIN.",
+    "en": "YOU CAN'T ESCAPE.",
+    "zh": "你逃不掉的。",
+    "ja": "逃げられないぞ。",
+    "es": "NO PUEDES ESCAPAR.",
+    "ru": "НЕ УБЕЖИШЬ.",
+    "pt": "NÃO PODE ESCAPAR."
+  },
+  {
+    "key": "CURSED_SPEECH_2",
+    "tr": "HESAP VER.",
+    "en": "PAY THE PRICE.",
+    "zh": "付出代价吧。",
+    "ja": "償え。",
+    "es": "RINDE CUENTAS.",
+    "ru": "ОТВЕТЬ ЗА ЭТО.",
+    "pt": "PAGUE O PREÇO."
+  },
+  {
+    "key": "CURSED_SPEECH_3",
+    "tr": "DEĞDİ Mİ?",
+    "en": "WAS IT WORTH IT?",
+    "zh": "值得吗？",
+    "ja": "それだけの価値はあったか？",
+    "es": "¿VALIÓ LA PENA?",
+    "ru": "ОНО ТОГО СТОИЛО?",
+    "pt": "VALEU A PENA?"
+  },
+  {
+    "key": "CURSED_SPEECH_4",
+    "tr": "NEREYE KADAR SAKLANACAKSIN?",
+    "en": "HOW LONG WILL YOU HIDE?",
+    "zh": "你能躲多久？",
+    "ja": "いつまで隠れるつもりだ？",
+    "es": "¿HASTA CUÁNDO TE ESCONDERÁS?",
+    "ru": "СКОЛЬКО ЕЩЁ БУДЕШЬ ПРЯТАТЬСЯ?",
+    "pt": "ATÉ QUANDO VAI SE ESCONDER?"
+  },
+  {
+    "key": "CURSED_SPEECH_5",
+    "tr": "YÜZLEŞ.",
+    "en": "FACE IT.",
+    "zh": "面对吧。",
+    "ja": "向き合え。",
+    "es": "ENFRÉNTALO.",
+    "ru": "ПРИМИ ЭТО.",
+    "pt": "ENCARE."
+  },
+  {
+    "key": "CURSED_SPEECH_6",
+    "tr": "ELİN ACIYOR MU?",
+    "en": "DOES YOUR HAND HURT?",
+    "zh": "你的手疼吗？",
+    "ja": "手が痛むか？",
+    "es": "¿TE DUELE LA MANO?",
+    "ru": "РУКА БОЛИТ?",
+    "pt": "SUA MÃO DÓI?"
+  },
+  {
+    "key": "CURSED_SPEECH_7",
+    "tr": "SEKİZ.",
+    "en": "EIGHT.",
+    "zh": "八。",
+    "ja": "八。",
+    "es": "OCHO.",
+    "ru": "ВОСЕМЬ.",
+    "pt": "OITO."
+  },
+  {
+    "key": "CURSED_SPEECH_8",
+    "tr": "NEDEN?",
+    "en": "WHY?",
+    "zh": "为什么？",
+    "ja": "なぜだ？",
+    "es": "¿POR QUÉ?",
+    "ru": "ПОЧЕМУ?",
+    "pt": "POR QUÊ?"
+  },
+  {
+    "key": "CURSED_SPEECH_9",
+    "tr": "PİŞMANLIK İÇİN ÇOK GEÇ.",
+    "en": "TOO LATE FOR REGRETS.",
+    "zh": "后悔已经太迟了。",
+    "ja": "後悔するには遅すぎる。",
+    "es": "MUY TARDE PARA ARREPENTIRSE.",
+    "ru": "ПОЗДНО СОЖАЛЕТЬ.",
+    "pt": "TARDE DEMAIS PARA ARREPENDIMENTOS."
+  },
+  {
+    "key": "CURSED_SPEECH_10",
+    "tr": "NE YAPTIĞINI BİLİYORSUN.",
+    "en": "",
+    "zh": "",
+    "ja": "",
+    "es": "",
+    "ru": "",
+    "pt": ""
+  },
+  {
+    "key": "CURSED_SPEECH_11",
+    "tr": "SİNAN!",
+    "en": "",
+    "zh": "",
+    "ja": "",
+    "es": "",
+    "ru": "",
+    "pt": ""
+  },
+  {
+    "key": "CURSED_SPEECH_11",
+    "tr": "KATİL!",
+    "en": "",
+    "zh": "",
+    "ja": "",
+    "es": "",
+    "ru": "",
+    "pt": ""
+  },
+  {
+    "key": "CURSED_SPEECH_11",
+    "tr": "BU SEFERKİNİ O BİLE ÇÖZEMEZ.",
+    "en": "",
+    "zh": "",
+    "ja": "",
+    "es": "",
+    "ru": "",
+    "pt": ""
+  },
+  {
     "key": "TEENGIRL0_GREETING_0",
     "tr": "Merhaba kolay gelsin.",
-    "en": "...",
-    "zh": "...",
-    "ja": "...",
-    "es": "...",
-    "ru": "...",
-    "pt": "..."
+    "en": "Hi there.",
+    "zh": "你好。",
+    "ja": "こんにちは、すみません。",
+    "es": "Hola, buenas.",
+    "ru": "Здравствуйте.",
+    "pt": "Oi, tudo bem?"
   },
   {
     "key": "TEENGIRL0_GREETING_1",
     "tr": "Kolay gelsin.",
-    "en": "...",
-    "zh": "...",
-    "ja": "...",
-    "es": "...",
-    "ru": "...",
-    "pt": "..."
+    "en": "Hi.",
+    "zh": "你好。",
+    "ja": "すみません。",
+    "es": "Buenas.",
+    "ru": "Привет.",
+    "pt": "Oi."
   },
   {
     "key": "TEENGIRL0_GREETING_2",
     "tr": "Merhaba.",
+    "en": "Hello.",
+    "zh": "你好。",
+    "ja": "こんにちは。",
+    "es": "Hola.",
+    "ru": "Привет.",
+    "pt": "Olá."
+  },
+  {
+    "key": "TEENGIRL0_GREETING_3",
+    "tr": "İyi günler.",
+    "en": "Good day.",
+    "zh": "你好。",
+    "ja": "こんにちは。",
+    "es": "Buenos días.",
+    "ru": "Добрый день.",
+    "pt": "Bom dia."
+  },
+  {
+    "key": "TEENGIRL0_EMPTYORDER_0",
+    "tr": "Boş bu?",
+    "en": "It's empty?",
+    "zh": "空的？",
+    "ja": "空っぽ？",
+    "es": "¿Está vacío?",
+    "ru": "Пусто?",
+    "pt": "Tá vazio?"
+  },
+  {
+    "key": "TEENGIRL0_EMPTYORDER_1",
+    "tr": "Bu tepsi boş.",
+    "en": "This tray is empty.",
+    "zh": "这托盘是空的。",
+    "ja": "トレイ、空だよ。",
+    "es": "La bandeja está vacía.",
+    "ru": "Поднос пустой.",
+    "pt": "A bandeja tá vazia."
+  },
+  {
+    "key": "TEENGIRL0_EMPTYORDER_2",
+    "tr": "Dalga mı geçiyorsun hiçbir şey yok bunda!",
+    "en": "Are you kidding? There's nothing on it!",
+    "zh": "你在开玩笑吗？里面什么都没有！",
+    "ja": "ふざけてる？何もないじゃん！",
+    "es": "¿Me estás tomando el pelo? ¡No hay nada!",
+    "ru": "Ты издеваешься? Тут ничего нет!",
+    "pt": "Tá de brincadeira? Não tem nada aqui!"
+  },
+  {
+    "key": "TEENGIRL0_EMPTYORDER_3",
+    "tr": "Bunun boş bir tepsi olduğunun farkındasın di mi?",
+    "en": "You realize this is an empty tray, right?",
+    "zh": "你知道这是个空托盘吧？",
+    "ja": "これ空のトレイだって、わかってるよね？",
+    "es": "Te das cuenta de que es una bandeja vacía, ¿verdad?",
+    "ru": "Ты же понимаешь, что это пустой поднос?",
+    "pt": "Você percebeu que essa bandeja tá vazia, né?"
+  },
+  {
+    "key": "TEENGIRL0_KNIFETHROWED_0",
+    "tr": "Ay yavaş be!",
+    "en": "Whoa, watch it!",
+    "zh": "喂，看着点！",
+    "ja": "ちょ、危ないって！",
+    "es": "¡Oye, cuidado!",
+    "ru": "Эй, полегче!",
+    "pt": "Ei, vai com calma!"
+  },
+  {
+    "key": "TEENGIRL0_KNIFETHROWED_1",
+    "tr": "Dikkat etsene ya!",
+    "en": "Be careful, will you!",
+    "zh": "注意点啊！",
+    "ja": "気をつけてよ！",
+    "es": "¡Ten cuidado!",
+    "ru": "Осторожнее!",
+    "pt": "Presta atenção!"
+  },
+  {
+    "key": "TEENGIRL0_KNIFETHROWED_2",
+    "tr": "Bu nasıl bir sorumsuzluk ya? Ya bir şey olsaydı?",
+    "en": "That is so irresponsible! What if something happened?",
+    "zh": "太不负责任了吧？万一出事怎么办？",
+    "ja": "責任感なさすぎ！何かあったらどうすんの？",
+    "es": "¡Qué irresponsabilidad! ¿Y si pasaba algo?",
+    "ru": "Что за безответственность? А если бы что-то случилось?",
+    "pt": "Que irresponsabilidade! E se acontece alguma coisa?"
+  },
+  {
+    "key": "TEENGIRL0_KNIFETHROWED_3",
+    "tr": "Saçmalama istersen.",
+    "en": "Don't be ridiculous.",
+    "zh": "别乱来。",
+    "ja": "ふざけないでよ。",
+    "es": "No hagas tonterías.",
+    "ru": "Не дури.",
+    "pt": "Não faz besteira."
+  },
+  {
+    "key": "TEENGIRL0_WRONGORDER_0",
+    "tr": "Ben bunu istemedim.",
+    "en": "I didn't order this.",
+    "zh": "这不是我点的。",
+    "ja": "これ、頼んでないけど。",
+    "es": "Yo no pedí esto.",
+    "ru": "Я это не заказывала.",
+    "pt": "Eu não pedi isso."
+  },
+  {
+    "key": "TEENGIRL0_WRONGORDER_1",
+    "tr": "Bi yanlışlık oldu sanırım.",
+    "en": "I think there's a mistake.",
+    "zh": "好像搞错了。",
+    "ja": "なんか間違ってるみたい。",
+    "es": "Creo que hay un error.",
+    "ru": "Кажется, тут ошибка.",
+    "pt": "Acho que houve um engano."
+  },
+  {
+    "key": "TEENGIRL0_WRONGORDER_2",
+    "tr": "Bu benim siparişim değil.",
+    "en": "This isn't my order.",
+    "zh": "这不是我的餐。",
+    "ja": "これ、私の注文じゃないよ。",
+    "es": "Este no es mi pedido.",
+    "ru": "Это не мой заказ.",
+    "pt": "Esse pedido não é meu."
+  },
+  {
+    "key": "TEENGIRL0_WRONGORDER_3",
+    "tr": "Başkasının falan mı bu?",
+    "en": "Is this someone else's?",
+    "zh": "这是别人的吗？",
+    "ja": "これ、他の人の？",
+    "es": "¿Esto es de otra persona?",
+    "ru": "Это для кого-то другого?",
+    "pt": "Isso é de outra pessoa?"
+  },
+  {
+    "key": "TEENGIRL0_CRISPYCHICKEN_MEDIUMCOLA",
+    "tr": "Bi Çıtır Tavuk Burger bi de Orta Boy Kola istiyorum.",
     "en": "...",
     "zh": "...",
     "ja": "...",
@@ -3121,8 +3401,8 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_CRISPYCHICKEN_COLA",
-    "tr": "Bi Çıtır Tavuk Burger bi de Kola istiyorum.",
+    "key": "TEENGIRL0_CHEESEBURGER_MEDIUMCOLA",
+    "tr": "Bi Çizburger bi de Orta Boy Kola istiyorum.",
     "en": "...",
     "zh": "...",
     "ja": "...",
@@ -3131,8 +3411,8 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_CHEESEBURGER_COLA",
-    "tr": "Bi Çizburger bi de Kola istiyorum.",
+    "key": "TEENGIRL0_GARDENBURGER_MEDIUMORANGESODA",
+    "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
     "en": "...",
     "zh": "...",
     "ja": "...",
@@ -3141,8 +3421,8 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_GARDENBURGER_ORANGESODA",
-    "tr": "Bi Bahçıvan Burger bi de Portakallı Gazoz istiyorum.",
+    "key": "TEENGIRL0_CLASSICBURGER_MEDIUMORANGESODA",
+    "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
     "en": "...",
     "zh": "...",
     "ja": "...",

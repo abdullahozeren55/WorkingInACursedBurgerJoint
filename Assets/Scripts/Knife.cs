@@ -294,6 +294,27 @@ public class Knife : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
+                // --- YENÝ: MÜÞTERÝ VURMA MANTIÐI ---
+                if (collision.gameObject.CompareTag("Customer"))
+                {
+                    // Müþteri scriptini bul (Kafasýna veya koluna gelmiþ olabilir, parent'a da bak)
+                    var customer = collision.gameObject.GetComponent<CustomerController>();
+                    if (customer == null) customer = collision.gameObject.GetComponentInParent<CustomerController>();
+
+                    if (customer != null)
+                    {
+                        // 1. Müþteriye haber ver
+                        customer.OnHitByKnife();
+
+                        // 2. Býçaðý yok et
+                        Destroy(gameObject);
+
+                        // 3. Çarpma sesini veya saplanma efektini iptal et ve çýk
+                        return;
+                    }
+                }
+                // ------------------------------------
+
                 if (((1 << collision.gameObject.layer) & data.stabableLayers) != 0)
                     StickToSurface(collision);
 

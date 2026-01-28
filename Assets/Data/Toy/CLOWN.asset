@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CLOWN
   m_EditorClassIdentifier: 
   focusTextKey: GRABABLE_TOY_CLOWN
-  toyType: 2
+  toyType: 0
   handGrabType: 9
   handRigType: 1
   iconData:
