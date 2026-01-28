@@ -50,6 +50,8 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     private Transform counterPoint;
     private DiningTable assignedTable;
     private Transform mySeatPoint;
+    private Transform myEntryPoint;
+    private Transform myTrayPoint;
 
     // Layers
     private int interactableLayer;
@@ -178,16 +180,25 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             case CustomerState.MovingToSeat:
                 if (mySeatPoint == null && assignedTable != null)
                 {
-                    mySeatPoint = assignedTable.GetSeatForCustomer(this);
+                    // Fonksiyon artýk trayPoint'i de veriyor
+                    mySeatPoint = assignedTable.GetSeatForCustomer(this, out myEntryPoint, out myTrayPoint);
                 }
 
                 if (mySeatPoint != null)
                 {
-                    agent.SetDestination(mySeatPoint.position);
+                    // --- DEÐÝÞÝKLÝK BURADA ---
+                    // Artýk oturma noktasýna deðil, GÝRÝÞ noktasýna yürüyoruz.
+                    // Eðer myEntryPoint null gelirse (Unity'de atamayý unutursan) mySeatPoint'e gider.
+                    agent.SetDestination(myEntryPoint != null ? myEntryPoint.position : mySeatPoint.position);
 
+                    // Vardýk mý?
                     if (!agent.pathPending && agent.remainingDistance < 0.2f)
                     {
-                        GoToState(CustomerState.Eating);
+                        // Ekstra kontrol: Hýz gerçekten düþtü mü?
+                        if (agent.velocity.sqrMagnitude < 0.1f)
+                        {
+                            GoToState(CustomerState.Eating);
+                        }
                     }
                 }
                 break;
@@ -432,19 +443,22 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
         switch (newState)
         {
-            // --- FIX 3: EKSÝK OLAN ANIMASYONLARI EKLEDÝM ---
             case CustomerState.ApproachingDoor:
                 agent.isStopped = false;
                 agent.updateRotation = true;
                 anim.SetBool("walk", true); // Artýk kapýya giderken yürüyecek!
                 break;
 
-            case CustomerState.Leaving: // Çýkarken de yürümeli
+            case CustomerState.Leaving:
+                // Önce NavMesh'i tekrar açabilmek için objeyi NavMesh üstüne ýþýnla/yaklaþtýr
+                // Çünkü animasyonla kaymýþ olabilir.
+
+                agent.enabled = true; // Tekrar aç
                 agent.isStopped = false;
                 agent.updateRotation = true;
                 anim.SetBool("walk", true);
+                anim.SetBool("Sitting", false);
                 break;
-            // ------------------------------------------------
 
             case CustomerState.Entering:
                 agent.isStopped = false;
@@ -500,17 +514,87 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
             case CustomerState.MovingToSeat:
                 // Kasa ile iþimiz bitti, yukarýdaki 'if' bloðu zaten Unregister yapacak.
+                agent.enabled = true; // Yürürken emin olalým
                 agent.isStopped = false;
                 agent.updateRotation = true;
                 anim.SetBool("walk", true);
                 break;
 
             case CustomerState.Eating:
+                // 1. NAVMESH'Ý DEVREDEN ÇIKAR (Kritik!)
+                // Agent açýk kalýrsa karakteri itmeye çalýþýr veya kaydýrýr.
                 agent.isStopped = true;
+                agent.enabled = false; // Tamamen kapatýyoruz ki transform kontrolü bize geçsin.
+
                 anim.SetBool("walk", false);
                 anim.SetBool("sit", true);
+
+                // 2. OTURMA POZÝSYONUNU HESAPLA
+                if (mySeatPoint != null)
+                {
+                    // A. Tepsiyi Masaya Býrak (Görsel olarak)
+                    // (Bunu istersen ayrý bir animasyon event ile de yapabilirsin ama þimdilik buraya koyalým)
+                    if (carriedTray != null)
+                    {
+                        PlaceTrayOnTable();
+                    }
+
+                    // B. Karakteri Yerleþtir (Mýknatýs)
+                    SnapToSeat();
+                }
                 break;
         }
+    }
+
+    // --- YENÝ METOT: Tepsiyi Masaya Koyma ---
+    private void PlaceTrayOnTable()
+    {
+        if (carriedTray == null) return;
+
+        carriedTray.transform.SetParent(null);
+
+        // ESKÝ HESAPLAMAYI SÝL:
+        // Vector3 tablePos = mySeatPoint.position + ... (Bunu sil)
+
+        // YENÝ HESAPLAMA:
+        Vector3 targetPos;
+        Quaternion targetRot;
+
+        if (myTrayPoint != null)
+        {
+            targetPos = myTrayPoint.position;
+            targetRot = myTrayPoint.rotation;
+        }
+        else
+        {
+            // Fallback (Eðer editörde unuttuysan)
+            targetPos = transform.position + transform.forward * 0.5f + Vector3.up * 0.8f;
+            targetRot = Quaternion.identity;
+        }
+
+        // Tepsiyi hedefe yolla
+        carriedTray.transform.DOMove(targetPos, 0.5f).SetEase(Ease.OutQuad);
+
+        // Tepsiyi masanýn açýsýna göre döndür (Random hafif yamukluk da katabiliriz)
+        carriedTray.transform.DORotateQuaternion(targetRot, 0.5f);
+
+        carriedTray = null;
+    }
+
+    // --- YENÝ METOT: Koltuða Oturtma ---
+    private void SnapToSeat()
+    {
+        // 1. Hedef Pozisyon: Koltuk Pozisyonu + (Koltuk Yönüne Göre Offset)
+        // TransformDirection kullanýyoruz ki koltuk dönerse offset de dönsün.
+        Vector3 finalPos = mySeatPoint.position +
+                           mySeatPoint.TransformDirection(currentProfile.SitPositionOffset);
+
+        // 2. Hedef Rotasyon: Koltuk Rotasyonu * Offset Rotasyonu
+        Quaternion finalRot = mySeatPoint.rotation * Quaternion.Euler(currentProfile.SitRotationOffset);
+
+        // 3. DOTween ile Yumuþak Geçiþ (0.5 saniyede yerine otursun)
+        transform.DOMove(finalPos, 0.5f).SetEase(Ease.OutBack); // Hafif yaylanarak otursun
+        transform.DORotateQuaternion(finalRot, 0.5f).SetEase(Ease.OutQuad);
     }
 
     public void OnFocus()

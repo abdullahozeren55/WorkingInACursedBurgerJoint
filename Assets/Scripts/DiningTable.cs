@@ -33,21 +33,25 @@ public class DiningTable : MonoBehaviour
         IsTableReserved = true;
     }
 
-    // Müþteriye masadan rastgele boþ bir koltuk/nokta ver
-    public Transform GetSeatForCustomer(ICustomer customer)
+    // Parametre sayýsý arttý: assignedTrayPoint eklendi
+    public Transform GetSeatForCustomer(ICustomer customer, out Transform assignedEntryPoint, out Transform assignedTrayPoint)
     {
-        // Listeyi bozmadan rastgele sýralanmýþ geçici bir liste oluþtur (Shuffle)
-        // OrderBy(GUID) veya Random.value basit ve etkili bir karýþtýrma yöntemidir.
+        assignedEntryPoint = null;
+        assignedTrayPoint = null;
+
         var shuffledSeats = SeatsAroundTable.OrderBy(x => UnityEngine.Random.value).ToList();
 
         foreach (var seat in shuffledSeats)
         {
-            // Koltukta yer var mý?
-            if (seat.TryOccupy(customer, out Transform sitPoint))
+            // TryOccupy artýk 3 tane out veriyor
+            if (seat.TryOccupy(customer, out Transform sitPoint, out Transform entryPoint, out Transform trayPoint))
             {
+                assignedEntryPoint = entryPoint;
+                assignedTrayPoint = trayPoint; // Yakaladýk!
                 return sitPoint;
             }
         }
+
         return null;
     }
 

@@ -9,6 +9,13 @@ public class CustomerProfile : ScriptableObject
     public float WalkSpeed = 3.5f;
     public float ArrivalDistance = 0.5f;
 
+    [Header("Sitting Settings")]
+    [Tooltip("Koltuk noktasýna göre ne kadar yukarýda/aþaðýda/ileride duracak?")]
+    public Vector3 SitPositionOffset; // Örn: Y=0.1 (Biraz yukarý kaldýr), Z=-0.1 (Biraz arkaya yasla)
+
+    [Tooltip("Otururken ekstra bir dönüþ gerekir mi?")]
+    public Vector3 SitRotationOffset; // Genelde (0,0,0) olur ama yamuk oturan varsa buradan ayarlanýr.
+
     [System.Serializable]
     public struct PotentialOrder
     {
