@@ -801,7 +801,44 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         // 2. (Opsiyonel) Efekt/Animasyon
         // Buraya "Pain" animasyonu, kan efekti veya iliþki düþmesi eklenebilir.
         // anim.SetTrigger("Hit"); 
+    }
 
-        Debug.Log($"{name}: BIÇAKLANDIM!");
+    // --- ANIMATION EVENT TARAFINDAN ÇAÐRILIR ---
+    public void PlayFootstep()
+    {
+        // 1. Data ve Manager Kontrolü
+        if (currentProfile == null || currentProfile.FootstepSounds == null) return;
+        if (SoundManager.Instance == null) return;
+
+        // 2. Zemin Tespiti (LayerMask Kullanarak)
+        RaycastHit hit;
+        SurfaceType detectedSurface = SurfaceType.Stone; // Varsayýlan
+
+        // Maskeyi Data'dan çek
+        LayerMask targetMask = currentProfile.FootstepSounds.GroundLayerMask;
+
+        // Karakterin karnýndan (0.5f yukarý) aþaðýya doðru 1.5 birim ýþýn at.
+        // Böylece hafif eðimli yüzeylerde veya merdivenlerde de algýlar.
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 1.5f, targetMask))
+        {
+            // Çarptýðýmýz objede SurfaceIdentity var mý?
+            SurfaceIdentity surfaceID = hit.collider.GetComponent<SurfaceIdentity>();
+            if (surfaceID != null)
+            {
+                detectedSurface = surfaceID.type;
+            }
+        }
+
+        // 3. Sesleri Getir
+        AudioClip[] clipsToPlay = currentProfile.FootstepSounds.GetClipsForSurface(detectedSurface);
+
+        // 4. Çal (Transform: this.transform)
+        if (clipsToPlay != null && clipsToPlay.Length > 0)
+        {
+            SoundManager.Instance.PlayRandomSoundFX(
+                clipsToPlay,
+                transform // Ses kaynaðý müþterinin kendisi
+            );
+        }
     }
 }

@@ -249,34 +249,39 @@ public class DialogueManager : MonoBehaviour
         currentLineData = line; // Update'de eriþmek için kaydet
 
         // 1. Konuþmacýyý Bul
-        IDialogueSpeaker activeSpeaker = null; // Yerel deðiþken yaptýk
+        IDialogueSpeaker activeSpeaker = null;
         if (speakers.ContainsKey(line.SpeakerID))
         {
             activeSpeaker = speakers[line.SpeakerID];
-            // Burada OnSpeakStart'ý çaðýrmýyoruz, yazý baþlayýnca çaðýracaðýz (Opsiyonel)
         }
 
         // 2. HAVUZDAN BALON SEÇ
         DialogueAnimator selectedDialogueAnimator = GetAvailableDialogueAnimator();
-        currentActiveDialogueAnimator = selectedDialogueAnimator; // Artýk yeni patron bu
+        currentActiveDialogueAnimator = selectedDialogueAnimator;
 
         selectedDialogueAnimator.SetColor(line.TextColor);
-
         selectedDialogueAnimator.SetSpeed(line.TypewriterSpeedMultiplier);
+
+        // --- YENÝ EKLENEN KISIM ---
+        // Data'da font seçimi olmadýðý için þimdilik manuel olarak "DialogueOutlined" veriyoruz.
+        // Bu çaðrý, dil Çince/Japonca ise fontu ve boyutu (Scale) otomatik ayarlayacak.
+        selectedDialogueAnimator.UpdateFontSettings(FontType.DialogueOutlined);
+        // --------------------------
 
         if (glitchAudioSource != null) glitchAudioSource.volume = 0f;
 
-        // 2. Ses Sýrasýný Sýfýrla
         useClipA = true;
 
         string rawText = LocalizationManager.Instance.GetText(line.LocalizationKey);
         string processedText = selectedDialogueAnimator.ApplyRichText(rawText, line.TextEffects);
 
+        // ... (Kodun geri kalaný ayný þekilde devam ediyor: Camera Juice, Events, Behavior vb.) ...
+
         bool hasJumpscare = (line.Jumpscare != JumpscareType.None);
 
-        // --- CAMERA JUICE (GÜNCELLENDÝ) ---
         if (CameraManager.Instance != null)
         {
+            // ... Camera kodlarý ayný ...
             Transform targetTrans = null;
             CustomerID targetID = (line.FocusTargetID != CustomerID.None) ? line.FocusTargetID : line.SpeakerID;
 
@@ -286,9 +291,6 @@ public class DialogueManager : MonoBehaviour
                 else if (speakers[targetID] is MonoBehaviour mb) targetTrans = mb.transform;
             }
 
-            // --- ÝLK SATIR KONTROLÜ ---
-            // Eðer þu an 0. satýrý oynatýyorsak, kamera IÞINLANSIN (Instant).
-            // Sonraki satýrlarda YUMUÞAK (Tween) geçsin.
             bool isFirstLine = (currentIndex == 0);
 
             CameraManager.Instance.UpdateDialogueShot(
@@ -300,10 +302,11 @@ public class DialogueManager : MonoBehaviour
                 line.NoiseType,
                 line.NoiseAmplitudeMultiplier,
                 line.NoiseFrequencyMultiplier,
-                (currentIndex == 0), // isInstant
-                hasJumpscare         // <--- YENÝ: skipLensAndNoise
+                (currentIndex == 0),
+                hasJumpscare
             );
 
+            // ... (Kalan tüm switch-case ve delay mantýklarý aynen kalýyor)
             float organicTextDelay = GetOrganicDelay(line.TextDelay);
             float organicJumpscareDelay = GetOrganicDelay(line.JumpscareDelay);
             float organicEventDelay = GetOrganicDelay(line.EventDelay);
@@ -314,51 +317,36 @@ public class DialogueManager : MonoBehaviour
                 eventDelayRoutine = StartCoroutine(ProcessEventsRoutine(organicEventDelay, line.Events));
             }
 
-            // --- JUMPSCARE (DELAYLI) ---
             if (line.Jumpscare != JumpscareType.None)
             {
                 jumpscareDelayRoutine = StartCoroutine(JumpscareRoutine(organicJumpscareDelay, line.Jumpscare, line.JumpscareFadeInDuration, line.JumpscareFadeOutDuration));
             }
 
-            // 4. BEHAVIOR LOGIC (YENÝ KISIM)
-
-            // Önceki Glitch Tweenlerini temizle (Eðer varsa)
             selectedDialogueAnimator.transform.DOKill();
 
             switch (line.Behavior)
             {
                 case LineBehavior.Normal:
                     StopGlitchAudio(0.1f);
-                    // Standart akýþ
-                    selectedDialogueAnimator.SetGlitchStrength(0f); // Temizle
+                    selectedDialogueAnimator.SetGlitchStrength(0f);
                     textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
                     break;
 
                 case LineBehavior.Meltdown:
-                    // Normal baþla -> Sonra Glitchle -> Sonra Yok Ol
                     selectedDialogueAnimator.SetGlitchStrength(0f);
-                    // Burada Typewriter normal çalýþacak
                     textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-
-                    // Meltdown Özel Rutini: Yazý bitimine yakýn veya belli sürede glitchi artýr
                     StartCoroutine(MeltdownRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
                     break;
 
                 case LineBehavior.HorrorReveal:
-                    // Glitchli baþla -> Hafif oyna -> Sonunda Patla
                     selectedDialogueAnimator.SetGlitchStrength(0f);
-                    // Horror reveal genelde yavaþ olur, hýz ayarýný datadan yaparsýn.
                     textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-
-                    // Horror Özel Rutini
                     StartCoroutine(HorrorRevealRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
                     break;
 
                 case LineBehavior.InstantRecover:
                     StopGlitchAudio(0.1f);
-                    // Typewriter yok, anýnda belirir, Glitch sýfýr.
                     selectedDialogueAnimator.SetGlitchStrength(0f);
-                    // Delay varsa bekle, sonra PAT diye göster
                     textDelayRoutine = StartCoroutine(InstantTextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
                     break;
             }

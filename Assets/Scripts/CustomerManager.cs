@@ -116,7 +116,7 @@ public class CustomerManager : MonoBehaviour
 
         var victim = customersAtCounter.FirstOrDefault(x => x.CurrentState == CustomerState.WaitingForFood);
 
-        // --- YENÝ: BOÞ TEPSÝ KONTROLÜ ---
+        // 1. BOÞ TEPSÝ KONTROLÜ
         if (tray.CurrentContent.IsEmpty())
         {
             Debug.Log("Tepsi tamamen boþ!");
@@ -127,10 +127,25 @@ public class CustomerManager : MonoBehaviour
             }
             return false;
         }
-        // --------------------------------
 
-        // Yanlýþ sipariþ
-        
+        // 2. DOÐRU SÝPARÝÞ KONTROLÜ
+        // Kasadaki yemek bekleyen herkese "Bu senin mi?" diye soruyoruz.
+        foreach (var customer in customersAtCounter)
+        {
+            if (customer.CurrentState == CustomerState.WaitingForFood)
+            {
+                // Eðer biri kabul ederse (true dönerse), iþlem baþarýlýdýr.
+                if (customer.TryReceiveTray(tray))
+                {
+                    return true;
+                }
+            }
+        }
+        // ---------------------------------------
+
+        // 3. YANLIÞ SÝPARÝÞ CEZASI
+        // Döngü bitti, kimse "Bu benim" demedi (return true olmadý).
+        // Demek ki sipariþ yanlýþ.
         if (victim != null) victim.OnWrongOrderReceived();
 
         return false;

@@ -328,6 +328,8 @@ public class FirstPersonController : MonoBehaviour
         CalculateArmLengths();
 
         if (inventoryUI != null) inventoryUI.UpdateDisplay(inventoryItems, currentSlotIndex);
+
+        wasGrounded = true;
     }
 
     private void Update()
@@ -417,11 +419,23 @@ public class FirstPersonController : MonoBehaviour
 
         else
         {
-            if (!characterController.isGrounded)
-            {
-                HandleGravityAndLanding();
-            }
+            // --- BURAYI KOMPLE ÞÖYLE YAP ---
 
+            // 1. Karakteri zorla yerdeymiþ gibi iþaretle
+            wasGrounded = true;
+            anim.SetBool("isGrounded", true); // Animatörü de rahatlat
+
+            // 2. KRÝTÝK NOKTA: Yerçekimi birikmesini SIFIRLA.
+            // Bunu yapmazsan bekleme süresince hýz -1000'e çýkar, play dediðinde gümletir.
+            moveDirection.y = -2f;
+
+            // 3. Karakter havada asýlý kalmasýn diye ufak bir yerçekimi uygula (Ýsteðe baðlý)
+            // Ama CanPlay kapalýyken karakterin donmasýný istiyorsan, Move çaðýrma.
+            // Eðer CanPlay kapalýyken bile aþaðý düþsün istiyorsan aþaðýdaki if'i açabilirsin ama
+            // moveDirection.y'yi sýfýrladýðýmýz için zaten düþmez. 
+            // En temizi gravity kodunu CanPlay=false iken HÝÇ ÇAÐIRMAMAKTIR.
+
+            // --- Temizlik Kodlarý (Aynen kalsýn) ---
             CleanUpFocus();
 
             if (currentInteractable != null)
@@ -432,7 +446,6 @@ public class FirstPersonController : MonoBehaviour
             }
 
             anim.SetFloat("speed", 0f, 0.15f, Time.deltaTime);
-
         }
 
         if (CanBreathe)

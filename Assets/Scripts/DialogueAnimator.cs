@@ -10,44 +10,80 @@ public class DialogueAnimator : MonoBehaviour
 
     public bool IsBusy { get; private set; } = false;
 
+    // --- FONT HAFIZA DEÐERLERÝ (LocalizedText'ten transfer) ---
+    private float _initialFontSize;
+    private float _initialCharSpacing;
+    private float _initialWordSpacing;
+    private float _initialLineSpacing;
+    private bool _hasInitializedValues = false;
+
     // Orijinal hýz deðerlerini saklamak için
-    private float baseNormalWait = -1f; // -1 veriyoruz ki baþlatýlmadýðýný anlayalým
+    private float baseNormalWait = -1f;
     private float baseMiddleWait = -1f;
     private float baseLongWait = -1f;
 
-    // Shader Property ID'si (Performans için cache)
+    // Shader Property ID
     private static readonly int GlitchStrengthID = Shader.PropertyToID("_GlitchStrength");
-
-    // Orijinal materyali bozmamak için instance tutacaðýz
     private Material textMaterialInstance;
 
     private void Awake()
     {
-        // Eðer inspector'dan atanmadýysa otomatik bul
         if (textComponent == null)
             textComponent = GetComponent<TMP_Text>();
 
+        // --- HAFIZA AL ---
+        // Editörde ayarladýðýn (Ýngilizce/Referans) deðerleri sakla
+        if (textComponent != null)
+        {
+            _initialFontSize = textComponent.fontSize;
+            _initialCharSpacing = textComponent.characterSpacing;
+            _initialWordSpacing = textComponent.wordSpacing;
+            _initialLineSpacing = textComponent.lineSpacing;
+            _hasInitializedValues = true;
+
+            textMaterialInstance = textComponent.fontMaterial;
+            SetGlitchStrength(0f);
+        }
+
         if (typewriter != null)
         {
-            // --- YENÝ: EVENT BAÐLANTISI ---
-            // Her karakter göründüðünde bu fonksiyon çalýþacak
             typewriter.onCharacterVisible.AddListener(OnCharacterVisible);
-
             typewriter.onTextShowed.AddListener(OnTypingFinished);
             typewriter.onTextDisappeared.AddListener(OnDisappearFinished);
         }
-
-        // --- MATERYAL HAZIRLIÐI ---
-        if (textComponent != null)
-        {
-            // .fontMaterial çaðrýsý otomatik olarak instance oluþturur.
-            textMaterialInstance = textComponent.fontMaterial;
-            // Baþlangýçta glitch'i sýfýrla
-            SetGlitchStrength(0f);
-        }
     }
 
-    // --- YENÝ: SHADER KONTROL ---
+    // --- YENÝ: FONT GÜNCELLEME (LocalizedText Mantýðý) ---
+    public void UpdateFontSettings(FontType fontType)
+    {
+        if (textComponent == null || LocalizationManager.Instance == null || !_hasInitializedValues) return;
+
+        // 1. Verileri Çek
+        var targetData = LocalizationManager.Instance.GetFontDataForCurrentLanguage(fontType);
+        var defaultData = LocalizationManager.Instance.GetDefaultFontData(fontType);
+
+        // 2. Font Ata
+        if (targetData.font != null && textComponent.font != targetData.font)
+        {
+            textComponent.font = targetData.font;
+            // Font deðiþince materyal instance referansý bozulabilir, yenilemekte fayda var
+            textMaterialInstance = textComponent.fontMaterial;
+        }
+
+        // 3. BOYUT HESABI (Scale Ratio)
+        // Matematik: (Tasarým Boyutu / Default Baz) = Oran. 
+        // Yeni Boyut = Hedef Baz * Oran
+        float defaultBaseSize = Mathf.Max(defaultData.basePixelSize, 0.1f);
+        float scaleRatio = _initialFontSize / defaultBaseSize;
+
+        textComponent.fontSize = targetData.basePixelSize * scaleRatio;
+
+        // 4. SPACING HESABI
+        textComponent.characterSpacing = _initialCharSpacing + (targetData.characterSpacingOffset - defaultData.characterSpacingOffset);
+        textComponent.wordSpacing = _initialWordSpacing + (targetData.wordSpacingOffset - defaultData.wordSpacingOffset);
+        textComponent.lineSpacing = _initialLineSpacing + (targetData.lineSpacingOffset - defaultData.lineSpacingOffset);
+    }
+
     public void SetGlitchStrength(float value)
     {
         if (textMaterialInstance != null)
@@ -64,40 +100,27 @@ public class DialogueAnimator : MonoBehaviour
         }
     }
 
-    // --- YENÝ: RICH TEXT WRAPPER ---
     public string ApplyRichText(string content, RichTextTag tags)
     {
         string final = content;
-
         if (tags.HasFlag(RichTextTag.Shake)) final = $"<shake>{final}</shake>";
         if (tags.HasFlag(RichTextTag.Wave)) final = $"<wave>{final}</wave>";
         if (tags.HasFlag(RichTextTag.Wiggle)) final = $"<wiggle>{final}</wiggle>";
-        // GlitchFont varsa: final = $"<font=\"GlitchFontSDF\">{final}</font>";
-
         return final;
     }
 
-    // --- BU FONKSÝYON DEÐERLERÝ GARANTÝ ALTINA ALIR ---
     private void EnsureInitialized()
     {
-        // Eðer zaten almýþsak ve deðerler saçma (0) deðilse çýk
         if (baseNormalWait > 0f) return;
 
         if (typewriter != null)
         {
-            // Deðerleri çek
             baseNormalWait = typewriter.waitForNormalChars;
             baseMiddleWait = typewriter.waitMiddle;
             baseLongWait = typewriter.waitLong;
 
-            // KORUMA: Eðer hala 0 geldiyse (Inspector'da 0.04 ayarlý olsa bile bazen Scripting order yüzünden 0 gelebilir)
-            // Febucci'nin varsayýlanlarýna veya manuel bir güvenli deðere çek.
             if (baseNormalWait <= 0.0001f)
             {
-                // HATA VAR DEMEKTÝR. Log basalým.
-                Debug.LogWarning($"[DialogueAnimator] Base wait time 0 olarak algýlandý! Inspector deðerlerini kontrol et. Obje: {gameObject.name}");
-
-                // Fallback (Acil durum) deðerleri
                 baseNormalWait = 0.04f;
                 baseMiddleWait = 0.08f;
                 baseLongWait = 0.16f;
@@ -105,33 +128,20 @@ public class DialogueAnimator : MonoBehaviour
         }
     }
 
-    // --- BU FONKSÝYON HER HARFTE ÇALIÞIR ---
     private void OnCharacterVisible(char c)
     {
-        // Boþluk karakterlerinde ses çalmasýn (Opsiyonel ama önerilir)
         if (char.IsWhiteSpace(c)) return;
-
-        // Manager'a "Sýradaki sesi çal" de
         if (DialogueManager.Instance != null)
         {
             DialogueManager.Instance.PlayNextTypewriterSound();
         }
     }
 
-    // --- YENÝ: HIZ AYARLAMA ---
     public void SetSpeed(float multiplier)
     {
         if (typewriter == null) return;
-
-        // Önce base deðerlerin doðru olduðundan emin ol
         EnsureInitialized();
-
-        // Güvenlik: 0'a bölme veya negatif hatasý olmasýn
         if (multiplier <= 0.01f) multiplier = 0.01f;
-
-        // Speed artarsa, bekleme süresi AZALIR. (Ters Orantý)
-        // Hýz 2x ise -> Süre 0.5x olmalý.
-        // Math: Base / Multiplier
 
         typewriter.waitForNormalChars = baseNormalWait / multiplier;
         typewriter.waitMiddle = baseMiddleWait / multiplier;
@@ -140,26 +150,19 @@ public class DialogueAnimator : MonoBehaviour
 
     public void SetColor(Color color)
     {
-        if (textComponent != null)
-        {
-            textComponent.color = color;
-        }
+        if (textComponent != null) textComponent.color = color;
     }
 
     public void Show(string text)
     {
         IsBusy = true;
         gameObject.SetActive(true);
-
-        // Eðer önceki text hala disappear oluyorsa, onu anýnda kesip yenisini yazabiliriz
-        // veya Febucci'nin ShowText'i zaten resetler.
         typewriter.ShowText(text);
         typewriter.StartShowingText();
     }
 
     public void Hide()
     {
-        // Direkt kapanmasýn, disappear efektini baþlatsýn
         if (gameObject.activeInHierarchy)
             typewriter.StartDisappearingText();
         else
@@ -168,18 +171,8 @@ public class DialogueAnimator : MonoBehaviour
 
     public void ForceHide()
     {
-        // Typewriter hala çalýþýyorsa sustur
-        if (typewriter != null)
-        {
-            typewriter.StopShowingText();
-        }
-
-        // YENÝ: Metni fiziksel olarak sil (Ghosting'i önler)
-        if (textComponent != null)
-        {
-            textComponent.text = string.Empty;
-        }
-
+        if (typewriter != null) typewriter.StopShowingText();
+        if (textComponent != null) textComponent.text = string.Empty;
         gameObject.SetActive(false);
         IsBusy = false;
     }
@@ -189,22 +182,16 @@ public class DialogueAnimator : MonoBehaviour
         typewriter.SkipTypewriter();
     }
 
-    // --- CALLBACKS ---
-    private void OnTypingFinished()
-    {
-        // Yazma bitti ama hala ekranda duruyor, o yüzden hala Busy sayýlýr.
-        // Busy false yapmak için Disappear olmasýný bekleyeceðiz.
-    }
+    private void OnTypingFinished() { }
 
     private void OnDisappearFinished()
     {
-        // Artýk tamamen yok oldu, yeni görev alabilir.
         IsBusy = false;
         gameObject.SetActive(false);
     }
 
     public bool IsTyping()
     {
-        return typewriter.isShowingText; // Febucci'nin kendi bool'u
+        return typewriter.isShowingText;
     }
 }

@@ -59,4 +59,7 @@ public class CustomerProfile : ScriptableObject
 
     // Býçak yerse ne desin? ("AH!", "DELÝ MÝSÝN?!", "SENÝ POLÝSE VERECEÐÝM!")
     public List<InteractionDialogue> PossibleKnifeHitDialogues;
+
+    [Header("Audio")]
+    public FootstepData FootstepSounds;
 }
