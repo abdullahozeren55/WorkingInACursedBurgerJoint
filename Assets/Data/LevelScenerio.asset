@@ -15,7 +15,7 @@ MonoBehaviour:
   LoopIndex: 0
   Waves:
   - GroupName: TeenGirl0_Alone
-    DelayAfterPreviousGroup: 0
+    DelayAfterPreviousGroup: 5
     Members:
     - ID: 8
       ProfileForToday: {fileID: 11400000, guid: 01870921cf4af0e42b8d1c197d87a261, type: 2}

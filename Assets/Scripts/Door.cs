@@ -17,6 +17,11 @@ public class Door : MonoBehaviour, IInteractable
     [SerializeField] private NavMeshObstacle navObstacle; // Inspector'dan ata
     [SerializeField] private bool autoCloseForNPC = true;
     [SerializeField] private float autoCloseDelay = 3f;
+    [Tooltip("Dükkanýn DIÞINDAKÝ kapý kolu (Giriþ tarafý)")]
+    public Transform outsideHandle;
+
+    [Tooltip("Dükkanýn ÝÇÝNDEKÝ kapý kolu (Çýkýþ tarafý)")]
+    public Transform insideHandle;
 
     // ... (Jumpscare vs deðiþkenleri aynen kalsýn) ...
     [Header("Settings")]
@@ -44,6 +49,31 @@ public class Door : MonoBehaviour, IInteractable
     private int uninteractableLayer;
 
     private Coroutine autoCloseCoroutine;
+
+    // Müþterinin pozisyonuna göre en uygun kolu seçen fonksiyon
+    public Transform GetBestHandle(Vector3 interactingAgentPos)
+    {
+        // 1. Kapýdan müþteriye doðru bir vektör çiz
+        Vector3 directionToAgent = interactingAgentPos - transform.position;
+
+        // 2. Dot Product (Nokta Çarpýmý) Hesabý
+        // Kapýnýn ileri yönü (transform.forward) ile müþterinin yönünü kýyasla.
+        // Sonuç > 0 ise müþteri kapýnýn "Önünde" (Forward yönünde) demektir.
+        // Sonuç < 0 ise müþteri kapýnýn "Arkasýnda" demektir.
+        float dot = Vector3.Dot(transform.forward, directionToAgent);
+
+        // NOT: Hangi tarafýn Inside hangi tarafýn Outside olduðu,
+        // kapýyý sahneye nasýl koyduðuna (Forward'ýn nereye baktýðýna) baðlýdýr.
+        // Genelde Forward (Mavi ok) dýþarý bakýyorsa:
+        if (dot > 0)
+        {
+            return outsideHandle; // Ön taraf
+        }
+        else
+        {
+            return insideHandle; // Arka taraf
+        }
+    }
 
     private void Awake()
     {

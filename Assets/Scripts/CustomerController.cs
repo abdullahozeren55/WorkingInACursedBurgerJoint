@@ -52,6 +52,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     private Transform mySeatPoint;
     private Transform myEntryPoint;
     private Transform myTrayPoint;
+    private Transform activeDoorHandle;
 
     // Layers
     private int interactableLayer;
@@ -61,6 +62,8 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
     private bool isLeavingShop = false;
     private Door currentTargetDoor;
+    private float doorIKWeight = 0f; // Kapýya uzanma aðýrlýðý
+    private bool isReachingForDoor = false; // Þu an uzanmalý mý?
 
     // --- FIX 1: COROUTINE SPAM ENGELLEYÝCÝ ---
     private bool isInteractingWithDoor = false;
@@ -305,6 +308,22 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             // --- GÖVDE DÜZELTMESÝ (Opsiyonel) ---
             // Tepsi taþýrken hafif öne eðilmesini engellemek veya kollarýn yetiþmesi için
             // Body pozisyonuyla oynanabilir ama þimdilik ellere odaklanalým.
+        }
+        else
+        {
+            // Kapý IK Mantýðý
+            float targetDoorWeight = isReachingForDoor ? 1f : 0f;
+            doorIKWeight = Mathf.Lerp(doorIKWeight, targetDoorWeight, Time.deltaTime * 8f);
+
+            // DEÐÝÞÝKLÝK: 'currentTargetDoor.handlePoint' yerine 'activeDoorHandle' kullanýyoruz
+            if (doorIKWeight > 0.01f && activeDoorHandle != null)
+            {
+                anim.SetIKPositionWeight(AvatarIKGoal.RightHand, doorIKWeight);
+                anim.SetIKRotationWeight(AvatarIKGoal.RightHand, doorIKWeight * 0.5f);
+
+                anim.SetIKPosition(AvatarIKGoal.RightHand, activeDoorHandle.position);
+                anim.SetIKRotation(AvatarIKGoal.RightHand, activeDoorHandle.rotation);
+            }
         }
     }
 
@@ -657,18 +676,34 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
     private IEnumerator DoorInteractionRoutine()
     {
-        isInteractingWithDoor = true; // KÝLÝTLE
-
+        isInteractingWithDoor = true;
         agent.isStopped = true;
         anim.SetBool("walk", false);
 
         if (currentTargetDoor != null && !currentTargetDoor.isOpened)
         {
-            transform.DOLookAt(currentTargetDoor.transform.position, 0.3f, AxisConstraint.Y);
-            yield return new WaitForSeconds(0.3f);
+            // 1. Hangi kolu tutacaðýmýzý hesapla ve kaydet
+            activeDoorHandle = currentTargetDoor.GetBestHandle(transform.position);
 
+            // 2. Kapýya (daha doðrusu tutacaðýmýz kola) dön
+            // Kapýnýn merkezine deðil, tutacaðýmýz kola dönersek daha doðal olur.
+            if (activeDoorHandle != null)
+            {
+                Vector3 lookTarget = activeDoorHandle.position;
+                lookTarget.y = transform.position.y; // Kafayý yukarý dikmesin, gövde dönsün
+                transform.DOLookAt(lookTarget, 0.3f);
+            }
+
+            // 3. Elini Uzat
+            isReachingForDoor = true;
+            yield return new WaitForSeconds(0.4f);
+
+            // 4. Kapýyý Aç
             currentTargetDoor.OpenByNPC();
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.2f);
+
+            // 5. Elini Ýndir
+            isReachingForDoor = false;
         }
 
         agent.isStopped = false;
