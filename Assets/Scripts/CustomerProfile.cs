@@ -4,7 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewCustomerProfile", menuName = "Data/CustomerProfile")]
 public class CustomerProfile : ScriptableObject
 {
-    public string ProfileID; // "OldMan", "Teenager"
+    [Header("Identity")]
+    public CustomerID ID;
     public Material SkinMaterial; // Görünüþü
     public float WalkSpeed = 3.5f;
     public float ArrivalDistance = 0.5f;

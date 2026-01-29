@@ -1,28 +1,41 @@
 using UnityEngine;
-using Febucci.UI;
 
 public class DialogueSpeaker : MonoBehaviour, IDialogueSpeaker
 {
-    [Header("Identity")]
-    [SerializeField] private CustomerID _speakerID; // Inspector'dan seç
-
-    [Header("Camera Focus")]
-    [Tooltip("Kamera bu kiþiye bakarken tam olarak nereyi hedeflesin? (Gözler)")]
+    // SerializedField'ý kaldýrabilirsin veya debug için ReadOnly býrakabilirsin.
+    [SerializeField] private CustomerID _speakerID = CustomerID.None;
     [SerializeField] private Transform _lookAtPoint;
 
-    // Interface Implementation
-    public CustomerID SpeakerID => _speakerID;
+    public CustomerID SpeakerID { get => _speakerID; set => _speakerID = value; }
+    public Transform LookAtPoint { get => _lookAtPoint; set => _lookAtPoint = value; }
 
-    public Transform LookAtPoint => _lookAtPoint != null ? _lookAtPoint : transform;
+    // Start() SÝLÝNDÝ. Kendi kendine kaydolmasýn.
 
-    private void Awake()
+    // Controller bunu çaðýracak
+
+    private void OnEnable()
     {
-        DialogueManager.Instance.RegisterSpeaker(this);
+        // Havuzdan tekrar çýkarsa ve kimliði belliyse tekrar kaydolsun
+        if (_speakerID != CustomerID.None)
+        {
+            RegisterToManager();
+        }
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (DialogueManager.Instance != null)
+        {
+            // Olayý basitleþtirdik: Direkt kendini sildiriyor.
             DialogueManager.Instance.UnregisterSpeaker(this);
+        }
+    }
+
+    private void RegisterToManager()
+    {
+        if (DialogueManager.Instance != null && _speakerID != CustomerID.None)
+        {
+            DialogueManager.Instance.RegisterSpeaker(this);
+        }
     }
 }

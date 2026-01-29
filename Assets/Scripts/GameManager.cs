@@ -21,11 +21,11 @@ public enum CustomerID
     FamilyFather,
     FamilyMother,
     FamilyKid,
-    OldMan,
     OldWoman,
+    OldMan,
     AloneKid,
-    TeenGirl0,
-    TeenGirl1,
+    TeenGirl,
+    TeenGuy,
 
     // --- Diğer Hedefler (Gerekirse eklersin) ---
     // Radio,

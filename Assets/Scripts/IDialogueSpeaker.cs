@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IDialogueSpeaker
 {
-    CustomerID SpeakerID { get; } // String yerine Enum
+    CustomerID SpeakerID { get; set; } // String yerine Enum
 
-    Transform LookAtPoint { get; }
+    Transform LookAtPoint { get; set;  }
 }

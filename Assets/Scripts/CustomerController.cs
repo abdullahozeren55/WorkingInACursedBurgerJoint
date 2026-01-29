@@ -14,6 +14,8 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     [SerializeField] private CustomerProfile currentProfile;
     [SerializeField] private OrderData currentOrder;
 
+    public CustomerProfile CurrentProfile => currentProfile;
+
     [Header("Settings")]
     [SerializeField] private Transform trayHoldPoint;
     [SerializeField] private float headLookWeight = 1f;
@@ -24,6 +26,8 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     // IInteractable Props
     public PlayerManager.HandRigTypes HandRigType { get => handRigType; set => handRigType = value; }
     [SerializeField] private PlayerManager.HandRigTypes handRigType = PlayerManager.HandRigTypes.Nothing;
+
+    private List<CustomerController> myGroupMembers = new List<CustomerController>();
 
     public bool OutlineShouldBeRed { get => outlineShouldBeRed; set => outlineShouldBeRed = value; }
     private bool outlineShouldBeRed;
@@ -67,6 +71,8 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
     // --- FIX 1: COROUTINE SPAM ENGELLEYÝCÝ ---
     private bool isInteractingWithDoor = false;
+
+    private float assignedCounterOffset = 0f;
 
     // YENÝ: IK Hedefini geçici olarak deðiþtirmek için
     private Transform overrideLookTarget;
@@ -348,38 +354,24 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         }
     }
 
-    // --- ETKÝLEÞÝM (DÝYALOG BAÞLATMA) ---
-    public void OnInteract()
+    // Callback Fonksiyonu: Diyalog bitince burasý çalýþacak
+    // --- OnOrderingFinished GÜNCELLEMESÝ ---
+    private void OnOrderingFinished()
     {
-        if (!CanInteract) return;
-
-        // Sadece kasada bekliyorsa konuþabilir
-        if (CurrentState == CustomerState.AtCounter)
+        // YENÝ: Sadece ben deðil, tüm grup yemek beklemeye geçsin
+        foreach (var member in myGroupMembers)
         {
-            // State deðiþtir (Tekrar týklanmasýn ve Idle oynamaya devam etsin)
-            GoToState(CustomerState.Ordering);
-
-            if (assignedDialogue != null)
-            {
-                // Diyaloðu baþlat ve BÝTÝNCE ne yapacaðýný söyle (Callback)
-                DialogueManager.Instance.StartDialogue(assignedDialogue, OnOrderingFinished);
-            }
-            else
-            {
-                Debug.LogWarning("Müþterinin diyaloðu yok! Direkt sipariþ vermiþ sayýyorum.");
-                OnOrderingFinished();
-            }
+            member.SyncStateToWaiting();
         }
     }
 
-    // Callback Fonksiyonu: Diyalog bitince burasý çalýþacak
-    private void OnOrderingFinished()
+    // --- YENÝ: State Senkronizasyonu Helper 2 ---
+    public void SyncStateToWaiting()
     {
-        // Ekrana sipariþi yazdýrabilirsin (UI Manager'a haber ver)
-        // UIManager.Instance.ShowOrderTicket(currentOrder);
-
-        // Sipariþ beklemeye geç
-        GoToState(CustomerState.WaitingForFood);
+        if (CurrentState == CustomerState.Ordering) // Sadece ordering'den gelenleri al
+        {
+            GoToState(CustomerState.WaitingForFood);
+        }
     }
 
     // --- YENÝ YARDIMCI METOT ---
@@ -514,40 +506,46 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
                 agent.updateRotation = true;
                 anim.SetBool("walk", true);
 
-                // --- FIX: NULL CHECK VE GÜVENLÝK ---
                 if (counterPoint == null)
                 {
-                    // Eðer deðiþken boþsa, WorldManager'dan tekrar çekmeyi dene
                     if (WorldManager.Instance != null)
                         counterPoint = WorldManager.Instance.GetCounterPosition();
                 }
 
                 if (counterPoint != null)
                 {
-                    agent.SetDestination(counterPoint.position);
+                    // --- DEÐÝÞÝKLÝK BURADA: OFSET HESABI ---
+                    // CounterPoint'in "Right" vektörünü kullanýyoruz ki kasa dönerse ofset de dönsün.
+                    // Ana Nokta + (Sað Yön * Ofset Miktarý)
+                    Vector3 targetPos = counterPoint.position + (counterPoint.right * assignedCounterOffset);
+
+                    agent.SetDestination(targetPos);
                 }
                 else
                 {
-                    // Buraya düþüyorsa WorldManager sahneye koyulmamýþ veya Instance oluþmamýþ demektir.
-                    Debug.LogError($"KRÝTÝK HATA: '{gameObject.name}' kasaya gidemiyor çünkü CounterPoint YOK! WorldManager sahnede mi?");
+                    Debug.LogError($"KRÝTÝK HATA: '{gameObject.name}' kasaya gidemiyor çünkü CounterPoint YOK!");
                 }
                 break;
 
             case CustomerState.AtCounter:
-                CanInteract = true;
-                ChangeLayer(interactableLayer);
+                // --- DEÐÝÞÝKLÝK BAÞLANGICI ---
 
-                // --- BURAYI GÜÇLENDÝRDÝK ---
+                // ARTIK HEMEN TRUE YAPMIYORUZ!
+                // CanInteract = true; 
+                // ChangeLayer(interactableLayer);
+
+                // Sadece fiziði durduruyoruz
                 agent.isStopped = true;
-                agent.velocity = Vector3.zero; // Fiziði tamamen öldür
-                agent.ResetPath(); // Hedefi unut ki tekrar yürümeye kalkmasýn
-
+                agent.velocity = Vector3.zero;
+                agent.ResetPath();
                 anim.SetBool("walk", false);
 
-                // --- YENÝ: Kendimizi kaydettiriyoruz ---
                 CustomerManager.Instance.RegisterCustomerAtCounter(this);
 
-                // ---------------------------
+                // GRUP KONTROLÜ: Herkes geldi mi?
+                CheckAndEnableGroupInteraction();
+
+                // --- DEÐÝÞÝKLÝK BÝTÝÞÝ ---
                 break;
 
             case CustomerState.Ordering:
@@ -646,16 +644,61 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         transform.DORotateQuaternion(finalRot, 0.5f).SetEase(Ease.OutQuad);
     }
 
+    // --- OnFocus ve OnLoseFocus GÜNCELLEMESÝ ---
     public void OnFocus()
     {
         if (!CanInteract) return;
-        ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
+
+        // Sadece kendimi deðil, TÜM GRUBU yak
+        foreach (var member in myGroupMembers)
+        {
+            if (member != null) member.SetGroupOutline(true);
+        }
     }
 
     public void OnLoseFocus()
     {
         if (!CanInteract) return;
-        ChangeLayer(interactableLayer);
+
+        // Sadece kendimi deðil, TÜM GRUBU söndür
+        foreach (var member in myGroupMembers)
+        {
+            if (member != null) member.SetGroupOutline(false);
+        }
+    }
+
+    // --- OnInteract GÜNCELLEMESÝ (State Senkronizasyonu) ---
+    public void OnInteract()
+    {
+        if (!CanInteract) return;
+
+        if (CurrentState == CustomerState.AtCounter)
+        {
+            // YENÝ: Sadece ben deðil, gruptaki HERKES Ordering moduna geçsin.
+            // Böylece diðerlerine týklanamaz hale gelirler (Outline söner).
+            foreach (var member in myGroupMembers)
+            {
+                member.SyncStateToOrdering();
+            }
+
+            if (assignedDialogue != null)
+            {
+                // Diyalog bittiðinde çaðrýlacak callback'i güncelle
+                DialogueManager.Instance.StartDialogue(assignedDialogue, OnOrderingFinished);
+            }
+            else
+            {
+                OnOrderingFinished();
+            }
+        }
+    }
+
+    // --- YENÝ: State Senkronizasyonu Ýçin Helper ---
+    public void SyncStateToOrdering()
+    {
+        GoToState(CustomerState.Ordering);
+        // Ordering state'i zaten 'CanInteract = false' yapýyor ve layer'ý 'Uninteractable' yapýyor.
+        // Yani outline otomatik sönecek.
     }
 
     public void OutlineChangeCheck()
@@ -803,6 +846,11 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
         // anim.SetTrigger("Hit"); 
     }
 
+    public void SetCounterOffset(float offset)
+    {
+        assignedCounterOffset = offset;
+    }
+
     // --- ANIMATION EVENT TARAFINDAN ÇAÐRILIR ---
     public void PlayFootstep()
     {
@@ -840,5 +888,71 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
                 transform // Ses kaynaðý müþterinin kendisi
             );
         }
+    }
+
+    // --- YENÝ: GRUP ATAMA ---
+    public void SetGroupMembers(List<CustomerController> group)
+    {
+        myGroupMembers = group;
+    }
+
+    // --- YENÝ: GRUP OUTLINE TETÝKLEYÝCÝSÝ ---
+    public void SetGroupOutline(bool isActive)
+    {
+        if (!CanInteract) return;
+
+        // Kendi layer'ýmýzý deðiþtir
+        // Eðer kýrmýzý yanmasý gerekiyorsa (InteractableOutlinedRed) ona öncelik ver
+        // Deðilse normal outline veya normal layer.
+
+        int targetLayer;
+        if (isActive)
+        {
+            targetLayer = OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer;
+        }
+        else
+        {
+            targetLayer = interactableLayer;
+        }
+
+        ChangeLayer(targetLayer);
+    }
+
+    // --- YENÝ: GRUP SENKRONÝZASYONU ---
+
+    private void CheckAndEnableGroupInteraction()
+    {
+        // 1. Eðer yalnýzsam (Grup listesi boþsa veya sadece ben varsam) direkt aç
+        if (myGroupMembers == null || myGroupMembers.Count <= 1)
+        {
+            EnableInteraction();
+            return;
+        }
+
+        // 2. Gruptaki herkesi kontrol et
+        foreach (var member in myGroupMembers)
+        {
+            // Eðer herhangi biri NULL ise veya henüz kasaya varmadýysa iþlemi iptal et.
+            if (member == null || member.CurrentState != CustomerState.AtCounter)
+            {
+                // Biri eksik, o yüzden kimseyi açma. Beklemeye devam.
+                return;
+            }
+        }
+
+        // 3. Buraya geldiysek HERKES kasadadýr.
+        // Tüm grubun kilidini aç!
+        foreach (var member in myGroupMembers)
+        {
+            member.EnableInteraction();
+        }
+    }
+
+    // Bu fonksiyonu public yapmýyoruz, sadece CheckAndEnableGroupInteraction çaðýracak
+    // (Veya yukarýdaki foreach içinden çaðrýlacak þekilde public yapabilirsin, sana kalmýþ)
+    public void EnableInteraction()
+    {
+        CanInteract = true;
+        ChangeLayer(interactableLayer); // Layer'ý burada deðiþtiriyoruz
     }
 }

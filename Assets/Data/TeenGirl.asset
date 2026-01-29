@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f9d4b025253a01428d678aaf123643f, type: 3}
-  m_Name: TeenGirl0
+  m_Name: TeenGirl
   m_EditorClassIdentifier: 
-  ProfileID: TeenGirl0
+  ID: 8
   SkinMaterial: {fileID: 2100000, guid: ef4e9ee46bb11c446afa5b924ce387e6, type: 2}
   WalkSpeed: 2
   ArrivalDistance: 0.2

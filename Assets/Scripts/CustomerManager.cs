@@ -23,6 +23,11 @@ public class CustomerManager : MonoBehaviour
     // Kasadakiler Listesi
     private List<CustomerController> customersAtCounter = new List<CustomerController>();
 
+    public List<CustomerController> GetCustomersAtCounter()
+    {
+        return customersAtCounter;
+    }
+
     // --- YENÝ: Dalga Takibi ---
     private int currentWaveIndex = 0; // Hangi gruptayýz?
     private bool isScenarioActive = false;
@@ -110,42 +115,39 @@ public class CustomerManager : MonoBehaviour
     {
         if (customersAtCounter.Count == 0) return false;
 
-        // Erken Teslimat Kontrolü (Hala konuþuyorlarsa tepki verme)
+        // Erken Teslimat Kontrolü
         bool isAnyoneWaiting = customersAtCounter.Any(x => x.CurrentState == CustomerState.WaitingForFood);
         if (!isAnyoneWaiting) return false;
 
-        var victim = customersAtCounter.FirstOrDefault(x => x.CurrentState == CustomerState.WaitingForFood);
+        // --- HÝYERARÞÝK MAÐDUR SEÇÝMÝ (GÜNCELLENDÝ) ---
+        // 1. Sadece yemek bekleyenleri al
+        // 2. ID'yi artýk doðrudan SCRIPTABLE OBJECT (Profile) üzerinden okuyoruz.
+        //    Böylece kod içinde ID atamayý unutsan bile Data neyse o çalýþýr.
+        var victim = customersAtCounter
+            .Where(x => x.CurrentState == CustomerState.WaitingForFood)
+            .OrderBy(x => (int)x.CurrentProfile.ID) // <--- DEÐÝÞÝKLÝK BURADA
+            .FirstOrDefault(); // En baþtakini (Lideri) seç
+                               // --------------------------------
 
         // 1. BOÞ TEPSÝ KONTROLÜ
         if (tray.CurrentContent.IsEmpty())
         {
-            Debug.Log("Tepsi tamamen boþ!");
-
-            if (victim != null)
-            {
-                victim.OnEmptyTrayReceived();
-            }
+            if (victim != null) victim.OnEmptyTrayReceived();
             return false;
         }
 
         // 2. DOÐRU SÝPARÝÞ KONTROLÜ
-        // Kasadaki yemek bekleyen herkese "Bu senin mi?" diye soruyoruz.
+        // (Burasý ayný kalýyor, doðru tepsiyi kimin aldýðý önemli deðil, sahibi alýr)
         foreach (var customer in customersAtCounter)
         {
             if (customer.CurrentState == CustomerState.WaitingForFood)
             {
-                // Eðer biri kabul ederse (true dönerse), iþlem baþarýlýdýr.
-                if (customer.TryReceiveTray(tray))
-                {
-                    return true;
-                }
+                if (customer.TryReceiveTray(tray)) return true;
             }
         }
-        // ---------------------------------------
 
         // 3. YANLIÞ SÝPARÝÞ CEZASI
-        // Döngü bitti, kimse "Bu benim" demedi (return true olmadý).
-        // Demek ki sipariþ yanlýþ.
+        // Lider (victim) konuþsun
         if (victim != null) victim.OnWrongOrderReceived();
 
         return false;
@@ -160,30 +162,76 @@ public class CustomerManager : MonoBehaviour
         if (allocatedTable == null)
         {
             Debug.LogError($"Grup '{group.GroupName}' için masa yok!");
-            // Masa yoksa ne yapalým? 
-            // 1. Bekletip sonra tekrar deneyebiliriz.
-            // 2. Þimdilik pas geçip bir sonraki dalgayý tetikleyelim ki oyun týkanmasýn.
             if (customersAtCounter.Count == 0) StartCoroutine(PrepareNextWaveRoutine());
             return;
         }
 
-        Debug.Log($"Grup Spawnlanýyor: {group.GroupName}");
+        Debug.Log($"Grup Spawnlanýyor: {group.GroupName} ({groupSize} Kiþi)");
 
-        foreach (var assignment in group.Members)
+        // --- KASA DÝZÝLÝM HESABI (Bu zaten vardý) ---
+        float counterSpacing = 0.8f;
+        float totalCounterWidth = (groupSize - 1) * counterSpacing;
+        float startCounterX = -totalCounterWidth / 2f;
+
+        // --- YENÝ: SPAWN DÝZÝLÝM HESABI ---
+        // Spawn noktasýnda da birbirlerini ezmesinler diye hafif aralýklý doðacaklar.
+        // Ama çok açýlmasýnlar ki sokaða taþmasýnlar (0.6f ideal).
+        float spawnSpacing = 0.6f;
+        float totalSpawnWidth = (groupSize - 1) * spawnSpacing;
+        float startSpawnX = -totalSpawnWidth / 2f;
+
+        Transform spawnOrigin = WorldManager.Instance.GetSpawnPosition();
+        // ---------------------------------
+
+        List<CustomerController> currentGroupControllers = new List<CustomerController>();
+
+        for (int i = 0; i < groupSize; i++)
         {
+            var assignment = group.Members[i];
             var charRef = SceneCharacters.FirstOrDefault(x => x.ID == assignment.ID);
+
             if (charRef.Controller != null)
             {
                 CustomerController customer = charRef.Controller;
+                currentGroupControllers.Add(customer);
 
-                // Spawn Pozisyonu
-                customer.transform.position = WorldManager.Instance.GetSpawnPosition().position;
+                // 1. Kasa Ofsetini Ata (Hedef)
+                float myCounterOffset = startCounterX + (i * counterSpacing);
+                customer.SetCounterOffset(myCounterOffset);
+
+                // 2. Spawn Pozisyonunu Hesapla (Baþlangýç)
+                float mySpawnOffset = startSpawnX + (i * spawnSpacing);
+
+                // Spawn noktasýnýn saðýna soluna (Right vektörü) göre yerleþtir
+                Vector3 targetSpawnPos = spawnOrigin.position + (spawnOrigin.right * mySpawnOffset);
+
+                // --- KRÝTÝK DÜZELTME: NAVMESH SNAP ---
+                // Hesapladýðýmýz nokta belki duvara denk geldi. 
+                // "Bana bu noktaya en yakýn, üzerinde yürünebilir (Walkable) yeri ver" diyoruz.
+                UnityEngine.AI.NavMeshHit hit;
+
+                // 1.0f yarýçap içinde geçerli bir zemin ara
+                if (UnityEngine.AI.NavMesh.SamplePosition(targetSpawnPos, out hit, 2.0f, UnityEngine.AI.NavMesh.AllAreas))
+                {
+                    customer.transform.position = hit.position;
+                }
+                else
+                {
+                    // Eðer bulamazsa (çok nadir), spawn noktasýnýn tam merkezini kullan
+                    customer.transform.position = spawnOrigin.position;
+                }
+                // -------------------------------------
+
                 customer.gameObject.SetActive(true);
-
-                // Masa ve Profil Atama
                 customer.AssignTable(allocatedTable);
                 customer.Initialize(assignment.ProfileForToday);
             }
+        }
+
+        // Grubu Tanýþtýr
+        foreach (var member in currentGroupControllers)
+        {
+            member.SetGroupMembers(currentGroupControllers);
         }
     }
 }

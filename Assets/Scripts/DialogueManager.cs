@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Febucci.UI;
@@ -8,17 +8,17 @@ using DG.Tweening;
 public enum TypewriterSoundType
 {
     None,
-    Soft,   // Pıt pıt (Normal konuşma)
+    Soft,   // PÄ±t pÄ±t (Normal konuÅŸma)
     Medium, // Tak tuk (Sert adam)
-    Hard    // Çat Çut (Daktilo veya Robot)
+    Hard    // Ã‡at Ã‡ut (Daktilo veya Robot)
 }
 
 [System.Serializable]
 public struct TypewriterSoundProfile
 {
     public TypewriterSoundType type;
-    public AudioClip clipA; // Dıt
-    public AudioClip clipB; // Düt
+    public AudioClip clipA; // DÄ±t
+    public AudioClip clipB; // DÃ¼t
 
     [Range(0f, 1f)] public float volume;
     public float minPitch;
@@ -31,14 +31,14 @@ public enum RichTextTag
     None = 0,
     Shake = 1 << 0,    // <shake>Titreme</shake>
     Wave = 1 << 1,     // <wave>Dalga</wave>
-    Wiggle = 1 << 2,   // <wiggle>Kıpırkıpır</wiggle>
+    Wiggle = 1 << 2,   // <wiggle>KÄ±pÄ±rkÄ±pÄ±r</wiggle>
 }
 
 public enum LineBehavior
 {
-    Normal,         // Standart satır. Tıkla geç.
-    Meltdown,       // Normal başlar, Glitch 0->2 artar, SONRAKİ SATIRA OTOMATİK ATLAR. (Skippable: False)
-    HorrorReveal,   // Glitchli (0->0.4) başlar, sonunda (2.0) patlar, SONRAKİ SATIRA OTOMATİK ATLAR. (Skippable: False)
+    Normal,         // Standart satÄ±r. TÄ±kla geÃ§.
+    Meltdown,       // Normal baÅŸlar, Glitch 0->2 artar, SONRAKÄ° SATIRA OTOMATÄ°K ATLAR. (Skippable: False)
+    HorrorReveal,   // Glitchli (0->0.4) baÅŸlar, sonunda (2.0) patlar, SONRAKÄ° SATIRA OTOMATÄ°K ATLAR. (Skippable: False)
     InstantRecover  // Typewriter yok. Pat diye belirir. Normal input bekler.
 }
 public class DialogueManager : MonoBehaviour
@@ -48,25 +48,37 @@ public class DialogueManager : MonoBehaviour
     [Header("Typewriter Audio Settings")]
     [SerializeField] private List<TypewriterSoundProfile> soundProfiles;
 
-    // Hızlı erişim için Dictionary
+    // HÄ±zlÄ± eriÅŸim iÃ§in Dictionary
     private Dictionary<TypewriterSoundType, TypewriterSoundProfile> soundProfileMap;
 
-    // Sesin A mı B mi olduğunu takip etmek için
+    // Sesin A mÄ± B mi olduÄŸunu takip etmek iÃ§in
     private bool useClipA = true;
 
     [Header("UI Pool System")]
     [SerializeField] private List<DialogueAnimator> dialogueAnimatorPool; // Inspector'dan 4 tane balon ata
 
     [Header("Glitch Audio Settings")]
-    [SerializeField] private AudioSource glitchAudioSource; // Child objeyi buraya sürükle
+    [SerializeField] private AudioSource glitchAudioSource; // Child objeyi buraya sÃ¼rÃ¼kle
     [Range(0f, 1f)][SerializeField] private float glitchMaxVolume = 0.5f;
     [Range(0.5f, 2f)][SerializeField] private float glitchMinPitch = 0.8f;
     [Range(0.5f, 2f)][SerializeField] private float glitchMaxPitch = 1.2f;
 
-    // Aktif olarak en son kullanılan (şu an ekranda en taze olan) balon
+    // --- DEBUG Ä°Ã‡Ä°N GÃ–RÃœNÃœR LÄ°STE ---
+    [System.Serializable]
+    public struct DebugSpeakerInfo
+    {
+        public string ID;
+        public string ObjectName;
+        public bool HasLookAtTarget;
+    }
+    [Header("DEBUG - DO NOT EDIT")]
+    public List<DebugSpeakerInfo> VisibleSpeakers = new List<DebugSpeakerInfo>();
+    // ---------------------------------
+
+    // Aktif olarak en son kullanÄ±lan (ÅŸu an ekranda en taze olan) balon
     private DialogueAnimator currentActiveDialogueAnimator;
 
-    // String yerine Enum Key kullanıyoruz
+    // String yerine Enum Key kullanÄ±yoruz
     private Dictionary<CustomerID, IDialogueSpeaker> speakers = new Dictionary<CustomerID, IDialogueSpeaker>();
 
     private DialogueData currentData;
@@ -75,10 +87,10 @@ public class DialogueManager : MonoBehaviour
     private IDialogueSpeaker currentSpeaker;
     private Action onDialogueCompleteCallback;
 
-    // YENİ: Şu anki satırın datasına Update'den erişmek için
+    // YENÄ°: Åu anki satÄ±rÄ±n datasÄ±na Update'den eriÅŸmek iÃ§in
     private DialogueData.DialogueLine currentLineData;
 
-    // YENİ: Delayleri durdurabilmek için Coroutine referansları
+    // YENÄ°: Delayleri durdurabilmek iÃ§in Coroutine referanslarÄ±
     private Coroutine textDelayRoutine;
     private Coroutine jumpscareDelayRoutine;
     private Coroutine eventDelayRoutine;
@@ -88,10 +100,10 @@ public class DialogueManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
 
-        // Başlangıçta tüm diyalog animatorleri kapat
+        // BaÅŸlangÄ±Ã§ta tÃ¼m diyalog animatorleri kapat
         foreach (var dialogAnim in dialogueAnimatorPool) dialogAnim.ForceHide();
 
-        // Listeyi Dictionary'e çevir (Performans)
+        // Listeyi Dictionary'e Ã§evir (Performans)
         soundProfileMap = new Dictionary<TypewriterSoundType, TypewriterSoundProfile>();
         foreach (var profile in soundProfiles)
         {
@@ -99,12 +111,12 @@ public class DialogueManager : MonoBehaviour
                 soundProfileMap.Add(profile.type, profile);
         }
 
-        // Başlangıçta glitch sesini sustur ve loop'a al
+        // BaÅŸlangÄ±Ã§ta glitch sesini sustur ve loop'a al
         if (glitchAudioSource != null)
         {
             glitchAudioSource.loop = true;
             glitchAudioSource.volume = 0f;
-            glitchAudioSource.Stop(); // Şimdilik dursun
+            glitchAudioSource.Stop(); // Åimdilik dursun
         }
     }
 
@@ -112,32 +124,32 @@ public class DialogueManager : MonoBehaviour
     {
         if (!isDialogueActive) return;
 
-        // --- YENİ: INPUT ENGELLEYİCİ ---
-        // Eğer şu anki satır "Meltdown" veya "HorrorReveal" ise, kontrol tamamen bizdedir.
-        // Oyuncu 'E' tuşuna bassa bile algılamamalıyız.
-        // Bu satırlar sadece Coroutine süreleri dolunca (AutoAdvance) geçecek.
+        // --- YENÄ°: INPUT ENGELLEYÄ°CÄ° ---
+        // EÄŸer ÅŸu anki satÄ±r "Meltdown" veya "HorrorReveal" ise, kontrol tamamen bizdedir.
+        // Oyuncu 'E' tuÅŸuna bassa bile algÄ±lamamalÄ±yÄ±z.
+        // Bu satÄ±rlar sadece Coroutine sÃ¼releri dolunca (AutoAdvance) geÃ§ecek.
         if (currentLineData != null)
         {
             if (currentLineData.Behavior == LineBehavior.Meltdown ||
                 currentLineData.Behavior == LineBehavior.HorrorReveal)
             {
-                return; // Oyuncu inputunu yoksay ve çık
+                return; // Oyuncu inputunu yoksay ve Ã§Ä±k
             }
         }
         // -------------------------------
 
         if (InputManager.Instance != null && InputManager.Instance.PlayerInteract())
         {
-            // 1. Durum: Yazı hala yazılıyor
+            // 1. Durum: YazÄ± hala yazÄ±lÄ±yor
             if (currentActiveDialogueAnimator != null && currentActiveDialogueAnimator.IsTyping())
             {
-                // Sadece NORMAL ve INSTANT satırlarda, eğer IsSkippable açıksa geçilebilir
+                // Sadece NORMAL ve INSTANT satÄ±rlarda, eÄŸer IsSkippable aÃ§Ä±ksa geÃ§ilebilir
                 if (currentLineData != null && currentLineData.IsSkippable)
                 {
                     currentActiveDialogueAnimator.SkipTypewriter();
                 }
             }
-            // 2. Durum: Yazı bitti, sonraki satıra geçmek isteniyor
+            // 2. Durum: YazÄ± bitti, sonraki satÄ±ra geÃ§mek isteniyor
             else
             {
                 AdvanceDialogue();
@@ -145,17 +157,46 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // --- SPEAKER KAYIT SİSTEMİ (ENUM) ---
+    // --- SPEAKER KAYIT SÄ°STEMÄ° (ENUM) ---
     public void RegisterSpeaker(IDialogueSpeaker speaker)
     {
-        if (!speakers.ContainsKey(speaker.SpeakerID))
+        // Mevcut Dictionary kodun:
+        if (speakers.ContainsKey(speaker.SpeakerID))
+            speakers[speaker.SpeakerID] = speaker;
+        else
             speakers.Add(speaker.SpeakerID, speaker);
+
+        // --- BURAYI EKLE: Listeyi GÃ¼ncelle ---
+        UpdateDebugList();
     }
 
     public void UnregisterSpeaker(IDialogueSpeaker speaker)
     {
-        if (speakers.ContainsKey(speaker.SpeakerID))
-            speakers.Remove(speaker.SpeakerID);
+        // Senin gÃ¼venli kodun:
+        if (speakers.TryGetValue(speaker.SpeakerID, out IDialogueSpeaker existing))
+        {
+            if (existing == speaker)
+            {
+                speakers.Remove(speaker.SpeakerID);
+                // --- BURAYI EKLE ---
+                UpdateDebugList();
+            }
+        }
+    }
+
+    private void UpdateDebugList()
+    {
+        VisibleSpeakers.Clear();
+        foreach (var kvp in speakers)
+        {
+            var sp = kvp.Value as MonoBehaviour;
+            VisibleSpeakers.Add(new DebugSpeakerInfo
+            {
+                ID = kvp.Key.ToString(),
+                ObjectName = sp != null ? sp.name : "NULL OBJE!",
+                HasLookAtTarget = kvp.Value.LookAtPoint != null
+            });
+        }
     }
 
     public void StartDialogue(DialogueData data, Action onComplete = null)
@@ -171,21 +212,21 @@ public class DialogueManager : MonoBehaviour
         {
             CameraManager.Instance.StartDialogueMode();
 
-            // --- YENİ: KONUŞAN KİŞİNİN KAFASINI KAMERAYA ÇEVİR ---
-            // İlk satırın konuşmacısını bulalım
+            // --- YENÄ°: KONUÅAN KÄ°ÅÄ°NÄ°N KAFASINI KAMERAYA Ã‡EVÄ°R ---
+            // Ä°lk satÄ±rÄ±n konuÅŸmacÄ±sÄ±nÄ± bulalÄ±m
             if (data.lines.Count > 0)
             {
                 var firstSpeakerID = data.lines[0].SpeakerID;
                 if (speakers.ContainsKey(firstSpeakerID))
                 {
-                    // Eğer konuşan kişi bir CustomerController ise (veya component'e sahipse)
+                    // EÄŸer konuÅŸan kiÅŸi bir CustomerController ise (veya component'e sahipse)
                     var speakerObj = speakers[firstSpeakerID] as MonoBehaviour;
                     if (speakerObj != null)
                     {
                         var customer = speakerObj.GetComponent<CustomerController>();
                         if (customer != null)
                         {
-                            // KAMERAYA BAK EMRİ
+                            // KAMERAYA BAK EMRÄ°
                             customer.SetLookTarget(CameraManager.Instance.GetDialogueCameraTransform());
                         }
                     }
@@ -198,22 +239,22 @@ public class DialogueManager : MonoBehaviour
 
     private void AdvanceDialogue()
     {
-        // Önceki satırdan kalan bekleyen işleri iptal et
+        // Ã–nceki satÄ±rdan kalan bekleyen iÅŸleri iptal et
         if (textDelayRoutine != null) StopCoroutine(textDelayRoutine);
         if (jumpscareDelayRoutine != null) StopCoroutine(jumpscareDelayRoutine);
         if (eventDelayRoutine != null) StopCoroutine(eventDelayRoutine);
 
-        // --- KRİTİK DÜZELTME BURADA ---
+        // --- KRÄ°TÄ°K DÃœZELTME BURADA ---
         if (currentActiveDialogueAnimator != null)
         {
             bool shouldHardCut = false;
 
-            // Eğer şu an biten satırın verisi varsa kontrol et
+            // EÄŸer ÅŸu an biten satÄ±rÄ±n verisi varsa kontrol et
             if (currentLineData != null)
             {
-                // Eğer Meltdown veya HorrorReveal ise -> BIÇAK GİBİ KES (ForceHide)
-                // Çünkü bu modlarda süre dolunca "PAT" diye kesilip diğerine geçmesi gerekir.
-                // Fade-out animasyonu glitch etkisini yumuşatır ve senin yaşadığın bug'a sebep olur.
+                // EÄŸer Meltdown veya HorrorReveal ise -> BIÃ‡AK GÄ°BÄ° KES (ForceHide)
+                // Ã‡Ã¼nkÃ¼ bu modlarda sÃ¼re dolunca "PAT" diye kesilip diÄŸerine geÃ§mesi gerekir.
+                // Fade-out animasyonu glitch etkisini yumuÅŸatÄ±r ve senin yaÅŸadÄ±ÄŸÄ±n bug'a sebep olur.
                 if (currentLineData.Behavior == LineBehavior.Meltdown ||
                     currentLineData.Behavior == LineBehavior.HorrorReveal)
                 {
@@ -227,7 +268,7 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
-                // Normal satırsa nazikçe silinsin
+                // Normal satÄ±rsa nazikÃ§e silinsin
                 currentActiveDialogueAnimator.Hide();
             }
         }
@@ -246,25 +287,43 @@ public class DialogueManager : MonoBehaviour
 
     private void PlayLine(DialogueData.DialogueLine line)
     {
-        currentLineData = line; // Update'de erişmek için kaydet
+        currentLineData = line; // Update'de eriÅŸmek iÃ§in kaydet
 
-        // 1. Konuşmacıyı Bul
+        // --- ISPIYONCU LOG ---
+        if (speakers.ContainsKey(line.SpeakerID))
+        {
+            var sp = speakers[line.SpeakerID];
+            var mb = sp as MonoBehaviour;
+            Debug.Log($"<color=green>âœ” BULUNDU:</color> SatÄ±r '{line.SpeakerID}' istiyor. SÃ¶zlÃ¼kte '{mb.name}' objesi var. LookAtPoint: {(sp.LookAtPoint != null ? "VAR" : "YOK")}");
+        }
+        else
+        {
+            Debug.LogError($"<color=red>âŒ BULUNAMADI:</color> SatÄ±r '{line.SpeakerID}' istiyor ama sÃ¶zlÃ¼kte YOK! Kamera eski yerinde kalacak.");
+
+            // SÃ¶zlÃ¼kte kimler var dÃ¶kÃ¼mÃ¼nÃ¼ alalÄ±m:
+            string kimlerVar = "";
+            foreach (var key in speakers.Keys) kimlerVar += key + ", ";
+            Debug.Log($"SÃ¶zlÃ¼kteki Mevcut KiÅŸiler: {kimlerVar}");
+        }
+        // ---------------------
+
+        // 1. KonuÅŸmacÄ±yÄ± Bul
         IDialogueSpeaker activeSpeaker = null;
         if (speakers.ContainsKey(line.SpeakerID))
         {
             activeSpeaker = speakers[line.SpeakerID];
         }
 
-        // 2. HAVUZDAN BALON SEÇ
+        // 2. HAVUZDAN BALON SEÃ‡
         DialogueAnimator selectedDialogueAnimator = GetAvailableDialogueAnimator();
         currentActiveDialogueAnimator = selectedDialogueAnimator;
 
         selectedDialogueAnimator.SetColor(line.TextColor);
         selectedDialogueAnimator.SetSpeed(line.TypewriterSpeedMultiplier);
 
-        // --- YENİ EKLENEN KISIM ---
-        // Data'da font seçimi olmadığı için şimdilik manuel olarak "DialogueOutlined" veriyoruz.
-        // Bu çağrı, dil Çince/Japonca ise fontu ve boyutu (Scale) otomatik ayarlayacak.
+        // --- YENÄ° EKLENEN KISIM ---
+        // Data'da font seÃ§imi olmadÄ±ÄŸÄ± iÃ§in ÅŸimdilik manuel olarak "DialogueOutlined" veriyoruz.
+        // Bu Ã§aÄŸrÄ±, dil Ã‡ince/Japonca ise fontu ve boyutu (Scale) otomatik ayarlayacak.
         selectedDialogueAnimator.UpdateFontSettings(FontType.DialogueOutlined);
         // --------------------------
 
@@ -275,13 +334,13 @@ public class DialogueManager : MonoBehaviour
         string rawText = LocalizationManager.Instance.GetText(line.LocalizationKey);
         string processedText = selectedDialogueAnimator.ApplyRichText(rawText, line.TextEffects);
 
-        // ... (Kodun geri kalanı aynı şekilde devam ediyor: Camera Juice, Events, Behavior vb.) ...
+        // ... (Kodun geri kalanÄ± aynÄ± ÅŸekilde devam ediyor: Camera Juice, Events, Behavior vb.) ...
 
         bool hasJumpscare = (line.Jumpscare != JumpscareType.None);
 
         if (CameraManager.Instance != null)
         {
-            // ... Camera kodları aynı ...
+            // ... Camera kodlarÄ± aynÄ± ...
             Transform targetTrans = null;
             CustomerID targetID = (line.FocusTargetID != CustomerID.None) ? line.FocusTargetID : line.SpeakerID;
 
@@ -306,7 +365,7 @@ public class DialogueManager : MonoBehaviour
                 hasJumpscare
             );
 
-            // ... (Kalan tüm switch-case ve delay mantıkları aynen kalıyor)
+            // ... (Kalan tÃ¼m switch-case ve delay mantÄ±klarÄ± aynen kalÄ±yor)
             float organicTextDelay = GetOrganicDelay(line.TextDelay);
             float organicJumpscareDelay = GetOrganicDelay(line.JumpscareDelay);
             float organicEventDelay = GetOrganicDelay(line.EventDelay);
@@ -353,17 +412,17 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // --- YENİ: ORGANİK DELAY HESAPLAYICI ---
+    // --- YENÄ°: ORGANÄ°K DELAY HESAPLAYICI ---
     private float GetOrganicDelay(float baseDelay)
     {
-        if (baseDelay <= 0.05f) return 0f; // Çok küçükse direkt oynat
+        if (baseDelay <= 0.05f) return 0f; // Ã‡ok kÃ¼Ã§Ã¼kse direkt oynat
 
-        // %10 aşağı veya yukarı sapma
-        // Örn: 2.0 saniye -> 1.8 ile 2.2 arasında değişir.
+        // %10 aÅŸaÄŸÄ± veya yukarÄ± sapma
+        // Ã–rn: 2.0 saniye -> 1.8 ile 2.2 arasÄ±nda deÄŸiÅŸir.
         return baseDelay * UnityEngine.Random.Range(0.9f, 1.1f);
     }
 
-    // --- YENİ: EVENT RUTİNİ ---
+    // --- YENÄ°: EVENT RUTÄ°NÄ° ---
     private IEnumerator ProcessEventsRoutine(float delay, DialogueEvent events)
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
@@ -371,23 +430,23 @@ public class DialogueManager : MonoBehaviour
         HandleDialogueEvents(events);
     }
 
-    // --- HAVUZ MANTIĞI ---
+    // --- HAVUZ MANTIÄI ---
     private DialogueAnimator GetAvailableDialogueAnimator()
     {
-        // 1. Öncelik: Hiç meşgul olmayan (Animasyonu bitmiş, kapalı) bir animator bul
+        // 1. Ã–ncelik: HiÃ§ meÅŸgul olmayan (Animasyonu bitmiÅŸ, kapalÄ±) bir animator bul
         foreach (var dialogueAnimator in dialogueAnimatorPool)
         {
             if (!dialogueAnimator.IsBusy) return dialogueAnimator;
         }
 
-        // 2. Durum: Hepsi meşgul (Çok hızlı geçildi). 
-        // O zaman Disappear animasyonu bitmeye EN YAKIN olanı (yani listedeki en eski active olanı) bulup resetleyelim.
-        // Basit çözüm: Listede sırayla dönüyoruz ya, muhtemelen index 0 en eskidir.
-        // Ama biz yine de aktif olanlardan birini kurban seçelim.
+        // 2. Durum: Hepsi meÅŸgul (Ã‡ok hÄ±zlÄ± geÃ§ildi). 
+        // O zaman Disappear animasyonu bitmeye EN YAKIN olanÄ± (yani listedeki en eski active olanÄ±) bulup resetleyelim.
+        // Basit Ã§Ã¶zÃ¼m: Listede sÄ±rayla dÃ¶nÃ¼yoruz ya, muhtemelen index 0 en eskidir.
+        // Ama biz yine de aktif olanlardan birini kurban seÃ§elim.
 
-        Debug.LogWarning("Tüm diyalog animatorleri meşgul! Birini zorla sıfırlıyorum.");
+        Debug.LogWarning("TÃ¼m diyalog animatorleri meÅŸgul! Birini zorla sÄ±fÄ±rlÄ±yorum.");
 
-        // İlkini al, zorla kapat ve onu ver.
+        // Ä°lkini al, zorla kapat ve onu ver.
         var victim = dialogueAnimatorPool[0];
         victim.ForceHide();
         return victim;
@@ -406,8 +465,8 @@ public class DialogueManager : MonoBehaviour
 
         if (CameraManager.Instance != null) CameraManager.Instance.EndDialogueMode();
 
-        // --- YENİ: HERKESİN KAFASINI SERBEST BIRAK ---
-        // Sahnedeki tüm kayıtlı konuşmacıları gez ve eğer müşteriyseler bakışlarını sıfırla
+        // --- YENÄ°: HERKESÄ°N KAFASINI SERBEST BIRAK ---
+        // Sahnedeki tÃ¼m kayÄ±tlÄ± konuÅŸmacÄ±larÄ± gez ve eÄŸer mÃ¼ÅŸteriyseler bakÄ±ÅŸlarÄ±nÄ± sÄ±fÄ±rla
         foreach (var kvp in speakers)
         {
             var speakerObj = kvp.Value as MonoBehaviour;
@@ -416,7 +475,7 @@ public class DialogueManager : MonoBehaviour
                 var customer = speakerObj.GetComponent<CustomerController>();
                 if (customer != null)
                 {
-                    customer.ClearLookTarget(); // Player'a dön
+                    customer.ClearLookTarget(); // Player'a dÃ¶n
                 }
             }
         }
@@ -425,14 +484,14 @@ public class DialogueManager : MonoBehaviour
         onDialogueCompleteCallback = null;
     }
 
-    // --- YENİ EVENT MANTIĞI ---
+    // --- YENÄ° EVENT MANTIÄI ---
     private void HandleDialogueEvents(DialogueEvent events)
     {
         if (events.HasFlag(DialogueEvent.ChromaticAberrationGlitch))
         {
             if (PostProcessManager.Instance != null)
             {
-                // Özel ayarlı glitch'i tetikle
+                // Ã–zel ayarlÄ± glitch'i tetikle
                 PostProcessManager.Instance.TriggerChromaticGlitch(
                     currentLineData.EventFadeInDuration,
                     currentLineData.EventFadeOutDuration
@@ -441,50 +500,50 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    // --- YENİ RUTİNLER ---
+    // --- YENÄ° RUTÄ°NLER ---
 
     private IEnumerator MeltdownRoutine(DialogueAnimator anim, float duration)
     {
-        // Sürenin %70'i güvenli
+        // SÃ¼renin %70'i gÃ¼venli
         float safeTime = duration * 0.7f;
         float glitchTime = duration * 0.3f;
 
-        // Başlangıçta ses yok
+        // BaÅŸlangÄ±Ã§ta ses yok
         if (glitchAudioSource != null) glitchAudioSource.volume = 0f;
 
         yield return new WaitForSeconds(safeTime);
 
-        // --- GLITCH BAŞLIYOR ---
-        StartGlitchAudio(); // Sesi başlat (Volume 0'da)
+        // --- GLITCH BAÅLIYOR ---
+        StartGlitchAudio(); // Sesi baÅŸlat (Volume 0'da)
 
-        // Görsel bozulma
+        // GÃ¶rsel bozulma
         anim.TweenGlitch(2.0f, glitchTime, Ease.InExpo);
 
-        // İşitsel bozulma (Sesi aç)
+        // Ä°ÅŸitsel bozulma (Sesi aÃ§)
         TweenGlitchVolume(glitchMaxVolume, glitchTime);
 
         yield return new WaitForSeconds(glitchTime);
 
-        // Süre bitti, AdvanceDialogue çağrılacak.
-        // AdvanceDialogue içindeki ForceHide sesi aniden kesmemeli, 
-        // bir sonraki satır (InstantRecover) sesi susturacak.
+        // SÃ¼re bitti, AdvanceDialogue Ã§aÄŸrÄ±lacak.
+        // AdvanceDialogue iÃ§indeki ForceHide sesi aniden kesmemeli, 
+        // bir sonraki satÄ±r (InstantRecover) sesi susturacak.
         AdvanceDialogue();
     }
 
     private IEnumerator HorrorRevealRoutine(DialogueAnimator anim, float duration)
     {
-        // --- BAŞLANGIÇ ---
-        // HorrorReveal başlar başlamaz hafif bir cızırtı olsun
+        // --- BAÅLANGIÃ‡ ---
+        // HorrorReveal baÅŸlar baÅŸlamaz hafif bir cÄ±zÄ±rtÄ± olsun
         StartGlitchAudio();
 
-        // Hafif Glitch (Görsel 0.4, Ses %30)
+        // Hafif Glitch (GÃ¶rsel 0.4, Ses %30)
         anim.TweenGlitch(0.4f, duration * 0.8f, Ease.Linear);
         TweenGlitchVolume(glitchMaxVolume * 0.3f, duration * 0.8f); // Hafif ses
 
-        // Süre sonuna kadar bekle
+        // SÃ¼re sonuna kadar bekle
         yield return new WaitForSeconds(duration);
 
-        // --- FİNAL PATLAMASI ---
+        // --- FÄ°NAL PATLAMASI ---
         // Aniden max glitch ve max ses
         anim.SetGlitchStrength(2.0f);
         if (glitchAudioSource != null) glitchAudioSource.volume = glitchMaxVolume;
@@ -498,28 +557,28 @@ public class DialogueManager : MonoBehaviour
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
 
-        // Instant = true parametresiyle çağır
+        // Instant = true parametresiyle Ã§aÄŸÄ±r
         anim.Show(text);
         anim.SkipTypewriter();
 
-        // Ses çal (Genelde recover'da ses olmaz ama data ne derse o)
+        // Ses Ã§al (Genelde recover'da ses olmaz ama data ne derse o)
         if (line.SoundType != TypewriterSoundType.None)
         {
-            // Instant olduğu için tek bir 'bip' çalabiliriz veya hiç çalmayız.
+            // Instant olduÄŸu iÃ§in tek bir 'bip' Ã§alabiliriz veya hiÃ§ Ã§almayÄ±z.
             // PlayNextTypewriterSound(); 
         }
     }
 
-    // TextRoutine biraz sadeleşti (String'i parametre olarak alıyor)
+    // TextRoutine biraz sadeleÅŸti (String'i parametre olarak alÄ±yor)
     private IEnumerator TextRoutine(float delay, DialogueData.DialogueLine line, DialogueAnimator anim, string text)
     {
         if (delay > 0) yield return new WaitForSeconds(delay);
 
         anim.Show(text); // Typewriter aktif
 
-        // Ses başlatma (Eski kodun aynısı)
+        // Ses baÅŸlatma (Eski kodun aynÄ±sÄ±)
         if (line.SoundType != TypewriterSoundType.None)
-            PlayNextTypewriterSound(); // İlk harf için tetik (veya Febucci eventi halleder)
+            PlayNextTypewriterSound(); // Ä°lk harf iÃ§in tetik (veya Febucci eventi halleder)
     }
 
     private IEnumerator JumpscareRoutine(float delay, JumpscareType type, float fadeIn, float fadeOut)
@@ -528,25 +587,25 @@ public class DialogueManager : MonoBehaviour
 
         if (CameraManager.Instance != null && currentLineData != null)
         {
-            // Data'daki Fade In ve Fade Out sürelerini gönderiyoruz
-            // CameraManager içinde bunlar randomize edilecek.
+            // Data'daki Fade In ve Fade Out sÃ¼relerini gÃ¶nderiyoruz
+            // CameraManager iÃ§inde bunlar randomize edilecek.
             CameraManager.Instance.TriggerJumpscare(type, fadeIn, fadeOut);
         }
     }
 
     public void PlayNextTypewriterSound()
     {
-        // Eğer şu anki satırın ses ayarı 'None' ise veya data yoksa çalma
+        // EÄŸer ÅŸu anki satÄ±rÄ±n ses ayarÄ± 'None' ise veya data yoksa Ã§alma
         if (currentLineData == null || currentLineData.SoundType == TypewriterSoundType.None) return;
 
         // Profili bul
         if (!soundProfileMap.ContainsKey(currentLineData.SoundType)) return;
         TypewriterSoundProfile profile = soundProfileMap[currentLineData.SoundType];
 
-        // A/B Seçimi
+        // A/B SeÃ§imi
         AudioClip clipToPlay = useClipA ? profile.clipA : profile.clipB;
 
-        // Çal
+        // Ã‡al
         if (SoundManager.Instance != null && clipToPlay != null)
         {
             SoundManager.Instance.PlayTypewriterSoundFX(
@@ -557,11 +616,11 @@ public class DialogueManager : MonoBehaviour
             );
         }
 
-        // Sırayı değiştir
+        // SÄ±rayÄ± deÄŸiÅŸtir
         useClipA = !useClipA;
     }
 
-    // --- SES YARDIMCISI: BAŞLAT ---
+    // --- SES YARDIMCISI: BAÅLAT ---
     private void StartGlitchAudio()
     {
         if (glitchAudioSource == null) return;
@@ -569,18 +628,18 @@ public class DialogueManager : MonoBehaviour
         // 1. Rastgele Pitch
         glitchAudioSource.pitch = UnityEngine.Random.Range(glitchMinPitch, glitchMaxPitch);
 
-        // 2. Rastgele Başlangıç Noktası
+        // 2. Rastgele BaÅŸlangÄ±Ã§ NoktasÄ±
         if (glitchAudioSource.clip != null)
         {
             float randomTime = UnityEngine.Random.Range(0f, glitchAudioSource.clip.length);
             glitchAudioSource.time = randomTime;
         }
 
-        // 3. Başlat (Ama ses kısık)
+        // 3. BaÅŸlat (Ama ses kÄ±sÄ±k)
         if (!glitchAudioSource.isPlaying) glitchAudioSource.Play();
     }
 
-    // --- SES YARDIMCISI: SES SEVİYESİNİ LERP ET ---
+    // --- SES YARDIMCISI: SES SEVÄ°YESÄ°NÄ° LERP ET ---
     private void TweenGlitchVolume(float targetVolume, float duration)
     {
         if (glitchAudioSource == null) return;
@@ -592,7 +651,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (glitchAudioSource == null) return;
 
-        // Sesi kıs ve sonra durdur
+        // Sesi kÄ±s ve sonra durdur
         glitchAudioSource.DOFade(0f, fadeOutDuration)
             .SetUpdate(true)
             .OnComplete(() => glitchAudioSource.Stop());

@@ -294,23 +294,31 @@ public class Knife : MonoBehaviour, IGrabable
         {
             if (isJustThrowed)
             {
-                // --- YENÝ: MÜÞTERÝ VURMA MANTIÐI ---
+                // --- MÜÞTERÝ KONTROLÜ ---
                 if (collision.gameObject.CompareTag("Customer"))
                 {
-                    // Müþteri scriptini bul (Kafasýna veya koluna gelmiþ olabilir, parent'a da bak)
                     var customer = collision.gameObject.GetComponent<CustomerController>();
                     if (customer == null) customer = collision.gameObject.GetComponentInParent<CustomerController>();
 
                     if (customer != null)
                     {
-                        // 1. Müþteriye haber ver
-                        customer.OnHitByKnife();
+                        // YENÝ KONTROL: Müþteri kasada mý?
+                        // Sadece bu 3 durumda (Etkileþim halindeyken) tepki versin.
+                        bool isAtCounter = customer.CurrentState == CustomerState.AtCounter ||
+                                           customer.CurrentState == CustomerState.Ordering ||
+                                           customer.CurrentState == CustomerState.WaitingForFood;
 
-                        // 2. Býçaðý yok et
-                        Destroy(gameObject);
+                        if (isAtCounter)
+                        {
+                            // Kasada ise: Diyalog baþlat ve býçaðý yok et
+                            customer.OnHitByKnife();
+                            Destroy(gameObject);
+                            return; // Ýþlem bitti, çýk.
+                        }
 
-                        // 3. Çarpma sesini veya saplanma efektini iptal et ve çýk
-                        return;
+                        // Kasada DEÐÝLSE (Yürüyor, oturuyor vs.):
+                        // Hiçbir þey yapma (if bloðundan çýk). 
+                        // Kod aþaðýya devam edecek ve normal fizik çarpma sesi çalacak.
                     }
                 }
                 // ------------------------------------
@@ -319,24 +327,18 @@ public class Knife : MonoBehaviour, IGrabable
                     StickToSurface(collision);
 
                 Invoke("TurnOffTriggerSC", 0.1f);
-
                 ChangeLayer(grabableLayer);
-
                 isJustThrowed = false;
             }
             else if (isJustDropped)
             {
                 ChangeLayer(grabableLayer);
-
                 isJustDropped = false;
             }
 
             if (!isStuckAndCantPlayAudioUntilPickedAgain)
                 HandleSoundFX(collision);
-
         }
-
-
     }
 
     public void OnUseHold()

@@ -3231,7 +3231,7 @@
     "pt": ""
   },
   {
-    "key": "TEENGIRL0_GREETING_0",
+    "key": "TEENGIRL_GREETING_0",
     "tr": "Merhaba kolay gelsin.",
     "en": "Hi there.",
     "zh": "你好。",
@@ -3241,7 +3241,7 @@
     "pt": "Oi, tudo bem?"
   },
   {
-    "key": "TEENGIRL0_GREETING_1",
+    "key": "TEENGIRL_GREETING_1",
     "tr": "Kolay gelsin.",
     "en": "Hi.",
     "zh": "你好。",
@@ -3251,7 +3251,7 @@
     "pt": "Oi."
   },
   {
-    "key": "TEENGIRL0_GREETING_2",
+    "key": "TEENGIRL_GREETING_2",
     "tr": "Merhaba.",
     "en": "Hello.",
     "zh": "你好。",
@@ -3261,7 +3261,7 @@
     "pt": "Olá."
   },
   {
-    "key": "TEENGIRL0_GREETING_3",
+    "key": "TEENGIRL_GREETING_3",
     "tr": "İyi günler.",
     "en": "Good day.",
     "zh": "你好。",
@@ -3271,7 +3271,37 @@
     "pt": "Bom dia."
   },
   {
-    "key": "TEENGIRL0_EMPTYORDER_0",
+    "key": "FAMILYKID_GREETING",
+    "tr": "Kolay gelsin abi!",
+    "en": "Hi, mister!",
+    "zh": "大哥哥，你好！",
+    "ja": "お兄ちゃん、こんにちは！",
+    "es": "¡Hola, señor!",
+    "ru": "Здравствуйте, дядя!",
+    "pt": "Oi, moço!"
+  },
+  {
+    "key": "FAMILYFATHER_GREETING",
+    "tr": "Kolay gelsin dostum.",
+    "en": "Hey buddy, how's it going?",
+    "zh": "嘿，伙计。",
+    "ja": "どうも。",
+    "es": "¿Qué tal, amigo?",
+    "ru": "Привет, дружище.",
+    "pt": "E aí, parceiro."
+  },
+  {
+    "key": "FAMILYMOTHER_GREETING",
+    "tr": "Bakar mısınız?",
+    "en": "Excuse me?",
+    "zh": "不好意思。",
+    "ja": "すみません。",
+    "es": "Disculpe...",
+    "ru": "Извините...",
+    "pt": "Com licença?"
+  },
+  {
+    "key": "TEENGIRL_EMPTYORDER_0",
     "tr": "Boş bu?",
     "en": "It's empty?",
     "zh": "空的？",
@@ -3281,7 +3311,7 @@
     "pt": "Tá vazio?"
   },
   {
-    "key": "TEENGIRL0_EMPTYORDER_1",
+    "key": "TEENGIRL_EMPTYORDER_1",
     "tr": "Bu tepsi boş.",
     "en": "This tray is empty.",
     "zh": "这托盘是空的。",
@@ -3291,7 +3321,7 @@
     "pt": "A bandeja tá vazia."
   },
   {
-    "key": "TEENGIRL0_EMPTYORDER_2",
+    "key": "TEENGIRL_EMPTYORDER_2",
     "tr": "Dalga mı geçiyorsun hiçbir şey yok bunda!",
     "en": "Are you kidding? There's nothing on it!",
     "zh": "你在开玩笑吗？里面什么都没有！",
@@ -3301,7 +3331,7 @@
     "pt": "Tá de brincadeira? Não tem nada aqui!"
   },
   {
-    "key": "TEENGIRL0_EMPTYORDER_3",
+    "key": "TEENGIRL_EMPTYORDER_3",
     "tr": "Bunun boş bir tepsi olduğunun farkındasın di mi?",
     "en": "You realize this is an empty tray, right?",
     "zh": "你知道这是个空托盘吧？",
@@ -3311,7 +3341,37 @@
     "pt": "Você percebeu que essa bandeja tá vazia, né?"
   },
   {
-    "key": "TEENGIRL0_KNIFETHROWED_0",
+    "key": "FAMILYKID_EMPTYORDER",
+    "tr": "Bunda hiçbir şey yok ki abi.",
+    "en": "There's nothing on this, mister.",
+    "zh": "大哥哥，这里面什么都没有呀。",
+    "ja": "お兄ちゃん、これ何もないよ。",
+    "es": "¡Aquí no hay nada, señor!",
+    "ru": "Дядя, тут же ничего нет.",
+    "pt": "Não tem nada aqui, moço."
+  },
+  {
+    "key": "FAMILYFATHER_EMPTYORDER",
+    "tr": "Bu tepsi boş birader.",
+    "en": "This tray is empty, buddy.",
+    "zh": "伙计，这托盘是空的。",
+    "ja": "おい、トレイが空だぞ。",
+    "es": "La bandeja está vacía, amigo.",
+    "ru": "Поднос пустой, приятель.",
+    "pt": "A bandeja tá vazia, parceiro."
+  },
+  {
+    "key": "FAMILYMOTHER_EMPTYORDER",
+    "tr": "Bu tepsi bomboş.",
+    "en": "This tray is completely empty.",
+    "zh": "这托盘完全是空的。",
+    "ja": "このトレイ、空っぽですよ。",
+    "es": "Esta bandeja está totalmente vacía.",
+    "ru": "Этот поднос совсем пустой.",
+    "pt": "Essa bandeja está completamente vazia."
+  },
+  {
+    "key": "TEENGIRL_KNIFETHROWED_0",
     "tr": "Ay yavaş be!",
     "en": "Whoa, watch it!",
     "zh": "喂，看着点！",
@@ -3321,7 +3381,7 @@
     "pt": "Ei, vai com calma!"
   },
   {
-    "key": "TEENGIRL0_KNIFETHROWED_1",
+    "key": "TEENGIRL_KNIFETHROWED_1",
     "tr": "Dikkat etsene ya!",
     "en": "Be careful, will you!",
     "zh": "注意点啊！",
@@ -3331,7 +3391,7 @@
     "pt": "Presta atenção!"
   },
   {
-    "key": "TEENGIRL0_KNIFETHROWED_2",
+    "key": "TEENGIRL_KNIFETHROWED_2",
     "tr": "Bu nasıl bir sorumsuzluk ya? Ya bir şey olsaydı?",
     "en": "That is so irresponsible! What if something happened?",
     "zh": "太不负责任了吧？万一出事怎么办？",
@@ -3341,7 +3401,7 @@
     "pt": "Que irresponsabilidade! E se acontece alguma coisa?"
   },
   {
-    "key": "TEENGIRL0_KNIFETHROWED_3",
+    "key": "TEENGIRL_KNIFETHROWED_3",
     "tr": "Saçmalama istersen.",
     "en": "Don't be ridiculous.",
     "zh": "别乱来。",
@@ -3351,7 +3411,37 @@
     "pt": "Não faz besteira."
   },
   {
-    "key": "TEENGIRL0_WRONGORDER_0",
+    "key": "FAMILYKID_KNIFETHROWED",
+    "tr": "Annem bana \"Bıçaklarla oyun olmaz.\" demişti.",
+    "en": "My mom told me, \"Don't play with knives.\"",
+    "zh": "妈妈跟我说过，“不能玩刀”。",
+    "ja": "お母さんが「ナイフで遊んじゃだめ」って言ってたよ。",
+    "es": "Mamá me dijo: \"No se juega con cuchillos\".",
+    "ru": "Мама говорила: «С ножами не играют».",
+    "pt": "A mamãe disse: \"Não se brinca com facas\"."
+  },
+  {
+    "key": "FAMILYFATHER_KNIFETHROWED",
+    "tr": "Yavaş be birader! Çocuk var burada.",
+    "en": "Easy there, buddy! There's a kid here.",
+    "zh": "嘿，小心点伙计！这有孩子呢。",
+    "ja": "おい、危ないだろ！子供がいるんだぞ。",
+    "es": "¡Eh, cuidado amigo! Hay una niña aquí.",
+    "ru": "Эй, полегче! Тут ребенок.",
+    "pt": "Vai com calma, parceiro! Tem criança aqui."
+  },
+  {
+    "key": "FAMILYMOTHER_KNIFETHROWED",
+    "tr": "Dikkat etsene azıcık!",
+    "en": "Be a little careful!",
+    "zh": "注意点啊！",
+    "ja": "ちょっと、気をつけてよ！",
+    "es": "¡Ten un poco de cuidado!",
+    "ru": "Можно поосторожнее!",
+    "pt": "Tenha um pouco de cuidado!"
+  },
+  {
+    "key": "TEENGIRL_WRONGORDER_0",
     "tr": "Ben bunu istemedim.",
     "en": "I didn't order this.",
     "zh": "这不是我点的。",
@@ -3361,7 +3451,7 @@
     "pt": "Eu não pedi isso."
   },
   {
-    "key": "TEENGIRL0_WRONGORDER_1",
+    "key": "TEENGIRL_WRONGORDER_1",
     "tr": "Bi yanlışlık oldu sanırım.",
     "en": "I think there's a mistake.",
     "zh": "好像搞错了。",
@@ -3371,7 +3461,7 @@
     "pt": "Acho que houve um engano."
   },
   {
-    "key": "TEENGIRL0_WRONGORDER_2",
+    "key": "TEENGIRL_WRONGORDER_2",
     "tr": "Bu benim siparişim değil.",
     "en": "This isn't my order.",
     "zh": "这不是我的餐。",
@@ -3381,7 +3471,7 @@
     "pt": "Esse pedido não é meu."
   },
   {
-    "key": "TEENGIRL0_WRONGORDER_3",
+    "key": "TEENGIRL_WRONGORDER_3",
     "tr": "Başkasının falan mı bu?",
     "en": "Is this someone else's?",
     "zh": "这是别人的吗？",
@@ -3391,7 +3481,107 @@
     "pt": "Isso é de outra pessoa?"
   },
   {
-    "key": "TEENGIRL0_CRISPYCHICKEN_MEDIUMCOLA",
+    "key": "FAMILYFATHER_WRONGORDER",
+    "tr": "Bu başkasının siparişi olsa gerek dostum.",
+    "en": "This must be someone else's order, buddy.",
+    "zh": "伙计，这好像是别人的餐。",
+    "ja": "これ、他の人の注文みたいだな。",
+    "es": "Esto debe ser de otra persona, amigo.",
+    "ru": "Дружище, это, наверное, чей-то чужой заказ.",
+    "pt": "Isso deve ser de outra pessoa, parceiro."
+  },
+  {
+    "key": "FAMILYMOTHER_WRONGORDER",
+    "tr": "Bu sipariş yanlış.",
+    "en": "The order is wrong.",
+    "zh": "这订单错了。",
+    "ja": "注文が違います。",
+    "es": "Este pedido está mal.",
+    "ru": "Заказ неправильный.",
+    "pt": "O pedido está errado."
+  },
+  {
+    "key": "FAMILYKID_WRONGORDER",
+    "tr": "Benim istediğim bu değildi abi.",
+    "en": "This isn't what I wanted, mister.",
+    "zh": "大哥哥，这不是我想要的。",
+    "ja": "お兄ちゃん、頼んだのこれじゃないよ。",
+    "es": "Esto no es lo que quería, señor.",
+    "ru": "Дядя, я не это хотела.",
+    "pt": "Não foi isso que eu pedi, moço."
+  },
+  {
+    "key": "TEENGIRL_TRUEORDER_0",
+    "tr": "Teşekkürler, kolay gelsin.",
+    "en": "Thanks, have a good one.",
+    "zh": "谢谢，辛苦啦。",
+    "ja": "ありがとう、頑張ってね。",
+    "es": "Gracias, que vaya bien.",
+    "ru": "Спасибо, удачи.",
+    "pt": "Obrigada, bom trabalho."
+  },
+  {
+    "key": "TEENGIRL_TRUEORDER_1",
+    "tr": "Teşekkürler.",
+    "en": "Thanks.",
+    "zh": "谢啦。",
+    "ja": "ありがと。",
+    "es": "Gracias.",
+    "ru": "Спасибо.",
+    "pt": "Obrigada."
+  },
+  {
+    "key": "TEENGIRL_TRUEORDER_2",
+    "tr": "Eline sağlık.",
+    "en": "Looks great, thanks.",
+    "zh": "看起来不错，谢了。",
+    "ja": "美味しそう、ありがと。",
+    "es": "Gracias, tiene buena pinta.",
+    "ru": "Выглядит вкусно, спасибо.",
+    "pt": "Parece ótimo, valeu."
+  },
+  {
+    "key": "TEENGIRL_TRUEORDER_3",
+    "tr": "Kolay gelsin.",
+    "en": "Take care.",
+    "zh": "辛苦了。",
+    "ja": "じゃあね。",
+    "es": "Hasta luego.",
+    "ru": "Пока.",
+    "pt": "Tchau."
+  },
+  {
+    "key": "FAMILYKID_TRUEORDER",
+    "tr": "Teşekkürler abi! Eline sağlık!",
+    "en": "Thanks, mister! It looks great!",
+    "zh": "谢谢大哥哥！辛苦啦！",
+    "ja": "ありがとう、お兄ちゃん！美味しそう！",
+    "es": "¡Gracias, señor! ¡Qué buena pinta!",
+    "ru": "Спасибо, дядя! Выглядит вкусно!",
+    "pt": "Obrigada, moço! Parece ótimo!"
+  },
+  {
+    "key": "FAMILYFATHER_TRUEORDER",
+    "tr": "Sağolasın dostum.",
+    "en": "Thanks, buddy.",
+    "zh": "谢了，伙计。",
+    "ja": "ありがとな。",
+    "es": "Gracias, amigo.",
+    "ru": "Спасибо, дружище.",
+    "pt": "Valeu, parceiro."
+  },
+  {
+    "key": "FAMILYMOTHER_TRUEORDER",
+    "tr": "Teşekkür ederim.",
+    "en": "Thank you.",
+    "zh": "谢谢。",
+    "ja": "ありがとうございます。",
+    "es": "Gracias.",
+    "ru": "Спасибо.",
+    "pt": "Obrigada."
+  },
+  {
+    "key": "TEENGIRL_CRISPYCHICKEN_MEDIUMCOLA",
     "tr": "Bi Çıtır Tavuk Burger bi de Orta Boy Kola istiyorum.",
     "en": "...",
     "zh": "...",
@@ -3401,7 +3591,7 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_CHEESEBURGER_MEDIUMCOLA",
+    "key": "TEENGIRL_CHEESEBURGER_MEDIUMCOLA",
     "tr": "Bi Çizburger bi de Orta Boy Kola istiyorum.",
     "en": "...",
     "zh": "...",
@@ -3411,7 +3601,7 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_GARDENBURGER_MEDIUMORANGESODA",
+    "key": "TEENGIRL_GARDENBURGER_MEDIUMORANGESODA",
     "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
     "en": "...",
     "zh": "...",
@@ -3421,7 +3611,7 @@
     "pt": "..."
   },
   {
-    "key": "TEENGIRL0_CLASSICBURGER_MEDIUMORANGESODA",
+    "key": "TEENGIRL_CLASSICBURGER_MEDIUMORANGESODA",
     "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
     "en": "...",
     "zh": "...",

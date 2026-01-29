@@ -123,8 +123,8 @@ public class CameraManager : MonoBehaviour
     [Header("Auto-Framing Settings")]
     [Tooltip("Kamera müşterinin yüzünden ne kadar uzakta dursun?")]
     [SerializeField] private float faceToFaceDistance = 0.8f;
-    [Tooltip("Kamera müşterinin göz hizasından ne kadar aşağıda/yukarıda olsun?")]
-    [SerializeField] private float heightOffset = 0.1f;
+    [Tooltip("Kameranın yerden yüksekliği sabit kaç olsun?")]
+    [SerializeField] private float dialogueFixedHeight = 1.5f;
     [Tooltip("Yumuşatma hızı")]
     [SerializeField] private float repositionDuration = 1f;
 
@@ -275,19 +275,60 @@ public class CameraManager : MonoBehaviour
         return firstPersonCam;
     }
 
+    // --- YENİ METOT: GRUP MERKEZİNİ HESAPLA ---
+    private void RepositionCameraToGroupCenter()
+    {
+        if (CustomerManager.Instance == null) return;
+
+        // Kasadaki müşterileri al
+        var customers = CustomerManager.Instance.GetCustomersAtCounter();
+        if (customers == null || customers.Count == 0) return;
+
+        // Aritmetik Ortalama (Centroid) Hesapla
+        Vector3 centerPos = Vector3.zero;
+        Vector3 averageForward = Vector3.zero;
+
+        foreach (var c in customers)
+        {
+            centerPos += c.transform.position;
+            averageForward += c.transform.forward;
+        }
+
+        centerPos /= customers.Count;
+        averageForward /= customers.Count;
+        averageForward.Normalize();
+
+        // Kameranın X ve Z'sini hesapla (Y'ye dokunma)
+        Vector3 targetCamPos = centerPos + (averageForward * faceToFaceDistance);
+
+        // --- KRİTİK AYAR: YÜKSEKLİK FİX ---
+        targetCamPos.y = dialogueFixedHeight;
+        // ----------------------------------
+
+        // Kamerayı ışınla
+        dialogueCam.transform.position = targetCamPos;
+
+        // LookTarget'ı da başlangıçta aynı yüksekliğe koy ki kamera yere bakarak başlamasın
+        if (dialogueLookTarget != null)
+        {
+            Vector3 targetLookAt = centerPos;
+            targetLookAt.y = dialogueFixedHeight; // Veya biraz aşağısı/yukarısı
+            dialogueLookTarget.position = targetLookAt;
+        }
+    }
+
     // --- "JOLT" FIX: DİYALOG BAŞLANGICI ---
     public void StartDialogueMode()
     {
         if (dialogueCam != null)
         {
-            // YENİ: Kamerayı aktif etmeden ÖNCE gürültüsünü ayarla
-            // Böylece Inspector değerleriyle (varsayılan noise) bir kare bile görünmez.
+            // 1. ÖNCE KAMERAYI GRUBUN ORTASINA YERLEŞTİR
+            RepositionCameraToGroupCenter();
+
+            // 2. Gürültü ayarları (Eski kodun aynısı)
             var perlin = dialogueCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             if (perlin != null)
             {
-                // Başlangıçta gürültüyü Settings çarpanına göre ayarla veya sıfırla
-                // Genelde diyalog başında noise type 'None' veya 'Idle' olur.
-                // Güvenli yöntem: Sıfırla veya mevcut profili çarp.
                 perlin.m_AmplitudeGain *= Settings.GlobalDistortionMultiplier;
             }
 
@@ -303,45 +344,43 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    // --- BURAYI GÜNCELLE: Kamera Sabit, Kafa Oynak ---
     public void UpdateDialogueShot(Transform targetTransform, float moveDuration, Ease moveEase, float dutchAngle, float fov, CameraNoiseType noiseType, float ampMult, float freqMult, bool isInstant = false, bool skipLensAndNoise = false)
     {
         if (dialogueCam == null || dialogueLookTarget == null) return;
 
-        // --- 1. POZİSYON VE ROTASYON ---
-        Vector3 targetLookPos = targetTransform != null ? targetTransform.position : dialogueLookTarget.position;
-        Vector3 targetCamPos = dialogueCam.transform.position;
+        // --- 1. SADECE LOOK TARGET (BAKILAN YER) HESABI ---
+        // Kameranın kendi pozisyonunu (targetCamPos) hesaplamıyoruz artık!
 
+        Vector3 targetLookPos = targetTransform != null ? targetTransform.position : dialogueLookTarget.position;
+
+        // Target'ın yüzüne odaklansın (Boy ayarı varsa ekle, yoksa direkt transform)
+        // Eğer targetTransform null değilse (bir müşteri ise) kafasına odaklayalım
         if (targetTransform != null)
         {
-            Vector3 customerForward = targetTransform.root.forward;
-            targetCamPos = targetTransform.position + (customerForward * faceToFaceDistance);
-            targetCamPos.y += heightOffset;
+            // Basitçe pozisyonu alıyoruz, eğer göz hizası sorunu olursa y ekseni ekle
+            // targetLookPos.y += 0.1f; 
         }
 
         if (isInstant)
         {
             dialogueLookTarget.DOKill();
-            dialogueCam.transform.DOKill();
             dialogueLookTarget.position = targetLookPos;
-            dialogueCam.transform.position = targetCamPos;
+            // Kamera pozisyonu değiştirilmiyor!
         }
         else
         {
+            // SADECE LOOK TARGET HAREKET EDİYOR
             dialogueLookTarget.DOMove(targetLookPos, moveDuration).SetEase(moveEase);
-            if (targetTransform != null)
-            {
-                dialogueCam.transform.DOMove(targetCamPos, repositionDuration).SetEase(Ease.OutCubic);
-            }
+
+            // dialogueCam.transform.DOMove... SİLİNDİ!
         }
 
-        // --- 2. LENS VE NOISE ---
+        // --- 2. LENS VE NOISE (Burası Aynen Kalıyor) ---
         if (skipLensAndNoise) return;
 
         var perlin = dialogueCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-        // --- SETTINGS ÇARPANI ---
         float globalMult = Settings.GlobalDistortionMultiplier;
-        // Bu satır kritik. Ayarlardan gelen 0.0, 0.5 veya 1.0 değerini alıyoruz.
 
         if (isInstant)
         {
@@ -363,8 +402,6 @@ public class CameraManager : MonoBehaviour
                 {
                     NoisePreset preset = noiseMap[noiseType];
                     perlin.m_NoiseProfile = preset.settingsAsset;
-
-                    // GÜNCELLEME: Çarpanı buraya ekledik
                     perlin.m_AmplitudeGain = preset.defaultAmplitude * ampMult * globalMult;
                     perlin.m_FrequencyGain = preset.defaultFrequency * freqMult;
                 }
@@ -384,14 +421,13 @@ public class CameraManager : MonoBehaviour
             {
                 if (noiseType == CameraNoiseType.None)
                 {
-                    // ... (Sıfırlama Tweenleri AYNI - Dokunma) ...
+                    // Boş
                 }
                 else if (noiseMap.ContainsKey(noiseType))
                 {
                     NoisePreset preset = noiseMap[noiseType];
                     if (perlin.m_NoiseProfile != preset.settingsAsset) perlin.m_NoiseProfile = preset.settingsAsset;
 
-                    // GÜNCELLEME: Hedef şiddeti çarpanla hesaplıyoruz
                     float targetAmp = preset.defaultAmplitude * ampMult * globalMult;
                     float targetFreq = preset.defaultFrequency * freqMult;
 
