@@ -3331,6 +3331,56 @@
     "pt": "Com licença?"
   },
   {
+    "key": "ALONEKID_GREETING",
+    "tr": "Günaydın abi!",
+    "en": "Morning, mister!",
+    "zh": "早安，大哥哥！",
+    "ja": "おはよう、お兄さん！",
+    "es": "¡Buenos días, señor!",
+    "ru": "Доброе утро, дядя!",
+    "pt": "Bom dia, moço!"
+  },
+  {
+    "key": "OLDMAN_GREETING_0",
+    "tr": "Kolay gele yiğenim!",
+    "en": "Take it easy, sonny!",
+    "zh": "小伙子，辛苦啦！",
+    "ja": "精が出るのう、若者。",
+    "es": "¡Buen trabajo, hijo!",
+    "ru": "Бог в помощь, сынок!",
+    "pt": "Bom trabalho, meu filho!"
+  },
+  {
+    "key": "OLDMAN_GREETING_1",
+    "tr": "Yiğenim selamünaleyküm!",
+    "en": "Greetings, sonny!",
+    "zh": "小伙子，你好啊！",
+    "ja": "よう、若いの。",
+    "es": "¡Saludos, hijo!",
+    "ru": "Здорово, сынок!",
+    "pt": "A paz, meu filho!"
+  },
+  {
+    "key": "OLDWOMAN_GREETING_0",
+    "tr": "Bak hele delikanlı!",
+    "en": "Look here, young man!",
+    "zh": "哎，小伙子，看这里！",
+    "ja": "ちょっと、お兄さん！",
+    "es": "¡Mira, joven!",
+    "ru": "Послушай-ка, милок!",
+    "pt": "Olha aqui, menino!"
+  },
+  {
+    "key": "OLDWOMAN_GREETING_1",
+    "tr": "Evladım bak buraya.",
+    "en": "Look here, my child.",
+    "zh": "孩子，看这里。",
+    "ja": "こっちおくれ、坊や。",
+    "es": "Hijo, atiende aquí.",
+    "ru": "Сынок, погляди сюда.",
+    "pt": "Meu filho, olha aqui."
+  },
+  {
     "key": "TEENGIRL_EMPTYORDER_0",
     "tr": "Boş bu?",
     "en": "It's empty?",
@@ -3429,6 +3479,36 @@
     "es": "Esta bandeja está totalmente vacía.",
     "ru": "Этот поднос совсем пустой.",
     "pt": "Essa bandeja está completamente vazia."
+  },
+  {
+    "key": "ALONEKID_EMPTYORDER",
+    "tr": "Siparişim nerede abi?",
+    "en": "Where's my order, mister?",
+    "zh": "大哥哥，我的餐在哪里呀？",
+    "ja": "お兄さん、僕の注文どこ？",
+    "es": "¿Dónde está mi pedido, señor?",
+    "ru": "Дядя, а где мой заказ?",
+    "pt": "Cadê meu pedido, moço?"
+  },
+  {
+    "key": "OLDMAN_EMPTYORDER",
+    "tr": "Eline sağlık yiğ- Boş bu yav.",
+    "en": "Thanks sonn- Hey, this is empty.",
+    "zh": "辛苦了小伙—— 哎，这空的呀。",
+    "ja": "ご苦労、若…ん？空じゃわい。",
+    "es": "Gracias hij— Oye, esto está vacío.",
+    "ru": "Спасибо, сын— Э, да он пустой.",
+    "pt": "Obrigado filh— Ué, tá vazia."
+  },
+  {
+    "key": "OLDWOMAN_EMPTYORDER",
+    "tr": "Tepsiyi mi kemirelim çocuğum?",
+    "en": "Am I supposed to chew on the tray, child?",
+    "zh": "孩子，你是让我啃托盘吗？",
+    "ja": "トレイをかじれと言うのかい？",
+    "es": "¿Tengo que roer la bandeja, hijo?",
+    "ru": "Нам что, поднос грызть, деточка?",
+    "pt": "É pra roer a bandeja, meu filho?"
   },
   {
     "key": "TEENGIRL_KNIFETHROWED_0",
@@ -3531,6 +3611,36 @@
     "pt": "Tenha um pouco de cuidado!"
   },
   {
+    "key": "ALONEKID_KNIFETHROWED",
+    "tr": "N'apıyosun abi ya?!",
+    "en": "What are you doing, mister?!",
+    "zh": "大哥哥，你在干什么呀？",
+    "ja": "お兄さん、何してるの！？",
+    "es": "¡¿Qué hace, señor?!",
+    "ru": "Дядя, ты чего делаешь?!",
+    "pt": "O que você tá fazendo, moço?!"
+  },
+  {
+    "key": "OLDMAN_KNIFETHROWED",
+    "tr": "84'te biraderle tartışınca bana aynı böyle bıçak fırlattıydı yav heh heh heh heh. Toprağı bol olsun.",
+    "en": "Back in '84, my brother threw a knife at me just like that when we argued, heh heh. God rest his soul.",
+    "zh": "84年那会儿，我跟兄弟吵架，他也这么扔刀子，呵呵呵。愿他安息。",
+    "ja": "84年に兄弟と喧嘩した時も、そうやってナイフを投げてきよったわい、フォッフォッフォ。南無阿弥陀仏。",
+    "es": "En el 84, mi hermano me tiró un cuchillo igualito cuando discutimos, je je je. Que en paz descanse.",
+    "ru": "В 84-м, когда мы с братом спорили, он в меня так же нож кинул, хе-хе-хе. Земля ему пухом.",
+    "pt": "Em 84, meu irmão jogou uma faca em mim igualzinho quando brigamos, he he he. Que Deus o tenha."
+  },
+  {
+    "key": "OLDWOMAN_KNIFETHROWED",
+    "tr": "Zamane gençleri pek saygısız.",
+    "en": "Kids these days have no respect.",
+    "zh": "现在的年轻人太没礼貌了。",
+    "ja": "これだから今時の若者は、礼儀を知らん。",
+    "es": "Los jóvenes de hoy no tienen ningún respeto.",
+    "ru": "Нынешняя молодежь совсем распустилась.",
+    "pt": "Esses jovens de hoje não têm respeito nenhum."
+  },
+  {
     "key": "TEENGIRL_WRONGORDER_0",
     "tr": "Ben bunu istemedim.",
     "en": "I didn't order this.",
@@ -3631,6 +3741,36 @@
     "pt": "Não foi isso que eu pedi, moço."
   },
   {
+    "key": "ALONEKID_WRONGORDER",
+    "tr": "Ben bundan istememiştim abi.",
+    "en": "I didn't ask for this, mister.",
+    "zh": "大哥哥，这不是我想要的。",
+    "ja": "お兄さん、僕これ頼んでないよ。",
+    "es": "Yo no pedí esto, señor.",
+    "ru": "Дядя, я не это хотел.",
+    "pt": "Eu não queria isso, moço."
+  },
+  {
+    "key": "OLDMAN_WRONGORDER",
+    "tr": "Sağolasın yiğenim eline kol- Bu benim sipariş değilmiş yav.",
+    "en": "Thanks sonny, bless your he- Wait, this ain't mine.",
+    "zh": "谢谢啊小伙子，辛苦— 哎，这不是我的餐啊。",
+    "ja": "ありがとな若者、ご苦労— ん？これワシの注文じゃないわい。",
+    "es": "Gracias hijo, Dios te bendi— Huy, esto no es mío.",
+    "ru": "Спасибо, сынок, дай бог тебе здо— Э, это не мой заказ.",
+    "pt": "Obrigado meu filho, Deus te aben— Ué, isso não é meu."
+  },
+  {
+    "key": "OLDWOMAN_WRONGORDER",
+    "tr": "Bu sipariş yanlış çocuğum.",
+    "en": "This order is wrong, child.",
+    "zh": "孩子，这单送错了。",
+    "ja": "注文が違ってるよ、坊や。",
+    "es": "Este pedido está mal, hijo.",
+    "ru": "Заказ неправильный, деточка.",
+    "pt": "O pedido está errado, meu filho."
+  },
+  {
     "key": "TEENGIRL_TRUEORDER_0",
     "tr": "Teşekkürler, kolay gelsin.",
     "en": "Thanks, have a good one.",
@@ -3721,45 +3861,395 @@
     "pt": "Obrigada."
   },
   {
-    "key": "TEENGIRL_CRISPYCHICKEN_MEDIUMCOLA",
-    "tr": "Bi Çıtır Tavuk Burger bi de Orta Boy Kola istiyorum.",
+    "key": "ALONEKID_TRUEORDER",
+    "tr": "Vay be şimdi bu kadar şey bedava mı? Teşekkürler abi!",
+    "en": "Wow, is all this really free? Thanks, mister!",
+    "zh": "哇，这些真的都免费吗？谢谢大哥哥！",
+    "ja": "わぁ、これ全部タダなの？ありがとう、お兄さん！",
+    "es": "¡Guau! ¿Todo esto es gratis? ¡Gracias, señor!",
+    "ru": "Ого, это всё правда бесплатно? Спасибо, дядя!",
+    "pt": "Uau, tudo isso é de graça mesmo? Obrigado, moço!"
+  },
+  {
+    "key": "OLDMAN_TRUEORDER",
+    "tr": "Bu benim siparişim değil yiğ- Ha benim siparişimmiş yav. Sağolasın yiğenim.",
+    "en": "This ain't mine, sonn- Oh, it IS mine. Thanks, sonny.",
+    "zh": "这不是我的餐— 哦，还真是我的。谢了小伙子。",
+    "ja": "これはワシの注文じゃな… あ、ワシのじゃったわい。ありがとな、若いの。",
+    "es": "Esto no es mío, hij— Ah, sí es mío. Gracias, hijo.",
+    "ru": "Это не мой заказ, сы— А, нет, мой. Спасибо, сынок.",
+    "pt": "Isso não é meu, filh— Ah, é meu sim. Obrigado, meu filho."
+  },
+  {
+    "key": "OLDWOMAN_TRUEORDER",
+    "tr": "Sağolasın çocuğum ellerin dert görmesin.",
+    "en": "Thank you, child. Bless your heart.",
+    "zh": "谢谢孩子，真是辛苦你了。",
+    "ja": "ありがとうね、坊や。ご苦労さま。",
+    "es": "Gracias hijo, que Dios te bendiga.",
+    "ru": "Спасибо, деточка, дай тебе бог здоровья.",
+    "pt": "Obrigada, meu filho. Deus te abençoe."
+  },
+  {
+    "key": "TEENGIRL_CRISPYCHICKEN_MEDIUMCOLA_FRIES_KETCHUP_MAYO",
+    "tr": "Bir Çıtır Tavuk Burger bir de Orta Kola istiyorum. Yanına da Patates Kızartması ve Ketçap Mayonez alayım.",
+    "en": "I'd like a Crispy Chicken Burger and a Medium Cola. Also French Fries with Ketchup and Mayo.",
+    "zh": "我要一个香脆鸡肉汉堡和中号可乐。再来份炸薯条，要番茄酱和蛋黄酱。",
+    "ja": "クリスピーチキンとMサイズコーラお願いします。あとフライドポテトと、ケチャップ、マヨネーズで。",
+    "es": "Quiero una Pollo Crujiente y una Cola Mediana. Y Papas Fritas con Kétchup y Mayonesa.",
+    "ru": "Мне Хруст. Чикен и Среднюю Колу. И еще Картофель Фри с Кетчупом и Майонезом.",
+    "pt": "Quero um Frango Croc. e uma Cola Média. E Batatas Fritas com Ketchup e Maionese."
+  },
+  {
+    "key": "TEENGIRL_CHEESEBURGER_MEDIUMCOLA_ONIONRINGS_MUSTARD",
+    "tr": "Bir Çizburger bir de Orta Kola istiyorum. Yanına da Soğan Halkası ve Hardal.",
+    "en": "I want a Cheeseburger and a Medium Cola. Plus Onion Rings and Mustard.",
+    "zh": "来个芝士汉堡和中号可乐。配洋葱圈和芥末酱。",
+    "ja": "チーズバーガーとMサイズコーラ。あとオニオンリングとマスタード。",
+    "es": "Quiero una Cheeseburger y una Cola Mediana. Y Aros de Cebolla con Mostaza.",
+    "ru": "Буду Чизбургер и Среднюю Колу. На гарнир Луковые Кольца и Горчицу.",
+    "pt": "Vou querer um Cheeseburger e uma Cola Média. E Anéis de Cebola com Mostarda."
+  },
+  {
+    "key": "TEENGIRL_GARDENBURGER_MEDIUMORANGESODA_MOZZARELLASTICKS_BUFFALO",
+    "tr": "Bir Bahçıvan Burger bir de Orta Portakallı Gazoz istiyorum. Yanına da Mozzarella Çubuğu ve Buffalo Sos lütfen.",
+    "en": "Can I get a Garden Burger and a Medium Orange Soda? And Mozzarella Sticks with Buffalo Sauce, please.",
+    "zh": "我要一个田园汉堡和中号橙味汽水。再要马苏里拉芝士条配水牛城辣酱，谢谢。",
+    "ja": "ガーデンバーガーとMサイズオレンジソーダで。サイドはモッツァレラスティックとバッファローソースお願いします。",
+    "es": "Me pones una Burger Huerta y una Soda de Naranja Mediana. Y Palitos de Mozzarella con Salsa Buffalo, por favor.",
+    "ru": "Мне Фермерский и Среднюю Апельсиновую Газировку. Плюс Палочки Моцареллы и Соус Баффало, пожалуйста.",
+    "pt": "Me vê um Burger da Horta e um Refri de Laranja Médio. E Palitos de Mussarela com Molho Buffalo, por favor."
+  },
+  {
+    "key": "TEENGIRL_CLASSICBURGER_LARGELEMONLIME_FRIES_2MAYO",
+    "tr": "Bir Klasik Burger bir Büyük Sade Gazoz. Yanına da Patates Kızartması ve iki tane Mayonez lütfen. Teşekkürler.",
+    "en": "One Classic Burger and a Large Lemon-Lime Soda. Also Fries and two Mayos, please. Thanks.",
+    "zh": "一个经典汉堡，一杯大号柠檬酸橙汽水。还有炸薯条和两份蛋黄酱，谢谢。",
+    "ja": "クラシックとLサイズレモンライムソーダ。あとポテトとマヨネーズ2つお願いします。ありがとう。",
+    "es": "Una Burger Clásica y una Soda Lima-Limón Grande. De lado, Papas Fritas y dos Mayonesas, por favor. Gracias.",
+    "ru": "Классику и Большую Лимонную Газировку. И Картофель Фри с двумя Майонезами, пожалуйста. Спасибо.",
+    "pt": "Um Burger Clássico e um Refri de Limão Grande. De acompanhamento, Batatas Fritas e duas Maioneses, por favor. Obrigada."
+  },
+  {
+    "key": "TEENGIRL_FLAMINGCHICKEN_LARGEORANGESODA_NUGGETS_MAYO_BBQ",
+    "tr": "Bir Alevli Tavuk Burger bir Büyük Portakallı Gazoz. Yanına da Nugget. Sos olarak da Mayonez ve Barbekü alayım.",
+    "en": "I'll take a Flaming Chicken Burger and a Large Orange Soda. With Nuggets. For sauce, I'll have Mayo and BBQ.",
+    "zh": "我要火焰鸡肉汉堡和大号橙味汽水。配炸鸡块。酱料要蛋黄酱和烧烤酱。",
+    "ja": "フレイミングチキンとLサイズオレンジソーダ。それとナゲット。ソースはマヨネーズとBBQで。",
+    "es": "Quiero una Pollo Fuego y una Soda de Naranja Grande. Con Nuggets. De salsa, Mayonesa y Barbacoa.",
+    "ru": "Мне Пылающий Чикен и Большую Апельсиновую Газировку. К ним Наггетсы. Из соусов — Майонез и Барбекю.",
+    "pt": "Vou querer um Frango Fogo e um Refri de Laranja Grande. Com Nuggets. De molho, Maionese e Barbecue."
+  },
+  {
+    "key": "TEENGIRL_DOUBLECHEESEBURGER_LARGECOLA_ONIONRINGS_2KETCHUP",
+    "tr": "Bir Duble Çizburger bir de Büyük Kola istiyorum. Yanına da Soğan Halkası ve iki Ketçap. Teşekkürler.",
+    "en": "A Double Cheeseburger and a Large Cola. Also Onion Rings and two Ketchups. Thanks.",
+    "zh": "来个双层芝士汉堡和大号可乐。还要洋葱圈和两份番茄酱。谢啦。",
+    "ja": "ダブルチーズとLサイズコーラ。あとオニオンリングとケチャップ2つで。ありがとう。",
+    "es": "Una Cheeseburger Doble y una Cola Grande. Y Aros de Cebolla con dos de Kétchup. Gracias.",
+    "ru": "Двойной Чизбургер и Большую Колу. Плюс Луковые Кольца и два Кетчупа. Спасибо.",
+    "pt": "Um Cheeseburger Duplo e uma Cola Grande. E Anéis de Cebola com dois Ketchups. Valeu."
+  },
+  {
+    "key": "TEENGUY_SMOKEDBURGER_LEMONADE_3NUGGETS_5MAYO",
+    "tr": "Kral sen bana bir Dumanlı Burger çek. Yanına da Limonata alayım. Bir de Nugget at. Hatta iki yap Nugget'ı. Yok yok üç yap. Bedava nasılsa heh heh heh. Başkaaaa... Beş tane de Mayonez yaz. Anca yeter o kadar Nugget'a.",
+    "en": "Yo King, hit me with a Smoked Burger. And a Lemonade. Throw in a Nugget. Actually make it two. Nah, make it three. Since it's free, heh heh. And uh... put down five Mayos. Need that much for those Nuggets.",
+    "zh": "国王，给我整一个烟熏汉堡。再来杯柠檬水。加个炸鸡块。不对，要两个。算了，要三个吧。反正免费，呵呵呵。还有……记上五个蛋黄酱。这才够蘸那些鸡块的。",
+    "ja": "キング、スモークバーガー頼むわ。あとレモネード。それとチキンナゲット1つ。いや2つにして。やっぱ3つで。どうせタダだしな、へへへ。あとはー… マヨネーズ5つつけといて。ナゲット食うにはそんくらい要るっしょ。",
+    "es": "Jefe, ponme una Burger Ahumada. Y una Limonada. Tira también un Nugget. Mejor que sean dos. No no, hazlo tres. Total es gratis, jejeje. Y ootra cosa... Apunta cinco Mayonesas. Apenas llega para tanto Nugget.",
+    "ru": "Царь, оформи мне Копченый. И Лимонад возьму. Еще кинь Наггетс. Давай даже два. Не, не, давай три. Бесплатно же, хе-хе-хе. И еще... Запиши пять Майонезов. Как раз хватит на столько Наггетсов.",
+    "pt": "Mestre, manda ver um Burger Defumado pra mim. E uma Limonada. Joga um Nugget aí. Ou melhor, dois. Não, não, faz três. É de graça mesmo, he he he. E maaaais... Bota cinco Maioneses. Só assim pra dar pra tanto Nugget."
+  },
+  {
+    "key": "TEENGUY_2PLUSBURGER_2LARGEORANGESODA_2FRIES",
+    "tr": "Kanka ikişer tane Artı Burger'le Büyük Portakallı Soda çak bana. Hatta iki de Patates Kızartması ekle. Bedava di mi bugün her şey?",
+    "en": "Bro, smash two Plus Burgers and two Large Orange Sodas for me. Actually add two Fries too. Everything's free today, right?",
+    "zh": "哥们儿，给我整两个普拉斯汉堡和两杯大号橙味汽水。再加两份炸薯条。今天都是免费的对吧？",
+    "ja": "相棒、プラスバーガーとLサイズオレンジソーダ、2つずつ頼むわ。ついでにポテトも2つ追加で。今日全部タダなんだろ？",
+    "es": "Socio, clávame dos Burger Plus y dos Sodas de Naranja Grandes. Y añade dos Papas Fritas también. Hoy todo es gratis, ¿no?",
+    "ru": "Братан, пробей мне по два Бургер Плюс и Больших Апельсиновых Газировки. И еще две Картошки Фри добавь. Сегодня же все на халяву, да?",
+    "pt": "Mano, desce dois Burger Plus e dois Refris de Laranja Grandes pra mim. Aproveita e add duas Batatas Fritas. Hoje é tudo na faixa, né?"
+  },
+  {
+    "key": "TEENGUY_3CHEESEBURGER_3SMALLCOLA",
+    "tr": "Aga sen bana ne yap biliyor musun? Üç tane Çizburger gönder. Yanına da bir Büyük Kola. Yok yok. Üç Küçük Kola ver onun yerine. Büyüklerin tadı bazen garip oluyo biliyon mu?",
+    "en": "Dude, you know what? Send me three Cheeseburgers. And a Large Cola. No, wait. Give me three Small Colas instead. The large ones taste weird sometimes, ya know?",
+    "zh": "老兄，你知道怎么弄吗？给我来三个芝士汉堡。再要一杯大号可乐。不不，换成三杯小号可乐。大杯的味道有时候怪怪的，懂吧？",
+    "ja": "なぁ兄弟、こうしてくれ。チーズバーガー3つ。あとLサイズコーラ。あーいや、やっぱなし。代わりにSサイズコーラ3つにして。デカいやつってたまに味変じゃん？わかる？",
+    "es": "Tío, ¿sabes qué vas a hacer? Mándame tres Cheeseburgers. Y una Cola Grande. No, espera. Dame tres Colas Pequeñas mejor. Las grandes a veces saben raro, ¿sabes?",
+    "ru": "Брат, знаешь че сделай? Давай три Чизбургера. И Большую Колу. Не, стой. Давай лучше три Маленьких Колы. У больших вкус иногда странный, шаришь?",
+    "pt": "Cara, sabe o que tu faz? Manda três Cheeseburgers. E uma Cola Grande. Não, pera. Me vê três Colas Pequenas no lugar. O gosto da grande às vezes é estranho, tá ligado?"
+  },
+  {
+    "key": "TEENGUY_6CRISPYCHICKEN",
+    "tr": "Hacı sen bana altı tane Çıtır Tavuk Burger sal. Kendimi tavukla kaplamayı denicem. Parasıyla değil mi? Aa doğru değil. Hehehehe.",
+    "en": "Boss, unleash six Crispy Chicken Burgers on me. I'm gonna try to coat myself in chicken. I'm paying for it, ain't I? Oh wait, I'm not. Hehehe.",
+    "zh": "老板，给我甩六个香脆鸡肉汉堡。我要试试把自己裹在鸡肉里。我有钱任性……啊不对，不要钱。呵呵呵。",
+    "ja": "大将、クリスピーチキン6つ頼むわ。チキンで全身武装してみるわ。金ならあるしな？あ、タダか。へへへ。",
+    "es": "Jefe, suéltame seis de Pollo Crujiente. Voy a intentar cubrirme de pollo. Lo pago yo, ¿no? Ah, verdad que no. Jejeje.",
+    "ru": "Шеф, отгрузи мне шесть штук Хруст. Чикен. Попробую обмазаться курицей. За свои же гуляю? А, точно, нет. Хе-хе-хе.",
+    "pt": "Chefia, libera seis Frangos Croc. pra mim. Vou tentar me cobrir de frango. Tô pagando, não tô? Ah, é, não tô. Hehehe."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER0",
+    "tr": "Herkes siparişine karar verdi mi?",
+    "en": "Has everyone decided what to order?",
+    "zh": "大家都想好要点什么了吗？",
+    "ja": "みんな、注文決まったか？",
+    "es": "¿Ya habéis decidido qué pedir?",
+    "ru": "Все решили, что будут заказывать?",
+    "pt": "Todo mundo já decidiu o pedido?"
+  },
+  {
+    "key": "FAMILY_ORDER0_KID0",
+    "tr": "Ben Civciv Burger istiyorum! Bir de o Mutlu Patateslerden. Yanında da Ketçap. Bir de Ayran!",
+    "en": "I want a Chick Burger! And those Happy Fries. With Ketchup. And an Ayran!",
+    "zh": "我要一个小鸡汉堡！还有那个开心薯条。还要番茄酱。还有爱兰！",
+    "ja": "私、ひよこバーガーがいい！あとあのハッピーポテト。それとケチャップ。あとアイラン！",
+    "es": "¡Yo quiero una Burger Pollito! Y de esas Papas Felices. Con Kétchup. ¡Y un Ayran!",
+    "ru": "Я хочу Цыпленка! И ту Веселую Картошку. С Кетчупом. И еще Айран!",
+    "pt": "Eu quero um Burger Pintinho! E aquelas Batatas Felizes. Com Ketchup. E um Ayran!"
+  },
+  {
+    "key": "FAMILY_ORDER0_MOTHER0",
+    "tr": "Oyuncak istemiyor musun?",
+    "en": "Don't you want a toy?",
+    "zh": "不想要玩具吗？",
+    "ja": "おもちゃは要らないの？",
+    "es": "¿No quieres juguete?",
+    "ru": "А игрушку не хочешь?",
+    "pt": "Não vai querer brinquedo?"
+  },
+  {
+    "key": "FAMILY_ORDER0_KID1",
+    "tr": "Ay oyuncağı unuttum! Oyuncak da istiyorum!",
+    "en": "Oh, I forgot the toy! I want a toy too!",
+    "zh": "哎呀玩具忘了！我也要玩具！",
+    "ja": "あ、おもちゃ忘れてた！おもちゃも欲しい！",
+    "es": "¡Ay, olvidé el juguete! ¡También quiero juguete!",
+    "ru": "Ой, я забыла про игрушку! Хочу игрушку тоже!",
+    "pt": "Ai, esqueci do brinquedo! Quero brinquedo também!"
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER1",
+    "tr": "Hangisini istiyosun kızım? Top mu?",
+    "en": "Which one do you want, sweetie? The Ball?",
+    "zh": "想要哪个呀女儿？球吗？",
+    "ja": "どれがいい？ボールか？",
+    "es": "¿Cuál quieres, hija? ¿La pelota?",
+    "ru": "Какую хочешь, дочка? Мяч?",
+    "pt": "Qual você quer, filha? A bola?"
+  },
+  {
+    "key": "FAMILY_ORDER0_KID2",
+    "tr": "Ya baba ne topu ya!",
+    "en": "Ugh, Dad, not the ball!",
+    "zh": "哎呀爸爸，什么球啊！",
+    "ja": "もうパパ、ボールなわけないでしょ！",
+    "es": "¡Jo, papá, qué pelota ni qué nada!",
+    "ru": "Ну пап, какой еще мяч!",
+    "pt": "Ah pai, que bola o quê!"
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER2",
+    "tr": "Hehehe tamam tamam... Araba o zaman.",
+    "en": "Hehehe alright, alright... The Car then.",
+    "zh": "嘿嘿嘿，好好好……那就是车咯。",
+    "ja": "へへへ、わかったわかった… じゃあ車だな。",
+    "es": "Jejeje, vale, vale... El coche entonces.",
+    "ru": "Хе-хе-хе, ладно, ладно... Тогда машинку.",
+    "pt": "Hehehe tá bom, tá bom... O carrinho então."
+  },
+  {
+    "key": "FAMILY_ORDER0_KID3",
+    "tr": "Yaaa anne babama bir şey de ya!",
+    "en": "Moooom, tell Dad to stop!",
+    "zh": "呀——妈妈，你说说爸爸呀！",
+    "ja": "もー！ママ、パパに何とか言ってよ！",
+    "es": "¡Jooo, mamá, dile algo a papá!",
+    "ru": "Ма-ам, ну скажи папе!",
+    "pt": "Mãããe, fala pro pai parar!"
+  },
+  {
+    "key": "FAMILY_ORDER0_MOTHER1",
+    "tr": "Uğraşma kızımla!.. Hem top al hem araba al.",
+    "en": "Don't tease my daughter!.. Buy both the ball AND the car.",
+    "zh": "别逗女儿了！……给她买个球再买个车。",
+    "ja": "娘をからかわないの！…ボールと車、両方頼めばいいじゃない。",
+    "es": "¡No te metas con mi niña!... Cómprale la pelota Y el coche.",
+    "ru": "Не дразни дочь!.. Возьми и мяч, и машинку.",
+    "pt": "Não implica com a menina!.. Compra a bola E o carrinho."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER3",
+    "tr": "Hehehehehe.",
+    "en": "Hehehehehe.",
+    "zh": "嘿嘿嘿嘿嘿。",
+    "ja": "へへへへへ。",
+    "es": "Jejejejeje.",
+    "ru": "Хе-хе-хе-хе.",
+    "pt": "Hehehehehe."
+  },
+  {
+    "key": "FAMILY_ORDER0_MOTHER2",
+    "tr": "Hihihihihi.",
+    "en": "Hihihihihi.",
+    "zh": "嘻嘻嘻嘻嘻。",
+    "ja": "ふふふふふ。",
+    "es": "Jijijijiji.",
+    "ru": "Хи-хи-хи-хи.",
+    "pt": "Hihihihihi."
+  },
+  {
+    "key": "FAMILY_ORDER0_KID4",
+    "tr": "Yaaaaa.",
+    "en": "Ughhhhhh.",
+    "zh": "呀————",
+    "ja": "もーーーー！",
+    "es": "Jo...",
+    "ru": "Ну-у-у...",
+    "pt": "Affffff."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER4",
+    "tr": "Tamam tamam delikanlıyı bekletmeyelim daha fazla.",
+    "en": "Okay, okay, let's not keep the gentleman waiting any longer.",
+    "zh": "好了好了，别让人家久等了。",
+    "ja": "よしよし、お兄さんを待たせちゃ悪いな。",
+    "es": "Vale, vale, no hagamos esperar más al chico.",
+    "ru": "Ладно, ладно, не будем задерживать парня.",
+    "pt": "Tá bom, tá bom, não vamos deixar o rapaz esperando."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER5",
+    "tr": "Dostum bir Civciv Burger, bir de Mutlu Patateslerden. İçecek olarak Ayran. Yanına da Ketçap. Bir de Oyuncak Palyaço'dan ver.",
+    "en": "Buddy, one Chick Burger and the Happy Fries. Ayran for the drink. Ketchup on the side. And give us the Toy Clown.",
+    "zh": "伙计，来个小鸡汉堡，还有开心薯条。饮料要爱兰。配番茄酱。再给个玩具小丑。",
+    "ja": "君、ひよこバーガーとハッピーポテトを一つずつ。飲み物はアイランで。あとケチャップ。それと、おもちゃのピエロをくれ。",
+    "es": "Amigo, una Burger Pollito y Papas Felices. De beber Ayran. Con Kétchup. Y danos el Payaso de Juguete.",
+    "ru": "Дружище, один Цыпленок и Веселая Картошка. Из напитков — Айран. К нему Кетчуп. И давай Игрушечного Клоуна.",
+    "pt": "Parceiro, um Burger Pintinho e Batatas Felizes. Ayran pra beber. Ketchup do lado. E vê o Palhaço de Brinquedo."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER6",
+    "tr": "Bize de her zamankilerden söylüyorum.",
+    "en": "I'm ordering the usual for us.",
+    "zh": "我们也点老样子的。",
+    "ja": "ワシらにはいつものやつを頼むよ。",
+    "es": "Para nosotros pido lo de siempre.",
+    "ru": "Нам заказываю как обычно.",
+    "pt": "Vou pedir o de sempre pra gente."
+  },
+  {
+    "key": "FAMILY_ORDER0_MOTHER3",
+    "tr": "Olur.",
+    "en": "Sure.",
+    "zh": "行。",
+    "ja": "ええ。",
+    "es": "Vale.",
+    "ru": "Хорошо.",
+    "pt": "Pode ser."
+  },
+  {
+    "key": "FAMILY_ORDER0_FATHER7",
+    "tr": "Bize de birer tane Duble Bahçıvan Burger. Birer tane Patates Kızartması. Birer tane de Limonata.",
+    "en": "For us, two Double Garden Burgers. Two French Fries. And two Lemonades.",
+    "zh": "给我们来两份双层田园汉堡。两份炸薯条。还有两杯柠檬水。",
+    "ja": "こっちはWガーデンを2つ。フライドポテトを2つ。あとレモネードも2つで。",
+    "es": "Para nosotros dos Burger Huerta Doble. Dos de Papas Fritas. Y dos Limonadas.",
+    "ru": "Нам два Дв. Фермерских. Две Картошки Фри. И два Лимонада.",
+    "pt": "Pra nós, dois Burger Horta Duplo. Duas Batatas Fritas. E duas Limonadas."
+  },
+  {
+    "key": "ALONEKID_DINOGGET_CHERRYJUICE_KETCHUP_CAR_0",
+    "tr": "Dinozorlu nuggetlardan almak istiyorum. Dinozorrets... Dinets... Donugs... Neydi ya...",
+    "en": "I want those dinosaur nuggets. Dinorets... Dinets... Donugs... What was it...",
+    "zh": "我想买那个恐龙样子的炸鸡块。迪诺... 迪块... 迪豆... 叫什么来着...",
+    "ja": "恐竜のナゲットが欲しいんだ。ダイナ... ダイネ... ダイノ... なんだっけ...",
+    "es": "Quiero los nuggets de dinosaurio. Dinorets... Dinets... Donugs... ¿Cómo era...?",
+    "ru": "Я хочу наггетсы с динозаврами. Динореты... Динеты... Донуги... Как же там...",
+    "pt": "Quero aqueles nuggets de dinossauro. Dinorets... Dinets... Donugs... Como era mesmo..."
+  },
+  {
+    "key": "ALONEKID_DINOGGET_CHERRYJUICE_KETCHUP_CAR_1",
+    "tr": "Keşke annemle babam burada olsaydı onlar bilirlerdi.",
+    "en": "I wish my mom and dad were here, they'd know.",
+    "zh": "要是爸爸妈妈在这里就好了，他们肯定知道。",
+    "ja": "パパとママがここにいれば、分かったのになぁ。",
+    "es": "Ojalá mamá y papá estuvieran aquí, ellos lo sabrían.",
+    "ru": "Жаль, что папы с мамой нет рядом, они бы знали.",
+    "pt": "Queria que minha mãe e meu pai estivessem aqui, eles saberiam."
+  },
+  {
+    "key": "ALONEKID_DINOGGET_CHERRYJUICE_KETCHUP_CAR_2",
+    "tr": "Dinets'di galiba. Dinets istiyorum. Bir de Vişne Suyu'yla Ketçap. Bir de Oyuncak Araba.",
+    "en": "I think it was Dinets. I want Dinets. And Cherry Juice with Ketchup. Also a Toy Car.",
+    "zh": "好像是叫迪块吧。我要迪块。还要樱桃汁和番茄酱。再要一个玩具车。",
+    "ja": "確かダイネだ。ダイネください。あとチェリージュースとケチャップ。それとおもちゃの車も。",
+    "es": "Creo que era Dinets. Quiero Dinets. Y Jugo de Cereza con Kétchup. Y un Auto de Juguete.",
+    "ru": "Наверное, Динеты. Хочу Динеты. И Вишневый Сок с Кетчупом. И еще Игрушечную Машинку.",
+    "pt": "Acho que era Dinets. Quero Dinets. E Suco de Cereja com Ketchup. E um Carrinho de Brinquedo."
+  },
+  {
+    "key": "OLDCOUPLE_ORDER0_OLDMAN0",
+    "tr": "Yiğenim sen bana bir tane Çıtır Tavuk Burger ver. Teyzene de Bahçıvan Burger ver.",
+    "en": "Sonny, give me a Crispy Chicken Burger. And give your auntie a Garden Burger.",
+    "zh": "小伙子，给我来个香脆鸡肉汉堡。给你大妈来个田园汉堡。",
+    "ja": "若いの、ワシにクリスピーチキンをくれ。婆さんにはガーデンバーガーだ。",
+    "es": "Hijo, ponme una Pollo Crujiente. Y para tu tía una Burger Huerta.",
+    "ru": "Сынок, дай мне Хруст. Чикен. А бабушке — Фермерский.",
+    "pt": "Meu filho, me vê um Frango Croc. E pra sua tia um Burger da Horta."
+  },
+  {
+    "key": "OLDCOUPLE_ORDER0_OLDWOMAN0",
+    "tr": "Hadi oradan! Çıtır Tavuk Burgermişmiş. Bir ısırıcaksın dişlerin üstünde kalacak.",
+    "en": "Oh, hush! Crispy Chicken my foot. You'll take one bite and leave your teeth in it.",
+    "zh": "去去去！还香脆鸡肉呢。咬一口你假牙都得崩上面。",
+    "ja": "何言ってるの！クリスピーチキンだなんて。一口噛んだら入れ歯が持ってかれるよ。",
+    "es": "¡Anda ya! Qué Pollo Crujiente ni qué nada. Muerdes eso y te dejas los dientes ahí.",
+    "ru": "Да ну тебя! Тоже мне, Хруст. Чикен. Один раз укусишь — зубы там и оставишь.",
+    "pt": "Deixa disso! Que Frango Croc. o quê. Vai dar uma mordida e os dentes ficam lá."
+  },
+  {
+    "key": "OLDCOUPLE_ORDER0_OLDWOMAN1",
+    "tr": "Evladım sen bize birer tane Bahçıvan Burger'le Ayran ver başka bir şey istemez.",
+    "en": "Child, just give us two Garden Burgers and Ayrans. That's all.",
+    "zh": "孩子，给我们来两个田园汉堡和爱兰就行，别的不要。",
+    "ja": "坊や、ガーデンバーガーとアイランを2つずつおくれ。それだけでいいよ。",
+    "es": "Hijo, ponnos dos Burger Huerta y dos Ayran. Nada más.",
+    "ru": "Деточка, дай нам два Фермерских и Айран. Больше ничего не надо.",
+    "pt": "Meu filho, dá dois Burger da Horta e Ayran pra gente. Só isso."
+  },
+  {
+    "key": "OLDCOUPLE_ORDER0_OLDMAN1",
+    "tr": "Yaa ama Çıtır Tavuk Bur-",
+    "en": "Aw, but the Crispy Chicken Bur-",
+    "zh": "哎呀，但是香脆鸡肉——",
+    "ja": "いや、でもクリスピーチキ…",
+    "es": "Jo, pero la Pollo Cruj...",
+    "ru": "Ну, но Хруст. Чик...",
+    "pt": "Ah, mas o Frango Cro..."
+  },
+  {
+    "key": "OLDCOUPLE_ORDER0_OLDWOMAN2",
+    "tr": "...",
     "en": "...",
-    "zh": "...",
-    "ja": "...",
+    "zh": "……",
+    "ja": "…",
     "es": "...",
     "ru": "...",
     "pt": "..."
   },
   {
-    "key": "TEENGIRL_CHEESEBURGER_MEDIUMCOLA",
-    "tr": "Bi Çizburger bi de Orta Boy Kola istiyorum.",
-    "en": "...",
-    "zh": "...",
-    "ja": "...",
-    "es": "...",
-    "ru": "...",
-    "pt": "..."
-  },
-  {
-    "key": "TEENGIRL_GARDENBURGER_MEDIUMORANGESODA",
-    "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
-    "en": "...",
-    "zh": "...",
-    "ja": "...",
-    "es": "...",
-    "ru": "...",
-    "pt": "..."
-  },
-  {
-    "key": "TEENGIRL_CLASSICBURGER_MEDIUMORANGESODA",
-    "tr": "Bi Bahçıvan Burger bi de Orta Boy Portakallı Gazoz istiyorum.",
-    "en": "...",
-    "zh": "...",
-    "ja": "...",
-    "es": "...",
-    "ru": "...",
-    "pt": "..."
+    "key": "OLDCOUPLE_ORDER0_OLDMAN2",
+    "tr": "Bahçıvan iyi Bahçıvan güzel.",
+    "en": "Garden is good, Garden is nice.",
+    "zh": "田园好，田园挺好。",
+    "ja": "ガーデンがいい、ガーデンが美味い。",
+    "es": "La Huerta está bien, está rica.",
+    "ru": "Фермерский хороший, Фермерский вкусный.",
+    "pt": "Horta é bom, Horta é legal."
   }
-]
 
+]
 }

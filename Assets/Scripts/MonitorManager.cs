@@ -66,7 +66,7 @@ public class MonitorManager : MonoBehaviour
     public TMP_Text currentOrdersTMP;      // UI'daki text
     public TMP_Text currentOrdersTMPWorld; // World Space'deki text (Varsa)
 
-    private OrderData _activeOrderData; // Þu an ekranda gösterilen sipariþ verisi
+    private List<OrderData> _activeOrderList = new List<OrderData>();
 
     // --- HAFIZA DEÐÝÞKENLERÝ (Order List) ---
     private float _initOrderSize;
@@ -270,17 +270,16 @@ public class MonitorManager : MonoBehaviour
         RefreshPage();
     }
 
-    // --- YENÝ: SÝPARÝÞÝ DIÞARIDAN ATAMA ---
-    public void SetCurrentOrder(OrderData order)
+    // --- SÝPARÝÞÝ LÝSTE OLARAK AL ---
+    public void SetCurrentOrder(List<OrderData> orders)
     {
-        _activeOrderData = order;
-        RefreshOrderListDisplay(); // Hemen görseli güncelle
+        _activeOrderList = orders; // Listeyi kaydet
+        RefreshOrderListDisplay(); // Ekraný güncelle
     }
 
-    // --- YENÝ: SÝPARÝÞÝ TEMÝZLEME (Müþteri gidince vs.) ---
     public void ClearCurrentOrder()
     {
-        _activeOrderData = null;
+        _activeOrderList.Clear(); // Listeyi temizle
         if (currentOrdersTMP != null) currentOrdersTMP.text = "";
         if (currentOrdersTMPWorld != null) currentOrdersTMPWorld.text = "";
     }
@@ -329,29 +328,47 @@ public class MonitorManager : MonoBehaviour
     // --- YENÝ: SÝPARÝÞ LÝSTESÝNÝ GÜNCELLEME MANTIÐI ---
     private void RefreshOrderListDisplay()
     {
-        if (_activeOrderData == null) return;
+        if (_activeOrderList == null || _activeOrderList.Count == 0) return;
         if (currentOrdersTMP == null && currentOrdersTMPWorld == null) return;
         if (LocalizationManager.Instance == null) return;
 
-        // 1. Font Verilerini Al
+        // 1. Font Verilerini Al (Ayný kalýyor)
         var targetData = LocalizationManager.Instance.GetFontDataForCurrentLanguage(orderFontType);
         var defaultData = LocalizationManager.Instance.GetDefaultFontData(orderFontType);
 
-        // 2. Oranlarý Hesapla
         float defaultBase = Mathf.Max(defaultData.basePixelSize, 0.1f);
         float ratio = targetData.basePixelSize / defaultBase;
-
         float charSpacingDiff = targetData.characterSpacingOffset - defaultData.characterSpacingOffset;
         float lineSpacingDiff = targetData.lineSpacingOffset - defaultData.lineSpacingOffset;
 
-        // 3. Metni Oluþtur (Localize Edilmiþ String)
-        string orderContent = BuildOrderString(_activeOrderData);
+        // --- 2. METNÝ OLUÞTUR (DEÐÝÞÝKLÝK BURADA) ---
+        StringBuilder finalSb = new StringBuilder();
 
-        // 4. Ekrana Bas (Font ayarlarýyla birlikte)
-        ApplyOrderTextSettings(currentOrdersTMP, orderContent, targetData.font,
+        for (int i = 0; i < _activeOrderList.Count; i++)
+        {
+            // Tekil sipariþi string'e çevir
+            string singleOrderText = BuildOrderString(_activeOrderList[i]);
+
+            // Eðer sipariþ boþ deðilse ekle
+            if (!string.IsNullOrEmpty(singleOrderText))
+            {
+                finalSb.Append(singleOrderText);
+
+                // Eðer bu son sipariþ deðilse, araya BOÞLUK (Satýr atlama) koy
+                if (i < _activeOrderList.Count - 1)
+                {
+                    finalSb.Append("\n\n"); // Ýki kere alt satýra geç = 1 satýr boþluk
+                }
+            }
+        }
+
+        string finalContent = finalSb.ToString();
+
+        // 3. Ekrana Bas (Ayný kalýyor)
+        ApplyOrderTextSettings(currentOrdersTMP, finalContent, targetData.font,
             _initOrderSize * ratio, _initOrderSpacing + charSpacingDiff, _initOrderLineSpacing + lineSpacingDiff);
 
-        ApplyOrderTextSettings(currentOrdersTMPWorld, orderContent, targetData.font,
+        ApplyOrderTextSettings(currentOrdersTMPWorld, finalContent, targetData.font,
             _initOrderSize * ratio, _initOrderSpacing + charSpacingDiff, _initOrderLineSpacing + lineSpacingDiff);
     }
 
