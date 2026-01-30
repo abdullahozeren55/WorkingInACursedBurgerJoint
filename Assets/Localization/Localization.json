@@ -3951,7 +3951,7 @@
     "pt": "Um Cheeseburger Duplo e uma Cola Grande. E Anéis de Cebola com dois Ketchups. Valeu."
   },
   {
-    "key": "TEENGUY_SMOKEDBURGER_LEMONADE_3NUGGETS_5MAYO",
+    "key": "TEENGUY_SMOKEDBURGER_LEMONADE_3NUGGETS_5MAYO_0",
     "tr": "Kral sen bana bir Dumanlı Burger çek. Yanına da Limonata alayım. Bir de Nugget at. Hatta iki yap Nugget'ı. Yok yok üç yap. Bedava nasılsa heh heh heh. Başkaaaa... Beş tane de Mayonez yaz. Anca yeter o kadar Nugget'a.",
     "en": "Yo King, hit me with a Smoked Burger. And a Lemonade. Throw in a Nugget. Actually make it two. Nah, make it three. Since it's free, heh heh. And uh... put down five Mayos. Need that much for those Nuggets.",
     "zh": "国王，给我整一个烟熏汉堡。再来杯柠檬水。加个炸鸡块。不对，要两个。算了，要三个吧。反正免费，呵呵呵。还有……记上五个蛋黄酱。这才够蘸那些鸡块的。",
@@ -3961,7 +3961,17 @@
     "pt": "Mestre, manda ver um Burger Defumado pra mim. E uma Limonada. Joga um Nugget aí. Ou melhor, dois. Não, não, faz três. É de graça mesmo, he he he. E maaaais... Bota cinco Maioneses. Só assim pra dar pra tanto Nugget."
   },
   {
-    "key": "TEENGUY_2PLUSBURGER_2LARGEORANGESODA_2FRIES",
+    "key": "TEENGUY_SMOKEDBURGER_LEMONADE_3NUGGETS_5MAYO_1",
+    "tr": "Başkaaa... Yeter ya. Açgözlülüğün alemi yok haksız mıyım?",
+    "en": "And uhhh... That's enough. No point in being greedy, am I right?",
+    "zh": "还有…… 算了够了。做人不能太贪心，我说得对吧？",
+    "ja": "あとはー… もういいわ。欲張りすぎも良くないっしょ？",
+    "es": "Y bueeeno... Ya vale. No hay que ser un ansias, ¿a que no?",
+    "ru": "И еще-е... Да хватит уже. Нефиг жадничать, я прав?",
+    "pt": "E maaaais... Tá bom já. Sem ser olho grande, né não?"
+  },
+  {
+    "key": "TEENGUY_2PLUSBURGER_2LARGEORANGESODA_2FRIES_0",
     "tr": "Kanka ikişer tane Artı Burger'le Büyük Portakallı Soda çak bana. Hatta iki de Patates Kızartması ekle. Bedava di mi bugün her şey?",
     "en": "Bro, smash two Plus Burgers and two Large Orange Sodas for me. Actually add two Fries too. Everything's free today, right?",
     "zh": "哥们儿，给我整两个普拉斯汉堡和两杯大号橙味汽水。再加两份炸薯条。今天都是免费的对吧？",
@@ -3969,6 +3979,16 @@
     "es": "Socio, clávame dos Burger Plus y dos Sodas de Naranja Grandes. Y añade dos Papas Fritas también. Hoy todo es gratis, ¿no?",
     "ru": "Братан, пробей мне по два Бургер Плюс и Больших Апельсиновых Газировки. И еще две Картошки Фри добавь. Сегодня же все на халяву, да?",
     "pt": "Mano, desce dois Burger Plus e dois Refris de Laranja Grandes pra mim. Aproveita e add duas Batatas Fritas. Hoje é tudo na faixa, né?"
+  },
+  {
+    "key": "TEENGUY_2PLUSBURGER_2LARGEORANGESODA_2FRIES_1",
+    "tr": "Allah'ım harika bir şey ya. Keşke bugün hiç bitmese.",
+    "en": "Oh God, this is awesome. I wish today would never end.",
+    "zh": "天哪，这也太爽了。真希望今天永远不要结束。",
+    "ja": "マジ最高だわ。このまま今日が終わらなきゃいいのに。",
+    "es": "Dios, qué maravilla. Ojalá este día no se acabe nunca.",
+    "ru": "Боже, какой кайф. Хоть бы этот день никогда не заканчивался.",
+    "pt": "Meu Deus, que maravilha. Queria que hoje nunca acabasse."
   },
   {
     "key": "TEENGUY_3CHEESEBURGER_3SMALLCOLA",
