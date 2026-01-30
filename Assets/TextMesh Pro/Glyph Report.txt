@@ -1,17 +1,0 @@
-Font: Glasstown NBP  Style: Regular
-Point Size: 16   SP/PD Ratio: 25,0%
-
-Characters included: 146/150
-Missing characters: 4
-Excluded characters: 0
-
-Characters missing from font file:
-----------------------------------------
-ID: 13	Hex: D	Char []
-ID: 10	Hex: A	Char [
-]
-ID: 8211	Hex: 2013	Char [–]
-ID: 8378	Hex: 20BA	Char [₺]
-
-Characters excluded from packing:
-----------------------------------------
