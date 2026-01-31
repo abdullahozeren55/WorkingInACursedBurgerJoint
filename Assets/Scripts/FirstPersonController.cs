@@ -131,6 +131,17 @@ public class FirstPersonController : MonoBehaviour
     public bool ThrowKeyIsDone;
     private bool ignoreNextThrowRelease = false; // Tepsi býrakýlýnca oluþacak "Release Hayaletini" engellemek için
 
+    public void SetIgnoreNextThrowRelease(bool state)
+    {
+        ignoreNextThrowRelease = state;
+    }
+
+    // Elimizin dolu olup olmadýðýný kontrol eden helper (Mevcut currentGrabable deðiþkenini kullanýr)
+    public bool IsHoldingItem()
+    {
+        return currentGrabable != null && currentGrabable.IsGrabbed;
+    }
+
     [Header("Grab Parameters")]
     [SerializeField] private LayerMask grabableLayers;
     [SerializeField] private LayerMask throwRaycastLayers;
@@ -2612,6 +2623,37 @@ public class FirstPersonController : MonoBehaviour
     public bool ShouldIGoWithOutlineWhenTurningBackToGrabable (IGrabable grabable) {  return (currentGrabable == grabable && !currentGrabable.IsGrabbed) || otherGrabable == grabable; }
 
     public void SetFocusTextComplete(bool value) => focusTextComplete = value; //GETS TRUE IN TYPEWRITTER ACTIONS WHEN ITS COMPLETE. GETS FALSE WHENEVER TEXT GETS CHANGED ON DECIDEFOCUSTEXT()
+
+    public void ForceCancelThrowAndResetHand()
+    {
+        if (singleHandThrowCoroutine != null)
+        {
+            StopCoroutine(singleHandThrowCoroutine);
+            singleHandThrowCoroutine = null;
+        }
+
+        CameraManager.Instance.PlayThrowEffects(false);
+        ResetHandAnim();
+        if (anim != null)
+        {
+            anim.SetBool("throw", false);
+            anim.SetBool("chargingThrow", false);
+        }
+
+        throwChargeTimer = 0f;
+
+        if (!IsHoldingItem())
+        {
+            if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
+            rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(false, false));
+        }
+        else
+        {
+            if (rightHandRigLerpCoroutine != null) StopCoroutine(rightHandRigLerpCoroutine);
+            rightHandRigLerpCoroutine = StartCoroutine(LerpRightHandRig(true, false));
+        }
+        
+    }
 
     private void ResetHandAnim()
     {

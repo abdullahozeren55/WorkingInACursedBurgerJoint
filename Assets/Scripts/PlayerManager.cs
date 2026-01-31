@@ -226,6 +226,33 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.RefreshUISettings();
     }
 
+    public void SetPlayerIgnoreNextThrow(bool state)
+    {
+        // FPC referansýnýn adý genelde 'playerController' veya 'firstPersonController'dýr.
+        // Kendi projendeki deðiþken ismine göre uyarla:
+        if (firstPersonController != null)
+        {
+            firstPersonController.SetIgnoreNextThrowRelease(state);
+        }
+    }
+
+    public bool IsPlayerHoldingItem()
+    {
+        if (firstPersonController != null)
+        {
+            return firstPersonController.IsHoldingItem();
+        }
+        return false;
+    }
+
+    public void CancelPlayerThrow()
+    {
+        if (firstPersonController != null)
+        {
+            firstPersonController.ForceCancelThrowAndResetHand();
+        }
+    }
+
     public void HandlePlayerEnterExitColdRoom(bool isEntering)
     {
 

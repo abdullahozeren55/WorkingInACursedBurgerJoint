@@ -62,7 +62,14 @@ public class Monitor : MonoBehaviour, IInteractable
     {
         if (!CanInteract) return;
 
-        PlayerManager.Instance.SetPlayerBasicMovements(false);
+        // Monitöre girerken kontrol et: Elim dolu mu?
+        // Eðer doluysa, çýkýþ tuþu (Throw) eþyayý fýrlatmasýn diye FPC'yi uyar.
+        if (PlayerManager.Instance.IsPlayerHoldingItem())
+        {
+            PlayerManager.Instance.SetPlayerIgnoreNextThrow(true);
+            PlayerManager.Instance.SetPlayerBasicMovements(false);
+        }
+
         CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.Monitor);
 
         Invoke("HandleMonitorUI", monitorUIStartAppearDelay);
@@ -124,6 +131,8 @@ public class Monitor : MonoBehaviour, IInteractable
 
     private void FinishMonitorUIP2()
     {
+        PlayerManager.Instance.CancelPlayerThrow();
+
         monitorUI.SetActive(false);
         ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
     }
