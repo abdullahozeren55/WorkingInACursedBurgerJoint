@@ -212,28 +212,25 @@ public class DialogueManager : MonoBehaviour
         {
             CameraManager.Instance.StartDialogueMode();
 
-            // --- YENİ: KONUŞAN KİŞİNİN KAFASINI KAMERAYA ÇEVİR ---
-            // İlk satırın konuşmacısını bulalım
-            if (data.lines.Count > 0)
+            // --- GÜNCELLENDİ: GRUBUN HEPSİ BAKSIN ---
+            // Konuşan kişiyi aramıyoruz, kasadaki herkesi alıyoruz.
+            if (CustomerManager.Instance != null)
             {
-                var firstSpeakerID = data.lines[0].SpeakerID;
-                if (speakers.ContainsKey(firstSpeakerID))
+                var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
+                Transform camTransform = CameraManager.Instance.GetDialogueCameraTransform();
+
+                foreach (var customer in groupMembers)
                 {
-                    // Eğer konuşan kişi bir CustomerController ise (veya component'e sahipse)
-                    var speakerObj = speakers[firstSpeakerID] as MonoBehaviour;
-                    if (speakerObj != null)
+                    if (customer != null)
                     {
-                        var customer = speakerObj.GetComponent<CustomerController>();
-                        if (customer != null)
-                        {
-                            // KAMERAYA BAK EMRİ
-                            customer.SetLookTarget(CameraManager.Instance.GetDialogueCameraTransform());
-                        }
+                        // Hepsi kameraya kilitlensin
+                        customer.SetLookTarget(camTransform);
                     }
                 }
             }
         }
 
+        // İlk satırı başlat
         AdvanceDialogue();
     }
 
@@ -440,17 +437,17 @@ public class DialogueManager : MonoBehaviour
 
         if (CameraManager.Instance != null) CameraManager.Instance.EndDialogueMode();
 
-        // --- YENİ: HERKESİN KAFASINI SERBEST BIRAK ---
-        // Sahnedeki tüm kayıtlı konuşmacıları gez ve eğer müşteriyseler bakışlarını sıfırla
-        foreach (var kvp in speakers)
+        // --- GÜNCELLENDİ: GRUBU SERBEST BIRAK ---
+        if (CustomerManager.Instance != null)
         {
-            var speakerObj = kvp.Value as MonoBehaviour;
-            if (speakerObj != null)
+            var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
+
+            foreach (var customer in groupMembers)
             {
-                var customer = speakerObj.GetComponent<CustomerController>();
                 if (customer != null)
                 {
-                    customer.ClearLookTarget(); // Player'a dön
+                    // Müşteri normal hayatına (Player'a bakmaya) dönsün
+                    customer.ClearLookTarget();
                 }
             }
         }

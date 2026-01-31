@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: OldMan_CorrectOrder
   m_EditorClassIdentifier: 
   lines:
-  - SpeakerID: 2
-    LocalizationKey: FAMILYFATHER_TRUEORDER
-    TextColor: {r: 0.29263082, g: 0.3172769, b: 0.4528302, a: 1}
+  - SpeakerID: 6
+    LocalizationKey: OLDMAN_TRUEORDER
+    TextColor: {r: 0.4433962, g: 0.40365788, b: 0.40365788, a: 1}
     TextEffects: 0
     IsSkippable: 1
     TypewriterSpeedMultiplier: 1
     TextDelay: 0
-    FocusTargetID: 2
+    FocusTargetID: 6
     CamMoveDuration: 0.5
     CamMoveEase: 4
     DutchAngle: 0

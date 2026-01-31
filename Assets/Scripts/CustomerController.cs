@@ -710,13 +710,13 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
 
     public void OutlineChangeCheck()
     {
-        if (meshRenderer.gameObject.layer == interactableOutlinedLayer && OutlineShouldBeRed)
+        if (gameObject.layer == interactableOutlinedLayer && OutlineShouldBeRed)
             // Sadece kendimi deðil, TÜM GRUBU yak
             foreach (var member in myGroupMembers)
             {
                 if (member != null) member.ChangeLayer(interactableOutlinedRedLayer);
             }
-        else if (meshRenderer.gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
+        else if (gameObject.layer == interactableOutlinedRedLayer && !OutlineShouldBeRed)
             // Sadece kendimi deðil, TÜM GRUBU yak
             foreach (var member in myGroupMembers)
             {

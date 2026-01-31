@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: OldWoman_CorrectOrder
   m_EditorClassIdentifier: 
   lines:
-  - SpeakerID: 3
-    LocalizationKey: FAMILYMOTHER_TRUEORDER
-    TextColor: {r: 0.33775365, g: 0.33775365, b: 0.4339623, a: 1}
+  - SpeakerID: 5
+    LocalizationKey: OLDWOMAN_TRUEORDER
+    TextColor: {r: 0.6603774, g: 0.43298328, b: 0.629369, a: 1}
     TextEffects: 0
     IsSkippable: 1
     TypewriterSpeedMultiplier: 1
     TextDelay: 0
-    FocusTargetID: 3
+    FocusTargetID: 5
     CamMoveDuration: 0.5
     CamMoveEase: 4
     DutchAngle: 0

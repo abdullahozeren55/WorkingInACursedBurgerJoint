@@ -15,12 +15,40 @@ MonoBehaviour:
   ID: 6
   SkinMaterial: {fileID: 2100000, guid: 489f06332ac130842bc403a6a21e6bcd, type: 2}
   WalkSpeed: 2
-  ArrivalDistance: 0.2
+  ArrivalDistance: 0.1
   SitPositionOffset: {x: 0, y: -0.458, z: -0.055}
   SitRotationOffset: {x: 0, y: 0, z: 0}
-  PossibleOrders: []
-  PossibleWrongOrderDialogues: []
-  PossibleCorrectOrderDialogues: []
-  PossibleEmptyTrayDialogues: []
-  PossibleKnifeHitDialogues: []
+  PossibleOrders:
+  - Order: {fileID: 11400000, guid: 28c04dd90a7324c4ca77e80907463e74, type: 2}
+    NormalDialogue: {fileID: 11400000, guid: cd008674cea5c75448df74a70e8076be, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  - Order: {fileID: 11400000, guid: 28c04dd90a7324c4ca77e80907463e74, type: 2}
+    NormalDialogue: {fileID: 11400000, guid: 2904a132398e27145b54b1db7ce05470, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  - Order: {fileID: 11400000, guid: 28c04dd90a7324c4ca77e80907463e74, type: 2}
+    NormalDialogue: {fileID: 11400000, guid: 53373ca2ec40d72498ebceb149170d50, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  - Order: {fileID: 11400000, guid: 28c04dd90a7324c4ca77e80907463e74, type: 2}
+    NormalDialogue: {fileID: 11400000, guid: b2883fd49c9f8db45b608a7e757a4fcf, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  PossibleWrongOrderDialogues:
+  - NormalDialogue: {fileID: 11400000, guid: 1d1596286148da64f92d36f607d3de45, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  PossibleCorrectOrderDialogues:
+  - NormalDialogue: {fileID: 11400000, guid: 2aa74757425621247b99a2f27d7901cf, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  PossibleEmptyTrayDialogues:
+  - NormalDialogue: {fileID: 11400000, guid: 0cc393aee5942aa4aa5f4b4c38bd0e66, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
+  PossibleKnifeHitDialogues:
+  - NormalDialogue: {fileID: 11400000, guid: ae26a92ce364c4c4d8109fd4cff91d8c, type: 2}
+    GlitchDialogue: {fileID: 0}
+    GlitchChance: 0
   FootstepSounds: {fileID: 11400000, guid: feb076469b0f79c40b8cdc301428e2fd, type: 2}

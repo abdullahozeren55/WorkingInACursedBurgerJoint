@@ -15,7 +15,7 @@ MonoBehaviour:
   ID: 4
   SkinMaterial: {fileID: 2100000, guid: bf2d033b7d636154684e930ffb46453d, type: 2}
   WalkSpeed: 1.5
-  ArrivalDistance: 0.2
+  ArrivalDistance: 0.1
   SitPositionOffset: {x: 0, y: -0.467, z: 0.148}
   SitRotationOffset: {x: 0, y: 0, z: 0}
   PossibleOrders:

@@ -27,6 +27,8 @@ public enum CustomerID
     TeenGirl,
     TeenGuy,
 
+    Clown,
+
     // --- Diğer Hedefler (Gerekirse eklersin) ---
     // Radio,
     // TV,
