@@ -8,19 +8,17 @@ public class ScenarioManager : MonoBehaviour
 
     [Header("Scenario")]
     [SerializeField] private LevelScenario scenario;
-    [SerializeField] private bool autoStart = true;
 
     [Header("Scenario Control")]
-    public bool IsSpawningPaused = false; // <-- YENÝ: Fren mekanizmasý
+    // DEÐÝÞÝKLÝK 1: Varsayýlan deðer true yapýldý. Böylece oyun baþlar baþlamaz akýþ durur.
+    public bool IsSpawningPaused = true;
 
     [Header("Ambient (Wave Based)")]
-    [SerializeField] private AmbientEventPoolSO defaultAmbientPool; // wave.AmbientPool null ise fallback
+    [SerializeField] private AmbientEventPoolSO defaultAmbientPool;
 
     private Coroutine routine;
-
     private ScenarioContext ctx;
     private bool eventBusy;
-
     private bool waveRunning = false;
     private AmbientEventPoolSO activeAmbientPool = null;
 
@@ -56,23 +54,27 @@ public class ScenarioManager : MonoBehaviour
             CustomerManager.Instance.OnCustomerLeftCounter -= HandleCustomerLeftCounter;
     }
 
-    // --- YENÝ: Eventlerden çaðýracaðýmýz kontrol metodlarý ---
+    public void PlayEvent(ScenarioEventSO ev)
+    {
+        StartCoroutine(PlayEventInternal(ev));
+    }
+
+    // --- KONTROL METODLARI ---
     public void PauseSpawning()
     {
         IsSpawningPaused = true;
-        Debug.Log("ScenarioManager: Spawn DURAKLATILDI.");
+        Debug.Log("ScenarioManager: Senaryo akýþý DURAKLATILDI.");
     }
 
     public void ResumeSpawning()
     {
         IsSpawningPaused = false;
-        Debug.Log("ScenarioManager: Spawn DEVAM EDÝYOR.");
+        Debug.Log("ScenarioManager: Senaryo akýþý DEVAM EDÝYOR.");
     }
 
     private void Start()
     {
-        if (autoStart)
-            StartScenario();
+        StartScenario();
     }
 
     public void StartScenario()
@@ -83,6 +85,10 @@ public class ScenarioManager : MonoBehaviour
         routine = StartCoroutine(RunScenario());
     }
 
+    // DEÐÝÞÝKLÝK 2: Pause durumunu kontrol eden yardýmcý bir özellik (property)
+    // WaitUntil içine direkt lambda yazmak yerine okunaklýlýðý artýrýr.
+    private bool IsScenarioActive => !IsSpawningPaused;
+
     private IEnumerator RunScenario()
     {
         if (scenario == null || scenario.Waves == null || scenario.Waves.Count == 0)
@@ -91,27 +97,47 @@ public class ScenarioManager : MonoBehaviour
             yield break;
         }
 
+        // DEÐÝÞÝKLÝK 3: Döngüye girmeden önce, oyunun baþlamasý için Resume komutunu bekle.
+        // Eðer oyun baþýnda IsSpawningPaused = true ise, kod burada asýlý kalýr.
+        yield return new WaitUntil(() => IsScenarioActive);
+
         for (int i = 0; i < scenario.Waves.Count; i++)
         {
             var wave = scenario.Waves[i];
+
+            // Wave baþlamadan önce duraklatma kontrolü
+            yield return new WaitUntil(() => IsScenarioActive);
 
             // wave baþý scripted eventler
             if (wave.EventsBeforeSpawn != null)
             {
                 foreach (var ev in wave.EventsBeforeSpawn)
+                {
+                    // Her event oynamadan önce duraklatma kontrolü
+                    yield return new WaitUntil(() => IsScenarioActive);
                     yield return PlayEventBlocking(ev);
+                }
             }
 
+            // Delay süresince duraklatýlýrsa, delay sayacý iþlemez; akýþ donar.
             if (wave.DelayAfterPreviousGroup > 0f)
+            {
+                yield return new WaitUntil(() => IsScenarioActive);
                 yield return new WaitForSeconds(wave.DelayAfterPreviousGroup);
+            }
 
+            // Wave'i çalýþtýrmadan hemen önce son kontrol
+            yield return new WaitUntil(() => IsScenarioActive);
             yield return RunWave(wave);
 
             // wave sonu scripted eventler
             if (wave.EventsAfterCounterEmpty != null)
             {
                 foreach (var ev in wave.EventsAfterCounterEmpty)
+                {
+                    yield return new WaitUntil(() => IsScenarioActive);
                     yield return PlayEventBlocking(ev);
+                }
             }
         }
 
@@ -123,18 +149,21 @@ public class ScenarioManager : MonoBehaviour
         var cm = CustomerManager.Instance;
 
         bool finished = false;
-        void OnWaveComplete() => finished = true; // Ýsim deðiþtirdim kafa karýþmasýn
+        void OnWaveComplete() => finished = true;
 
-        // CustomerManager'daki yeni event'e abone oluyoruz
         cm.OnWaveCompleted += OnWaveComplete;
 
         activeAmbientPool = (wave.AmbientPool != null) ? wave.AmbientPool : defaultAmbientPool;
         waveRunning = true;
 
-        // ARTIK bool DÖNMÜYORUZ, Coroutine baþlatýyoruz.
-        // Spawn iþlemini CustomerManager içinde bir Coroutine olarak baþlatýyoruz.
+        // NOT: Eðer ScenarioManager duraklatýldýysa, CustomerManager'a spawn emri vermeden önce bekle
+        yield return new WaitUntil(() => IsScenarioActive);
+
         cm.StartWaveSpawn(wave);
 
+        // Wave bitene kadar bekle.
+        // ÖNEMLÝ: Wave ortasýnda pause yapýldýðýnda burasý sadece beklemeye devam eder.
+        // CustomerManager spawn iþlemine devam edecektir (Aþaðýdaki dürüstlük notuna bakýnýz).
         yield return new WaitUntil(() => finished);
 
         waveRunning = false;
@@ -145,6 +174,7 @@ public class ScenarioManager : MonoBehaviour
 
     private void HandleCustomerLeftCounter(CustomerController customer)
     {
+
         if (!waveRunning) return;
         if (eventBusy) return;
 
@@ -152,16 +182,13 @@ public class ScenarioManager : MonoBehaviour
         if (pool == null) return;
         if (!pool.enabled) return;
 
-        // wave bitiþine yakýn bekletme riskini azalt
         var cm = CustomerManager.Instance;
         if (cm != null && cm.GetCustomersAtCounter().Count == 0)
-            return; // sadece wave bittiði aný skip
+            return;
 
-        // cooldown
         if (Time.time < GetNextAllowedTime(pool))
             return;
 
-        // chance (pool’dan)
         if (Random.value > pool.chancePerCustomerLeave)
             return;
 
@@ -177,7 +204,7 @@ public class ScenarioManager : MonoBehaviour
         PlayEventNonBlocking(picked);
     }
 
-    // ----- Pool helpers -----
+    // ----- Pool helpers (Deðiþmedi) -----
     private float GetNextAllowedTime(AmbientEventPoolSO pool)
         => nextAllowedByPool.TryGetValue(pool, out var t) ? t : 0f;
 
@@ -232,7 +259,7 @@ public class ScenarioManager : MonoBehaviour
         return valid[0].ev;
     }
 
-    // ----- Event runner -----
+    // ----- Event runner (Deðiþmedi) -----
     private IEnumerator PlayEventInternal(ScenarioEventSO ev)
     {
         if (ev == null) yield break;

@@ -44,9 +44,6 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
     // Components
     private NavMeshAgent agent;
     private Animator anim;
-    private DialogueSpeaker dialogueSpeaker;
-
-    private bool isInteracting;
 
     // IInteractable Properties
     public PlayerManager.HandRigTypes HandRigType { get; set; } = PlayerManager.HandRigTypes.Nothing;
@@ -70,7 +67,6 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
 
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
-        dialogueSpeaker = GetComponent<DialogueSpeaker>();
 
         interactableLayer = LayerMask.NameToLayer("Interactable");
         interactableOutlinedLayer = LayerMask.NameToLayer("InteractableOutlined");
@@ -188,14 +184,12 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
     {
         if (!CanInteract) return;
 
-        isInteracting = true;
         SetState(ClownState.Talking);
 
         // Oyuncuya Dön
         if (PlayerManager.Instance != null)
         {
-            Vector3 lookPos = PlayerManager.Instance.transform.position;
-            lookPos.y = transform.position.y;
+            Transform lookPos = PlayerManager.Instance.GetHeadTransform();
             transform.LookAt(lookPos);
         }
 
@@ -203,7 +197,7 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
         // Ýleride "Mola" durumundaysa breakTimeDialogue oynatýlýr.
         if (DialogueManager.Instance != null && standardDialogue != null)
         {
-            DialogueManager.Instance.StartDialogue(standardDialogue, () =>
+            DialogueManager.Instance.StartDialogue(standardDialogue, false, () =>
             {
                 HandleFinishDialogue();
             });
@@ -212,9 +206,7 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
 
     public void HandleFinishDialogue()
     {
-        isInteracting = false;
-        // Konuþma bitince tekrar iþine (yürümeye) dönsün
-        SetState(ClownState.Roaming);
+        CanInteract = false;
     }
 
     public void OnFocus()

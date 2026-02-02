@@ -22,9 +22,8 @@ MonoBehaviour:
     - ID: 5
       ProfileForToday: {fileID: 11400000, guid: 3acc80054bd37a44ca5912efafaf4d9a, type: 2}
     EventsBeforeSpawn:
-    - {fileID: 11400000, guid: 8f8797c05fcbf974eac8f0362cd5a346, type: 2}
-    EventsAfterCounterEmpty:
-    - {fileID: 11400000, guid: 27720825531220a4199eb51854798af7, type: 2}
+    - {fileID: 0}
+    EventsAfterCounterEmpty: []
     AmbientPool: {fileID: 11400000, guid: fa426bb640359a74aaef1014d1f8df8f, type: 2}
   - GroupName: Family
     DelayAfterPreviousGroup: 5

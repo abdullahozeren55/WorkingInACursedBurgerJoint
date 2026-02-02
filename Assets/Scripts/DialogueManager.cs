@@ -84,13 +84,16 @@ public class DialogueManager : MonoBehaviour
     private DialogueData currentData;
     private int currentIndex;
     private bool isDialogueActive;
-    private IDialogueSpeaker currentSpeaker;
+
+    //Bu diyalog serisi boyunca kamerayı yönetecek miyiz? ---
+    private bool isCameraControlEnabled = true;
+
     private Action onDialogueCompleteCallback;
 
-    // YENİ: Şu anki satırın datasına Update'den erişmek için
+    //Şu anki satırın datasına Update'den erişmek için
     private DialogueData.DialogueLine currentLineData;
 
-    // YENİ: Delayleri durdurabilmek için Coroutine referansları
+    //Delayleri durdurabilmek için Coroutine referansları
     private Coroutine textDelayRoutine;
     private Coroutine jumpscareDelayRoutine;
     private Coroutine eventDelayRoutine;
@@ -199,36 +202,45 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void StartDialogue(DialogueData data, Action onComplete = null)
+    // --- GÜNCELLENDİ: ARTIK PARAMETRE ALABİLİYOR ---
+    // enableCameraControl = false ise kamera ve müşteri kafaları dönmez.
+    public void StartDialogue(DialogueData data, bool enableCameraControl = true, Action onComplete = null)
     {
         currentData = data;
         onDialogueCompleteCallback = onComplete;
         currentIndex = -1;
         isDialogueActive = true;
 
+        // Bu durumu kaydediyoruz, EndDialogue ve PlayLine buna göre davranacak
+        isCameraControlEnabled = enableCameraControl;
+
+        // Player hareketini kısıtla (Diyalog müşterisiz olsa bile oyuncu yürümemeli)
+        // Eğer oyuncunun yürümesini de istiyorsan buraya da if koyabilirsin.
         if (PlayerManager.Instance != null) PlayerManager.Instance.SetPlayerBasicMovements(false);
 
-        if (CameraManager.Instance != null)
+        // --- KAMERA VE MÜŞTERİ MANTIĞI SADECE ENABLE İSE ÇALIŞIR ---
+        if (isCameraControlEnabled)
         {
-            CameraManager.Instance.StartDialogueMode();
-
-            // --- GÜNCELLENDİ: GRUBUN HEPSİ BAKSIN ---
-            // Konuşan kişiyi aramıyoruz, kasadaki herkesi alıyoruz.
-            if (CustomerManager.Instance != null)
+            if (CameraManager.Instance != null)
             {
-                var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
-                Transform camTransform = CameraManager.Instance.GetDialogueCameraTransform();
+                CameraManager.Instance.StartDialogueMode();
 
-                foreach (var customer in groupMembers)
+                if (CustomerManager.Instance != null)
                 {
-                    if (customer != null)
+                    var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
+                    Transform camTransform = CameraManager.Instance.GetDialogueCameraTransform();
+
+                    foreach (var customer in groupMembers)
                     {
-                        // Hepsi kameraya kilitlensin
-                        customer.SetLookTarget(camTransform);
+                        if (customer != null)
+                        {
+                            customer.SetLookTarget(camTransform);
+                        }
                     }
                 }
             }
         }
+        // -------------------------------------------------------------
 
         // İlk satırı başlat
         AdvanceDialogue();
@@ -284,7 +296,7 @@ public class DialogueManager : MonoBehaviour
 
     private void PlayLine(DialogueData.DialogueLine line)
     {
-        currentLineData = line; // Update'de erişmek için kaydet
+        currentLineData = line;
 
         // 2. HAVUZDAN BALON SEÇ
         DialogueAnimator selectedDialogueAnimator = GetAvailableDialogueAnimator();
@@ -292,12 +304,7 @@ public class DialogueManager : MonoBehaviour
 
         selectedDialogueAnimator.SetColor(line.TextColor);
         selectedDialogueAnimator.SetSpeed(line.TypewriterSpeedMultiplier);
-
-        // --- YENİ EKLENEN KISIM ---
-        // Data'da font seçimi olmadığı için şimdilik manuel olarak "DialogueOutlined" veriyoruz.
-        // Bu çağrı, dil Çince/Japonca ise fontu ve boyutu (Scale) otomatik ayarlayacak.
         selectedDialogueAnimator.UpdateFontSettings(FontType.DialogueOutlined);
-        // --------------------------
 
         if (glitchAudioSource != null) glitchAudioSource.volume = 0f;
 
@@ -306,13 +313,13 @@ public class DialogueManager : MonoBehaviour
         string rawText = LocalizationManager.Instance.GetText(line.LocalizationKey);
         string processedText = selectedDialogueAnimator.ApplyRichText(rawText, line.TextEffects);
 
-        // ... (Kodun geri kalanı aynı şekilde devam ediyor: Camera Juice, Events, Behavior vb.) ...
-
         bool hasJumpscare = (line.Jumpscare != JumpscareType.None);
 
-        if (CameraManager.Instance != null)
+        // --- DÜZELTME BAŞLANGICI ---
+
+        // 1. SADECE KAMERA İŞLEMLERİ BU BLOKTA KALSIN
+        if (isCameraControlEnabled && CameraManager.Instance != null)
         {
-            // ... Camera kodları aynı ...
             Transform targetTrans = null;
             CustomerID targetID = (line.FocusTargetID != CustomerID.None) ? line.FocusTargetID : line.SpeakerID;
 
@@ -321,8 +328,6 @@ public class DialogueManager : MonoBehaviour
                 if (speakers[targetID] is DialogueSpeaker ds) targetTrans = ds.LookAtPoint;
                 else if (speakers[targetID] is MonoBehaviour mb) targetTrans = mb.transform;
             }
-
-            bool isFirstLine = (currentIndex == 0);
 
             CameraManager.Instance.UpdateDialogueShot(
                 targetTrans,
@@ -336,52 +341,57 @@ public class DialogueManager : MonoBehaviour
                 (currentIndex == 0),
                 hasJumpscare
             );
+        } // <--- PARANTEZİ BURADA KAPATIYORUZ! (Eskiden en sondaydı)
 
-            // ... (Kalan tüm switch-case ve delay mantıkları aynen kalıyor)
-            float organicTextDelay = GetOrganicDelay(line.TextDelay);
-            float organicJumpscareDelay = GetOrganicDelay(line.JumpscareDelay);
-            float organicEventDelay = GetOrganicDelay(line.EventDelay);
-            float organicAutoAdvanceDuration = GetOrganicDelay(line.AutoAdvanceDuration);
+        // 2. METİN VE MANTIK İŞLEMLERİ ARTIK HER DURUMDA ÇALIŞACAK
 
-            if (line.Events != DialogueEvent.None)
-            {
-                eventDelayRoutine = StartCoroutine(ProcessEventsRoutine(organicEventDelay, line.Events));
-            }
+        float organicTextDelay = GetOrganicDelay(line.TextDelay);
+        float organicJumpscareDelay = GetOrganicDelay(line.JumpscareDelay);
+        float organicEventDelay = GetOrganicDelay(line.EventDelay);
+        float organicAutoAdvanceDuration = GetOrganicDelay(line.AutoAdvanceDuration);
 
-            if (line.Jumpscare != JumpscareType.None)
-            {
-                jumpscareDelayRoutine = StartCoroutine(JumpscareRoutine(organicJumpscareDelay, line.Jumpscare, line.JumpscareFadeInDuration, line.JumpscareFadeOutDuration));
-            }
-
-            selectedDialogueAnimator.transform.DOKill();
-
-            switch (line.Behavior)
-            {
-                case LineBehavior.Normal:
-                    StopGlitchAudio(0.1f);
-                    selectedDialogueAnimator.SetGlitchStrength(0f);
-                    textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-                    break;
-
-                case LineBehavior.Meltdown:
-                    selectedDialogueAnimator.SetGlitchStrength(0f);
-                    textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-                    StartCoroutine(MeltdownRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
-                    break;
-
-                case LineBehavior.HorrorReveal:
-                    selectedDialogueAnimator.SetGlitchStrength(0f);
-                    textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-                    StartCoroutine(HorrorRevealRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
-                    break;
-
-                case LineBehavior.InstantRecover:
-                    StopGlitchAudio(0.1f);
-                    selectedDialogueAnimator.SetGlitchStrength(0f);
-                    textDelayRoutine = StartCoroutine(InstantTextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
-                    break;
-            }
+        if (line.Events != DialogueEvent.None)
+        {
+            eventDelayRoutine = StartCoroutine(ProcessEventsRoutine(organicEventDelay, line.Events));
         }
+
+        // Jumpscare efekti (Kamera sallantısı vb.) kamera modundan bağımsız çalışsın mı?
+        // Eğer sadece kamera sallıyorsa isCameraControlEnabled kontrolü eklenebilir ama
+        // ses efekti de varsa çalışması gerekir. Şimdilik açık bırakıyorum.
+        if (line.Jumpscare != JumpscareType.None)
+        {
+            jumpscareDelayRoutine = StartCoroutine(JumpscareRoutine(organicJumpscareDelay, line.Jumpscare, line.JumpscareFadeInDuration, line.JumpscareFadeOutDuration));
+        }
+
+        selectedDialogueAnimator.transform.DOKill();
+
+        switch (line.Behavior)
+        {
+            case LineBehavior.Normal:
+                StopGlitchAudio(0.1f);
+                selectedDialogueAnimator.SetGlitchStrength(0f);
+                textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
+                break;
+
+            case LineBehavior.Meltdown:
+                selectedDialogueAnimator.SetGlitchStrength(0f);
+                textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
+                StartCoroutine(MeltdownRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
+                break;
+
+            case LineBehavior.HorrorReveal:
+                selectedDialogueAnimator.SetGlitchStrength(0f);
+                textDelayRoutine = StartCoroutine(TextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
+                StartCoroutine(HorrorRevealRoutine(selectedDialogueAnimator, organicAutoAdvanceDuration));
+                break;
+
+            case LineBehavior.InstantRecover:
+                StopGlitchAudio(0.1f);
+                selectedDialogueAnimator.SetGlitchStrength(0f);
+                textDelayRoutine = StartCoroutine(InstantTextRoutine(organicTextDelay, line, selectedDialogueAnimator, processedText));
+                break;
+        }
+        // --- DÜZELTME BİTİŞİ ---
     }
 
     // --- YENİ: ORGANİK DELAY HESAPLAYICI ---
@@ -435,22 +445,25 @@ public class DialogueManager : MonoBehaviour
 
         if (PlayerManager.Instance != null) PlayerManager.Instance.SetPlayerBasicMovements(true);
 
-        if (CameraManager.Instance != null) CameraManager.Instance.EndDialogueMode();
-
-        // --- GÜNCELLENDİ: GRUBU SERBEST BIRAK ---
-        if (CustomerManager.Instance != null)
+        // --- GÜNCELLENDİ: KAMERA VE MÜŞTERİ RESETLEME SADECE MOD AÇIKSA YAPILIR ---
+        if (isCameraControlEnabled)
         {
-            var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
+            if (CameraManager.Instance != null) CameraManager.Instance.EndDialogueMode();
 
-            foreach (var customer in groupMembers)
+            if (CustomerManager.Instance != null)
             {
-                if (customer != null)
+                var groupMembers = CustomerManager.Instance.GetCustomersAtCounter();
+
+                foreach (var customer in groupMembers)
                 {
-                    // Müşteri normal hayatına (Player'a bakmaya) dönsün
-                    customer.ClearLookTarget();
+                    if (customer != null)
+                    {
+                        customer.ClearLookTarget();
+                    }
                 }
             }
         }
+        // --------------------------------------------------------------------------
 
         onDialogueCompleteCallback?.Invoke();
         onDialogueCompleteCallback = null;

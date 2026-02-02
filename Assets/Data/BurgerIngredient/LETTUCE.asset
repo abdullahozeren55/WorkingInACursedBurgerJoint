@@ -12,13 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7283705b9a48eed4cafef7f670eb71e3, type: 3}
   m_Name: LETTUCE
   m_EditorClassIdentifier: 
+  rawParticleColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
+  cookedParticleColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
+  burntParticleColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
+  rawSmokeColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
+  cookedSmokeColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
+  burntSmokeColors:
+    minColor: {r: 0, g: 0, b: 0, a: 0}
+    maxColor: {r: 0, g: 0, b: 0, a: 0}
   isUseable: 0
   isSauce: 0
   isThrowable: 1
+  isCookable: 0
   sauceDropAmount: 5
   targetDropScale: 0.8
   randomMultiplier: 1.3
   throwMultiplier: 1
+  timeToCook: 10
+  timeToBurn: 10
+  cookingVariance: 0.15
+  rawMat: {fileID: 0}
+  cookedMat: {fileID: 0}
+  burntMat: {fileID: 0}
   ingredientType: 3
   sauceType: 0
   handGrabType: 4
@@ -26,7 +51,7 @@ MonoBehaviour:
   iconData:
     sprite: {fileID: 21300000, guid: 6fbed00e5a274854bb3577d13d4143e1, type: 3}
     offset: {x: 0, y: 0}
-  yHeight: 0.003
+  yHeight: 0.0035
   timeToPutOnTray: 0.2
   localScaleWhenGrabbed: {x: 8, y: 8, z: 8}
   stickableLayers:
@@ -36,6 +61,8 @@ MonoBehaviour:
   grabRotationOffset: {x: -20, y: -70, z: -70}
   grabLocalPositionOffset: {x: 0.0042737406, y: 0.051831357, z: 0.051521618}
   grabLocalRotationOffset: {x: 77.950226, y: 218.30931, z: 205.53195}
+  grillPositionOffset: {x: 0, y: 0, z: 0}
+  grillRotationOffset: {x: 0, y: 0, z: 0}
   focusTextKeys:
   - GRABABLE_LETTUCE_SLICE
   dropParticles:
@@ -47,6 +74,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 73aea1c146edc0449b056b3743e7d624, type: 3}
   - {fileID: 8300000, guid: 243d7da6b9c7e874aa89f00c3872e0ba, type: 3}
   - {fileID: 8300000, guid: 29073a5f8ca3bbe49ba983bf8a3ec393, type: 3}
+  cookingSound: {fileID: 0}
   grabSoundVolume: 0.7
   grabSoundMinPitch: 1
   grabSoundMaxPitch: 1.2
@@ -59,6 +87,9 @@ MonoBehaviour:
   traySoundVolume: 1
   traySoundMinPitch: 0.8
   traySoundMaxPitch: 1.2
+  cookingSoundVolume: 1
+  cookingSoundMinPitch: 0.85
+  cookingSoundMaxPitch: 1.15
   soundCooldown: 0.1
   throwThreshold: 5
   dropThreshold: 1

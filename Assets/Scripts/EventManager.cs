@@ -21,6 +21,8 @@ public class EventManager : MonoBehaviour
 
     public DoorClass[] DoorClasses;
 
+    public GameObject kitchenPlayerBlockers;
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -39,5 +41,30 @@ public class EventManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void MakeKitchenUnleavable()
+    {
+        kitchenPlayerBlockers.SetActive(true);
+
+        foreach (DoorClass dc in DoorClasses)
+        {
+            if (dc.type == DoorType.KitchenDoor)
+            {
+                if (dc.door.isOpened)
+                {
+                    dc.door.HandleRotation(false);
+                }
+
+                dc.door.CanInteract = false;
+
+                break;
+            }
+        }
+    }
+
+    public void PlayRandomHorrorMusic()
+    {
+        MonitorManager.Instance.PlayRandomHorrorTrack();
     }
 }

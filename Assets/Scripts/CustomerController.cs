@@ -417,7 +417,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             if (selectedDialogue != null)
             {
                 // Diyalog bitince masaya git (Callback)
-                DialogueManager.Instance.StartDialogue(selectedDialogue, HandleFinishDialogue);
+                DialogueManager.Instance.StartDialogue(selectedDialogue, true, HandleFinishDialogue);
             }
             else
             {
@@ -691,7 +691,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
             if (assignedDialogue != null)
             {
                 // Diyalog bittiðinde çaðrýlacak callback'i güncelle
-                DialogueManager.Instance.StartDialogue(assignedDialogue, OnOrderingFinished);
+                DialogueManager.Instance.StartDialogue(assignedDialogue, true, HandleFinishDialogue);
             }
             else
             {

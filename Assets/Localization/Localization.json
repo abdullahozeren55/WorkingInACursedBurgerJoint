@@ -2571,6 +2571,26 @@
     "pt": "Reprodutor de Vídeo"
   },
   {
+    "key": "CLOWN_DIALOGUE_0",
+    "tr": "Nerede kaldın ya?",
+    "en": "Where have you been?!",
+    "zh": "你跑哪儿去了？",
+    "ja": "どこ行ってたんだよ？",
+    "es": "¿Dónde te habías metido?",
+    "ru": "Ты где пропадал?",
+    "pt": "Onde você se meteu?"
+  },
+  {
+    "key": "CLOWN_DIALOGUE_1",
+    "tr": "Hadi çabuk mutfağa geç! Müşteriler gelmek üzeredir.",
+    "en": "Hurry up and get to the kitchen! Customers will be here any minute.",
+    "zh": "快点进厨房！客人马上就要来了。",
+    "ja": "さっさとキッチンに入れ！もうすぐ客が来るぞ。",
+    "es": "¡Vamos, rápido a la cocina! Los clientes están a punto de llegar.",
+    "ru": "Давай, живо на кухню! Клиенты уже на подходе.",
+    "pt": "Anda, vai logo pra cozinha! Os clientes estão quase chegando."
+  },
+  {
     "key": "UI_HOW_TO",
     "tr": "Nasıl?",
     "en": "How To?",
