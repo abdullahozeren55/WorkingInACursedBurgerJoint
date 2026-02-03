@@ -20,7 +20,13 @@ public class EventManager : MonoBehaviour
     public static EventManager Instance { get; private set; }
 
     public DoorClass[] DoorClasses;
+    public Cooler Cooler;
+    [Space]
+    public AudioClip scaryFootstep;
+    public Transform scaryFoostepPoint;
+    [Space]
 
+    public GameObject kitchenPlayerBlockerTrigger;
     public GameObject kitchenPlayerBlockers;
 
     private void Awake()
@@ -41,6 +47,22 @@ public class EventManager : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void OpenCoolerDoor()
+    {
+        Cooler.HandleRotation();
+    }
+
+    public void PlayScaryFootstep()
+    {
+        SoundManager.Instance.PlaySoundFX(scaryFootstep, scaryFoostepPoint);
+    }
+
+    public void TurnOnKitchenBlockerTrigger()
+    {
+        if (kitchenPlayerBlockerTrigger != null)
+            kitchenPlayerBlockerTrigger.SetActive(true);
     }
 
     public void MakeKitchenUnleavable()
@@ -66,5 +88,7 @@ public class EventManager : MonoBehaviour
     public void PlayRandomHorrorMusic()
     {
         MonitorManager.Instance.PlayRandomHorrorTrack();
+        CustomerManager.Instance.DisableAllCustomers();
+        Clown.Instance.ShouldBeSad = true;
     }
 }

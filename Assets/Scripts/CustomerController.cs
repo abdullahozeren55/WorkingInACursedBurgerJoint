@@ -458,7 +458,7 @@ public class CustomerController : MonoBehaviour, ICustomer, IInteractable
     {
         if (CurrentState == CustomerState.Ordering)
         {
-            GoToState(CustomerState.WaitingForFood);
+            OnOrderingFinished();
         }
         else if (CurrentState == CustomerState.WaitingForFood)
         {

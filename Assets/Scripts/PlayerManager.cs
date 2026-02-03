@@ -108,6 +108,19 @@ public class PlayerManager : MonoBehaviour
         firstPersonController.CanFootstep = can;
         crosshairGO.SetActive(can);
     }
+
+    public void SetPlayerFinalSceneMovements()
+    {
+        firstPersonController.CanMove = false;
+        firstPersonController.CanSprint = false;
+        firstPersonController.CanJump = false;
+        firstPersonController.CanCrouch = false;
+        firstPersonController.CanInteract = true;
+        firstPersonController.CanGrab = true;
+        firstPersonController.CanLook = true;
+        firstPersonController.CanFootstep = false;
+        crosshairGO.SetActive(true);
+    }
     public void SetPlayerCanInteract(bool can)
     {
         firstPersonController.CanInteract = can;

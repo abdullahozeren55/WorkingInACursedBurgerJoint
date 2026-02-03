@@ -199,7 +199,7 @@ public class Knife : MonoBehaviour, IGrabable
 
     private void StickToSurface(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Balloon") || collision.gameObject.CompareTag("Customer")) return;
+        if (collision.gameObject.CompareTag("Balloon") || collision.gameObject.CompareTag("Customer") || collision.gameObject.CompareTag("Clown")) return;
 
         // Get the surface normal from the collision
         Vector3 surfaceNormal = collision.GetContact(0).normal;

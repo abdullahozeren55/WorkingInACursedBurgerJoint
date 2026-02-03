@@ -102,7 +102,6 @@ public class Monitor : MonoBehaviour, IInteractable
 
         monitorUITween = monitorScaler.DOScale(Vector3.one, monitorUILerpTime)
         .SetEase(Ease.OutBack, 3.5f)
-        // .SetUpdate(true)  <--- BU SATIRI SÝLÝYORUZ (Varsayýlan false olsun)
         .OnComplete(() =>
         {
             GameManager.Instance.SetCursor(GameManager.CursorType.Retro);
@@ -112,7 +111,14 @@ public class Monitor : MonoBehaviour, IInteractable
 
     public void FinishMonitorUI()
     {
-        PlayerManager.Instance.SetPlayerBasicMovements(true);
+        if (Clown.Instance && Clown.Instance.ShouldBeSad)
+        {
+            PlayerManager.Instance.SetPlayerFinalSceneMovements();
+            Clown.Instance.SetState(Clown.ClownState.SadIdle);
+        }    
+        else
+            PlayerManager.Instance.SetPlayerBasicMovements(true);
+
         CameraManager.Instance.SwitchToCamera(CameraManager.CameraName.FirstPerson);
 
         GameManager.Instance.SetCursor(GameManager.CursorType.Default);
@@ -135,7 +141,6 @@ public class Monitor : MonoBehaviour, IInteractable
         PlayerManager.Instance.CancelPlayerThrow();
 
         monitorUI.SetActive(false);
-        ChangeLayer(OutlineShouldBeRed ? interactableOutlinedRedLayer : interactableOutlinedLayer);
     }
 
     public void UpdateShowHint()

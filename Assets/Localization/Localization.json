@@ -2341,16 +2341,6 @@
     "pt": "Escala da UI"
   },
   {
-    "key": "UI_TOAST_MACHINE",
-    "tr": "Tost Makinesi",
-    "en": "Toast Machine",
-    "zh": "面包机",
-    "ja": "トースター",
-    "es": "Tostadora",
-    "ru": "Тостер",
-    "pt": "Torradeira"
-  },
-  {
     "key": "UI_LOW",
     "tr": "Düşük",
     "en": "Low",
@@ -2381,14 +2371,14 @@
     "pt": "Alta"
   },
   {
-    "key": "UI_ULTRA",
-    "tr": "Ultra",
-    "en": "Ultra",
-    "zh": "极致",
-    "ja": "ウルトラ",
-    "es": "Ultra",
-    "ru": "Ультра",
-    "pt": "Ultra"
+    "key": "INTERACTABLE_LISTEN",
+    "tr": "Dinle",
+    "en": "Listen",
+    "zh": "听",
+    "ja": "聞く",
+    "es": "Escuchar",
+    "ru": "Слушать",
+    "pt": "Escutar"
   },
   {
     "key": "UI_MAIN_MENU_CONTROL_HINTS",
@@ -2589,6 +2579,26 @@
     "es": "¡Vamos, rápido a la cocina! Los clientes están a punto de llegar.",
     "ru": "Давай, живо на кухню! Клиенты уже на подходе.",
     "pt": "Anda, vai logo pra cozinha! Os clientes estão quase chegando."
+  },
+  {
+    "key": "CLOWN_SADDIALOGUE_0",
+    "tr": "Biz...",
+    "en": "What...",
+    "zh": "我们……",
+    "ja": "俺たちは…",
+    "es": "¿Qué...",
+    "ru": "Что...",
+    "pt": "O que..."
+  },
+  {
+    "key": "CLOWN_SADDIALOGUE_1",
+    "tr": "Biz ne yaptık?",
+    "en": "What have we done?",
+    "zh": "我们做了什么？",
+    "ja": "俺たちは何をしてしまったんだ？",
+    "es": "¿Qué hemos hecho?",
+    "ru": "Что мы наделали?",
+    "pt": "O que nós fizemos?"
   },
   {
     "key": "UI_HOW_TO",
@@ -3169,6 +3179,26 @@
     "es": "VSync",
     "ru": "VSync",
     "pt": "VSync"
+  },
+  {
+    "key": "UI_END_OF_DEMO",
+    "tr": "Demo Sonu",
+    "en": "End of Demo",
+    "zh": "试玩结束",
+    "ja": "デモ終了",
+    "es": "Fin de la Demo",
+    "ru": "Конец Демо-версии",
+    "pt": "Fim da Demo"
+  },
+  {
+    "key": "UI_END_OF_DEMO_DESCRIPTION",
+    "tr": "Oynadığınız için teşekkürler! Beğendiyseniz ve destek olmak isterseniz Steam'de İstek Listenize ekleyebilirsiniz!",
+    "en": "Thanks for playing! If you enjoyed it and want to support, please add it to your Steam Wishlist!",
+    "zh": "感谢游玩！如果您喜欢本游戏并希望给予支持，请将其加入您的 Steam 愿望单！",
+    "ja": "プレイしていただきありがとうございます！もし気に入って応援していただけるなら、Steamのウィッシュリストに追加していただけると嬉しいです！",
+    "es": "¡Gracias por jugar! Si te ha gustado y quieres apoyar el desarrollo, ¡añádelo a tu Lista de Deseados en Steam!",
+    "ru": "Спасибо за игру! Если вам понравилось и вы хотите поддержать проект, добавьте игру в список желаемого в Steam!",
+    "pt": "Obrigado por jogar! Se gostou e quiser apoiar, adicione à sua Lista de Desejos no Steam!"
   },
   {
     "key": "CURSED_SPEECH_0",

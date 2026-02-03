@@ -15,6 +15,8 @@ public class WindowController : MonoBehaviour, IPointerClickHandler
     [Header("Etkileþim Engelleyici")]
     public GameObject contentBlocker;
 
+    public bool isMusicPlayer = false;
+
     // Pencere baþlýðý yazýsýnýn rengini de deðiþtirmek istersen:
     // public TMPro.TextMeshProUGUI headerText;
     // public Color activeTextColor = Color.white;
@@ -57,6 +59,7 @@ public class WindowController : MonoBehaviour, IPointerClickHandler
     // Kapatma butonuna baðlayacaðýn fonksiyon
     public void CloseWindow()
     {
+        if (isMusicPlayer && Clown.Instance.ShouldBeSad) return;
 
         if (startMenuAppButton != null)
         {

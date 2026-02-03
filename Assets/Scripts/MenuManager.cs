@@ -61,6 +61,7 @@ public class MenuManager : MonoBehaviour
     [Header("Canvas")]
     public Canvas menuCanvas;
     public Canvas mouseCanvas;
+    public CanvasGroup demoEndGroup;
 
     private RectTransform canvasRect;
     private List<PixelPerfectCanvasScaler> activeScalers = new List<PixelPerfectCanvasScaler>();
@@ -163,6 +164,38 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void FinishTheGame()
+    {
+        StartCoroutine(DemoEndCoroutine());
+    }
+
+    private IEnumerator DemoEndCoroutine()
+    {
+        yield return new WaitForSeconds(0.8f);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < 3f)
+        {
+            demoEndGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime/1f);
+
+            if (!demoEndGroup.interactable && demoEndGroup.alpha > 0.4f)
+            {
+                demoEndGroup.interactable = true;
+                demoEndGroup.blocksRaycasts = true;
+                GameManager.Instance.SetCursor(GameManager.CursorType.Default);
+                GameManager.Instance.SetCursorLock(false);
+            }
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        demoEndGroup.alpha = 1f;
+        demoEndGroup.interactable = true;
+        demoEndGroup.blocksRaycasts = true;
+    }
+
     // --- YENÝ SÝSTEM: Mod Deðiþtirme Fonksiyonlarý ---
 
     /// <summary>
@@ -171,6 +204,10 @@ public class MenuManager : MonoBehaviour
     public void EnterMainMenuMode(bool instant = false)
     {
         if (!instant) isBusy = true;
+
+        demoEndGroup.alpha = 0;
+        demoEndGroup.blocksRaycasts = false;
+        demoEndGroup.interactable = false;
 
         float height = GetCanvasHeight();
 

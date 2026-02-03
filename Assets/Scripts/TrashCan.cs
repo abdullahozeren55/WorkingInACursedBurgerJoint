@@ -18,6 +18,13 @@ public class TrashCan : MonoBehaviour
             other.gameObject.CompareTag("WholeIngredient") ||
             other.gameObject.CompareTag("FoodPack") ||
             other.gameObject.CompareTag("Drink") ||
+            other.gameObject.CompareTag("SauceCapsule") ||
+            other.gameObject.CompareTag("Tray") ||
+            other.gameObject.CompareTag("FryableBox") ||
+            other.gameObject.CompareTag("Fryable") ||
+            other.gameObject.CompareTag("DrinkCup") ||
+            other.gameObject.CompareTag("Toy") ||
+            other.gameObject.CompareTag("Ball") ||
             other.gameObject.CompareTag("SauceBottle"))
         {
             SoundManager.Instance.PlaySoundFX(trashToCanSound, transform, trashToCanVolume, trashToCanMinPitch, trashToCanMaxPitch);

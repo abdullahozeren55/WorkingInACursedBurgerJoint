@@ -42,6 +42,14 @@ public class CustomerManager : MonoBehaviour
         Instance = this;
     }
 
+    public void DisableAllCustomers()
+    {
+        foreach (var ch in SceneCharacters)
+        {
+            ch.Controller.gameObject.SetActive(false);
+        }
+    }
+
     // Monitor güncelleme vs. aynen kalýyor
     public void UpdateMonitorWithGroupOrders()
     {

@@ -453,14 +453,7 @@ public class MonitorManager : MonoBehaviour
 
     public void NextSong()
     {
-        // Horror Modundan Çýkýþ -> Normal Mod
-        if (_isHorrorPlaying)
-        {
-            _isHorrorPlaying = false;
-            // Sýradaki normal parçayý çal, volume vs. eski haline DÖNMEZ.
-            LoadTrack(currentIndex, true);
-            return;
-        }
+        if (_isHorrorPlaying) return;
 
         currentIndex++;
         if (currentIndex >= playlist.Count) currentIndex = 0;
@@ -469,13 +462,7 @@ public class MonitorManager : MonoBehaviour
 
     public void PreviousSong()
     {
-        // Horror Modundan Çýkýþ -> Normal Mod
-        if (_isHorrorPlaying)
-        {
-            _isHorrorPlaying = false;
-            LoadTrack(currentIndex, true);
-            return;
-        }
+        if (_isHorrorPlaying) return;
 
         currentIndex--;
         if (currentIndex < 0) currentIndex = playlist.Count - 1;

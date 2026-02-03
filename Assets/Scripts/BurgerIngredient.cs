@@ -374,7 +374,7 @@ public class BurgerIngredient : MonoBehaviour, IGrabable
 
     private void StickToSurface(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Balloon") || collision.gameObject.CompareTag("Customer")) return;
+        if (collision.gameObject.CompareTag("Balloon") || collision.gameObject.CompareTag("Customer") || collision.gameObject.CompareTag("Clown")) return;
 
         Vector3 surfaceNormal = collision.contacts[0].normal;
         Vector3 bigSideDirection = transform.up;

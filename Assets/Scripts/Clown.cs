@@ -11,8 +11,13 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
 {
     public static Clown Instance;
 
+    public bool ShouldBeSad = false;
+
     [SerializeField] private GameObject bodyGO;
     [SerializeField] private GameObject headGO;
+    [Space]
+    [SerializeField] private Material sadMat;
+    [SerializeField] private GameObject sadCustomers;
 
     public enum ClownState
     {
@@ -20,7 +25,8 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
         Roaming,    // Rastgele bir yere yürüyor
         Performing, // Dans ediyor / Gösteri yapýyor
         Talking,    // Oyuncuyla konuþuyor
-        BreakTime   // (Ýleride) Mola verip yemek yiyeceði zaman
+        BreakTime,   // (Ýleride) Mola verip yemek yiyeceði zaman
+        SadIdle,
     }
 
     [Header("Settings")]
@@ -33,10 +39,12 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
     [Header("Interaction Data")]
     [SerializeField] private string focusTextKey = "interaction_clown"; // "Palyaço ile konuþ"
     [SerializeField] private DialogueData standardDialogue; // Standart "Naber patron" diyaloðu
-    [SerializeField] private DialogueData breakTimeDialogue; // "Yemek yiyorum" diyaloðu
+    [SerializeField] private DialogueData sadDialogue; // "Yemek yiyorum" diyaloðu
 
     [Header("References")]
     [SerializeField] private Transform roamCenterPoint; // Dükkanýn ortasý
+
+    public Transform clownSadPointTransform;
 
     // --- STATE MACHINE ---
     public ClownState CurrentState { get; private set; }
@@ -59,6 +67,13 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
     private int interactableOutlinedLayer;
     private int interactableOutlinedRedLayer;
     private int uninteractableLayer;
+
+    [Header("Final Scene")]
+    [SerializeField] private LayerMask interactableLayersForTheFinalSceneRaycast;
+    [SerializeField] private AudioClip tensionSound;
+    [SerializeField] private AudioClip horrorSound;
+    private bool isSoundPlayed = false;
+    private bool isSoundPlayedForCustomers = false;
 
     private void Awake()
     {
@@ -94,6 +109,27 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
                 StartCoroutine(PerformRoutine());
             }
         }
+
+        if (ShouldBeSad)
+        {
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 10f, interactableLayersForTheFinalSceneRaycast))
+            {
+                if (!isSoundPlayed && hit.collider.CompareTag("Clown"))
+                {
+                    SoundManager.Instance.PlaySoundFX(tensionSound, transform);
+                    isSoundPlayed = true;
+                }
+                else if (!isSoundPlayedForCustomers && hit.collider.CompareTag("Customer"))
+                {
+                    SoundManager.Instance.PlaySoundFX(horrorSound, transform);
+                    isSoundPlayedForCustomers = true;
+                    MenuManager.Instance.FinishTheGame();
+                }
+            }
+        }
     }
 
     // --- STATE MANAGEMENT ---
@@ -122,6 +158,25 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
                 anim.SetBool("dance", false);
                 agent.isStopped = true;
                 // Yüzünü oyuncuya dönme iþlemi OnInteract'ta yapýlýyor
+                break;
+            case ClownState.SadIdle:
+                anim.SetBool("walk", false);
+                anim.SetBool("dance", false);
+                anim.SetBool("sadIdle", true);
+                headGO.GetComponent<SkinnedMeshRenderer>().material = sadMat;
+                CanInteract = true;
+
+                // 1. Önce Agent'ý durdur ve yolunu temizle (Garanti olmasý için)
+                agent.isStopped = true;
+                agent.ResetPath();
+                agent.velocity = Vector3.zero;
+
+                // 2. Teleport iþlemi için Warp kullanýyoruz
+                // Warp, hem pozisyonu deðiþtirir hem de Agent'ý o NavMesh noktasýna baðlar.
+                agent.Warp(clownSadPointTransform.position);
+
+                // 3. Rotasyonu manuel ayarlayabilirsin (Warp rotasyonu deðiþtirmez)
+                transform.rotation = clownSadPointTransform.rotation;
                 break;
         }
     }
@@ -193,20 +248,44 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
             transform.LookAt(lookPos);
         }
 
-        // Diyaloðu Baþlat
-        // Ýleride "Mola" durumundaysa breakTimeDialogue oynatýlýr.
-        if (DialogueManager.Instance != null && standardDialogue != null)
+        if (ShouldBeSad)
         {
-            DialogueManager.Instance.StartDialogue(standardDialogue, false, () =>
+            if (DialogueManager.Instance != null && sadDialogue != null)
             {
-                HandleFinishDialogue();
-            });
+                DialogueManager.Instance.StartDialogue(sadDialogue, false, () =>
+                {
+                    HandleFinishDialogue();
+                });
+            }
         }
+        else
+        {
+            if (DialogueManager.Instance != null && standardDialogue != null)
+            {
+                DialogueManager.Instance.StartDialogue(standardDialogue, false, () =>
+                {
+                    HandleFinishDialogue();
+                });
+            }
+        }
+        
     }
 
     public void HandleFinishDialogue()
     {
         CanInteract = false;
+        if (ShouldBeSad)
+        {
+            sadCustomers.SetActive(true);
+        }
+        else
+        {
+            if (EventManager.Instance)
+            {
+                EventManager.Instance.TurnOnKitchenBlockerTrigger();
+            }
+        }
+        
     }
 
     public void OnFocus()
@@ -261,11 +340,6 @@ public class Clown : MonoBehaviour, ICustomer, IInteractable
 
     public void OnScareEvent()
     {
-        // Palyaçoyu korkutursan ne olur?
-        // Belki yere düþer veya kahkaha atar.
-        anim.SetTrigger("Scared");
-        SetState(ClownState.Idle); // Bir süre dursun
-        StartCoroutine(RecoverFromScare(2f));
     }
 
     public void PlayFootstep()

@@ -443,7 +443,13 @@ public class DialogueManager : MonoBehaviour
             currentActiveDialogueAnimator.Hide();
         }
 
-        if (PlayerManager.Instance != null) PlayerManager.Instance.SetPlayerBasicMovements(true);
+        if (PlayerManager.Instance != null)
+        {
+            if (Clown.Instance.ShouldBeSad)
+                PlayerManager.Instance.SetPlayerFinalSceneMovements();
+            else
+                PlayerManager.Instance.SetPlayerBasicMovements(true);
+        }
 
         // --- GÜNCELLENDİ: KAMERA VE MÜŞTERİ RESETLEME SADECE MOD AÇIKSA YAPILIR ---
         if (isCameraControlEnabled)

@@ -24,6 +24,12 @@ TagManager:
   - Grill
   - Balloon
   - Ball
+  - Clown
+  - SauceCapsule
+  - DrinkCup
+  - FryableBox
+  - Fryable
+  - Toy
   layers:
   - Default
   - TransparentFX

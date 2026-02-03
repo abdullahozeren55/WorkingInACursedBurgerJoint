@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 312a2d01e62420b4a90527c0d6d2a055, type: 3}
   m_Name: PlayRandomHorrorMusic
   m_EditorClassIdentifier: 
-  delayAfterTriggered: 0
+  delayAfterTriggered: 10
