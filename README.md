@@ -1,9 +1,6 @@
 ![Gif0](https://github.com/MidnightFork/xb-gifs/blob/main/XBurger0.gif?raw=true)
-
-![GamePlayGif0]
-
-![GamePlayGif1]https://github.com/MidnightFork/xb-gifs/blob/main/XBurger1.gif?raw=true
-![GamePlayGif2]https://github.com/MidnightFork/xb-gifs/blob/main/XBurger2.gif?raw=true
+![Gif1](https://github.com/MidnightFork/xb-gifs/blob/main/XBurger1.gif?raw=true)
+![Gif2](https://github.com/MidnightFork/xb-gifs/blob/main/XBurger2.gif?raw=true)
 
 
 # 🍔 X Burger - Advanced Gameplay Systems & Mechanics Showcase
