@@ -1,3 +1,7 @@
+https://github.com/MidnightFork/xb-gifs/blob/main/XBurger0.gif?raw=true
+https://github.com/MidnightFork/xb-gifs/blob/main/XBurger1.gif?raw=true
+https://github.com/MidnightFork/xb-gifs/blob/main/XBurger2.gif?raw=true
+
 # 🍔 X Burger - Advanced Gameplay Systems & Mechanics Showcase
 
 This repository serves as a deep dive into advanced gameplay systems, architectural patterns, and accessibility features I've developed in Unity. Rather than just building a "game," I focused on creating robust, scalable systems that mirror production-grade development environments.
